@@ -24,7 +24,7 @@ ADR9=@LsrGest0.lButton0
 BIT9=1
 
 CMD15=RUNEXE
-FILE15=C:\Kvara\LaserNet\LaserNet.exe
+FILE15=..\LaserNet\LaserNet.exe
 ABIL15=(Uipl.CurPsw==0)
 
 CMD40=ALARM
@@ -1760,7 +1760,7 @@ FIT=1
 FSN=0
 FRL=0
 FRM=ERR_HANDLER,0,0
-PRX=C:\Kvara\Exe\Monitor.ini
+PRX=.\Monitor.ini
 BKC=RGB(239,239,239)
 GRD=0
 FBR=1

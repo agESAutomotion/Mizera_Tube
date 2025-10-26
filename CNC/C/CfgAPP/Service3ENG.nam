@@ -5,7 +5,7 @@ TITLE=
 [PROMPT]
 KEY_NODE=Node
 SERVICE3=Leaf
-HELLO=C:\Kvara\CNC\C\cfgusr\Service3.str
+HELLO=..\CNC\C\cfgusr\Service3.str
 
 [STATUS]
 

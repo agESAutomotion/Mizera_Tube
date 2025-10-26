@@ -89,7 +89,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=ISO,0,1
-PRX=C:\Kvara\Exe\MonitorMDI.ini
+PRX=.\MonitorMDI.ini
 
 
 [ButtonEditMDI]

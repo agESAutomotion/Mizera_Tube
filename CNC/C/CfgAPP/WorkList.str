@@ -866,4 +866,4 @@ FIT=0
 FSN=0
 FRL=0
 FRM=GRAPH,0,0
-PRX=c:\kvara\exe\monitor.ini
+PRX=.\monitor.ini

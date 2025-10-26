@@ -173,7 +173,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=AXW,3,1
-PRX=C:\Kvara\CNC\C\CfgUsr\MyAxCH3.ini
+PRX=..\CNC\C\CfgUsr\MyAxCH3.ini
 MSK=0,0
 
 

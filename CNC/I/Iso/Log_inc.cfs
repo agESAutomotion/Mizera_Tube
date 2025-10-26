@@ -11,9 +11,9 @@ DBL fscanLock = 0
 STR sProgram
 
 IF (%PLCFLAGS.16) THEN 
- STR path1 = "C:/kvara/Log.csv"
+    STR path1 = "../../Log.csv"
 ELSE
- STR path1 = "D:/CFU/Log.csv"
+    STR path1 = "D:/CFU/Log.csv"
 ENDIF
 
 RET

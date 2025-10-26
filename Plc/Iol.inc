@@ -196,8 +196,8 @@ COLLIMATE_OK     AT %ui33.31;       * ui33.31 Collimate and point collimate or p
 ****************************************************************************************************
 **Assegnazioni registri di Comando \ Sincronismi Generali da ISO su %C18 ***************************
 ****************************************************************************************************
-* C:\Kvara\CNC\C\ISO\-1840.cfs/124:     *(C18.0)  Spegnimento anticipato
-* C:\Kvara\CNC\C\ISO\fnzm82.srt/5:      *(C18.1)  Congela regolazione
+* ..\CNC\C\ISO\-1840.cfs/124:     *(C18.0)  Spegnimento anticipato
+* ..\CNC\C\ISO\fnzm82.srt/5:      *(C18.1)  Congela regolazione
 AcqOrigEnd      AT %C18.2;              *(C18.2)  Acquisizione origine effettuata
 
 *ParkT2           AT %C18.6; * (C18.6)Richiesta Fuori ingombro testa a  (cn4)
@@ -206,7 +206,7 @@ TastInCorso2    AT %uxh_PlIso2.8;       *(uxh_PlIso2.4)Tastatura in corso (fase 
 *                                       *(C18.11) N.U.
 *                                       *(C18.12) N.U.
 *                                       *(C18.13) N.U.
-* C:\Kvara\CNC\C\ISO\-1800.cfs/291:     *(C18.16) = 1
+* ..\CNC\C\ISO\-1800.cfs/291:     *(C18.16) = 1
 CapacitiveTestRun   AT %C18.17;         *(C18.17) Capacitive test running
 IncaseofbevelCut    AT %C18.18;         *(C18.18) G800 G11 G13
 *                                       *(C18.19) N.U.

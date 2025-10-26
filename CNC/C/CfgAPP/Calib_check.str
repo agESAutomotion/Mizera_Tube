@@ -806,7 +806,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=PLOT,0,0
-PRX=C:\Kvara\CNC\C\CfgApp\Graphconfig\CalibControl.ini
+PRX=..\CNC\C\CfgApp\Graphconfig\CalibControl.ini
 TXC=RGB(128,64,64)
 BKC=RGB(255,255,255)
 STT=PlotCalibrationControl
@@ -1825,7 +1825,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=PLOT,0,0
-PRX=C:\Kvara\CNC\C\CfgApp\Graphconfig\RtcpTest.ini
+PRX=..\CNC\C\CfgApp\Graphconfig\RtcpTest.ini
 TXC=RGB(0,0,0)
 BKC=RGB(192,192,192)
 

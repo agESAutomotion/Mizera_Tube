@@ -9,18 +9,18 @@ PIC0=dataline.png
 CMD1=UIPL
 FILE1=OriginiAgg
 SAME_LEV1=0
-PIC1=C:\kvara\Res\Origin.png
+PIC1=..\Res\Origin.png
 
 CMD2=SELPROG_FAST
 VAL2=0
-PATH2=C:\kvara\CNC\D\PGM
+PATH2=..\CNC\D\PGM
 ABIL2=(R51.3==0)
 PIC2=pgm.png
 
 CMD3=UIPL
 FILE3=General
 SAME_LEV3=0
-PIC3=C:\kvara\Res\gen.png
+PIC3=..\Res\gen.png
 
 CMD4=UIPL_DLG
 FILE4=WorkList
@@ -28,7 +28,7 @@ WIDTH_UIPL_DLG4=1210
 HEIGHT_UIPL_DLG4=800
 BTN_OK_CANCEL_UIPL_DLG4=0
 ABIL4=(LSRPlcOp0.5==1)
-PIC4=C:\kvara\Res\worklist.png
+PIC4=..\Res\worklist.png
 ENABLE_CMND4=(LSRPlcOp0.5==1)
 SHW4=(rGui1.19 == 1)
 
@@ -695,7 +695,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=GRAPH,0,0
-PRX=c:\kvara\exe\monitor.ini
+PRX=.\monitor.ini
 SHW=(rGui1.20 == 1)
 
 
@@ -1620,7 +1620,7 @@ FIT=1
 FSN=0
 FRL=0
 FRM=ERR_HANDLER,0,0
-PRX=C:\Kvara\Exe\Monitor.ini
+PRX=.\Monitor.ini
 BKC=RGB(239,239,239)
 GRD=0
 FBR=1
@@ -1958,7 +1958,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=GRAPH3D,0,0
-PRX=C:\Kvara\Exe\TM.ini
+PRX=.\TM.ini
 SHW=(rGui1.20 == 0)
 
 

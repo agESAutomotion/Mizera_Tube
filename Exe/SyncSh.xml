@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Config>
   <OPCItemFiles>
-    <OPCItemFile>c:\Kvara\exe\SyncSh_CP.SHA</OPCItemFile>
+    <OPCItemFile>.\SyncSh_CP.SHA</OPCItemFile>
   </OPCItemFiles>
  </Config>
  

@@ -1,7 +1,8 @@
 
 [KEYS]
 
-CMD40=UIPL
+
+CMD40=UIPL
 FILE40=ParC_AX
 SAME_LEV40=0
 
@@ -78,7 +79,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=AXW,3,0
-PRX=C:\Kvara\Exe\Monitor.ini
+PRX=.\Monitor.ini
 MSK=0,0
 
 
@@ -163,7 +164,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=AXW,5,0
-PRX=C:\Kvara\Exe\Monitor.ini
+PRX=.\Monitor.ini
 MSK=0,0
 
 
@@ -176,7 +177,7 @@ FIT=0
 FSN=0
 FRL=0
 FRM=AXW,0,0
-PRX=C:\Kvara\Exe\Monitor.ini
+PRX=.\Monitor.ini
 MSK=0,0
 
 
