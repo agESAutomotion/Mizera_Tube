@@ -1,0 +1,21 @@
+:G173
+;//
+;// G173
+;//         Disattiva RTCP
+;//
+IF (rtcp_iclnut) THEN
+    rtcp_iclnut=0
+    G152
+ENDIF
+twist_head_no=0
+tool_holder_no=0
+rtcp_cut_edge_no=0
+rtcp_cut_edge_svl=0
+twist_table_no=0
+rtcp_oritrans=0
+rtcp_iclnut=0
+rtcp_padsid=0
+rtcp_on=0
+
+G152
+RET

@@ -1,0 +1,164 @@
+*******************************************************************************
+*   ONOFFMAC.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+#include "RemContr.inc"
+
+FPN_MACCH_ON:       TRIG;       * Fronte salita\discesa macchina ON
+TON_ALLARM:     	TON;        * TON salita allarme
+RTRIG_REM_DRY:      R_TRIG;
+
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+*******************************************************************************
+* Gestione Accensione\Spegnimento macchina e RESET
+*******************************************************************************
+FUNCTION Macch_Reset
+
+*******************************************************************************
+*   EMERGENZA MACCHINA DA  CN, PLC, Comando Sbloccaggio Protezioni Macchina
+*******************************************************************************
+LDN  O_O_CNC_OK                    ** CNC OK
+***(TODO)OR   EMERG_DA_SBL_PROTEZ
+ST   EMERGENZA_PLC_CN              ** M100.0  Emergenza da PLC o da CN
+
+*******************************************************************************
+*   Macchina OK 
+*******************************************************************************
+LDN  I_I_EMERGENZA                 ** Machine OK (no EMERG.)
+ST   MACCHINA_OK                   ** M100.1  Macchina OK
+
+*******************************************************************************
+*   Ciclo di Reference GENERALE in corso
+*******************************************************************************
+LD   REF_RUN                       ** M0.12 Taratura in corso
+ANDN PLC_SEL_SINGREF               ** ui16.28 Selezione REF singolo
+ST   GEN_REF_RUN                   ** M100.16 Ciclo di Reference GENERALE in corso
+
+*******************************************************************************
+*   Macchina in MANUALE
+*******************************************************************************
+LD   ch3_in_jog                    ** channel 3 in jog
+ST   MACCH_IN_MANUALE              ** M100.24 SELEZIONE MACCHINA IN MANUALE
+
+*******************************************************************************
+*   Macchina in AUTOMATICO
+*******************************************************************************
+LD   ch3_in_aut                    ** channel 3 in aut
+ST   MACCH_IN_AUTO                 ** M100.25 SELEZIONE MACCHINA IN AUTOMATICO
+
+*******************************************************************************
+*   Macchina in SIMULAZIONE
+*******************************************************************************
+CAL  RTRIG_REM_DRY(CLK:=RemContrDryRun)    * Xhc_Puls.8  Select Dry Run 
+
+LD   RTRIG_REM_DRY.Q
+AND  DryRunOption                   ** Macchina in modo Dry Run
+JMPCN no_dry_run
+LD   0
+ST   DryRunOption                   ** Macchina in modo Dry Run
+JMP no_dry
+no_dry_run:
+
+LD   RTRIG_REM_DRY.Q
+ANDN DryRunOption                   ** Macchina in modo Dry Run
+JMPCN yes_dry_run
+LD   1
+ST   DryRunOption                   ** Macchina in modo Dry Run
+yes_dry_run:
+no_dry:
+
+LD      %PlcOp0.2                ** Macchina in modo Dry Run
+ST      MACCH_IN_SIM	              ** M100.28 MACCHINA IN SIMULAZIONE
+
+*******************************************************************************
+*  SICUREZZE RIPRISTINATE (ON MACCHINA)
+*******************************************************************************
+CAL  FPN_MACCH_ON(CLK:=MACCHINA_OK) ** Fronte salita\discesa macchina ON
+
+LD   FPN_MACCH_ON.Q
+AND  MACCHINA_OK                   ** M100.1  Macchina OK
+ST   FP_MACCHINA_ON                ** M100.8  Fronte di salita Macchina ON
+
+LD   FPN_MACCH_ON.Q
+ANDN MACCHINA_OK                   ** M100.1  Macchina OK
+ST   FN_MACCHINA_ON                ** M100.7  Fronte di discesa Macchina ON
+
+*******************************************************************************
+*  RESET DA PULSANTE O AD ACCENSIONE MACCHINA
+*******************************************************************************
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+OR   FP_MACCHINA_ON                ** M100.8  Fronte di salita Macchina ON
+ST   RESET_MACCHINA                ** M100.2  Reset macchina
+
+******************************************************
+*  CANCELLAZIONE ALLARMI E MESSAGGI
+******************************************************
+LD   ON_ONE_SCAN                  ** PLCFLAGS.8  Flag on alla prima scansione PLC
+OR   RESET_MACCHINA                ** M100.2  Reset macchina
+ST   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+
+******************************************************
+*  AUTO JOG MODE 
+******************************************************
+LD   RemContrYPlus
+OR   RemContrCMinus
+OR   RemContrUPlus
+OR   RemContrUMinus
+OR   RemContrCPlus
+OR   RemContrZPlus
+OR   RemContrXMinus
+OR   RemContrXPlus
+OR   RemContrYMinus
+OR   RemContrZMinus
+OR   Gui_btn_CW 
+OR   Gui_btn_CCW
+OR   Gui_Pul_X_M  
+OR   Gui_Pul_X_P  
+OR   Gui_Pul_X1_M 
+OR   Gui_Pul_X1_P 
+OR   Rem_Combination
+ANDN %cn0.rc8.0
+ST   ContrJogFromBtn
+
+******************************************************
+*   ALLARME ATTIVO
+******************************************************
+LD  %PLCerr0
+GT  0
+OR(
+LD  %PLCerr1
+GT  0
+)
+OR(
+LD  %PLCerr2
+GT  0
+)
+OR (
+LD  %PLCerr3
+GT  0
+)
+OR (
+LD  %PLCerr4
+GT  0
+)
+OR (
+LD  %PLCerr5
+GT  0
+)
+OR (
+LD  %PLCerr6
+GT  0
+)
+ST   ALARM_ACT                     ** M100.3  Allarme attivo
+
+END_FUNCTION

@@ -1,0 +1,739 @@
+*******************************************************************************
+*   PIPE CALIBRATION 
+*   ESAutomotion
+*   LASER machine
+* Y  G2292 X(%CalPipe.DimXPipe/1000)  Y(%CalPipe.DimYPipe/1000)   Z(%CalPipe.DimZPipe/1000)  U(%CalPipe.DimUPipe/1000)  V(%CalPipe.DimVPipe/1000) W(%CalPipe.DimWPipe/1000) J(%CalPipe.Round/1000) TYPE 1               
+* Y G2292 X(%CalPipe.DimXPipe1/1000)  Y(%CalPipe.DimYPipe1/1000)  Z(%CalPipe.DimZPipe1/1000) U(%CalPipe.DimUPipe1/1000) V(%CalPipe.DimVPipe1/1000)W(%CalPipe.DimWPipe1/1000)J(%CalPipe.Round1/1000) TYPE 2
+* X  G2292 X(%CalPipe.DimXPipe/1000)  Y(%CalPipe.DimYPipe/1000)   Z(%CalPipe.DimZPipe/1000)  U(%CalPipe.DimUPipe/1000)  V(%CalPipe.DimVPipe/1000) W(%CalPipe.DimWPipe/1000) I(%CalPipe.Round/1000) TYPE 1               
+* X G2292 X(%CalPipe.DimXPipe1/1000)  Y(%CalPipe.DimYPipe1/1000)  Z(%CalPipe.DimZPipe1/1000) U(%CalPipe.DimUPipe1/1000) V(%CalPipe.DimVPipe1/1000)W(%CalPipe.DimWPipe1/1000)I(%CalPipe.Round1/1000) TYPE 2 
+*******************************************************************************
+VAR
+#include "cnc.inc"
+
+RTRIG_CHANG_OPT1:     R_TRIG;
+RTRIG_CHANG_OPT2:     R_TRIG;
+RTRIG_CHANG_OPT3:     R_TRIG;
+RTRIG_CHANG_OPT4:     R_TRIG;
+FTRIG_PRGRUN:         F_TRIG;
+R_TRIG_NO_SEL:        R_TRIG;
+RTRIG_PAR_COPY:       R_TRIG; 
+RTRIG_RES_CAL_X:      R_TRIG;
+RTRIG_RES_CAL_Y:      R_TRIG;
+appoggio:               BOOL;
+END_VAR
+
+#include "iol.inc"
+#include "pipe.inc"
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+*******************************************************************************
+*   Function: cancellazione tabella di calibrazione 2D e 3D
+*******************************************************************************
+FUNCTION RES_TAB_2D_3D
+
+LD   3                  * Type=nutator
+ST   T2D_TAB_T_KINE
+ST   T3D_TAB_T_KINE
+
+LD   0
+ST   T2D_T_OART_X0
+ST   T3D_T_OART_X0
+
+LD   0
+ST   T2D_T_OART_Y0
+ST   T3D_T_OART_Y0
+
+LD   0
+ST   T2D_T_OART_Z0
+ST   T3D_T_OART_Z0
+
+***6 ST   T2D_T_OART_ORIENT
+***6 ST   T3D_T_OART_ORIENT
+
+LD   0
+ST   T2D_T_OART_FRAME_C
+ST   T3D_T_OART_FRAME_C
+
+LD   0
+ST   T2D_T_OART_FRAME_B
+ST   T3D_T_OART_FRAME_B
+
+LD   0
+ST   T2D_T_OART_FRAME_A
+ST   T3D_T_OART_FRAME_A
+
+*** -90
+LD   90                 * SET !
+MUL  -1
+MUL  1000
+ST   T2D_T_OART_EC
+ST   T3D_T_OART_EC
+
+LD   0                  * SET !
+ST   T2D_T_OART_ECREV
+ST   T3D_T_OART_ECREV
+
+*** 9 ST   T2D_T_OART_ECAX
+*** 9 ST   T3D_T_OART_ECAX
+
+LD   0
+ST   T2D_T_OART_X1
+ST   T3D_T_OART_X1
+
+LD   0
+ST   T2D_T_OART_Y1
+ST   T3D_T_OART_Y1
+
+LD   0
+ST   T2D_T_OART_TILT
+ST   T3D_T_OART_TILT
+
+*** -90
+LD   90                 * SET !
+MUL  -1
+MUL  1000
+ST   T2D_T_OART_EB
+ST   T3D_T_OART_EB
+
+LD   0                  * SET !
+ST   T2D_T_OART_EBREV
+ST   T3D_T_OART_EBREV
+
+LD   0
+ST   T2D_T_OART_EBAX
+ST   T3D_T_OART_EBAX
+
+LD   0
+ST   T2D_T_OART_X2
+ST   T3D_T_OART_X2
+
+LD   0
+ST   T2D_T_OART_Y2
+ST   T3D_T_OART_Y2
+
+LD   0
+ST   T2D_T_OART_Z2
+ST   T3D_T_OART_Z2
+
+LD   0
+ST   T2D_T_OART_CAMBER
+ST   T3D_T_OART_CAMBER
+
+LD   0
+ST   T2D_T_OART_FRAME2_C
+ST   T3D_T_OART_FRAME2_C
+
+LD   0
+ST   T2D_T_OART_FRAME2_B
+ST   T3D_T_OART_FRAME2_B
+
+LD   0
+ST   T2D_T_OART_FRAME2_A
+ST   T3D_T_OART_FRAME2_A
+
+END_FUNCTION
+
+*******************************************************************************
+FUNCTION PIPE_CALIBRATION
+
+**
+* Force Factory Table
+LD   6
+ST   %CalPipe.BackupTable                  * Factory table
+
+
+* Safeties on option selections
+
+***
+CAL  RTRIG_CHANG_OPT1(CLK:=SquarePipeCal) ** (CalPipe.General.0) Table calibration for square pipe
+
+LD   RTRIG_CHANG_OPT1.Q
+JMPCN no_pipe_cal_round1
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    RoundPipeCal                  ** (CalPipe.General.1) Table calibration for round pipe
+no_pipe_cal_round1:
+
+CAL  RTRIG_CHANG_OPT2(CLK:=RoundPipeCal) ** (CalPipe.General.1) Table calibration for round pipe
+
+LD   RTRIG_CHANG_OPT2.Q
+JMPCN no_pipe_cal_round2
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    SquarePipeCal                 ** (CalPipe.General.0) Table calibration for square pipe
+no_pipe_cal_round2:
+
+* At least select one state
+LDN   SquarePipeCal                ** (CalPipe.General.0) Table calibration for square pipe
+ANDN  RoundPipeCal                 ** (CalPipe.General.1) Table calibration for round pipe
+ST    appoggio
+
+CAL  R_TRIG_NO_SEL (CLK:= appoggio)
+
+LD   R_TRIG_NO_SEL.Q
+JMPCN no_auto_select
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+S    SquarePipeCal                 ** (CalPipe.General.0) Table calibration for square pipe
+no_auto_select:
+***
+* Auto Reset when pipe axis is selected
+
+CAL  RTRIG_CHANG_OPT3(CLK:=PipeAlongX) ** (CalPipe.General.4) Pipe is cutted along X axis
+
+LD   RTRIG_CHANG_OPT3.Q
+JMPCN no_pipe_cal_x
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    PipeAlongY                    ** (CalPipe.General.5) Pipe is cutted along Y axis
+no_pipe_cal_x:
+
+CAL  RTRIG_CHANG_OPT4(CLK:=PipeAlongY) ** (CalPipe.General.5) Pipe is cutted along Y axis
+
+LD   RTRIG_CHANG_OPT4.Q
+JMPCN no_pipe_cal_y
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    PipeAlongX                    ** (CalPipe.General.4) Pipe is cutted along X axis
+no_pipe_cal_y:
+
+***
+* Reset of Pipe calibration result
+
+LD   PipeAlongX                    ** (CalPipe.General.4) Pipe is cutted along X axis
+AND  ResetPipeCal                  ** (CalPipe.General.8) Button to reset the value of calibration
+ST   appoggio
+
+CAL  RTRIG_RES_CAL_X (CLK:=appoggio)
+
+LD   PipeAlongY                    ** (CalPipe.General.5) Pipe is cutted along Y axis
+AND  ResetPipeCal                  ** (CalPipe.General.8) Button to reset the value of calibration
+ST   appoggio
+
+CAL  RTRIG_RES_CAL_Y (CLK:=appoggio)
+
+**
+* Preset of table ( X or Y )
+
+LD   RTRIG_CHANG_OPT3.Q            * Pipe is along X axis
+OR   RTRIG_RES_CAL_X.Q
+ANDN ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+JMPCN no_copy_X_par
+
+RES_TAB_2D_3D           * Cancellazione tabella per 2D e 3D
+
+LD   3
+ST   TAB_T_KINE
+
+LD   6
+ST   T_OART_ORIENT
+
+LD   90
+MUL  -1
+MUL  1000
+ST   T_OART_EC
+
+LD   9
+ST   T_OART_ECAX            
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   T_OART_X1               
+ST   T_OART_Y1    
+ST   T_OART_X0      
+ST   T_OART_Y0        
+ST   T_OART_Z0                     
+
+LD   90
+MUL  -1
+MUL  1000
+ST   T_OART_EB
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   T_OART_FRAME2_A
+no_copy_X_par:
+
+
+LD   RTRIG_CHANG_OPT4.Q           * Pipe is along Y axis
+OR   RTRIG_RES_CAL_Y.Q
+ANDN ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+JMPCN no_copy_Y_par
+
+RES_TAB_2D_3D           * Cancellazione tabella per 2D e 3D
+
+LD   3
+ST   TAB_T_KINE
+
+LD   8
+ST   T_OART_ORIENT
+
+LD   90
+MUL  1000
+ST   T_OART_EC
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   T_OART_X1               
+ST   T_OART_Y1
+ST   T_OART_X0      
+ST   T_OART_Y0        
+ST   T_OART_Z0  
+
+LD   9
+ST   T_OART_ECAX
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   T_OART_EB
+
+LD   90
+MUL  1000
+ST   T_OART_FRAME2_A
+no_copy_Y_par:
+***
+
+CAL  RTRIG_PAR_COPY (CLK:=FactoryParamCopy) ** (CalPipe.General.7) Factory parameters copy 
+
+
+LD   RTRIG_PAR_COPY.Q
+JMPCN no_copy_to_factory
+
+LD   TAB_T_KINE  
+ST   TAB_T_KINE_6 
+            
+LD   T_OART_X0    
+ST   T_OART_X0_6          
+
+
+LD   T_OART_Y0
+ST   T_OART_Y0_6   
+              
+LD   T_OART_Z0 
+ST   T_OART_Z0_6  
+              
+LD   T_OART_ORIENT 
+ST   T_OART_ORIENT_6 
+          
+LD   T_OART_FRAME_C     
+ST   T_OART_FRAME_C_6
+     
+LD   T_OART_FRAME_B     
+ST   T_OART_FRAME_B_6   
+     
+LD   T_OART_FRAME_A  
+ST   T_OART_FRAME_A_6 
+        
+LD   T_OART_EC        
+ST   T_OART_EC_6
+       
+LD   T_OART_ECREV     
+ST   T_OART_ECREV_6 
+       
+LD   T_OART_ECAX   
+ST   T_OART_ECAX_6  
+          
+LD   T_OART_X1
+ST   T_OART_X1_6
+               
+LD   T_OART_Y1    
+ST   T_OART_Y1_6
+           
+LD   T_OART_TILT 
+ST   T_OART_TILT_6
+           
+LD   T_OART_EB 
+ST   T_OART_EB_6 
+              
+LD   T_OART_EBREV  
+ST   T_OART_EBREV_6 
+          
+LD   T_OART_EBAX  
+ST   T_OART_EBAX_6 
+           
+LD   T_OART_X2  
+ST   T_OART_X2_6 
+             
+LD   T_OART_Y2 
+ST   T_OART_Y2_6  
+              
+LD   T_OART_Z2    
+ST   T_OART_Z2_6
+           
+LD   T_OART_CAMBER
+ST   T_OART_CAMBER_6
+           
+LD   T_OART_FRAME2_C   
+ST   T_OART_FRAME2_C_6
+      
+LD   T_OART_FRAME2_B 
+ST   T_OART_FRAME2_B_6   
+        
+LD   T_OART_FRAME2_A         
+ST   T_OART_FRAME2_A_6      
+no_copy_to_factory:                                                       
+      
+**
+* Datas for G2292 for the calibration
+
+LD   PipeAlongY                    ** (CalPipe.General.5) Pipe is cutted along Y axis
+JMPCN  no_gantry_Y
+
+* Spindle
+**
+LD   %CalPipe.Side2               * Side 1 
+DIV   2 
+ST   %CalPipe.DimXPipe            * Shape Information X
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   %CalPipe.DimYPipe            * Shape Information Y 
+
+LD   %CalPipe.Side3               * Side2
+DIV  2
+MUL  -1
+ST   %CalPipe.DimZPipe            * Shape Information Z  
+
+LD   %CalPipe.Side2               * Side 1
+DIV  2
+MUL  -1
+ST   %CalPipe.DimUPipe            * Shape Information U  
+
+LD   %CalPipe.Lenght1             * Lenght of the Pipe
+ST   %CalPipe.DimVPipe            * Shape Information V  
+
+LD   %CalPipe.Side3               * Side2
+DIV  2 
+ST   %CalPipe.DimWPipe            * Shape Information W  
+
+LD   %CalPipe.RoundPar1           * Roundess from gui
+ST   %CalPipe.Round               * Round of square pipe 
+**
+
+* Tube
+**
+LD   SquarePipeCal                 ** (CalPipe.General.0) Table calibration for square pipe
+JMPCN  no_square_type_2
+
+LD   %CalPipe.Side0               * Side 1 
+DIV   2 
+ST   %CalPipe.DimXPipe1           * Shape Information X
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   %CalPipe.DimYPipe1           * Shape Information Y 
+
+LD   %CalPipe.Side1               * Side2
+DIV  2
+MUL  -1
+ST   %CalPipe.DimZPipe1           * Shape Information Z  
+
+LD   %CalPipe.Side0               * Side 1
+DIV  2
+MUL  -1
+ST   %CalPipe.DimUPipe1           * Shape Information U  
+
+LD   %CalPipe.Lenght0             * Lenght of the Pipe
+ST   %CalPipe.DimVPipe1           * Shape Information V  
+
+LD   %CalPipe.Side1               * Side2
+DIV  2 
+ST   %CalPipe.DimWPipe1           * Shape Information W  
+
+LD   %CalPipe.RoundPar0           * Roundess from gui
+ST   %CalPipe.Round1              * Round of square pipe 
+no_square_type_2:
+**
+
+LD   RoundPipeCal                  ** (CalPipe.General.1) Table calibration for round pipe
+JMPCN no_circle_type_2Y
+
+LD   %CalPipe.Radius               
+ST   %CalPipe.DimXPipe1           * Shape Information X
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   %CalPipe.DimYPipe1           * Shape Information Y 
+
+LD   %CalPipe.Radius
+MUL  -1
+ST   %CalPipe.DimZPipe1           * Shape Information Z  
+
+LD   %CalPipe.Radius
+MUL  -1
+ST   %CalPipe.DimUPipe1           * Shape Information U  
+
+LD   %CalPipe.Lenght0             * Lenght of the Pipe
+ST   %CalPipe.DimVPipe1           * Shape Information V  
+
+LD   %CalPipe.Radius
+ST   %CalPipe.DimWPipe1           * Shape Information W  
+
+LD   %CalPipe.Radius
+ST   %CalPipe.Round1              * Round of square pipe 
+no_circle_type_2Y:
+**
+no_gantry_Y:
+***
+
+LD   PipeAlongX                    ** (CalPipe.General.4) Pipe is cutted along X axis
+JMPCN  no_gantry_X
+
+* Spindle 
+**
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   %CalPipe.DimXPipe            * Shape Information X
+
+LD   %CalPipe.Side2               * Side 1 
+DIV   2 
+MUL  -1
+ST   %CalPipe.DimYPipe            * Shape Information Y 
+
+LD   %CalPipe.Side3               * Side2
+DIV  2
+MUL  -1
+ST   %CalPipe.DimZPipe            * Shape Information Z  
+
+LD   %CalPipe.Lenght1             * Lenght of the Pipe
+ST   %CalPipe.DimUPipe            * Shape Information U  
+
+LD   %CalPipe.Side2               * Side 1
+DIV  2
+ST   %CalPipe.DimVPipe            * Shape Information V  
+
+LD   %CalPipe.Side3               * Side2
+DIV  2 
+ST   %CalPipe.DimWPipe            * Shape Information W  
+
+LD   %CalPipe.RoundPar1           * Roundess from gui
+ST   %CalPipe.Round               * Round of square pipe 
+**
+
+* Tube
+**
+LD   SquarePipeCal                 ** (CalPipe.General.0) Table calibration for square pipe
+JMPCN  no_square_type_2X
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   %CalPipe.DimXPipe1           * Shape Information X
+
+LD   %CalPipe.Side0               * Side 1 
+DIV   2 
+MUL  -1
+ST   %CalPipe.DimYPipe1           * Shape Information Y 
+
+LD   %CalPipe.Side1               * Side2
+DIV  2
+MUL  -1
+ST   %CalPipe.DimZPipe1           * Shape Information Z  
+
+LD   %CalPipe.Lenght0             * Lenght of the Pipe
+ST   %CalPipe.DimUPipe1           * Shape Information U  
+
+LD   %CalPipe.Side0               * Side 1
+DIV  2
+ST   %CalPipe.DimVPipe1           * Shape Information V  
+
+LD   %CalPipe.Side1               * Side2
+DIV  2 
+ST   %CalPipe.DimWPipe1           * Shape Information W  
+
+LD   %CalPipe.RoundPar0           * Roundess from gui
+ST   %CalPipe.Round1              * Round of square pipe 
+no_square_type_2X:
+**
+
+LD   RoundPipeCal                  ** (CalPipe.General.1) Table calibration for round pipe
+JMPCN no_circle_type_2X
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   %CalPipe.DimXPipe1           * Shape Information X
+
+LD   %CalPipe.Radius  
+MUL  -1
+ST   %CalPipe.DimYPipe1           * Shape Information Y 
+
+LD   %CalPipe.Radius
+MUL  -1
+ST   %CalPipe.DimZPipe1           * Shape Information Z  
+
+LD   %CalPipe.Lenght0             * Lenght of the Pipe
+ST   %CalPipe.DimUPipe1           * Shape Information U  
+
+LD   %CalPipe.Radius
+ST   %CalPipe.DimVPipe1           * Shape Information V  
+
+LD   %CalPipe.Radius
+ST   %CalPipe.DimWPipe1           * Shape Information W  
+
+LD   %CalPipe.Radius
+ST   %CalPipe.Round1              * Round of square pipe 
+no_circle_type_2X:
+**
+no_gantry_X:
+***
+
+***
+** Calibration cycle request
+
+LD   RunCalibration                ** (CalPipe.General.2) Run calibration from GUI
+ANDN I_I_EMERGENZA                 ** Machine OK (no EMERG.)
+ANDN EMER_GEN                      ** M0.10 Emergenza generale
+S    ExePipeCalib                  ** (CalPipe.General.3) Exe Pipe Calibration
+
+CAL  FTRIG_PRGRUN (CLK:=PRGRUN_CN0) ** M0.0 cn0.rc8.0  Programma in corso
+
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+OR   FTRIG_PRGRUN.Q
+OR   I_I_EMERGENZA                 ** Machine OK (no EMERG.)
+OR   EMER_GEN                      ** M0.10 Emergenza generale
+R    ExePipeCalib                  ** (CalPipe.General.3) Exe Pipe Calibration
+
+**
+* Alarm Messages
+
+LD   %cn3.cc1.5                   * Pipe axis configured
+ANDN PipeAlongX                    ** (CalPipe.General.4) Pipe is cutted along X axis
+ANDN PipeAlongY                    ** (CalPipe.General.5) Pipe is cutted along Y axis
+ST   %PLCerr2.10                  * Pipe axis configured, but not define X OR Y
+
+LD   PipeCalCycleTouch             ** (CalPipe0.General3) index to communicate in laser touch the setpoint for the calibration
+EQ   0
+JMPC no_check_limit
+
+LD   %ax29.ra4                    * Z axis position [um]
+LT   (
+LD   %UnitWork.uxh0.a_z
+SUB  %CalPipe.MaxErrTouchVert
+)
+ANDN CapacitiveTestRun
+S    %PLCerr2.11                  * Pipe Vertical Overtravel, check Calibration data
+no_check_limit:
+
+**
+* Pipe Spindle calibration
+
+LD   SpindleCalProc                ** (CalPipe0.General2) index to comunicate to plc the spindle singfc start
+JMPCN no_check_limit1
+
+LD  %CalPipe.General.4            * pipe along X         
+JMPCN sim_no_x
+
+LD   %ax28.ra4
+DIV  1000
+GT   (
+LD   PosForSingFC                  ** (CalPipe.General1) Programmed position for singfc command inside spindle calibration
+ADD  (
+LD   %CalPipe.MaxErrTouchHoriz
+DIV  1000
+)
+)
+OR   (
+LD   %ax28.ra4
+DIV  1000
+LT  (
+LD   PosForSingFC                  ** (CalPipe.General1) Programmed position for singfc command inside spindle calibration
+SUB  (
+LD   %CalPipe.MaxErrTouchHoriz
+DIV  1000
+)
+)
+)
+S    %PLCerr2.12                  *  Pipe Vertical Horizontal, check Calibration data
+sim_no_x:
+
+LD  %CalPipe.General.5            * pipe along y
+JMPCN sim_no_y
+
+LD  %ax27.ra4
+DIV  1000
+GT  (
+LD   PosForSingFC                  ** (CalPipe.General1) Programmed position for singfc command inside spindle calibration
+ADD  (
+LD   %CalPipe.MaxErrTouchHoriz
+DIV  1000
+)
+)
+OR (
+LD   %ax27.ra4
+DIV  1000
+LT  (
+LD   PosForSingFC                  ** (CalPipe.General1) Programmed position for singfc command inside spindle calibration
+SUB  (
+LD   %CalPipe.MaxErrTouchHoriz
+DIV  1000
+)
+)
+)
+S    %PLCerr2.12                  *  Pipe Vertical Horizontal, check Calibration data
+sim_no_y:
+no_check_limit1:
+
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+R    %PLCerr2.11                  * Pipe Vertical Overtravel, check Calibration data
+R    %PLCerr2.12                  *  Pipe Vertical Horizontal, check Calibration data
+**
+
+LDN  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+JMPCN res_value
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   PipeCalCycleTouch             ** (CalPipe0.General3) index to communicate in laser touch the setpoint for the calibration
+ST   SpindleCalProc                ** (CalPipe0.General2) index to comunicate to plc the spindle singfc start
+res_value:
+
+********************************************************************************
+* Pipe cutting enable
+
+LD   %UnitWork.gTravE 
+EQ   1
+OR   (
+LD   PipeAlongY                    ** (CalPipe.General.5) Pipe is cutted along Y axis
+AND  (
+ LD   %tab1.t_ttab.t_oart.t_dX
+ LE   0
+AND  (
+ LD   %ax27.ra4
+  LT   ( 
+  LD   %ax27.pa21
+  ADD  %LSRCostK9
+    )
+  )
+ )
+)
+OR   (
+LD   PipeAlongY                    ** (CalPipe.General.5) Pipe is cutted along Y axis
+AND  (
+ LD   %tab1.t_ttab.t_oart.t_dX
+ GT   0
+AND  (
+ LD   %ax27.ra4
+  GT   ( 
+  LD   %ax27.pa22
+  SUB  %LSRCostK9
+    )
+  )
+ )
+)
+OR   (
+LD   PipeAlongX                    ** (CalPipe.General.4) Pipe is cutted along X axis
+AND  (
+ LD   %tab1.t_ttab.t_oart.t_dY
+ LE   0
+AND  (
+ LD   %ax28.ra4
+  LT   ( 
+  LD   %ax28.pa21
+  ADD  %LSRCostK9
+    )
+  )
+ )
+)
+OR   (
+LD   PipeAlongX                    ** (CalPipe.General.4) Pipe is cutted along X axis
+AND  (
+ LD   %tab1.t_ttab.t_oart.t_dY
+ GT   0
+AND  (
+ LD   %ax28.ra4
+  LT   ( 
+  LD   %ax28.pa22
+  SUB  %LSRCostK9
+    )
+  )
+ )
+)
+ST   O_O_PIPE_RUN                    * (QW710.10) Pipe cutting run 
+*********************************************************************************
+
+END_FUNCTION

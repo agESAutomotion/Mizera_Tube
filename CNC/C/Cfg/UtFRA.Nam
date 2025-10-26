@@ -1,0 +1,84 @@
+[PROMPT]
+KEY_UT        =Données Outils (ver. 1.5)
+
+UT_TYPE    =Type outil
+DU_DESC    =Descrizione
+
+PT_LUNGZ   =Longueur Z Outil[mm]
+PT_USLUNGZ =Usure Longueur Z[mm]
+PT_PRES    =Preset Outil
+PT_VITA    =Vie Outil
+PT_THDLUNGZ   =THD Longueur Z Outil[mm]
+
+FC_LUNGZ   =Longueur Z Outil[mm]
+FC_RAD     =Rayon Outil[mm]
+FC_PRES    =Preset Outil
+FC_VITA    =Vie Outil
+FC_USLUNGZ =Usure Longueur Z[mm]
+FC_USRAD   =Usure Rayon[mm]
+FC_THDLUNGZ =THD Longueur Z Outil[mm]
+
+FA_LUNGZ   =Longueur Z Outil[mm]
+FA_LUNGX   =Longueur X Outil[mm]
+FA_RAD     =Rayon Outil[mm]
+FA_PRES    =Preset Outil
+FA_VITA    =Vie Outil
+FA_USLUNGZ =Usure Longueur Z[mm]
+FA_USLUNGX =Usure Longueur X[mm]
+FA_USRAD   =Usure Rayon[mm]
+FA_THDLUNGZ =THD Longueur Z Outil[mm]
+FA_THDLUNGX =THD Longueur X Outil[mm]
+
+TN_LUNGZ   =Longueur Z Outil[mm]
+TN_LUNGX   =Longueur X Outil[mm]
+TN_RAD     =Rayon Outil[mm]
+TN_ANG_A   =Angolo di spoglia A
+TN_ANG_B   =Angolo di spoglia B
+TN_PRES    =Preset Outil
+TN_VITA    =Vie Outil
+TN_USLUNGZ =Usure Longueur Z[mm]
+TN_USLUNGX =Usure Longueur X[mm]
+TN_USRAD   =Usure Rayon[mm]
+TN_THDLUNGZ   =THD Longueur Z Outil[mm]
+TN_THDLUNGX   =THD Longueur X Outil[mm]
+TN_THDLUNGY   =THD Longueur Y Outil[mm]
+
+VITA_PREAL = Vita preallarme
+
+[HELP]
+UT_TYPE       =Type Outil: 1-Fraise à Chandelle  2-Fraise à Tête angulaire  3-Tour 4-Foret de perçage
+
+PT_LUNGZ   =Longueur Z Outil: Longueur de l'outil dans la direction orthogonale au plan sélectionné
+PT_USLUNGZ =Usure Longueur Z
+PT_PRES    =Preset Outil
+PT_VITA    =Vie Outil
+
+FC_LUNGZ   =Longueur Z Outil: Longueur de l'outil dans la direction orthogonale au plan sélectionné
+FC_RAD     =Rayon Outil: Rayon de l'outil permet de prendre en compte l'encombrement réel de l'outil en phase d'usinage
+FC_PRES    =Preset Outil
+FC_VITA    =Vie Outil
+FC_USLUNGZ =Usure Longueur Z
+FC_USRAD   =Usure Rayon
+
+FA_LUNGZ   =Longueur Z Outil: Longueur de l'outil dans la direction orthogonale au plan sélectionné
+FA_LUNGX   =Longueur X Outil: Offset de l'outil sur le plan d'usinage
+FA_RAD     =Rayon Outil:Rayon de l'outil permet de prendre en compte l'encombrement réel de l'outil en phase d'usinage
+FA_PRES    =Preset Outil
+FA_VITA    =Vie Outil
+FA_USLUNGZ =Usure Longueur Z
+FA_USLUNGX =Usure Longueur X
+FA_USRAD   =Usure Rayon
+
+TN_LUNGZ   =Longueur Z Outil: Longueur de l'outil dans la direction orthogonale au plan sélectionné
+TN_LUNGX   =Longueur X Outil: Offset de l'outil sur le plan d'usinage
+TN_RAD     =Rayon Outil: Rayon de l'outil permet de prendre en compte l'encombrement réel de l'outil en phase d'usinage
+TN_ANG_A   =Angolo di spoglia A
+TN_ANG_B   =Angolo di spoglia B
+TN_PRES    =Preset
+TN_VITA    =vie Outil
+TN_USLUNGZ =Usure Longueur Z
+TN_USLUNGX =Usure Longueur X
+TN_USRAD   =Usure Rayon
+
+VITA_PREAL = Vita preallarme
+

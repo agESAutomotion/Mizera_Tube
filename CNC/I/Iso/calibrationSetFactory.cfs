@@ -1,0 +1,20 @@
+ : calibrationSetFactory
+
+;// RTCP Calibration Cycle
+;// DEFINED -> rtcp_calib
+;// Stores Current calibration data to Factory Defaults
+;// (REQUIRES PASSWORD)
+
+DBL dstTable
+DBL srcTable
+
+SYN
+IF (%twi[tbCurrent].yKine == 0) $No calibration data!
+IF (%twi[tbCurrent].yKine == 0) RET
+
+dstTable = tbFactory
+srcTable = tbCurrent
+JSR "copyCalibrationData.cfs"
+
+$Factory data set.
+RET

@@ -1,0 +1,351 @@
+#funcdec "FBSuppor.plc"
+#funcdec "assi.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+#funcdec "SupForce.plc"
+#funcdec "suppFB.plc"
+
+#include "Iol.inc"
+#include "usrMem.inc"
+
+VAR
+#include "iof.inc"
+#include "usrIof.inc"
+#include "cnc.inc"
+
+F_TRIG_RES_FOLL:     F_TRIG;
+
+appoggio:              BOOL;
+
+SUP1:               SUPPORT;
+SUP2:               SUPPORT;
+SUP3:               SUPPORT;
+SUP4:               SUPPORT;
+END_VAR
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"              
+END_VAR
+
+FUNCTION LOAD_SUPPORTS
+
+PATH  %cn5
+
+*******************************************************
+*         Staggered avoidance position                *
+*******************************************************
+LD   %ax30.ra0.0
+JMPCN _closeloop_active
+     LD   %ax30.ra92
+     ST   PosUMis 
+JMP _no_loop
+_closeloop_active:      
+     LD   %ax30.ra4
+     ST   PosUMis     
+_no_loop:
+
+LDN  OptEnabAutoParkLoad
+JMPCN _DISABLEFOLLOWER
+     LD   0
+     ST   PosUMis
+_DISABLEFOLLOWER:
+
+*******************************************************
+*         FOLLOWIING SUPPORTS MANAGEMENT              *
+*******************************************************
+ *(gIso39.0) Enable blendSwitch PLC writes (Lunette da ISO)
+CAL  F_TRIG_RES_FOLL (CLK:=PRGRUN_CN0)
+LD   F_TRIG_RES_FOLL.Q
+OR   Pul_Reset
+R    EnWriteBlendSwitch1    
+R    ParkAllLoadSuppCmd             
+
+LDN  PRGRUN_CN0
+JMPCN RSTBLEND
+     LD   %PLCFLAGS.0
+	 ST   EnWriteBlendSwitch1
+	 ST   ISO_SupLoader_Init  
+	 ST   ParkUn51Sup_ISO
+	 ST   ParkUn52Sup_ISO
+	 ST   ParkUn53Sup_ISO
+	 ST   ParkUn54Sup_ISO
+     
+     LD   0
+	 ST   ThreshLoadingSupDown
+RSTBLEND:
+
+LD   ALWAYS_ONE
+ST   SUP1.xUaxDir
+ST   SUP2.xUaxDir
+ST   SUP3.xUaxDir
+ST   SUP4.xUaxDir
+
+LD   Reset
+OR   EMER_GEN
+ST   SUP1.xReset   
+ST   SUP2.xReset   
+ST   SUP3.xReset   
+ST   SUP4.xReset   
+
+LD   EnWriteBlendSwitch1
+ST   SUP1.xBlendSwitchEn
+ST   SUP2.xBlendSwitchEn
+ST   SUP3.xBlendSwitchEn
+ST   SUP4.xBlendSwitchEn
+
+LD   OptEnabAutoParkLoad
+ST   SUP1.xEnabAutoDwn
+ST   SUP2.xEnabAutoDwn
+ST   SUP3.xEnabAutoDwn
+ST   SUP4.xEnabAutoDwn
+
+LD   IN_M700_M704
+EQ   700
+OR(
+LD   IN_M700_M704
+EQ   704
+)
+AND  %cn0.rc8.0
+JMPC CLRACTBIT
+     LD   %PLCFLAGS.0
+     ST   M700_BLEND
+CLRACTBIT:
+
+LD   IN_M700_M704
+EQ   704
+OR   M700_BLEND
+AND  %cn0.rc8.0 
+AND  O_O_Mobile_Spindle_Close
+ANDN IN_M4_MODE
+ST   SUP1.xEnabAutoUp
+ST   SUP2.xEnabAutoUp
+ST   SUP3.xEnabAutoUp
+ST   SUP4.xEnabAutoUp
+
+LD   IN_M700_M704
+ST   SUP1.xM700_M704
+ST   SUP2.xM700_M704
+ST   SUP3.xM700_M704
+ST   SUP4.xM700_M704
+
+LD   IN_M4_MODE
+JMPCN NOG1000PRK
+     LD   0
+     ST   SUP1.xM700_M704
+     ST   SUP2.xM700_M704
+     ST   SUP3.xM700_M704
+     ST   SUP4.xM700_M704
+NOG1000PRK:
+
+LD   PosUMis  
+ST   SUP1.xSupervisePos
+ST   SUP2.xSupervisePos
+ST   SUP3.xSupervisePos
+ST   SUP4.xSupervisePos
+
+LD   ParkingPositionLoad        
+ST   SUP1.xParkingPos 
+ST   SUP2.xParkingPos 
+ST   SUP3.xParkingPos 
+ST   SUP4.xParkingPos 
+
+LD   ThreshLoadingSupDown
+ST   SUP1.xSuperviseOft 
+ST   SUP2.xSuperviseOft 
+ST   SUP3.xSuperviseOft 
+ST   SUP4.xSuperviseOft 
+
+LD   %ax30.ra3.0
+ST   SUP1.xUaxStill
+ST   SUP2.xUaxStill
+ST   SUP3.xUaxStill
+ST   SUP4.xUaxStill
+
+* [lv, lat, ulv, uhor]=[0,1,2,3]
+LD   0
+ST   SUP1.xBlendId
+ST   SUP2.xBlendId
+ST   SUP3.xBlendId
+ST   SUP4.xBlendId
+
+LD   %config_machine0.7
+ST   SUP1.xEnCyComSup
+ST   SUP2.xEnCyComSup
+ST   SUP3.xEnCyComSup
+ST   SUP4.xEnCyComSup
+JMPCN _CYCOMOFT
+LD   %ax60.ra24
+ST   SUP1.xCyComOft
+ST   SUP2.xCyComOft
+ST   SUP3.xCyComOft
+ST   SUP4.xCyComOft
+_CYCOMOFT:
+
+* Support 1 
+LD   %cn5.cc1.1
+JMPCN no_support_1
+
+PATH  %ax51
+
+LD   SUPPORT_1_Quota          
+ST   SUP1.xLimitSuppDwn   
+
+LD   ParkAllLoadSuppCmd
+OR   Fun_M725_Ch0    
+OR   ParkUn51Sup_ISO      
+ST   SUP1.xParkCmd
+
+CAL  SUP1
+
+LD   SUP1.yReqGrant
+ANDN ch5_in_ref
+ST   usrReqGrantSupL1 
+
+LD   SUP1.yHoldMovSupp
+ANDN ch5_in_ref
+ST   HoldZ1SuppLoad
+
+LD   SUP1.yHoldMovSuperv
+ANDN ch5_in_ref
+ST   Hold_U_Z1SuppLoad
+
+LD   SUP1.yCenterOpen
+ST   Force_Open_Center_1
+
+LD   SUP1.yCyComDwn
+ST   yActivatedCyCom_51
+
+LD   SUP1.yCyComOft
+ST   CyComOftAx51
+
+no_support_1:
+
+* Support 2
+
+LD   %cn5.cc1.2
+JMPCN no_support_2
+
+PATH  %ax52
+
+LD   SUPPORT_2_Quota            
+ST   SUP2.xLimitSuppDwn 
+
+LD   ParkAllLoadSuppCmd
+OR   Fun_M725_Ch0           * M force parking from autocycle
+OR   ParkUn52Sup_ISO  
+ST   SUP2.xParkCmd
+
+CAL  SUP2
+
+LD   SUP2.yReqGrant
+ANDN ch5_in_ref
+ST   usrReqGrantSupL2 
+
+LD   SUP2.yHoldMovSupp
+ANDN ch5_in_ref
+ST   HoldZ2SuppLoad
+
+LD   SUP2.yHoldMovSuperv
+ANDN ch5_in_ref
+ST   Hold_U_Z2SuppLoad
+
+LD   SUP2.yCenterOpen
+ST   Force_Open_Center_2
+
+LD   SUP2.yCyComDwn
+ST   yActivatedCyCom_52
+
+LD   SUP2.yCyComOft
+ST   CyComOftAx52
+
+no_support_2:
+
+*  Support 3
+*   
+LD   %cn5.cc1.3
+JMPCN no_support_3
+
+PATH  %ax53
+
+LD   SUPPORT_3_Quota            * dwn limit for support 
+ST   SUP3.xLimitSuppDwn 
+
+LD   ParkAllLoadSuppCmd
+OR   Fun_M725_Ch0           * M force parking from autocycle
+OR   ParkUn53Sup_ISO  
+ST   SUP3.xParkCmd
+
+CAL  SUP3
+
+LD   SUP3.yReqGrant
+ANDN ch5_in_ref
+ST   usrReqGrantSupL3 
+
+LD   SUP3.yHoldMovSupp
+ANDN ch5_in_ref
+ST   HoldZ3SuppLoad
+
+LD   SUP3.yHoldMovSuperv
+ANDN ch5_in_ref
+ST   Hold_U_Z3SuppLoad
+
+LD   SUP3.yCenterOpen
+ST   Force_Open_Center_3
+
+LD   SUP3.yCyComDwn
+ST   yActivatedCyCom_53
+
+LD   SUP3.yCyComOft
+ST   CyComOftAx53
+
+no_support_3:             
+
+*  Support 4
+*   
+LD   %cn5.cc1.4
+JMPCN no_support_4
+
+PATH  %ax54
+ 
+LD   SUPPORT_4_Quota            * dwn limit for support 
+ST   SUP4.xLimitSuppDwn   
+
+LD   ParkAllLoadSuppCmd
+OR   Fun_M725_Ch0           * M force parking from autocycle
+OR   ParkUn54Sup_ISO  
+ST   SUP4.xParkCmd
+
+CAL  SUP4
+
+LD   SUP4.yReqGrant
+ANDN ch5_in_ref
+ST   usrReqGrantSupL4 
+
+LD   SUP4.yHoldMovSupp
+ANDN ch5_in_ref
+ST   HoldZ4SuppLoad
+
+LD   SUP4.yHoldMovSuperv
+ANDN ch5_in_ref
+ST   Hold_U_Z4SuppLoad
+
+LD   SUP4.yCenterOpen
+ST   Force_Open_Center_4
+
+LD   SUP4.yCyComDwn
+ST   yActivatedCyCom_54
+
+LD   SUP4.yCyComOft
+ST   CyComOftAx54
+
+no_support_4:
+
+*//=============================================================================
+*// Cylinder Type Follower Support
+*//=============================================================================
+LOAD_CYLINDER_SUPPORTS
+
+*//=============================================================================
+
+END_FUNCTION

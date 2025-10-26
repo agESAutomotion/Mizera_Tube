@@ -1,0 +1,74 @@
+[PROMPT]
+KEY_CONFCHAN  =Configure Channel
+
+CC_CHNAME     =Channel name
+CC_NUMBOARD   =Processing Board number
+CC_MASKAXES   =Channel Axes mask
+CC_NX         =X Axis number
+CC_NY         =Y Axis number
+CC_NZ         =Z Axis number
+CC_NU         =U Axis number
+CC_NV         =V Axis number
+CC_NW         =W Axis number
+CC_NA         =A Axis number
+CC_NB         =B Axis number
+CC_NC         =C Axis number
+CC_NM         =S Axis number (spindle 1)
+CC_S2         =S2 Axis number (spindle 2)
+CC_S3         =S3 Axis number (spindle 3)
+CC_MAINPROC   =Main process number
+CC_AUXPROC    =Auxiliary process number
+CC_PRIORITY   =Channel priority
+CC_TWIBASE    =Basic Spindle Table index
+CC_TWIAMOUNT  =Number of Spindles
+CC_THDBASE    =Basic Toolholder Table index
+CC_THDAMOUNT  =Number of Toolholders
+CC_CEDBASE    =Basic Tool Table index
+CC_CEDAMOUNT  =Number of Tools
+CC_VARSPERLEVEL=Loc. var. for subroutine level
+CC_CHANPTKB   =Pass-thru memory size
+CC_PTMONLINESC=Pass-thru buffered lines (client browser)
+CC_PTMONLINESS=Pass-thru buffered lines (server browser)
+CC_CHANRETRKB =Retrace memory size
+CC_MAG        =Tool storage type
+CC_RV         =Tool storage No
+CC_TABBASE    =Tables table base index
+CC_TABAMOUNT  =Number of tables
+CC_GORGBASE   =Global origins table base index
+CC_GORGAMOUNT =Number of global origins
+CC_SOSID      =Slave extension index (0=none)
+CC_SOSQUEUE   =Queue size [elements]
+
+[HELP]
+
+CC_CHNAME     =String of maximum 8 characters for the channel name
+CC_NUMBOARD   =Processing Board Number: number of the board that operates the channel logics, to be used only in distributed systems.
+CC_MASKAXES   =Channel Axes Mask: establishes the axes group to be controlled by the channel
+CC_NX         =X Axis Number: X axis process number
+CC_NY         =Y Axis Number: Y axis process number
+CC_NZ         =Z Axis Number: Z axis process number
+CC_NU         =U Axis Number: U axis process number
+CC_NV         =V Axis Number: V axis process number
+CC_NW         =W Axis Number: W axis process number
+CC_NA         =A Axis Number: A axis process number
+CC_NB         =B Axis Number: B axis process number
+CC_NC         =C Axis Number: C axis process number
+CC_NM         =S Axis Number (spindle): Spindle axis process number
+CC_MAINPROC   =Main process number: number of the process responsible of the channel interpolation control
+CC_AUXPROC    =Auxiliary process number:  used by the PLC Function Blocks
+CC_PRIORITY   =Establishes the channel execution priority.  The lower the value the higher the priority.  Valid values are:  (0-1-2-3) executed with given priority (10) never executed
+CC_TWIBASE    =Index of the first Spindle used by the channel in the table containing all the spindles
+CC_TWIAMOUNT  =Number of Spindles used by the channel
+CC_THDBASE    =Index of the first Toolholder used by the channel in the table containing all the toolholders
+CC_THDAMOUNT  =Number of Toolholders used by the channel
+CC_CEDBASE    =Index of the first Tool used by the channel in the table containing all the tools
+CC_CEDAMOUNT  =Number of Tools used by the channel
+CC_VARSPERLEVEL=Local variables for each subroutine level
+CC_CHANPTKB   =Pass-thru execution memory size (KB).  See also the similar CN configuration parameter, which could need to be updated after changes to this one.
+CC_CHANRETRKB =Retrace buffer size (KB).  See also the similar CN configuration parameter, which could need to be updated after changes to this one.
+CC_MAG        =Tool storage type: 0) no tool storage 1) Revolver
+CC_RV         =Tool storage data structure index:  set to 1 to link to revolver(0)
+CC_TABBASE    =Tables table base index
+CC_TABAMOUNT  =Number of tables
+CC_GORGBASE   =Global origins table base index
+CC_GORGAMOUNT =Number of global origins

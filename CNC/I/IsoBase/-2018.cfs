@@ -1,0 +1,66 @@
+ :G1018
+;//
+;// JUMP ACROSS TUBE FACES SUPPORT:
+;// MARK SHAPE
+;//
+DBL pi = tubePI
+DBL ax, ay
+DBL bx, by, br
+DBL cx, cy
+DBL ab1x, ab1y, bc1x, bc1y
+DBL Cbx, Cby
+DBL length, one_length, lb
+DBL angleABC
+DBL minR
+DBL i, n
+DBL gi
+DBL r
+
+n = %gmaPolygons[pi].gmanVertices
+IF (n < 3) ERROR(55) ;at least 3p for a polygon
+
+;// Determine bounding circle radius
+minR = 0.0
+FOR i = 0 TO n - 1
+    ;// load data for ABC, where current vertex B and polygon is closed
+    gi = i - 1
+    IF (gi < 0) gi = gi + n
+    ax = %gmaPolygons[pi].gmaVertices[gi].gma_u
+    ay = %gmaPolygons[pi].gmaVertices[gi].gma_v
+    gi = i
+    IF (gi >= n) gi = gi - n
+    bx = %gmaPolygons[pi].gmaVertices[gi].gma_u
+    by = %gmaPolygons[pi].gmaVertices[gi].gma_v
+    br = %gmaPolygons[pi].gmaVertices[gi].gma_r
+    gi = i + 1
+    IF (gi >= n) gi = gi - n
+    cx = %gmaPolygons[pi].gmaVertices[gi].gma_u
+    cy = %gmaPolygons[pi].gmaVertices[gi].gma_v
+    ;// obtain AB and BC unit vectors
+    ab1x = bx - ax
+    ab1y = by - ay
+    length = SQRT(ab1x * ab1x + ab1y * ab1y)
+    IF (length < 0.1) ERROR(55) ;null segment
+    one_length = 1.0 / length
+    ab1x = ab1x * one_length
+    ab1y = ab1y * one_length
+    bc1x = cx - bx
+    bc1y = cy - by
+    length = SQRT(bc1x * bc1x + bc1y * bc1y)
+    IF (length < 0.1) ERROR(55) ;null segment
+    one_length = 1.0 / length
+    bc1x = bc1x * one_length
+    bc1y = bc1y * one_length
+    ;// obtain ABC angle
+    angleABC = ACOS(ab1x * bc1x + ab1y * bc1y)
+    lb = br / TAN(angleABC/2)
+    ;// obtain center near B
+    Cbx = +bc1x * lb + bx -bc1y * br
+    Cby = +bc1y * lb + by +bc1x * br
+    ;// calculate bounding circle radius
+    r = SQRT(Cbx * Cbx + Cby * Cby) + br
+    IF (minR < r) minR = r
+ENDFOR
+JminR = minR
+
+RET

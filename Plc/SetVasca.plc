@@ -1,0 +1,733 @@
+**************************************************************************
+*   SETVASCA.PLC
+**************************************************************************
+#funcdec "assi.plc"
+#funcdec "mand.plc"
+#funcdec "cnc.plc"
+
+VAR
+#include "assi.inc"
+#include "cnc.inc"
+END_VAR
+
+#include "iol.inc"
+
+**************************************************************************
+* FB GESTVS
+**************************************************************************
+FUNCTION_BLOCK GESTVS
+
+VAR_INPUT
+xStartX:        DWORD;  * Quota X0 inizio vasca (micron)
+xEndX:          DWORD;  * Quota X1 fine vasca (micron)
+xStartY:        DWORD;  * Quota Y0 inizio vasca (micron)
+xEndY:          DWORD;  * Quota Y1 fine vasca (micron)
+END_VAR
+
+VAR_OUTPUT
+yVascaOn:       BOOL;   * Apri vasca
+END_VAR
+
+VAR
+locX:           DWORD;
+locY:           DWORD;
+XactualQta:     DWORD;  * X actual quota
+YactualQta:     DWORD;  * Y actual quota
+MinLimit:       DWORD;  * Minimum Limit
+MaxLimit:       DWORD;  * Maximum Limit
+insideLimitX:   BOOL;   *
+insideLimitY:   BOOL;   *
+appoggio:       BOOL;   * Apri vasca
+TOF_VASC:       TOF;
+END_VAR
+
+****************************************
+*   Find the X and Y head coordinate
+****************************************
+LD   %GenVasche.GV_ParB0    ** 5 axes machine
+JMPCN Normal
+
+PATH %ax[%GenVasche.GV_ParB1]
+
+LD   %ra54              ** X TCP
+ST   locX
+
+PATH %ax[%GenVasche.GV_ParB2]
+
+LD   %ra54              ** Y TCP
+ST   locY
+
+LD   %cn0.mat.sts0
+EQ   16#B
+JMPCN identity
+
+LD   locX
+DIV  100                ** DIV per problemi di overflow
+MUL  %cn0.mat.a0
+ADD  (
+LD   locY
+DIV  100                ** DIV per problemi di overflow
+MUL  %cn0.mat.a1
+)
+DIV  10
+ADD  (
+LD   %cn0.mat.a3
+DIV  1000
+)
+ST   XactualQta                    ** X actual quota
+
+LD   locX
+DIV  100                ** DIV per problemi di overflow
+MUL  %cn0.mat.a4
+ADD  (
+LD   locY
+DIV  100                ** DIV per problemi di overflow
+MUL  %cn0.mat.a5
+)
+DIV  10
+ADD  (
+LD   %cn0.mat.a7
+DIV  1000
+)
+ST   YactualQta                    ** Y actual quota
+
+JMP  ComHead
+
+identity:
+LD   locX
+ST   XactualQta                    ** X actual quota
+
+LD   locY
+ST   YactualQta                    ** Y actual quota
+
+JMP  ComHead
+
+Normal:
+PATH %ax[%GenVasche.GV_ParB1]
+LD   %ra4
+ST   XactualQta                    ** X actual quota
+
+PATH %ax[%GenVasche.GV_ParB2]
+LD   %ra4
+ST   YactualQta                    ** Y actual quota
+
+ComHead:
+****************************************
+*   Check with X axis
+****************************************
+LD   xStartX                       ** Quota X0 inizio vasca (micron)
+SUB  %GenVasche.GV_ParDW0   * Sovrapposizione
+ST   MinLimit                      ** Minimum Limit
+
+LD   xEndX                         ** Quota X1 fine vasca (micron)
+ADD  %GenVasche.GV_ParDW0   * Sovrapposizione
+ST   MaxLimit                      ** Maximum Limit
+
+LD   XactualQta                    ** X actual quota
+GT   MinLimit                      ** Minimum Limit
+AND(
+LD   XactualQta                    ** X actual quota
+LT   MaxLimit                      ** Maximum Limit
+)
+ST   insideLimitX                  ** 
+
+****************************************
+*   Check with Y axis
+****************************************
+LD   xStartY                       ** Quota Y0 inizio vasca (micron)
+SUB  %GenVasche.GV_ParDW0   * Sovrapposizione
+ST   MinLimit                      ** Minimum Limit
+
+LD   xEndY                         ** Quota Y1 fine vasca (micron)
+ADD  %GenVasche.GV_ParDW0   * Sovrapposizione
+ST   MaxLimit                      ** Maximum Limit
+
+LD   YactualQta                    ** Y actual quota
+GT   MinLimit                      ** Minimum Limit
+AND(
+LD   YactualQta                    ** Y actual quota
+LT   MaxLimit                      ** Maximum Limit
+)
+ST   insideLimitY                  ** 
+
+****************************************
+*   Check if open or not
+****************************************
+LD   insideLimitX                  ** 
+AND  insideLimitY                  ** 
+ST   appoggio                      ** Apri vasca
+
+CAL  TOF_VASC(IN=appoggio, PT=%GenVasche.GV_ParDW1) ** Apri vasca
+
+LD   TOF_VASC.Q
+ST   yVascaOn                      ** Apri vasca
+
+END_FUNCTION_BLOCK
+
+
+**************************************************************************
+
+VAR
+
+VASCA0:         GESTVS;
+VASCA1:         GESTVS;
+VASCA2:         GESTVS;
+VASCA3:         GESTVS;
+VASCA4:         GESTVS;
+VASCA5:         GESTVS;
+VASCA6:         GESTVS;
+VASCA7:         GESTVS;
+VASCA8:         GESTVS;
+VASCA9:         GESTVS;
+VASCA10:        GESTVS;
+VASCA11:        GESTVS;
+VASCA12:        GESTVS;
+VASCA13:        GESTVS;
+VASCA14:        GESTVS;
+VASCA15:        GESTVS;
+VASCA16:        GESTVS;
+VASCA17:        GESTVS;
+VASCA18:        GESTVS;
+VASCA19:        GESTVS;
+VASCA20:        GESTVS;
+VASCA21:        GESTVS;
+VASCA22:        GESTVS;
+VASCA23:        GESTVS;
+VASCA24:        GESTVS;
+VASCA25:        GESTVS;
+VASCA26:        GESTVS;
+VASCA27:        GESTVS;
+VASCA28:        GESTVS;
+VASCA29:        GESTVS;
+VASCA30:        GESTVS;
+VASCA31:        GESTVS;
+
+END_VAR
+
+
+**************************************************************************
+* FB EXHAUST
+**************************************************************************
+FUNCTION_BLOCK EXHAUST
+
+VAR_INPUT
+xEnab:          BOOL;       * =1 enabled
+x5axes:         BYTE;       * =1 Gestione 5 assi
+xNumXaxis:      BYTE;       * asse X
+xNumYaxis:      BYTE;       * asse Y
+xQtaSovrap:     DWORD;      * Quota sovrapposizione
+xTimerOff:      DWORD;      * Timer off
+END_VAR
+
+VAR_OUTPUT
+yOut1:          DWORD;      * Uscite
+END_VAR
+
+VAR
+END_VAR
+**************************************************************************
+
+LD   xEnab                         ** =1 enabled
+JMPCN ExitExhaust
+
+LD   xQtaSovrap                    ** Quota sovrapposizione
+ST   %GenVasche.GV_ParDW0
+
+LD   xTimerOff                     ** Timer off
+ST   %GenVasche.GV_ParDW1
+
+LD   x5axes                        ** =1 Gestione 5 assi
+ST   %GenVasche.GV_ParB0
+
+LD   xNumXaxis                     ** asse X
+ST   %GenVasche.GV_ParB1
+
+LD   xNumYaxis                     ** asse Y
+ST   %GenVasche.GV_ParB2
+
+LD   %Bocca0.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA0.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca0.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA0.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca0.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA0.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca0.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA0.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA0
+***
+
+LD   %Bocca1.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA1.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca1.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA1.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca1.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA1.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca1.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA1.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA1
+***
+
+LD   %Bocca2.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA2.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca2.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA2.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca2.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA2.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca2.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA2.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA2
+***
+
+LD   %Bocca3.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA3.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca3.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA3.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca3.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA3.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca3.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA3.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA3
+***
+
+LD   %Bocca4.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA4.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca4.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA4.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca4.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA4.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca4.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA4.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA4
+***
+
+LD   %Bocca5.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA5.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca5.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA5.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca5.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA5.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca5.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA5.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA5
+***
+
+LD   %Bocca6.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA6.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca6.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA6.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca6.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA6.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca6.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA6.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA6
+***
+
+LD   %Bocca7.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA7.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca7.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA7.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca7.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA7.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca7.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA7.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA7
+***
+
+LD   %Bocca8.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA8.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca8.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA8.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca8.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA8.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca8.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA8.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA8
+***
+
+LD   %Bocca9.QStart     * Quota inizio bocca di aspirazione
+ST   VASCA9.xStartX     * Quota inizio vasca (micron)
+LD   %Bocca9.QEnd       * Quota fine bocca di aspirazione
+ST   VASCA9.xEndX       * Quota fine vasca (micron)
+
+LD   %Bocca9.QStartY    * Quota inizio bocca di aspirazione
+ST   VASCA9.xStartY     * Quota inizio vasca (micron)
+LD   %Bocca9.QEndY      * Quota fine bocca di aspirazione
+ST   VASCA9.xEndY       * Quota fine vasca (micron)
+
+CAL  VASCA9
+***
+
+LD   %Bocca10.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA10.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca10.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA10.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca10.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA10.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca10.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA10.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA10
+***
+
+LD   %Bocca11.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA11.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca11.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA11.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca11.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA11.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca11.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA11.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA11
+***
+
+LD   %Bocca12.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA12.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca12.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA12.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca12.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA12.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca12.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA12.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA12
+***
+
+LD   %Bocca13.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA13.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca13.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA13.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca13.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA13.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca13.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA13.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA13
+***
+
+LD   %Bocca14.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA14.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca14.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA14.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca14.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA14.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca14.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA14.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA14
+***
+
+LD   %Bocca15.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA15.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca15.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA15.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca15.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA15.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca15.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA15.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA15
+***
+
+LD   %Bocca16.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA16.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca16.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA16.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca16.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA16.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca16.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA16.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA16
+***
+
+LD   %Bocca17.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA17.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca17.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA17.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca17.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA17.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca17.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA17.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA17
+***
+
+LD   %Bocca18.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA18.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca18.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA18.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca18.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA18.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca18.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA18.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA18
+***
+
+LD   %Bocca19.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA19.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca19.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA19.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca19.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA19.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca19.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA19.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA19
+***
+
+LD   %Bocca20.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA20.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca20.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA20.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca20.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA20.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca20.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA20.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA20
+***
+
+LD   %Bocca21.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA21.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca21.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA21.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca21.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA21.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca21.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA21.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA21
+***
+
+LD   %Bocca22.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA22.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca22.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA22.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca22.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA22.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca22.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA22.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA22
+***
+
+LD   %Bocca23.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA23.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca23.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA23.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca23.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA23.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca23.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA23.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA23
+***
+
+LD   %Bocca24.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA24.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca24.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA24.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca24.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA24.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca24.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA24.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA24
+***
+
+LD   %Bocca25.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA25.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca25.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA25.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca25.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA25.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca25.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA25.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA25
+***
+
+LD   %Bocca26.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA26.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca26.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA26.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca26.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA26.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca26.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA26.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA26
+***
+
+LD   %Bocca27.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA27.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca27.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA27.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca27.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA27.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca27.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA27.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA27
+***
+
+LD   %Bocca28.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA28.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca28.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA28.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca28.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA28.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca28.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA28.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA28
+***
+
+LD   %Bocca29.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA29.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca29.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA29.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca29.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA29.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca29.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA29.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA29
+***
+
+LD   %Bocca30.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA30.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca30.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA30.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca30.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA30.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca30.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA30.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA30
+***
+
+LD   %Bocca31.QStart    * Quota inizio bocca di aspirazione
+ST   VASCA31.xStartX    * Quota inizio vasca (micron)
+LD   %Bocca31.QEnd      * Quota fine bocca di aspirazione
+ST   VASCA31.xEndX      * Quota fine vasca (micron)
+
+LD   %Bocca31.QStartY   * Quota inizio bocca di aspirazione
+ST   VASCA31.xStartY    * Quota inizio vasca (micron)
+LD   %Bocca31.QEndY     * Quota fine bocca di aspirazione
+ST   VASCA31.xEndY      * Quota fine vasca (micron)
+
+CAL  VASCA31
+***
+
+*** GESTIONE USCITE LOGICHE
+
+LD   VASCA0.yVascaOn     * Apri vasca
+ST   yOut1.0
+LD   VASCA1.yVascaOn     * Apri vasca
+ST   yOut1.1
+LD   VASCA2.yVascaOn     * Apri vasca
+ST   yOut1.2
+LD   VASCA3.yVascaOn     * Apri vasca
+ST   yOut1.3
+LD   VASCA4.yVascaOn     * Apri vasca
+ST   yOut1.4
+LD   VASCA5.yVascaOn     * Apri vasca
+ST   yOut1.5
+LD   VASCA6.yVascaOn     * Apri vasca
+ST   yOut1.6
+LD   VASCA7.yVascaOn     * Apri vasca
+ST   yOut1.7
+LD   VASCA8.yVascaOn     * Apri vasca
+ST   yOut1.8
+LD   VASCA9.yVascaOn     * Apri vasca
+ST   yOut1.9
+LD   VASCA10.yVascaOn    * Apri vasca
+ST   yOut1.10
+LD   VASCA11.yVascaOn    * Apri vasca
+ST   yOut1.11
+LD   VASCA12.yVascaOn    * Apri vasca
+ST   yOut1.12
+LD   VASCA13.yVascaOn    * Apri vasca
+ST   yOut1.13
+LD   VASCA14.yVascaOn    * Apri vasca
+ST   yOut1.14
+LD   VASCA15.yVascaOn    * Apri vasca
+ST   yOut1.15
+LD   VASCA16.yVascaOn    * Apri vasca
+ST   yOut1.16
+LD   VASCA17.yVascaOn    * Apri vasca
+ST   yOut1.17
+LD   VASCA18.yVascaOn    * Apri vasca
+ST   yOut1.18
+LD   VASCA19.yVascaOn    * Apri vasca
+ST   yOut1.19
+LD   VASCA20.yVascaOn    * Apri vasca
+ST   yOut1.20
+LD   VASCA21.yVascaOn    * Apri vasca
+ST   yOut1.21
+LD   VASCA22.yVascaOn    * Apri vasca
+ST   yOut1.22
+LD   VASCA23.yVascaOn    * Apri vasca
+ST   yOut1.23
+LD   VASCA24.yVascaOn    * Apri vasca
+ST   yOut1.24
+LD   VASCA25.yVascaOn    * Apri vasca
+ST   yOut1.25
+LD   VASCA26.yVascaOn    * Apri vasca
+ST   yOut1.26
+LD   VASCA27.yVascaOn    * Apri vasca
+ST   yOut1.27
+LD   VASCA28.yVascaOn    * Apri vasca
+ST   yOut1.28
+LD   VASCA29.yVascaOn    * Apri vasca
+ST   yOut1.29
+LD   VASCA30.yVascaOn    * Apri vasca
+ST   yOut1.30
+LD   VASCA31.yVascaOn    * Apri vasca
+ST   yOut1.31
+
+ExitExhaust:
+
+END_FUNCTION_BLOCK

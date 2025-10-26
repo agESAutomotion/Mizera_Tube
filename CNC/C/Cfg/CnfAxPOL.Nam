@@ -1,0 +1,123 @@
+[PROMPT]
+KEY_CONFAX    =Konfiguracja osi 
+
+AP_AXTYPELIST =0-Null, 1-Prop STD, 2-Polar, 3-Round, 4-Poor, 10-SpEnc, 11-SpNoEnc, 20-N Speed, 22-OneVelAna, 30-Ram, 40-Measure
+AP_AXTYPE     =Typ
+AP_DRVTYPELIST =0-Analog, 1-Mechatrolink, 2-SERCOS, 3-CANOpen Trajectory, 4-CANOpen Positioning, 5-ESALINK
+AP_DRVTYPE    =Typ napêdu
+AP_REGONM     =Rejestr wyjsciowy silnik wlaczony
+AP_REGDACPOS  =Bit znaku wyjscia analogowego regulatora 
+AP_REGFRENO   =Rejestr wyjsciowy hamulec
+AP_REGFCHWAV  =Rejestr wejscowy krañcówka do przodu HW 
+AP_REGFCHWIND =Rejestr wejscowy krañcówka do tylu HW 
+AP_NUMENC     =Liczba enkoderów zwiazanych z osia
+AP_ENCTYPE    =Interfejs przetwornika
+AP_ENCTYPELIST=0-Local, 1-Ring, 2-ADC12, 3-ADC16, 4-SSI, 5-CanOpen, 6-Measure
+AP_ENCTYPESSI =SSI Interface Type
+AP_ENCTYPELISTSSI=0-BPS24bit, 1-BPS25bit, 2-Rotating, 3-Linear
+AP_ENCSUBTYPE =Typ enkodera
+AP_ENCSUBTYPELIST=0-Przyrostowy, 1-Absolutny
+AP_ABSENCOFFS =Absolute encoder Offset [#mm]
+AP_ENCINTERF  =Typ interfejsu enkodera
+AP_ENCINTERFLIST=0-Quadrature, 1-Inny
+AP_DACTYPE    =polozenie DAC
+AP_DACTYPELIST=0-Local, 1-Ring, 5-CanOpen
+AP_NUMDAC     =Liczba DAC zwiazanych z osia
+AP_REGDACPOSAVA =Rejestr wyjscia analogowego ruch do przodu.
+AP_REGDACPOSIND =Rejestr wyjscia analogowego ruch do tylu
+AP_BITONM     =Bit wysciowy silnik zalaczony 
+AP_BITDACPOS  =Bit znaku wyjscia analogowego 
+AP_BITFRENO   =Bit wyjscia hamulec
+AP_BITFCHWAV  =Bit wejscia krañcówka HW do przodu
+AP_BITFCHWIND =Bit wejscia krañcówka HW do tylu 
+AP_BITDACPOSAVA =Bit analogowego wyjscia ruch do przodu
+AP_BITDACPOSIND =Bit analogowego wyjscia ruch do tylu
+AP_ZNOTCH_SIGNAL_LIST =0-C-Phase, 1-EXT1, 2-EXT2, 3-EXT3
+AP_ZNOTCH_SIGNAL=Sygnal Zero  (Mechatrolink)
+AP_ZNOTCH_LEVEL_LIST =0-High, 1-Low
+AP_ZNOTCH_LEVEL=Poziom Zero (nie uzywany)
+
+NV_VELAV1     =Rejestr wyjsciowy prêdkosc do przodu 1
+NV_VELIND1    =Rejestr wyjsciowy prêdkosc do tylu 1
+NV_VELAV2     =Rejestr wyjsciowy prêdkosc do przodu 2
+NV_VELIND2    =Rejestr wyjsciowy prêdkosc do tylu 2
+NV_VELAV3     =Rejestr wyjsciowy prêdkosc do przodu 3
+NV_VELIND3    =Rejestr wyjsciowy prêdkosc do tylu 3
+NV_BITAV1     =Bit wyjsciowy predkosc do przodu 1 
+NV_BITIND1    =Bit wyjsciowy predkosc do tylu 1
+NV_BITAV2     =Bit wyjsciowy predkosc do przodu 2
+NV_BITIND2    =Bit wyjsciowy predkosc do tylu 2
+NV_BITAV3     =Bit wyjsciowy predkosc do przodu 3
+NV_BITIND3    =Bit wyjsciowy predkosc do tylu 3
+NV_REGFRENO   =Rejestr wyjsciowy hamulec
+NV_BITFRENO   =Bit wyjsciowy hamulec
+NV_REGFCHWAV  =Rejestr wejsciowy krañcówka do przodu
+NV_BITFCHWAV  =Bit wejsciowy krañcówka do przodu
+NV_REGFCHWIND =Rejestr wejsciowy krañcówka do tylu
+NV_BITFCHWIND =Bit wejsciowy krañcówka do tylu
+NV_NUMENC     =Liczba enkoderów zwiazanych z osia
+NV_ENCTYPE    =Polozenie enkodera
+NV_ENCTYPELIST=0-Local, 1-Ring, 2-ADC12, 3-ADC16, 4-SSI, 5-CanOpen, 6-Measure
+
+PT_REGONM     =Rejestr wyjsciowy silnik wlaczony
+PT_REGDACPOS  =Bit znaku rejestru wyjscia analogowego 
+PT_BITONM     =Bit wyjsciowy silnik wlaczony
+PT_BITDACPOS  =Bit znaku wyjscia analogowego 
+PT_NUMENC     =Liczba enkoderów zwiazanych z osia
+PT_ENCTYPE    =Polozenie enkodera
+PT_ENCTYPELIST=0-Local, 1-Ring, 2-ADC12, 3-ADC16, 4-SSI, 5-CanOpen, 6-Measure
+PT_NUMDAC     =Licba DAC zwiazanych z osia
+PT_DACTYPE    =Polozenie DAC
+PT_DACTYPELIST=0-Local, 1-Ring, 5-CanOpen
+
+
+[HELP]
+
+AP_DRVTYPE    =Typ napêdu: 0-Analogowy 1-Cyfrowy (Yaskawa mechatrolink-compliant Servopack), 2-SERCOS, 3-CANOpen Trajectory, 4-CANOpen Positioning
+AP_REGONM     =Rejestr wyjsciowy silnik wlaczony
+AP_REGDACPOS  =Bit znaku analogowego rejestru wyjscia
+AP_REGFRENO   =Rejestr wyjsciowy hamulec
+AP_REGFCHWAV  =Rejestr wejsciowy wylacznika krañcowego HW do przodu
+AP_REGFCHWIND =Rejestr wejsciowy wylacznika krañcowego HW do tylu
+AP_NUMENC     =Liczba enkoderów zwiazanych z osia (jesli  SSI: # fizycznego kanalu 0..3)
+AP_ENCSUBTYPE =Typ enkodera: 0-Przyrostowy, 1-Absolutny
+AP_ENCINTERF  =Typ interfejsu enkodera: 0-Quadrature (mnoznik 4, ignorowany z enkoderem adsolutnym), 1-Inny (mnoznik 1)
+AP_NUMDAC     =Liczba DAC zwiazana z osia
+AP_BITONM     =Bit wyjsciowy silnik wlaczony
+AP_BITDACPOS  =Bit znaku wyjscia analogowego 
+AP_BITFRENO   =Bit wyjsciowy hamulca
+AP_BITFCHWAV  =Bit wejsciowy krañcówki HW do przodu 
+AP_BITFCHWIND = Bit wejsciowy krañcówki HW do tylu
+AP_REGDACPOSIND =Bit znaku wyjscia analogowego rejesteu ruch do przodu
+AP_BITDACPOSIND =Bit znaku wyjscia analogowego bit ruch do przodu
+AP_REGDACPOSAVA ==Bit znaku wyjscia analogowego rejesteu ruch do tylu
+AP_BITDACPOSAVA =Bit znaku wyjscia analogowego bit ruch do tylu
+
+NV_VELAV1     =Rejestr wyjsciowy prêdkosc do przodu 1
+NV_VELIND1    =Rejestr wyjsciowy prêdkosc do tylu 1
+NV_VELAV2     =Rejestr wyjsciowy prêdkosc do przodu 2
+NV_VELIND2    =Rejestr wyjsciowy prêdkosc do tylu 2
+NV_VELAV3     =Rejestr wyjsciowy prêdkosc do przodu 3
+NV_VELIND3    =Rejestr wyjsciowy prêdkosc do tylu 3
+NV_BITAV1     =Bit wyjsciowy prêdkosc do przodu 1
+NV_BITIND1    =Bit wyjsciowy prêdkosc do tylu 1
+NV_BITAV2     =Bit wyjsciowy prêdkosc do przodu 2
+NV_BITIND2    =Bit wyjsciowy prêdkosc do tylu 2
+NV_BITAV3     =Bit wyjsciowy prêdkosc do przodu 3
+NV_BITIND3    =Bit wyjsciowy prêdkosc do tylu 3
+NV_REGFRENO   =Rejestr wyjsciowy hamulec
+NV_BITFRENO   =Bit wyjsciowy hamulec
+NV_REGFCHWAV  =Rejestr wejsciowy krañcówki do przodu 
+NV_BITFCHWAV  =Bit wejsciowy krañcówki do przodu
+NV_REGFCHWIND =Rejestr wejsciowy krañcówki do tylu
+NV_BITFCHWIND =Bit wejsciowy krañcówki do tylu
+NV_NUMENC     =Liczba enkoderów zwiazanych z osia
+
+PT_REGONM     =Rejestr wyjsciowy silnik wlaczony
+PT_REGDACPOS  =Bit znaku rejestru wyjscia analogowego 
+PT_BITONM     =Bit wyjsciowy silnik wlaczony
+PT_BITDACPOS  =Bit znaku wyjscia analogowego 
+PT_NUMENC     =Liczba enkoderów zwiazanych z osia 
+PT_NUMDAC     =Liczba DAC zwiazanych z osia
+
+

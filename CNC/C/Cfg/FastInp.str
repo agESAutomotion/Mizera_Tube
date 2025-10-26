@@ -1,0 +1,60 @@
+[STRUCT]
+KEY_FASTINP {
+        FI_CONF;
+        FI_DATA,IsrStr,NumIsr;
+}
+
+FI_CONF {
+        #,FI_NUMBER;
+}
+
+FI_DATA {
+        FI_EDGE;
+        FI_AXIS;
+        FI_INPNUM;
+        FI_NOVER;
+        FI_DELAY;
+}
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+
+[FI_NUMBER]
+ADR = NumIsr
+LEN = 3
+RNG = { 0: 36 };
+HLP = FI_NUMBER
+RST = 1
+
+[FI_EDGE]
+ADR = isr_edge
+LEN = 1
+RNG = { 0: 3 };
+HLP = FI_EDGE
+
+[FI_AXIS]
+ADR = isr_axis
+LEN = 3
+RNG = { 0: 127 };
+HLP = FI_AXIS
+
+[FI_INPNUM]
+ADR = isr_inpnum
+LEN = 3
+RNG = { 0: 3 };
+HLP = FI_INPNUM
+
+[FI_NOVER]
+ADR = isr_nooverwrite
+LEN = 1
+RNG = { 0: 2 };
+HLP = FI_NOVER
+
+[FI_DELAY]
+ADR = isr_delay
+LEN = 10
+RNG = { 0: 10000000 };
+HLP = FI_DELAY
+

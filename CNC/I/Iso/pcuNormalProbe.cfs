@@ -1,0 +1,198 @@
+ : pcuNormalProbe
+;// pipe calibration cycles:
+;// rotates the tube at given C coordinates, then probes the face facing
+;// upwards perpendicularily and at given coordinates.  Outputs the acquired
+;// point.
+;//
+;// IMPORTANT! Coordinate arrays are arranged so that [2] is along the tube,
+;// and [0] and [1] form a right-handed system with [2].  It's up to this
+;// routine to determine how to map the axes (and C rotation) for proper
+;// operation.
+;// It's up to the caller to leave the touch site after the last touch
+;// operation, either by a G0 to (lift) or a jump to the machining.
+;//
+;// INPUT:
+;//     pcC
+;//     pcV[3]
+;//     pcW
+;// OUTPUT:
+;//     pcAcquired[3]
+
+DBL fGraph = %cn[WHO()].pc[14].25
+DBL saveF = XGET("@F")
+
+;DBL lift = 200      ;//TODO: use proper value
+DBL touchEpsilonV
+
+DBL vx, vy, vz
+DBL d
+DBL c
+DBL u = QNAN(), v = QNAN(), w = QNAN()
+
+DBL touch_enable = 1
+DBL tx, ty, tz
+DBL ti, tj, tk
+DBL z_abs, DistFromPiece
+DBL pbase = 1
+DBL piercing_mode = 1
+
+gTravT =-1
+
+IF( gG806FlyCutMode == 1 ) THEN
+    G806 T3 N1 H1 D1 E1 A11 F(0x0010)
+ELSE
+    G806 T3 N1 H1 D1 E1 A11
+ENDIF
+
+IF (twist_table_no == 0) ERROR(55)
+
+SWITCH (tubeAxis)
+CASE 0
+    vx = pcV[2]
+    vy = pcV[0]
+    vz = pcV[1]
+    u = pcW
+CASE 1
+    vx = pcV[1]
+    vy = pcV[2]
+    vz = pcV[0]
+    v = pcW
+CASE 2
+    vx = pcV[0]
+    vy = pcV[1]
+    vz = pcV[2]
+    w = pcW
+OTHERWISE
+    ERROR(55) ;bad tube axis
+ENDSWITCH
+
+IF (fGraph) JMPF .skipGraph
+
+c = pcC + pcPolyToPhy
+
+G153 G0 Z(optimized_lift)
+
+G180 X(vx) Y(vy) Z(vz) C(c)
+G153 G0 X(kine_x) Y(kine_y) C(HDC(C, kine_c)) U(u) V(v) W(w)
+
+;// V-ACQUIRE
+
+?%CalPipe[0].General[3] = 1                  ; index to communicate in laser touch the setpoint for the calibration
+          DistFromPiece = 1
+
+MSGOUT "vz " vz
+;M0
+G180 P1 X(vx) Y(vy) Z(vz) C(c)
+MSGOUT "kine_z " kine_z
+;M0
+
+
+?%UnitWork.uxh[0].a_x = kine_x 
+?%UnitWork.uxh[0].a_y = kine_y 
+?%UnitWork.uxh[0].a_z = kine_z + %UnitWork.uxh[0].uxh_Thickness + DistFromPiece;
+?%UnitWork.uxh[0].touch_mode = 1
+?%UnitWork.uxh[0].regol_mode = 1
+
+SYN
+; Relative Coordinates 
+
+tx = vx
+ty = vy
+tz = vz 
+
+ti = 0
+tj = SIN(c)
+tk = COS(c)    
+EI(ti) EJ(tj) EK(tk)
+G152
+
+IF (!fGraph) JSR "laser_start.cfs"
+
+SYN    
+touchEpsilonV = (%vrtc1.VrMon_Q_Flt_Q / 1000) 
+ 
+?%CalPipe[0].General[3] = 0                ; index to communicate in laser touch the setpoint for the calibration
+    
+IF (!fGraph) JSR "laser_stop.cfs" 
+
+;Pipe calibration with touching 
+IF( %LSRPlcOp0.10 == 1 ) THEN
+
+ G153
+ 
+ ;Disab filter
+ ?%LsIso15.2 = 1 ;
+ ?%LsIso16.2 = 1 ;
+ G4 F0.1         ;
+
+ ;Disable tip touch        
+ ?%LsIso17.0 = 1
+ 
+ DECTRJ=4000     ;
+ JRKTRJ=0        ;
+
+ ;//Parametri per _singolo e _singfc
+ ; 0x10              ;vmax presente
+ ; 0x04              ;forza vout  = 0
+ ; 0x08              ;forza vout != 0
+ ; 0x01              ;quota assoluta
+ ; 2                 ;indietro
+ ; 1                 ;avanti
+ _singfc( ( 0x10 | 0x08 ), Z, 2, 200, 0, "%LsPlc11.8", 1 )
+
+ ;Enab filter
+ ?%LsIso15.2 = 0 ;
+ ?%LsIso16.2 = 0 ;
+ G4 F0.1         ;
+ 
+ DECTRJ=%cn[WHO()].pc7
+ JRKTRJ=%cn[WHO()].pc16
+
+ _singfc( ( 0x10 | 0x04 ), Z, 1, 200, 0, "%LsPlc11.8", 0 )
+ G4 F0.2
+
+ SYN
+ z_abs = GET(Z)
+ touchEpsilonV = z_abs - %UnitWork.uxh[0].a_z + DistFromPiece
+ G10 G0 Z(QCALC(Z))
+ G152
+
+ENDIF
+
+G180 P1 X(vx) Y(vy) Z(vz)
+
+G180 D1 P1 Z(kine_z + touchEpsilonV)
+
+vx = kine_x
+vy = kine_y
+vz = kine_z
+
+.skipGraph
+;// leave
+
+G153 G0 Z(optimized_lift)
+
+;Enable tip touch        
+?%LsIso17.0 = 0
+
+IF (fGraph) G2805 C12 X(vx) Y(vy) Z(vz)
+
+SWITCH (tubeAxis)
+CASE 0
+    pcAcquired[0] = vy
+    pcAcquired[1] = vz
+    pcAcquired[2] = vx
+CASE 1
+    pcAcquired[0] = vz
+    pcAcquired[1] = vx
+    pcAcquired[2] = vy
+CASE 2
+    pcAcquired[0] = vx
+    pcAcquired[1] = vy
+    pcAcquired[2] = vz
+OTHERWISE
+    ERROR(55) ;bad tube axis
+ENDSWITCH
+
+F(saveF)
+RET

@@ -1,0 +1,19 @@
+ : G659
+;-----------------------------------------------------------------------------
+;End working table initialization
+;-----------------------------------------------------------------------------
+
+IF( %PlcOp[0].4 == 1 ) RET             ;Disable G65X
+
+IF( %cn[WHO()].rc[0].21 ) RET          ;Canale in test
+
+;Check parametri G65X
+IF( %PlcOp[0].5 == 1 ) THEN
+    $Check Work tables parameters 
+    M0
+    SYN
+    $
+ENDIF
+
+RET
+

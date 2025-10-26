@@ -1,0 +1,26 @@
+[PROMPT]
+KEY_WEAR      =Dati Usura e Vita
+
+WEAR_MODE    =Criterio calcolo usura utensile
+WEAR_ELACYC  =Cicli effettuati
+WEAR_ELATIM  =Tempo trascorso
+WEAR_ELASPC  =Spazio percorso
+WEAR_MAXCYC  =Cicli massimi
+WEAR_MAXTIM  =Tempo trascorso massimo
+WEAR_MAXSPC  =Spazio percorso massimo
+WEAR_WEALENZ =Coefficiente usura lunghezza Z
+WEAR_WEALENX =Coefficiente usura lunghezza X
+WEAR_WEALENY =Coefficiente usura lunghezza Y
+WEAR_ACTRAD  =Usura raggio attuale
+WEAR_ACTLENZ =Usura lunghezza attuale Z
+WEAR_ACTLENX =Usura lunghezza attuale X
+WEAR_ACTLENY =Usura lunghezza attuale Y
+WEAR_MAXRAD  =Usura raggio massima
+WEAR_MAXLENZ =Usura lunghezza massima Z
+WEAR_MAXLENX =Usura lunghezza massima X
+WEAR_MAXLENY =Usura lunghezza massima Y 
+WEAR_WRAD    =Coefficiente usura raggio
+
+
+[HELP]
+

@@ -1,0 +1,76 @@
+:
+
+G153    ;//*** WARNING
+
+LSYN
+DBL fx = QPREF(X)
+DBL fy = QPREF(Y)
+DBL fz = QPREF(Z)
+DBL fu = IFEXP(AEXISTS(U), QPREFQ(U) - pl_add1_u, QNAN())
+DBL fv = IFEXP(AEXISTS(V), QPREFQ(V) - pl_add1_v, QNAN())
+DBL fa = QPREFQ(A)
+DBL fb = QPREFQ(B)
+DBL fc = IFEXP(AEXISTS(C), QPREFQ(C) - pl_add1_c, QNAN())
+;per comodita', sul canale 0, A e B sono sempre presenti
+IF (!AEXISTS(3,A)) fa = QNAN()
+IF (!AEXISTS(3,B)) fb = QNAN()
+IF (!VALID(tx)) tx = fx
+IF (!VALID(ty)) ty = fy
+IF (!VALID(tz)) tz = fz
+IF (!VALID(tu)) tu = fu
+IF (!VALID(tv)) tv = fv
+IF (!VALID(ta)) ta = fa
+IF (!VALID(tb)) tb = fb
+IF (!VALID(tc)) tc = fc
+
+IF (never_split) JMPF .neverSplit
+
+DBL fcp, tcp, cpm       ;//contact point indexes
+DBL dir, isGlbFlat
+DBL p
+
+fcp = FLOOR(fc/90)                                  ;//C axis
+tcp = FLOOR((tc - 0.999*SAT((tc-fc)/1)*1) /90)      ;//C axis, 1 deg tolerance
+
+WHILE (ABS(tcp - fcp) > 0.001)
+    dir = SGN(tcp - fcp)
+    IF (dir > 0) fcp = fcp+1
+    isGlbFlat = 0
+    ;//+0 = aid_v_neg, +1 = aid_u_neg, +2 = aid_v_pos, +3 = aid_u_pos
+    cpm = MOD(fcp+0,4)
+    IF (cpm < 0) cpm = cpm+4
+    IF (aid_isFlat[cpm]) isGlbFlat = 1
+    IF (isGlbFlat) THEN
+        p = (fcp*90 - fc) / (tc-fc) ;//C axis
+        fx = fx + p*(tx-fx)
+        fy = fy + p*(ty-fy)
+        fz = fz + p*(tz-fz)
+        IF (VALID(fu)) fu = fu + p*(tu-fu)
+        IF (VALID(fv)) fv = fv + p*(tv-fv)
+        IF (VALID(fa)) fa = fa + p*(ta-fa)
+        IF (VALID(fb)) fb = fb + p*(tb-fb)
+        IF (VALID(fc)) fc = fc + p*(tc-fc)
+        G(g_type_par) F(feed_par) X(fx) Y(fy) Z(fz) U(fu) V(fv) A(fa) B(fb) C(fc)
+    ENDIF
+    IF (dir < 0) fcp = fcp-1
+ENDWHILE
+
+.neverSplit
+
+IF( %SUPPORTS_SYSTEM.boolean1.31 ) JMPF .no_m700
+IF ((tc >= (XGET("@C")+95)) || (tc <= (XGET("@C")-95)) && (%UNLOADER.values1.1) && (roundFlag == 0)) THEN
+   IF (tc >= (XGET("@C")+95))  ?%gIso37 = (tc - 45) * 1000
+   IF (tc <= (XGET("@C")-95))  ?%gIso37 = (tc + 45) * 1000
+   IF ( CouplingFollowEn ) M700
+ENDIF
+.no_m700
+
+G(g_type_par) F(feed_par) X(tx) Y(ty) Z(tz) U(tu) V(tv) A(ta) B(tb) C(tc)
+
+IF( %SUPPORTS_SYSTEM.boolean1.31 ) JMPF .no_m704
+IF( (%UNLOADER.values1.1) && (roundFlag == 0) && CouplingFollowEn ) M704
+.no_m704 
+
+G152    ;//*** WARNING
+
+RET

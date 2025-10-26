@@ -1,0 +1,46 @@
+*******************************************************************************
+*   MANAGEMENT USER PLC
+*******************************************************************************
+
+FUNCTION USR_INIT 
+
+#ifndef SIM_IO
+USR_INP_CONFIG
+#endif
+
+SHARED_MEMORY
+
+USR_READ_M
+
+SPINDLES
+
+LOADER            
+
+COMMAND_TO_MAIN
+
+LOAD_SUPPORTS
+
+LATERAL_SUPP    
+
+HORIZ_SUPP
+
+UNLOAD_SUPPORTS
+
+Lubrication
+
+UNLOADER
+
+*USR_MANAGEMENTS
+
+M_WAIT 
+
+END_FUNCTION
+
+
+FUNCTION USR_END
+
+#ifndef SIM_IO
+USR_OUT_CONFIG
+#endif
+
+END_FUNCTION

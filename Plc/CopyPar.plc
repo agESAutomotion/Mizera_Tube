@@ -1,0 +1,144 @@
+*******************************************************************************
+*   ParCopy.plc
+*   ESAutomotion
+*   LASER machine
+*   Dynamic Duty Power Frequency Management
+*******************************************************************************
+
+VAR
+#include "Cnc.inc"
+
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+
+#include "Iol.inc"
+
+FUNCTION COPYPAR
+
+* first scan parameters copy
+
+LD   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+JMPCN copy_first_scan
+
+LD   Kp_X                          ** x axis Kp parameter
+ST   XY_Kp                         ** (LsGui41) Axes position gain
+
+LD   Jerk_X                        ** x axis Jerk parameter
+ST   XY_Jerk                       ** (LsGui42) Axes jerk
+
+LD   X_acc                         ** x axis max acceleration
+ST   XY_Acc                        ** (LsGui43) axes acceleration
+
+LD   X_dec                         ** x axis max deleration  
+ST   XY_Dec                        ** (LsGui44) axes deceleration
+
+LD   Fir_1_X                       ** x axis fir 1 costant 
+ST   XY_TimeCostant_1              ** (LsGui45) fir 1
+
+LD   Fir_2_X                       ** x axis fir 2 costant
+ST   XY_TimeCostant_2              ** (LsGui46) fir 2
+
+LD   Ffw_X                         ** x axis ffw 
+ST   XY_FFW                        ** (LsGui47) feed forward 
+copy_first_scan:
+
+* User copy
+ 
+LD CopyParamComm                   ** (LsGui3.0) Copy common parameter X-Y 
+JMPCN no_copy_param
+
+* KP copy
+
+LD   XY_Kp                         ** (LsGui41) Axes position gain
+ST   Kp_X                          ** x axis Kp parameter
+ST   Kp_Y                          ** y axis Kp parameter                   
+ST   Kp_Gant                       ** U/V axis Kp parameter                  
+
+* jerk copy
+
+LD   XY_Jerk                       ** (LsGui42) Axes jerk
+ST   Jerk_X                        ** x axis Jerk parameter
+ST   Jerk_Y                        ** y axis Jerk parameter
+ST   Jerk_Gant                     ** U/V axis Jerk parameter
+
+* time costant 1 copy
+
+LD   XY_TimeCostant_1              ** (LsGui45) fir 1
+ST   Fir_1_X                       ** x axis fir 1 costant 
+ST   Fir_1_Y                       ** y axis fir 1 costant 
+ST   Fir_1_Gant                    ** U/V axis fir 1 costant 
+
+* time costant 2 copy
+
+LD   XY_TimeCostant_2              ** (LsGui46) fir 2
+ST   Fir_2_X                       ** x axis fir 2 costant
+ST   Fir_2_Y                       ** y axis fir 2 costant
+ST   Fir_2_Gant                    ** U/V axis fir 2 costant
+
+* feed forward copy
+
+LD   XY_FFW                        ** (LsGui47) feed forward 
+ST   Ffw_X                         ** x axis ffw 
+ST   Ffw_Y                         ** y axis ffw 
+ST   Ffw_Gant                      ** U/V axis ffw 
+
+* Acceleration copy
+
+LD   XY_Acc                        ** (LsGui43) axes acceleration
+ST   X_acc                         ** x axis max acceleration
+ST   Y_acc                         ** y axis max acceleration
+ST   Gant_acc                      ** U/V axis max acceleration
+
+* Deceleration copy
+
+LD   XY_Dec                        ** (LsGui44) axes deceleration
+ST   X_dec                         ** x axis max deleration  
+ST   Y_dec                         ** y axis max deceleration
+ST   Gant_dec                      ** U/V axis max deleration  
+
+**********************************************************************
+* Copy of parameters of real on virtual axes               
+
+LD   Kp_X                          ** x axis Kp parameter
+ST   %ax0.pa10            * x axis Kp parameter
+                       
+LD   Kp_Y                          ** y axis Kp parameter                   
+ST   %ax1.pa10            * y axis Kp parameter
+                       
+LD   X_acc                         ** x axis max acceleration
+ST   %ax0.pa1             * x axis max acceleration 
+                       
+LD   Y_acc                         ** y axis max acceleration
+ST   %ax1.pa1             * y axis max acceleration
+                       
+LD   Jerk_X                        ** x axis Jerk parameter
+ST   %ax0.pa25            * x axis Jerk parameter
+                       
+LD   Jerk_Y                        ** y axis Jerk parameter
+ST   %ax1.pa25            * y axis Jerk parameter
+                       
+LD   X_dec                         ** x axis max deleration  
+ST   %ax0.pa2             * x axis max deceleration 
+                       
+LD   Y_dec                         ** y axis max deceleration
+ST   %ax1.pa2             * y axis max deceleration         
+
+no_copy_param:         
+**********************************************************************
+* Find Kp for drive calculation
+
+LD   3072 
+DIV  10
+MUL  kp_Calc                       ** (LsGui48) Kp for calculation 
+DIV  10
+MUL  100
+DIV  Rpm_Calc                      ** (LsGui48) Rpm for Kp drive Calc
+*DIV  10
+*MUL  10
+ST   KpDriveRes                    ** (LsGui50) Kp drive 
+
+END_FUNCTION

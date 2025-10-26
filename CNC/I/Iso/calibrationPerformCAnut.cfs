@@ -1,0 +1,650 @@
+ : calibrationPerform__
+
+;// RTCP Calibration Cycle
+;// DEFINED -> rtcp_calib
+;// ------------------------------------
+;// CALIBRATION ROUTINE HEAD TYPE: CAnut
+;// ------------------------------------
+
+;// Acquires/refines calibration data by performing a machine-dependent RTCP
+;// calibration cycle.
+;// Current calibration data is first moved to temporary data.
+
+;// NOTA: $APP L'aggancio della testa avviene interamente all'interno.
+
+;//XXX $APP
+DBL fSimul = %cn[WHO()].rc[0].21
+DBL fPartGraphics = %cn[WHO()].pc[14].25
+DBL touch_simul = %RtcpCalib0.RCrWtGui[46]       ;//Simulation mode (1=sample, 2=full)    XXX SOLA simul non componentizz
+
+;//autoprepare/sensor offset
+;//XXX $APP
+DBL fAutoPrepare   = %RtcpCalib0.RCrWtGui[0].0          ;//Sensor in a fixed position
+DBL fJogPrepare    = %RtcpCalib0.RCrWtGui[0].5          ;//JOG preparation requested
+DBL cylJogPrepareZ = %RtcpCalib0.RCrWtGui[14] / 1000    ;//JOG preparation Z measure
+DBL cylSensorOffX  = %RtcpCalib0.RCrWtGui[15] / 1000    ;//sensor X in auto-prepare mode (cyl upper surface)
+DBL cylSensorOffY  = %RtcpCalib0.RCrWtGui[16] / 1000    ;//sensor Y in auto-prepare mode (cyl upper surface)
+DBL cylSensorOffZ  = %RtcpCalib0.RCrWtGui[17] / 1000    ;//sensor Z in auto-prepare mode (cyl upper surface)
+
+;//sensor config
+;//XXX $APP
+DBL touchDev         = 0        ;//touch device ID
+DBL touchOt          = %RtcpCalib0.RCrWtGui[44] / 1000  ;//Touch max overtravel
+DBL cylSensorRadius  = %RtcpCalib0.RCrWtGui[18] / 1000  ;//cylindrical sensor radius
+DBL cylSensorHeight  = %RtcpCalib0.RCrWtGui[19] / 1000  ;//cylindrical sensor height
+DBL sphSensorCenOffZ = %RtcpCalib0.RCrWtGui[20] / 1000  ;//spherical sensor center relative Z offset
+DBL sphSensorRadius  = %RtcpCalib0.RCrWtGui[21] / 1000  ;//spherical sensor radius
+DBL sphSegmentHeight = %RtcpCalib0.RCrWtGui[22] / 1000  ;//spherical segment height
+
+DBL sphSensorAperture = ASIN(sphSegmentHeight/2/sphSensorRadius)
+
+;//tool config
+;//XXX $APP
+DBL toolSphDist      = %RtcpCalib0.RCrWtGui[32] / 1000  ;//tool spherical tip distance
+DBL toolSphRadius    = %RtcpCalib0.RCrWtGui[33] / 1000  ;//tool spherical tip radius
+DBL toolSphAllow     = %RtcpCalib0.RCrWtGui[34] / 1000  ;//tool spherical tip length allowance
+DBL toolSphAllowCurv = 0.0                 ;//tool spherical tip length allowance (curve surface)
+DBL toolCylRadius    = %RtcpCalib0.RCrWtGui[35] / 1000  ;//tool cylindrical shaft radius
+DBL toolCylDist1     = %RtcpCalib0.RCrWtGui[36] / 1000  ;//tool tip distance 1 for rotary axes calib.
+DBL toolCylDist2     = %RtcpCalib0.RCrWtGui[37] / 1000  ;//tool tip distance 2 for rotary axes calib.
+
+;//cycle config
+;//XXX $APP
+DBL fEnablePhase1 = %RtcpCalib0.RCrWtGui[0].1           ;//rotary axes orientation acquire phase enable
+DBL fEnablePhase2 = %RtcpCalib0.RCrWtGui[0].2           ;//pitch-roll acquire phase enable
+DBL fEnablePhase3 = %RtcpCalib0.RCrWtGui[0].3           ;//nutation acquire phase enable
+DBL fEnablePhase4 = %RtcpCalib0.RCrWtGui[0].4           ;//pivotal distances acquire phase enable
+
+;//misc
+;//XXX $APP
+DBL sensorRapidF   = %RtcpCalib0.RCrWtGui[38]           ;//sensor rapid reach velocity
+DBL sensorProxyF   = %RtcpCalib0.RCrWtGui[39]           ;//sensor proximity motion axes velocity
+DBL cylSensorProxy = %RtcpCalib0.RCrWtGui[40] / 1000    ;//sensor proximity motion range (cylinder)
+DBL sphSensorProxy = %RtcpCalib0.RCrWtGui[41] / 1000    ;//sensor proximity motion range (sphere)
+DBL cylSensorTdist = %RtcpCalib0.RCrWtGui[42] / 1000    ;//sensor touch start distance (cylinder)
+DBL sphSensorTdist = %RtcpCalib0.RCrWtGui[43] / 1000    ;//sensor touch start distance (sphere)
+DBL headSafeDist   = 50.0                  ;//head safe clearance while swivelling
+DBL travSafeZ      = %CostK44
+;//$APP
+;//non impostare al valore esatto del finecorsa, per evitare problemi in
+;//fase di calibrazione dell'angolo
+DBL tilta       = 60.0   ;//max tilt angle for A (physical) - skewnuta
+;//NOTE: can also be 0 in case distance from C axis is enough
+DBL tiltaPR     = 45.0   ;//tilt angle for A (sphericals) - pitchroll
+DBL tiltaPV     = 45.0   ;//tilt angle for A (sphericals) - pivotals
+
+DBL dstTable
+DBL srcTable
+DBL subTable
+
+DBL x, y, z
+DBL deltaPresent
+
+DBL vox, voy, voz
+DBL dea1, dea2
+DBL v1x, v1y, v1z
+DBL v2x, v2y, v2z
+DBL v3x, v3y, v3z
+DBL v4x, v4y, v4z
+DBL v1a1, v1a2
+DBL v2a1, v2a2
+DBL v3a1, v3a2
+DBL v4a1, v4a2
+DBL roll, pitch
+DBL skew, nutation
+DBL a1, a2
+
+G64
+
+;//reset "done flags" and run
+?%RtcpCalib0.RCgIso18.0 = 0
+?%RtcpCalib0.RCgIso18.1 = 0
+?%RtcpCalib0.RCgIso18.2 = 0
+?%RtcpCalib0.RCgIso18.3 = 0
+?%RtcpCalib0.RCgIso18.15 = 0
+?%RtcpCalib0.RCgIso18.16 = 0
+?%RtcpCalib0.RCgIso18.17 = 0
+?%RtcpCalib0.RCgIso18.18 = 0
+
+
+SYN
+IF (%twi[tbCurrent].yKine == 0) $No initial data!
+IF (%twi[tbCurrent].yKine == 0) RET
+
+dstTable = tbTemporary
+srcTable = tbCurrent
+JSR "copyCalibrationData.cfs"
+
+;//reset delta
+.recalcDeltaa
+dstTable = tbDelta
+srcTable = tbTemporary
+subTable = tbCurrent
+JSR "diffCalibrationData.cfs"
+.recalcDeltaz
+deltaPresent = 0
+
+;// $APP
+;// RTCP enable
+
+IF (!fSimul && fJogPrepare) THEN
+    ;//Aggancia eventuali assi virtuali e aggiorna travSafeZ
+    ;//$APP
+    IF( tbCurrent == 1 ) THEN
+        JSR "Semi_Y3Z3.cfs"
+    ELSE
+        JSR "Semi_Y4Z4.cfs"
+    ENDIF
+
+    G153
+    $JOG to sensor position
+    ;// JOG to prepare point
+
+    ;//Commentare se il tool si trova già sulla verticale del sensore (JOG esterno).
+    ;//IMPORTANTE!  In tal caso, in seguito, JOG preparation requested deve essere azzerato.
+    ;//(vedi "REFINE")
+    ;//XXX $APP
+    RPT .vManPreparea, .vManPreparez, 1
+
+    $
+    G152
+    ;//$OPNOTE:
+    ;//l'utensile non deve essere necessariamente verticale per localizzare il
+    ;//sensore.  Eccezione:  nel caso gli assi angolari non siano referenziati
+    ;//correttamente, dovrà essere all'incirca verticale.
+    G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+    G180 P1 D1
+    $Locating sensor...
+    x = kine_x
+    y = kine_y
+    z = kine_z-toolSphRadius-cylJogPrepareZ
+    G180 X(0.0) Y(0.0) Z(z) C(0.0) A(0.0)
+    G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+    G1193 X(x) Y(y) Z(z) C(0.0) A(0.0)
+    cylSensorOffX = acq_x
+    cylSensorOffY = acq_y
+    cylSensorOffZ = acq_z
+    G180 X(0.0) Y(0.0) Z(z) C(0.0) A(0.0)
+    G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+    ;//XXX Se si vuole ricordare la stessa coordinata per il refine
+    ;//XXX In questo caso sovrascrive sensor X, sensor Y, ...
+    ;//XXX Se il sensore può essere sia ad una quota fissa che in mezzo alla
+    ;//XXX macchina, inserire un parametro e non sovrascrivere questi dati.
+    ;//XXX $APP ("REFINE")
+    fJogPrepare = 0
+    %RtcpCalib0.RCrWtGui[0].5 = fJogPrepare          ;//JOG preparation requested
+    %RtcpCalib0.RCrWtGui[15] = cylSensorOffX * 1000  ;//sensor X in auto-prepare mode (cyl upper surface)
+    %RtcpCalib0.RCrWtGui[16] = cylSensorOffY * 1000  ;//sensor Y in auto-prepare mode (cyl upper surface)
+    %RtcpCalib0.RCrWtGui[17] = cylSensorOffZ * 1000  ;//sensor Z in auto-prepare mode (cyl upper surface)
+    ;//XXX $APP
+
+    ;//Sgancia eventuali assi virtuali
+    ;//$APP
+    IF (tbCurrent == 1) THEN
+        JSR "UnSemi_Y3Z3.cfs"
+    ELSE
+        JSR "UnSemi_Y4Z4.cfs"
+    ENDIF
+ENDIF
+
+IF (fPartGraphics) THEN
+    G168
+    G161 X(cylSensorOffX) Y(cylSensorOffY) Z(cylSensorOffZ)
+
+    G2292 X(-sphSensorRadius) Y(-sphSensorRadius) Z(0.0) U(+sphSensorRadius) V(+sphSensorRadius) W(sphSensorCenOffZ-sphSegmentHeight/2)
+    G2803 C11 X(0.0) Y(0.0) Z(0.0) W(-cylSensorHeight) R(cylSensorRadius)
+    G2804 C10 X(0.0) Y(0.0) Z(sphSensorCenOffZ) R(sphSensorRadius) A(-sphSensorAperture) B(+sphSensorAperture)
+
+    G169
+ENDIF
+
+$Preparing...
+
+;//Aggancia eventuali assi virtuali (e parcheggia?) e aggiorna travSafeZ
+;//Parcheggia eventuali teste non utilizzate
+;//$APP
+abilparkZ=0
+IF( tbCurrent == 1 ) THEN
+    JSR "Semi_Y3Z3.cfs"
+ELSE
+    JSR "Semi_Y4Z4.cfs"
+ENDIF
+
+G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+
+G153 G0 Z(travSafeZ)
+
+;//XXX $APP
+dea1 =  0.0
+dea2 =  0.0
+
+CALL rtcpCalibUnRotary(tbTemporary, (0.0),(0.0), ^vox,^voy,^voz)
+
+;// -----------------
+;// *** PHASE 1
+;// *** rotary axes orientation acquire
+IF (fEnablePhase1) THEN
+
+?%RtcpCalib0.RCgIso18.0 = 0
+?%RtcpCalib0.RCgIso18.15 = 1
+
+$Running (1 of 4)...
+
+;//$OPNOTE: al momento abbiamo errori di refine del frame ma non sappiamo se
+;//         sono presenti solo nella simulazione
+G153
+LSYN
+%twi[tbTemporary].htwi.oarh.dFrameC = 0.0
+%twi[tbTemporary].htwi.oarh.dFrameB = 0.0
+%twi[tbTemporary].htwi.oarh.dFrameA = 0.0
+G152
+
+;//$OPNOTE:
+;//Siccome gli errori angolari possono essere rilevanti per mantenere un
+;//contatto corretto col sensore nelle acquisizioni successive, la calibrazione
+;//degli assi angolari è comunque effettuata come prima fase.
+
+x = cylSensorOffX
+y = cylSensorOffY
+z = cylSensorOffZ+sphSensorCenOffZ
+
+G1196 X(x) Y(y) Z(z) C(0.0) A(0.0) H(-sphSensorCenOffZ+cylSensorProxy)
+vox = acq_x
+voy = acq_y
+voz = acq_z
+;//avoid cyl collision
+G180 X(0.0) Y(0.0) Z(cylSensorOffZ+toolSphRadius+cylSensorProxy) C(0.0) A(0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//UPDATES
+
+IF (!fAutoPrepare) THEN
+    ;//See UPDATE SENSOR POSITION below
+    ;//sensor acquire angle is unknown... assume C0.0 A0.0
+    G180 P1 D1 X0 Y0 Z0 C0.0 A0.0
+    cylSensorOffX = cylSensorOffX + kine_x
+    cylSensorOffY = cylSensorOffY + kine_y
+    cylSensorOffZ = cylSensorOffZ + kine_z
+ENDIF
+
+;//3) CI_SOLUTION_SINGULAR_CARRIER
+dea1 = 0.0
+CALL rtcpCalibRotary(tbTemporary, vox,voy,voz, 3, ^dea1,^dea2)
+G153
+LSYN
+;//$OPNOTES: under dev
+;%twi[tbTemporary].htwi.oarh.dEC = %twi[tbTemporary].htwi.oarh.dEC + (-dea1)
+;%twi[tbTemporary].htwi.oarh.dEB = %twi[tbTemporary].htwi.oarh.dEB + (-dea2)
+G152
+;//will trigger homing procedure [request]
+;//XXX $APP
+%RtcpCalib0.RCrWtGui[tbaTemporaryA2] = %RtcpCalib0.RCrWtGui[tbaTemporaryA2] + 1000 * (dea2) ;//XXX $APP use RETAIN/CHKSUM regs
+
+IF (!fAutoPrepare) THEN
+    ;//UPDATE SENSOR POSITION (REFINE)
+    ;//this is required because rotary axes homing rotation has changed
+    ;//sensor acquire angle is unknown... assume C0.0 A0.0
+    G180 P1 D1 X0 Y0 Z0 C(0.0+dea1) A(0.0+dea2)
+    cylSensorOffX = cylSensorOffX - kine_x
+    cylSensorOffY = cylSensorOffY - kine_y
+    cylSensorOffZ = cylSensorOffZ - kine_z
+
+    %RtcpCalib0.RCrWtGui[15] = cylSensorOffX * 1000  ;//sensor X in auto-prepare mode (cyl upper surface)
+    %RtcpCalib0.RCrWtGui[16] = cylSensorOffY * 1000  ;//sensor Y in auto-prepare mode (cyl upper surface)
+    %RtcpCalib0.RCrWtGui[17] = cylSensorOffZ * 1000  ;//sensor Z in auto-prepare mode (cyl upper surface)
+ENDIF
+
+;//XXX AND CHECKS ?
+
+RPT .recalcDeltaa, .recalcDeltaz, 1
+deltaPresent = 1
+
+?%RtcpCalib0.RCgIso18.0 = 1
+?%RtcpCalib0.RCgIso18.15 = 0
+
+ENDIF ;//fEnablePhase1
+
+;//$OPNOTES: test_shortcut
+IF (fEnablePhase1) JMPF .claimHoming
+
+;// -----------------
+;// *** PHASE 2
+;// *** pitch-roll acquire
+IF (fEnablePhase2) THEN
+
+?%RtcpCalib0.RCgIso18.1 = 0
+?%RtcpCalib0.RCgIso18.16 = 1
+
+$Running (2 of 4)...
+
+;//$OPNOTE: al momento abbiamo errori di refine del frame ma non sappiamo se
+;//         sono presenti solo nella simulazione
+G153
+LSYN
+%twi[tbTemporary].htwi.oarh.dFrameC = 0.0
+%twi[tbTemporary].htwi.oarh.dFrameB = 0.0
+%twi[tbTemporary].htwi.oarh.dFrameA = 0.0
+G152
+
+x = cylSensorOffX
+y = cylSensorOffY
+z = cylSensorOffZ
+
+;//1) CI_SOLUTION_POSITIVE_CARRIED
+CALL rtcpCalibRotary(tbTemporary, +SIN(tiltaPR),0.0,COS(tiltaPR), 1, ^a1,^a2)
+
+G1193 X(x) Y(y) Z(z) C(dea1+a1) A(dea2+a2)
+IF( touch_simul == 2 )G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+G180 P1 X(acq_x) Y(acq_y) Z(acq_z)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+v1x = kine_x
+v1y = kine_y
+v1z = kine_z
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//1) CI_SOLUTION_POSITIVE_CARRIED
+CALL rtcpCalibRotary(tbTemporary, 0.0,-SIN(tiltaPR),COS(tiltaPR), 1, ^a1,^a2)
+
+G1193 X(x) Y(y) Z(z) C(dea1+a1) A(dea2+a2)
+IF( touch_simul == 2 )G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+G180 P1 X(acq_x) Y(acq_y) Z(acq_z)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+v4x = kine_x
+v4y = kine_y
+v4z = kine_z
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//1) CI_SOLUTION_POSITIVE_CARRIED
+CALL rtcpCalibRotary(tbTemporary, -SIN(tiltaPR),0.0,COS(tiltaPR), 1, ^a1,^a2)
+
+G1193 X(x) Y(y) Z(z) C(dea1+a1) A(dea2+a2)
+IF( touch_simul == 2 )G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+G180 P1 X(acq_x) Y(acq_y) Z(acq_z)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+v3x = kine_x
+v3y = kine_y
+v3z = kine_z
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//1) CI_SOLUTION_POSITIVE_CARRIED
+CALL rtcpCalibRotary(tbTemporary, 0.0,+SIN(tiltaPR),COS(tiltaPR), 1, ^a1,^a2)
+
+G1193 X(x) Y(y) Z(z) C(dea1+a1) A(dea2+a2)
+IF( touch_simul == 2 )G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+G180 P1 X(acq_x) Y(acq_y) Z(acq_z)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+v2x = kine_x
+v2y = kine_y
+v2z = kine_z
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//XXX UPDATES
+
+CALL rtcpCalibPitchRoll(tbTemporary, (v1x-v3x),(v1y-v3y),(v1z-v3z), (v2x-v4x),(v2y-v4y),(v2z-v4z), ^pitch,^roll)
+G153
+LSYN
+%twi[tbTemporary].htwi.oarh.dFrameC = 0.0
+%twi[tbTemporary].htwi.oarh.dFrameB = pitch
+%twi[tbTemporary].htwi.oarh.dFrameA = roll
+G152
+
+;//XXX AND CHECKS?
+
+;//$OPNOTE
+;//XXX Recalc C/A calibration (dea2, ... vox, ...)?
+
+RPT .recalcDeltaa, .recalcDeltaz, 1
+deltaPresent = 1
+
+?%RtcpCalib0.RCgIso18.1 = 1
+?%RtcpCalib0.RCgIso18.16 = 0
+
+ENDIF ;//fEnablePhase2
+
+;// -----------------
+;// *** PHASE 3
+;// *** nutation acquire
+IF (fEnablePhase3) THEN
+
+?%RtcpCalib0.RCgIso18.2 = 0
+?%RtcpCalib0.RCgIso18.17 = 1
+
+$Running (3 of 4)...
+
+x = cylSensorOffX
+y = cylSensorOffY
+z = cylSensorOffZ
+
+G1193 X(x) Y(y) Z(z) C(dea1+0.0) A(dea2+0.0)
+IF( touch_simul == 2 )G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+G180 P1 X(acq_x) Y(acq_y) Z(acq_z)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+v2x = kine_x
+v2y = kine_y
+v2z = kine_z
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+G1193 X(x) Y(y) Z(z) C(dea1+0.0) A(dea2-tilta)
+IF( touch_simul == 2 )G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+G180 P1 X(acq_x) Y(acq_y) Z(acq_z)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+v3x = kine_x
+v3y = kine_y
+v3z = kine_z
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+G1193 X(x) Y(y) Z(z) C(dea1+0.0) A(dea2+tilta)
+IF( touch_simul == 2 )G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+G180 P1 X(acq_x) Y(acq_y) Z(acq_z)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+v1x = kine_x
+v1y = kine_y
+v1z = kine_z
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//XXX UPDATES
+
+IF (!fAutoPrepare) THEN
+    ;//See UPDATE SENSOR POSITION below
+    ;//sensor acquire angle is unknown... assume C0.0 A0.0
+    G180 P1 D1 X0 Y0 Z0 C0.0 A0.0
+    cylSensorOffX = cylSensorOffX + kine_x
+    cylSensorOffY = cylSensorOffY + kine_y
+    cylSensorOffZ = cylSensorOffZ + kine_z
+ENDIF
+
+SYN                     ;XXX
+%EBK300 = v1x
+%EBK301 = v1y
+%EBK302 = v1z
+%EBK303 = v2x
+%EBK304 = v2y
+%EBK305 = v2z
+%EBK306 = v3x
+%EBK307 = v3y
+%EBK308 = v3z
+
+CALL rtcpCalibSkewNutation(tbTemporary, (v1x-v2x),(v1y-v2y),(v1z-v2z), (v3x-v2x),(v3y-v2y),(v3z-v2z), (0.0), ^skew,^nutation)
+G153
+LSYN
+%twi[tbTemporary].htwi.oarh.dTilt = nutation
+;//XXX NOTA:
+;//XXX Waterjet
+;//XXX La testa a 45 non avrà mai nutazione negativa (al massimo 44 gradi).
+;//XXX Sulle altre non si usa I3, quindi la cinematica inversa (o sph->nut)
+;//XXX non dovrebbe mai essere usata con nutazione negativa.
+G152
+;//will trigger homing procedure [request]
+;//XXX $APP
+%RtcpCalib0.RCrWtGui[tbaTemporaryA1] = %RtcpCalib0.RCrWtGui[tbaTemporaryA1] + 1000 * (-skew) ;//XXX $APP use RETAIN/CHKSUM regs
+
+IF (!fAutoPrepare) THEN
+    ;//UPDATE SENSOR POSITION (REFINE)
+    ;//this is required because rotary axes homing rotation has changed
+    ;//sensor acquire angle is unknown... assume C0.0 A0.0
+    G180 P1 D1 X0 Y0 Z0 C(0.0+skew) A(0.0+0.0)
+    cylSensorOffX = cylSensorOffX - kine_x
+    cylSensorOffY = cylSensorOffY - kine_y
+    cylSensorOffZ = cylSensorOffZ - kine_z
+
+    %RtcpCalib0.RCrWtGui[15] = cylSensorOffX * 1000  ;//sensor X in auto-prepare mode (cyl upper surface)
+    %RtcpCalib0.RCrWtGui[16] = cylSensorOffY * 1000  ;//sensor Y in auto-prepare mode (cyl upper surface)
+    %RtcpCalib0.RCrWtGui[17] = cylSensorOffZ * 1000  ;//sensor Z in auto-prepare mode (cyl upper surface)
+ENDIF
+
+;//XXX AND CHECKS?
+
+;//$OPNOTE
+;//XXX Recalc C/A calibration (dea1, ... vox, ...)?
+
+RPT .recalcDeltaa, .recalcDeltaz, 1
+deltaPresent = 1
+
+?%RtcpCalib0.RCgIso18.2 = 1
+?%RtcpCalib0.RCgIso18.17 = 0
+
+ENDIF ;//fEnablePhase3
+
+;//$OPNOTES: test_shortcut
+IF (fEnablePhase3) JMPF .claimHoming
+
+;//-----------------
+;// *** PHASE 4
+;// *** pivotal distances acquire
+IF (fEnablePhase4) THEN
+
+?%RtcpCalib0.RCgIso18.3 = 0
+?%RtcpCalib0.RCgIso18.18 = 1
+
+$Running (4 of 4)...
+
+x = cylSensorOffX
+y = cylSensorOffY
+z = cylSensorOffZ
+
+;//1) CI_SOLUTION_POSITIVE_CARRIED
+CALL rtcpCalibRotary(tbTemporary, -SIN(tiltaPV),0.0,COS(tiltaPV), 1, ^a1,^a2)
+
+G1193 X(x) Y(y) Z(z) C(dea1+a1) A(dea2+a2)
+v1x = acq_x
+v1y = acq_y
+v1z = acq_z
+v1a1 = dea1+a1
+v1a2 = dea2+a2
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//1) CI_SOLUTION_POSITIVE_CARRIED
+CALL rtcpCalibRotary(tbTemporary, +SIN(tiltaPV),0.0,COS(tiltaPV), 1, ^a1,^a2)
+
+G1193 X(x) Y(y) Z(z) C(dea1+a1) A(dea2+a2)
+v2x = acq_x
+v2y = acq_y
+v2z = acq_z
+v2a1 = dea1+a1
+v2a2 = dea2+a2
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//2) CI_SOLUTION_NEGATIVE_CARRIED
+CALL rtcpCalibRotary(tbTemporary, 0.0,+SIN(tiltaPV),COS(tiltaPV), 2, ^a1,^a2)
+
+G1193 X(x) Y(y) Z(z) C(dea1+a1) A(dea2+a2)
+v3x = acq_x
+v3y = acq_y
+v3z = acq_z
+v3a1 = dea1+a1
+v3a2 = dea2+a2
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//1) CI_SOLUTION_POSITIVE_CARRIED
+CALL rtcpCalibRotary(tbTemporary, 0.0,-SIN(tiltaPV),COS(tiltaPV), 1, ^a1,^a2)
+
+G1193 X(x) Y(y) Z(z) C(dea1+a1) A(dea2+a2)
+v4x = acq_x
+v4y = acq_y
+v4z = acq_z
+v4a1 = dea1+a1
+v4a2 = dea2+a2
+G180 X(0.0) Y(0.0) Z(z+toolSphRadius+cylSensorProxy) C(dea1+0.0) A(dea2+0.0)
+G153 G1 Z(kine_z + headSafeDist) F(sensorRapidF)
+
+;//UPDATES
+
+CALL rtcpCalibPivots(tbTemporary, v1x,v1y,v1z,v1a1,v1a2, v2x,v2y,v2z,v2a1,v2a2, v3x,v3y,v3z,v3a1,v3a2, v4x,v4y,v4z,v4a1,v4a2)
+
+;//XXX AND CHECKS ???
+
+RPT .recalcDeltaa, .recalcDeltaz, 1
+deltaPresent = 1
+
+?%RtcpCalib0.RCgIso18.3 = 1
+?%RtcpCalib0.RCgIso18.18 = 0
+
+ENDIF ;//fEnablePhase4
+;//-----------------
+
+.claimHoming
+G153 G0 Z(travSafeZ)
+G153 G0 C(dea1+0.0) A(dea2+0.0)
+
+G153
+LSYN
+;//$OPNOTES: under dev
+;%twi[tbTemporary].htwi.oarh.dEC = %twi[tbTemporary].htwi.oarh.dEC - (-dea1)
+;%twi[tbTemporary].htwi.oarh.dEB = %twi[tbTemporary].htwi.oarh.dEB - (-dea2)
+G152
+RPT .recalcDeltaa, .recalcDeltaz, 1
+
+IF (deltaPresent) THEN
+$Confirm?
+ELSE
+$No changes
+ENDIF
+
+RET
+
+
+;//SUBROUTINE
+
+;//-------------------------------------------
+;// posizionamento manuale inizio acquisizione
+
+.vManPreparea
+
+;//Sgancia eventuali assi virtuali
+;//$APP
+IF (tbCurrent == 1) THEN
+    JSR "UnSemi_Y3Z3.cfs"
+ELSE
+    JSR "UnSemi_Y4Z4.cfs"
+ENDIF
+
+GRPQ[X,Y,Z,A,B,C] = 0
+M10
+SYN
+GRPQ[X,Y,Z,A,B,C] = 1
+
+;//Aggancia eventuali assi virtuali e aggiorna travSafeZ
+;//$APP
+IF (tbCurrent == 1) THEN
+    JSR "Semi_Y3Z3.cfs"
+ELSE
+    JSR "Semi_Y4Z4.cfs"
+ENDIF
+
+G4 F0.2
+SYN
+.vManPreparez
+

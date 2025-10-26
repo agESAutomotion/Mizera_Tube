@@ -1,0 +1,48 @@
+
+[KEYS]
+TITLE=ORIGINI
+TXT2=Imposta la lunghezza del tubo
+TXT3=Acquisisci origine
+TXT4=Imposta X/Y
+TXT5=Imposta ROTAZIONE
+TXT9=INC / ABS
+
+[PROMPT]
+KEYWORD=
+KEY_ORIGINIAGGIUNTIVE=
+GroupBox4=Opzioni APA
+GroupBox1=Opzioni
+GroupBoxManSet=Settaggio manuale
+GroupBoxActualO=Origine attuale
+LIST0=ASSOLUTA,INCREMENTO
+LabelAPA2=Acquisizione automatica orig.
+LabelX=X
+LabelY1=Y
+LabelRor=ROT.
+LabelX1=X
+LabelY2=Y
+LabelRor1=ROT
+LabelActualOrigN=N.
+LabelAPA1=Origine APA automatica
+LabelAPA3=Lungo X Scostamento iniziale [mm]
+Button=Acquisisci APA Origine tubo
+Label1=____________________________________________________________________________________________________________________________________________________________________
+Label2=____________________________________________________________________________________________________________________________________________________________________
+AxesLaserCH1=Axes1
+Label3=ISO Info
+GroupBox2=Tubo in macchina
+LabelActualOrigin2=Tubo in macchina [mm] :
+LabelActualOrigin1=Ultima intestazione [mm] :
+LabelAPA4=Cancella lunghezza tubo dopo aver acquisito l'origine
+P_REF1=Vel. -
+P_REF3=Vel. +
+Label4=%
+LabelTrack1=Numero traccia
+LabelExeTime1=Tempo di esecuzione
+LabelExeTime2=Avanzamento [m/min]
+lbDiagPar1=Totale / Corr. Pezzi
+LabelAPA5=Calibrazione della CAP sul tubo (origine)
+
+[STATUS]
+
+[HELP]

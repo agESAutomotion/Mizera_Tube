@@ -1,0 +1,47 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=
+SETUP=Machine setup
+GroupBoxFeed1=Follow Support Options
+GroupBoxActiveTech=Active cut technology selection
+LabelPlasma=Plasma
+LabelOxi=Oxi
+LabelLsrCut=Laser
+LIST0=None,Plasma,Oxyfuel,Laser,Waterjet,Drill,Marker
+LabelTech=TECHNOLOGY
+LabelUnit=UNIT
+LIST1=None,Plasma,Oxyfuel,Laser,Waterjet,Drill,Marker
+LIST2=None,Plasma,Oxyfuel,Laser,Waterjet,Drill,Marker
+LIST3=None,Plasma,Oxyfuel,Laser,Waterjet,Drill,Marker
+LIST4=None,Plasma,Oxyfuel,Laser,Waterjet,Drill,Marker
+LIST5=None,Plasma,Oxyfuel,Laser,Waterjet,Drill,Marker
+LIST6=None,Plasma,Oxyfuel,Laser,Waterjet,Drill,Marker
+LabelWTJcut=WTJ
+LabelPlasma1=Plasma
+LabelWTJcut1=Cut
+LabelLsrCut1=Cut
+LabelOxi1=Cut
+LabelPlasma2=THC
+LabelPlasma3=with "Z"
+GroupBoxFeed=Override parameters
+LabelOVRMax=Max value [%]
+LabelOVRMax1=Min value [%]
+LabelOVRMax2=Slow speed [%]
+LIST8=Analog,HMI
+LabelOVRType=Type
+LabelOVRinc=step [%]
+LabelLunette=ENABLE SUPPORTS
+LIST9=REGULATION ALONG SURFACE,REGULATION ALONG Z,REGULATION ALONG TOOL
+LabelLunette1=Enable Motor Cylinder Composite Support
+LabelLunette2=Loading Side | Unloading Side
+LabelLunette3=[1] Loading Support Cylinder [mm]
+LabelLunette4=[2] Unloading Support Cylinder [mm]
+LabelLunette5=Tube Diameter Threshold [mm]
+LabelLunette6=Tube Diameter Threshold [mm]
+
+[STATUS]
+
+[HELP]

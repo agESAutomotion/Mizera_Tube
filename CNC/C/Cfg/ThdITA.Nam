@@ -1,0 +1,36 @@
+[PROMPT]
+KEY_THD       =Dati Portautensili
+
+THD_Z0        =Coordinata pivot che si somma a Z
+THD_C         =Rotazione intorno all'asse Z
+THD_FLG       =Flag tipo di trasformazione
+THD_X1        =Coordinata X del pivot
+THD_Y1        =Coordinata Y del pivot
+THD_B         =Rotazione intorno all'asse Y
+THD_X2        =Coordinata X della base utensile
+THD_Z2        =Coordinata Z della base utensile
+THD_DSC       =Descrizione
+
+THD_MAXRPM    =Numero massimo di giri al minuto
+THD_REV       =Trasm. con inversione senso di rotaz.
+
+THD_IDX       =Indice descrittore utensile
+THD_CONE      =Identif. cono per cambio utensile
+
+
+[HELP]
+THD_Z0        =Coordinata pivot che si somma a Z del punto individuato dai dati Mandrino
+THD_C         =Rotazione intorno all'asse Z del sistema di riferimento con origine nel punto individuato dai dati Mandrino
+THD_FLG       =Flag tipo di trasformazione:  (1) Prima rotazione intorno all'asse Z, poi traslazione X Y pivot (2) Prima traslazione, poi rotazione (consigliato).
+THD_X1        =Coordinata X del pivot rispetto al sistema di riferimento con origine nel punto Portautensile
+THD_Y1        =Coordinata Y del pivot rispetto al sistema di riferimento con origine nel punto Portautensile
+THD_B         =Rotazione intorno all'asse Y' del sistema di riferimento con origine nel PIVOT1
+THD_X2        =Coordinata X della base utensile rispetto al sistema di riferimento centrato in PIVOT1
+THD_Z2        =Coordinata Z della base utensile rispetto al sistema di riferimento centrato in PIVOT1
+
+THD_MAXRPM    =Numero massimo di giri al minuto
+THD_REV       =Trasmissione con inversione senso di rotazione
+
+THD_IDX       =Indice descrittore utensile
+THD_CONE      =Identificatore cono di aggancio per cambio utensile
+

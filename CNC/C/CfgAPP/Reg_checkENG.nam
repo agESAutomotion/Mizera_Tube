@@ -1,0 +1,62 @@
+
+[KEYS]
+TITLE=Capacitive test
+TXT0=Data
+TXT1=Jumping data
+TXT14=Clear Alarm
+
+[PROMPT]
+KEY_NODE=Node
+REG_CHECK=Leaf
+Label1=Capacitive -mm-
+LBL_VELOCITA1=Cut Height [mm]
+Label2=pos upper limit [mm] [ 0]
+Label3=pos lower limit [mm] [ 1]
+Label4=vel upward limit [mm/min] [ 2]
+Label5=vel downward limit [mm/min] [ 3]
+Label6=acc upward limit [mm/s²] [ 4]
+Label7=acc downward limit [mm/s²] [ 5]
+Label8=Kp gain [Hz] [ 6]
+Label9=Kp gain table index [ 7]
+Label10=Kp gain table mul (0=N/U) [ 8]
+Label11=positive deadband [ 9]
+Label12=negative deadband [10]
+Label13=filter cutoff freq [Hz] [11]
+Label14=filter damping coeff [12]
+Label15=simulation x-fade time [ms] [13]
+Label16=trig lock vel upward limit [mm/min] [14]
+Label17=trig lock vel downward limit [mm/min] [15]
+Label18=trig lock acc limit [mm/s²] [16]
+LabelTab2=PROBE [0]
+LabelTab1=JUMP [1]
+LabelTab4=FAR [2]
+LabelTab3=NEAR [3]
+LabelTab6=CUT [4]
+LBL_jumplimit1=Height Jump Limit [mm] (Pipe Machine)
+LabelTabHold1=HOLD [5]
+AxesLaserCH1=Axes1
+LabelActualTableSel=Actual table selected
+LabelTabHold2=SIMULATION [6]
+Label20=Dec Sliding Mode [mm/s^2] [ 17]
+LBL_upVel1=Capacitive Senser Out Of Range Thershold  [%]
+LBL_jumplimit3=Z Dist. disable Probe state during jump[mm]
+LBL_jumplimit4=First Filter regulator (Z axis)  [ms]
+LBL_jumplimit5=Second Filter Regulator (Z axis) [ms]
+LBL_jumplimit6=Delay (Z axis) [ms]
+LBL_jumplimit7=Interpolated Speed Fir [ms]
+LBL_VELOCITA3=System Model Processing Surface
+LIST0=OFF,ON
+LBL_VELOCITA2=Sliding Mode Delay Surface [ms]
+LBL_VELOCITA5=System Model Process Fir 1 (Surface) [ms]
+LBL_VELOCITA4=System Model Process Fir 2 (Surface)  [ms]
+LBL_VELOCITA7=System Model Process Delay (Surface)  [ms]
+LBL_upVel2=Z axis quota for speed change [from PGM] [mm]
+LabelTrack2=Track Num
+LabelExeTime2=Execution time
+LabelExeTime1=Feed [m/min]
+lbDiagPar1=Total / Curr. Pieces
+P_INC3=Follow
+
+[STATUS]
+
+[HELP]

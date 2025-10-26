@@ -1,0 +1,111 @@
+ : diffCalibrationData
+
+;// RTCP Calibration Cycle
+;// DEFINED -> rtcp_calib
+;// Helper CFS to calc calibration data difference between tables.
+
+DBL dst = dstTable
+DBL src = srcTable
+DBL sub = subTable
+DBL tmpA1, tmpA2
+
+;//'TWI code is out of range'
+IF (dst == 0) ERROR(265)
+IF (src == 0) ERROR(265)
+IF (sub == 0) ERROR(265)
+
+;//'unsupported kinematics'
+IF ((%twi[src].yKine != 0) && (%twi[src].yKine != 3)) ERROR(221)
+IF ((%twi[sub].yKine != 0) && (%twi[sub].yKine != 3)) ERROR(221)
+
+;//---------------------------
+
+SYN
+;//'illegal operation'
+IF (%twi[src].yKine == 0) ERROR(55)
+
+IF (%twi[sub].yKine == 0) JMPF .justCopy
+
+%twi[dst].yKine = %twi[src].yKine
+
+%twi[dst].htwi.oarh.dX      = %twi[src].htwi.oarh.dX      - %twi[sub].htwi.oarh.dX
+%twi[dst].htwi.oarh.dY      = %twi[src].htwi.oarh.dY      - %twi[sub].htwi.oarh.dY
+%twi[dst].htwi.oarh.dZ      = %twi[src].htwi.oarh.dZ      - %twi[sub].htwi.oarh.dZ
+%twi[dst].htwi.oarh.yOrient = %twi[src].htwi.oarh.yOrient
+%twi[dst].htwi.oarh.dFrameC = %twi[src].htwi.oarh.dFrameC - %twi[sub].htwi.oarh.dFrameC
+%twi[dst].htwi.oarh.dFrameB = %twi[src].htwi.oarh.dFrameB - %twi[sub].htwi.oarh.dFrameB
+%twi[dst].htwi.oarh.dFrameA = %twi[src].htwi.oarh.dFrameA - %twi[sub].htwi.oarh.dFrameA
+%twi[dst].htwi.oarh.dEC     = %twi[src].htwi.oarh.dEC     - %twi[sub].htwi.oarh.dEC
+%twi[dst].htwi.oarh.bECRev  = %twi[src].htwi.oarh.bECRev
+%twi[dst].htwi.oarh.yECAx   = %twi[src].htwi.oarh.yECAx
+%twi[dst].htwi.oarh.dXx     = %twi[src].htwi.oarh.dXx     - %twi[sub].htwi.oarh.dXx
+%twi[dst].htwi.oarh.dYy     = %twi[src].htwi.oarh.dYy     - %twi[sub].htwi.oarh.dYy
+%twi[dst].htwi.oarh.dTilt   = %twi[src].htwi.oarh.dTilt   - %twi[sub].htwi.oarh.dTilt
+%twi[dst].htwi.oarh.dEB     = %twi[src].htwi.oarh.dEB     - %twi[sub].htwi.oarh.dEB
+%twi[dst].htwi.oarh.bEBRev  = %twi[src].htwi.oarh.bEBRev
+%twi[dst].htwi.oarh.yEBAx   = %twi[src].htwi.oarh.yEBAx
+%twi[dst].htwi.oarh.dXX     = %twi[src].htwi.oarh.dXX     - %twi[sub].htwi.oarh.dXX
+%twi[dst].htwi.oarh.dYY     = %twi[src].htwi.oarh.dYY     - %twi[sub].htwi.oarh.dYY
+%twi[dst].htwi.oarh.dZZ     = %twi[src].htwi.oarh.dZZ     - %twi[sub].htwi.oarh.dZZ
+
+;//XXX $APP
+SWITCH (src)
+CASE tbCurrent
+    tmpA1 = %ax[tbCurrentA1].pa[18] / 1000
+    tmpA2 = %ax[tbCurrentA2].pa[18] / 1000
+CASE tbTemporary
+    tmpA1 = %RtcpCalib0.RCrWtGui[tbaTemporaryA1] / 1000          ;//XXX $APP use RETAIN/CHKSUM regs
+    tmpA2 = %RtcpCalib0.RCrWtGui[tbaTemporaryA2] / 1000          ;//XXX $APP use RETAIN/CHKSUM regs
+CASE tbDelta
+    tmpA1 = %RtcpCalib0.RCrWtGui[tbaDeltaA1] / 1000              ;//XXX $APP use RETAIN/CHKSUM regs
+    tmpA2 = %RtcpCalib0.RCrWtGui[tbaDeltaA2] / 1000              ;//XXX $APP use RETAIN/CHKSUM regs
+CASE tbFactory
+    tmpA1 = %RtcpCalib0.RCrWtGui[tbaFactoryA1] / 1000            ;//XXX $APP use RETAIN/CHKSUM regs
+    tmpA2 = %RtcpCalib0.RCrWtGui[tbaFactoryA2] / 1000            ;//XXX $APP use RETAIN/CHKSUM regs
+ENDSWITCH
+
+;//XXX $APP
+SWITCH (sub)
+CASE tbCurrent
+    tmpA1 = tmpA1 - %ax[tbCurrentA1].pa[18] / 1000
+    tmpA2 = tmpA2 - %ax[tbCurrentA2].pa[18] / 1000
+CASE tbTemporary
+    tmpA1 = tmpA1 - %RtcpCalib0.RCrWtGui[tbaTemporaryA1] / 1000  ;//XXX $APP use RETAIN/CHKSUM regs
+    tmpA2 = tmpA2 - %RtcpCalib0.RCrWtGui[tbaTemporaryA2] / 1000  ;//XXX $APP use RETAIN/CHKSUM regs
+CASE tbDelta
+    tmpA1 = tmpA1 - %RtcpCalib0.RCrWtGui[tbaDeltaA1] / 1000      ;//XXX $APP use RETAIN/CHKSUM regs
+    tmpA2 = tmpA2 - %RtcpCalib0.RCrWtGui[tbaDeltaA2] / 1000      ;//XXX $APP use RETAIN/CHKSUM regs
+CASE tbFactory
+    tmpA1 = tmpA1 - %RtcpCalib0.RCrWtGui[tbaFactoryA1] / 1000    ;//XXX $APP use RETAIN/CHKSUM regs
+    tmpA2 = tmpA2 - %RtcpCalib0.RCrWtGui[tbaFactoryA2] / 1000    ;//XXX $APP use RETAIN/CHKSUM regs
+ENDSWITCH
+
+;//XXX $APP usate %R con 3 decimali
+tmpA1 = FLOOR((tmpA1 * 1000) + 0.5)
+tmpA2 = FLOOR((tmpA2 * 1000) + 0.5)
+
+;//XXX $APP
+SWITCH (dst)
+CASE tbCurrent
+    IF (ABS(%ax[tbCurrentA1].pa[18]-tmpA1) > 0.5) rotaryHomingReq = 1
+    IF (ABS(%ax[tbCurrentA2].pa[18]-tmpA2) > 0.5) rotaryHomingReq = 1
+    %ax[tbCurrentA1].pa[18] = tmpA1
+    %ax[tbCurrentA2].pa[18] = tmpA2
+CASE tbTemporary
+    %RtcpCalib0.RCrWtGui[tbaTemporaryA1] = tmpA1                 ;//XXX $APP use RETAIN/CHKSUM regs
+    %RtcpCalib0.RCrWtGui[tbaTemporaryA2] = tmpA2                 ;//XXX $APP use RETAIN/CHKSUM regs
+CASE tbDelta
+    %RtcpCalib0.RCrWtGui[tbaDeltaA1] = tmpA1                     ;//XXX $APP use RETAIN/CHKSUM regs
+    %RtcpCalib0.RCrWtGui[tbaDeltaA2] = tmpA2                     ;//XXX $APP use RETAIN/CHKSUM regs
+CASE tbFactory
+    %RtcpCalib0.RCrWtGui[tbaFactoryA1] = tmpA1                   ;//XXX $APP use RETAIN/CHKSUM regs
+    %RtcpCalib0.RCrWtGui[tbaFactoryA2] = tmpA2                   ;//XXX $APP use RETAIN/CHKSUM regs
+ENDSWITCH
+
+;//---------------------------
+RET
+
+.justCopy
+JSR "copyCalibrationData.cfs"
+
+RET

@@ -1,0 +1,23 @@
+
+[KEYS]
+TITLE=FUNZIONI UTENTE
+TXT0=Luce cabina
+TXT1=Luce testa laser
+TXT8=Team Viewer
+
+[PROMPT]
+KEY_NODE=
+USER=
+ButtonAspiratorMngt=ASPIRAZIONE
+ButtonCleanHead=PULIZIA TESTA
+ButtonService=SERVICE
+ButtonInpTest=I/O DIGITALI
+ButtonIOanalog=I/O ANALOGICI
+ButtonAspiratorMngt1=TAGLIO MANUALE
+ButtonCleanHead1=LUBRIFICAZIONE
+ButtonIOanalog1=Log
+ButtonCleanHead2=CALIBRAZIONE TUBO
+
+[STATUS]
+
+[HELP]

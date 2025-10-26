@@ -1,0 +1,51 @@
+[PROMPT]
+KEY_CED       =Données Outils
+
+CED_RAD       =Rayon Outil [mm]
+CED_TRAD      =Rayon raccord pour fraise torique
+CED_LENZ      =Longueur Z Outil [mm]
+CED_THICK     =Epaisseur outil à disque
+CED_LENX      =Longueur X outil pour tournage
+CED_LENY      =Longueur Y outil pour tournage
+CED_LATHE_ANG_A =Angolo di spoglia A per tornitura
+CED_LATHE_ANG_B =Angolo di spoglia B per tornitura
+CED_DSC       =Descrizione
+CED_WEAIDX    =Indice extension pour gestion usure
+
+CED_MINRPM    =Nombre minimum de tours/minute
+CED_MAXRPM    =Nombre maximum de tours/minute
+CED_STDRPM    =Nombre de tours/minute
+CED_CCW       =Outil rotation à gauche
+CED_MAXFEED   =Vitesse maxi avance linéaire
+CED_STDFEED   =Vitesse avance linéaire de défaut
+CED_DIR       =Active contrôle sens de coupe
+CED_TG        =Type d'avancement admis
+CED_TGTHRE    =Tolérance angulaire (degrés)
+CED_STATUS    =Evénements qui impliquent l'outil
+CED_MAXACC    =Accélération maximum [rev/s²]
+CED_MAXDEC    =Décélération maximum [rev/s²]
+
+[HELP]
+
+CED_RAD       =Rayon Outil: Rayon de l'outil permet de prendre en compte l'encombrement réel de l'outil en phase d'usinage
+CED_TRAD      =Rayon raccord pour fraise torique
+CED_LENZ      =Longueur Z Outil: Longueur de l'outil dans la direction orthogonale au plan sélectionné [mm]
+CED_THICK     =La figure montre un exemple de paramétrage d'outil à disques, on remarquera le dThick qui représente l'épaisseur de l'outil à disque
+CED_LENX      =Longueur X: Longueur auxiliaire 1 outil pour tournage
+CED_LENY      =Longueur Y: Longueur auxiliaire 2 outil pour tournage
+CED_LATHE_ANG_A =Angolo di spoglia A per tornitura
+CED_LATHE_ANG_B =Angolo di spoglia B per tornitura
+CED_WEAIDX    =Indice extension données outil pour gestion usure
+
+CED_MINRPM    =Nombre minimum de tours/minute
+CED_MAXRPM    =Nombre maximum de tours/minute
+CED_STDRPM    =Nombre de tours/minute
+CED_CCW       =Outil rotation à gauche
+CED_MAXFEED   =Vitesse maxi avance linéaire
+CED_STDFEED   =Vitesse avance linéaire de défaut
+CED_DIR       =Active contrôle sens de coupe
+CED_TG        =Type d'avance admise pendant l'usinage :  0-quelconque (ex.:  fraise cylindrique);  1-avance axiale seulement (ex.:  foret);  2-avance radiale seulement (ex.:  lame)
+CED_TGTHRE    =Tolérance angulaire pour la surveillance de l'avance pendant l'usinage (degrés)
+CED_STATUS    =Evénements qui peuvent conditionner l'utilisation de l'outil
+CED_MAXACC    =Accélération maximale [rev/s²]; c'est la vitesse maximale de rotation [rev/s] divisée par le temps [s] employé pour l'atteindre
+CED_MAXDEC    =Décélération maximale [rev/s²]; c'est la vitesse maximale de rotation [rev/s] divisée par le temps [s] employé pour s'arrêter à partir de cette vitesse

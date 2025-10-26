@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Config>
+  <OPCItemFiles>
+    <OPCItemFile>c:\Kvara\exe\SyncSh_Mu0.SHA</OPCItemFile>
+    <OPCItemFile>c:\Kvara\exe\SyncSh_Mu1.SHA</OPCItemFile>
+    <OPCItemFile>c:\Kvara\exe\SyncSh_Ru0.SHA</OPCItemFile>
+    <OPCItemFile>c:\Kvara\exe\SyncSh_Ru1.SHA</OPCItemFile>
+  </OPCItemFiles>
+ </Config>
+ 
+ 

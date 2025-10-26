@@ -1,0 +1,25 @@
+[PROMPT]
+KEY_ANTSLT =Parametri Antislittamento
+
+ANTSLT_ENABLE =Modalita' di gestione
+ANTSLT_ERRMIN =Limite minimo errore slittamento [mm]
+ANTSLT_ERRMAX =Limite massimo errore slittamento [mm]
+ANTSLT_VELMIN =Velocita' mantenimento ruota [rpm]
+ANTSLT_VELMAX =Velocita' massima ruota trascinamento [rpm]
+
+ANTSLT_MAXVEL =Massima velocita' rilevata [mm/min]
+ANTSLT_MAXERR =Massimo errore slittamento [mm]
+ANTSLT_PERCERR =Percentuale errore slittamento attuale [%]
+ANTSLT_ERRACT =Errore slittamento attuale [mm]
+ANTSLT_LOG_ENABLE =Abilitazione log [tick regol]
+ANTSLT_LOG_STATE =Stato log [tick regol]
+
+ANTSLT_ENABLE_LIST = Disabilitato, Master, Slave
+
+
+[HELP]
+ANTSLT_ENABLE =Definire se gestire o meno l'antislittamento. Impostare MASTER l'asse che controlla lo slittamento. Impostare SLAVE l'asse/i eventualmente coinvolti nell'interpolazione con l'asse MASTER.
+ANTSLT_ERRMIN =Indica la soglia minima dell'intervallo di slittamento. Significativo per asse master
+ANTSLT_ERRMAX =Indica la soglia massima dell'intervallo di slittamento. Significativo per asse master
+ANTSLT_VELMIN =Velocita' di mantenimento dell'asse nel caso che lo slittamento superi il limite minimo di errore impostato. Significativo per asse master
+ANTSLT_VELMAX =Velocita' massima della ruota di trascinamento. Significativo per asse master

@@ -1,0 +1,84 @@
+*//============================================================================
+*// AXIS TRACKING FROM PLC
+*//============================================================================
+* Only Used during program running
+*
+* CAL SEGUI_AXIS0(xAxNum:=,xMove:=,xTarget:=,xSpeed:=)
+* 
+* LD  SEGUI_AXIS0.yFromPlc     
+* ST  GESTAX*.xFromPlc
+*//============================================================================
+
+#funcdec "assi.plc"
+#funcdec "cnc.plc"
+#include "iol.inc"
+
+VAR
+#include "assi.inc"
+#include "cnc.inc"
+#include "mem.inc"
+END_VAR
+
+FUNCTION_BLOCK  AX_VAR_TRACK
+
+*//============================================================================
+* To keep axis following target
+*//============================================================================
+
+VAR_INPUT
+xAxNum:            DWORD;         * Axis ID
+xMove:             BOOL;          * Move CMD
+xTarget:           DWORD;         * Destination
+xSpeed:            DWORD;         * Moving Speed
+END_VAR
+
+VAR_OUTPUT
+yFromPlc:          BOOL;
+END_VAR
+
+VAR
+TP_PRGOFF:         TP;
+TOF_RESET:         TOF;  
+Appoggio:          BOOL;
+POS_AX:            AX_SINGVAR; 
+END_VAR
+
+PATH %ax[xAxNum]
+
+*//============================================================================
+
+LD   xMove
+AND  MACC_TARATA   
+ANDN EMER_GEN
+ANDN MACC_ALARM
+AND  %cn0.rc8.0
+ANDN %cn0.rc8.1          
+ST   POS_AX.xax_ENABLE
+ST   yFromPlc
+
+LDN  %cn0.rc8.0                    
+ST   Appoggio
+CAL  TP_PRGOFF(IN=Appoggio, PT=10) 
+CAL  TOF_RESET(IN=Pul_Reset, PT=10)
+
+LDN  POS_AX.xax_ENABLE
+OR   TP_PRGOFF.Q
+OR   TOF_RESET.Q
+ST   POS_AX.xax_CLEAR
+
+LD   POS_AX.xax_ENABLE
+AND  POS_AX.yax_READY
+ANDN POS_AX.yax_ENDERR
+ST   POS_AX.xax_START
+
+LD   xTarget                       
+ST   POS_AX.xax_QUOTA
+
+LD   xSpeed                  
+ST   POS_AX.xax_VEL
+
+CAL  POS_AX
+
+*//============================================================================
+
+END_FUNCTION_BLOCK

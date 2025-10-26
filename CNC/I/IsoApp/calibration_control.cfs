@@ -1,0 +1,117 @@
+:CICLO FISSO CONTROLLO CALIBRAZIONE CAPACITIVO
+; PRECITEC - IPG
+;------------------------------------------------------------------------------
+; SET PLC (MM)          ADC CALC        ADC READ
+; rPlc22 = 1 / 2        %rPlc11 = ADC   %LsIso90 = ADC
+; rPlc23 = 2 / 4        %rPlc12 = ADC   %LsIso91 = ADC
+; rPlc24 = 3 / 6        %rPlc13 = ADC   %LsIso92 = ADC
+; rPlc25 = 4 / 8        %rPlc14 = ADC   %LsIso93 = ADC
+; rPlc26 = 5 / 10       %rPlc15 = ADC   %LsIso94 = ADC
+; rPlc27 = 6 / 12       %rPlc16 = ADC   %LsIso95 = ADC
+; rPlc28 = 7 / 14       %rPlc17 = ADC   %LsIso96 = ADC
+; rPlc29 = 8 / 16       %rPlc18 = ADC   %LsIso97 = ADC
+; rPlc30 = 9 / 18       %rPlc19 = ADC   %LsIso98 = ADC
+; rPlc31 = 10 / 20      %rPlc20 = ADC   %LsIso99 = ADC
+;------------------------------------------------------------------------------
+
+DBL ABSINC = 0x01
+DBL VOUT0 = 0x04
+DBL VOUT = 0x08
+DBL VMAX = 0x10
+
+DBL VHIGH = 2000
+DBL VLOW = 200
+DBL LevelE = 0                      ; [(Normale close)  Aspetta il segnale a 0 per uscire dal comando]
+DBL LevelS = 1                      ; [(Normale open)   Aspetta il segnale a 1 per uscire dal comando]
+                                   
+DBL j,i,i_err,i_quota,i_calc
+DBL ValSamp
+DBL CalibOK
+DBL ErrorFound
+
+SYN
+?%LsIso10.1 = 0             ; Iso said calibration control done 
+?%C26.0=1
+?%C26.3=1                   ; ISOTipTouchDisable
+
+;Tastatura
+G153
+
+IF( %M33 == 0 ) THEN
+    ; FAR INPUT management enabled
+    IF( (%LSRPlcOp1.9) && (%config_machine26 != 3) )  THEN
+	   _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%C31.0", LevelE )
+    ENDIF
+	
+	IF( (%LSRPlcOp1.9) && (%config_machine26 == 3) )  THEN
+      _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%EmConfig.Far_signal.0 ", LevelE )  ;Far
+    ENDIF
+	
+    ; FAR INPUT management enabled
+    IF( (!%LSRPlcOp1.9) && (%config_machine26 == 0) &&( %LSRPlcOp0.20 ) )  THEN
+	   _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%C31.0", LevelE )   ; Aspetta il segnale basso per uscire
+    ENDIF
+
+    _singfc( ( VMAX | VOUT0 ), Z, 2, VLOW, 0, "%C31.1", LevelS )  ; Aspetta TIP TOUCH alto per uscire
+    G4 F0.2
+    SYN
+    _singfc( ( VMAX | VOUT0 ), Z, 1, VLOW/4, 0, "%C31.1", LevelE )  ; Aspetta TIP TOUCH basso per uscire
+    G4 F0.2
+    SYN
+    kine_z = GET(Z) 
+    G10 G0 Z(QCALC(Z)) 
+ELSE
+    kine_z = 0
+ENDIF
+
+G152
+
+SYN
+G153 G0 Z(kine_z+(%LSRCostK[31]/1000))  ;Posizionamento a 10/20mm dalla lamiera tastata
+
+?%C26.3=0                   ; ISOTipTouchDisable
+
+i = 99
+i_err = 99
+i_quota = 31
+i_calc = 20
+CalibOK = 1
+
+FOR j=0 TO 9
+    RPT .StartCheck, .EndCheck, 1
+    i = i-1
+    i_err = i_err-1
+    i_quota = i_quota - 1
+    i_calc = i_calc - 1
+ENDFOR
+
+G153 G1 Z( MaxQta_Z -10 ) F10000   ;Posizionamento quota MAX - 10 mm
+
+?%LsIso10.1=1              ; Iso said calibration control done 
+?%C26.0=0
+
+SYN
+IF( CalibOK ) THEN
+    %LsIso10.9 = 1
+ELSE
+    %LsIso10.9 = 0
+ENDIF
+RET
+
+;--------------------------------------------
+;   SUBROUTINE
+;--------------------------------------------
+.StartCheck
+
+    G153 G1 Z(kine_z+(%rPlc[i_quota]/1000)) F(2000)
+    SYN 
+    %LsIso[i]=%C121 + 0
+    SYN
+
+    ValSamp = %LsIso[i] * 1000
+    ErrorFound = ((ValSamp - (%rPlc[i_calc]*1000)) / 4095000 ) * 100  ; Error %
+    ErrorFound = ErrorFound * 1000
+    %LsPlc[i_err]= ErrorFound
+    IF( (ABS(%LsPlc[i_err])) > (%rLsGui62) ) CalibOK = 0
+
+.EndCheck

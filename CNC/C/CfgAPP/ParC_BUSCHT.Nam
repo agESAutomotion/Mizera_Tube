@@ -1,0 +1,9 @@
+[PROMPT]
+KEYWORD =Parameters
+#include "dgt?.nam"
+#include "can?.nam"
+#include "Ecat?.nam"
+
+[HELP]
+
+[KEYS]

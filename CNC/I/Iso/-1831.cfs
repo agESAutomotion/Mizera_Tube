@@ -1,0 +1,19 @@
+ : G831
+
+;// Inizio sezione di distacco
+;//
+;// G831
+;//
+
+;Richiesto perche' la spline eredita la velocita' di attacco distacco
+SPC 30099,1  ;Preprocessor sync
+
+;//PADSID=0
+
+SPC 33020, 1
+PADSID=0
+SPC 33020, 256  ;XXX instance #0, suspend look-ahead (begin setup phase)
+PADSID=0
+SPC 33020, 0    ;XXX instance #0, resume look-ahead (end of setup phase)
+
+RET

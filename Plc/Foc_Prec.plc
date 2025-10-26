@@ -1,0 +1,293 @@
+*******************************************************************************
+*   FOC_PREC.PLC
+*******************************************************************************
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+#include "foc_prec.inc"
+
+VAR
+#include "Cnc.inc"
+ValoreFocale:             DWORD;  
+FocLinearCalc:      LINEAR_CALC;
+END_VAR
+
+******************************************************************************
+*   FUNZIONE LINEARIZZAZIONE FOCALE
+*   Torna la variabile locale "ValoreFocale"
+******************************************************************************
+FUNCTION FOC_LIN
+
+LD   %LSRPlcOp1.3
+JMPCN NoCapLin
+
+LD   128                            * FOCAL LINEARIZATION's pd_spline
+ST   FocLinearCalc.xIndex
+
+LD   ValoreFocale
+ST   FocLinearCalc.xInput
+
+CAL  FocLinearCalc
+
+LD   FocLinearCalc.yResult
+EQ   2147483647
+JMPC NoCapLin
+     LD   FocLinearCalc.yResult
+     ST   ValoreFocale
+NoCapLin:
+
+END_FUNCTION
+
+******************************************************************************
+******************************************************************************
+*   PRECITEC
+*   Main function block used to regulate the focal lens
+******************************************************************************
+******************************************************************************
+FUNCTION_BLOCK FOC_PRECITEC
+
+VAR_INPUT
+xReset:                  BOOL;
+xAnRes:                 DWORD;
+xCutFoc:                DWORD;
+xFocal_Type:            DWORD;
+xVal_Focale_ACT:        DWORD; 
+END_VAR
+
+VAR
+TP_CHK:                    TP;
+TON_CHK:                  TON;
+TON_REF_OK:               TON;      * Ritardo per conclusione reference precitec ok
+TON_REF_ERR:              TON;      * Ritardo da inizio reference per bypass /error
+TON_AUTO_ERR:             TON;      * Ritardo per emissione allarme errore in automatico
+TON_REF_TIMEOUT:          TON;      * Durata azzeramento testa precitec
+TON_SHAKEHAND_TIMEOUT:    TON;
+TOF_REF_HEAD:             TOF;
+    
+appoggio:                BOOL;      * Appoggio condizioni start temporizzatore
+Aux_ValoreFocale:       DWORD;        
+ValMemoFocale:          DWORD; 
+
+FOCLIM1:            FOC_SWLIM;
+FOCLIM2:            FOC_SWLIM;
+FOCLIM3:            FOC_SWLIM;
+FOCLIM4:            FOC_SWLIM;
+FOCLIM5:            FOC_SWLIM;
+FOCLIM6:            FOC_SWLIM;
+END_VAR
+
+VAR_OUTPUT
+yPrec_Pos_Run:           BOOL;       
+yFocAn:                 DWORD;
+yMsg:                   DWORD;  
+yError:                 DWORD;      
+END_VAR
+
+******************************************************************************
+* PRECITEC: Homming Management
+******************************************************************************
+CAL  TOF_REF_HEAD (IN:=%PLCFLAGS.8,PT:=4000)    
+LD   xReset    
+OR   ForceRefGui                 
+OR   TOF_REF_HEAD.Q                  
+AND  (
+LD   I_I_PREC_ERROR                
+ORN  I_I_PREC_POSITION_REACHED     
+)
+S    O_O_PREC_REFERENCE    
+            	
+LD   I_I_PREC_POSITION_REACHED     
+AND  O_O_PREC_REFERENCE            
+ST   appoggio                      
+CAL  TON_REF_OK(IN=appoggio,PT=2000)  	
+
+LD   I_I_PREC_ERROR              
+AND  O_O_PREC_REFERENCE               
+ST   appoggio                    
+CAL  TON_REF_ERR(IN=appoggio,PT=3000) 	
+CAL  TON_REF_TIMEOUT(IN=O_O_PREC_REFERENCE,PT=6000) 
+
+LD   TON_REF_OK.Q           
+OR   TON_REF_ERR.Q         
+OR   TON_REF_TIMEOUT.Q     
+R    O_O_PREC_REFERENCE    
+
+******************************************************************************
+*   PRECITEC: Automatic Focal Management
+*   - Within plc cycle focal command checking
+******************************************************************************    
+LD   xVal_Focale_ACT              
+ST   Aux_ValoreFocale             
+
+LDN  %cn0.rc8.0                     
+JMPC Prec_Focale
+     LD   xCutFoc
+     ST   Aux_ValoreFocale        
+Prec_Focale:
+ 
+LDN  TON_CHK.Q
+ST   appoggio  
+CAL  TON_CHK(IN=appoggio, PT=%plc0.PlcCycle)    
+LD   TON_CHK.Q
+JMPCN _AN_CHK
+     LD   Aux_ValoreFocale
+     ST   ValMemoFocale
+_AN_CHK:
+
+LD   Aux_ValoreFocale
+NE   ValMemoFocale
+ST   appoggio
+CAL  TP_CHK(IN=appoggio,PT=20) 
+LD   TP_CHK.Q
+ANDN O_O_PREC_REFERENCE
+ST   O_O_PREC_AUTOMATIC
+
+******************************************************************************
+*   PRECITEC: FOCAL lens regulation
+******************************************************************************
+
+***************************************
+*   125mm
+***************************************
+LD   xFocal_Type                   
+EQ   125                    
+JMPCN NO_PREC1  
+	 CAL  FOCLIM1(xIn=Aux_ValoreFocale,xMin=-9000,xMax=6000)
+     LD   FOCLIM1.Q
+	 ST   ValoreFocale
+     
+     FOC_LIN
+     
+     LD   ValoreFocale         
+     MULDIV(M=-6266,D=10000)  
+     ADD  4060                
+     ST   CntrlVoltage              
+NO_PREC1:
+
+***************************************
+*   150mm
+***************************************
+LD   xFocal_Type                   
+EQ   150                           
+JMPCN NO_PREC2
+	 CAL  FOCLIM2(xIn=Aux_ValoreFocale,xMin=-13000,xMax=9000)
+     LD   FOCLIM2.Q
+	 ST   ValoreFocale
+     
+     FOC_LIN
+     
+     LD   ValoreFocale         
+     MULDIV(M=-4272,D=10000)  
+     ADD  4145                 
+     ST   CntrlVoltage         
+NO_PREC2:
+
+***************************************
+*   175mm
+***************************************
+LD   xFocal_Type                  
+EQ   175                          
+JMPCN NO_PREC3
+	 CAL  FOCLIM3(xIn=Aux_ValoreFocale,xMin=-18000,xMax=12000)
+     LD   FOCLIM3.Q
+	 ST   ValoreFocale
+     
+     FOC_LIN
+     
+     LD    ValoreFocale       
+     MULDIV(M=-3133,D=10000)  
+     ADD   4060               
+     ST    CntrlVoltage       
+NO_PREC3:
+
+***************************************
+*   200mm
+***************************************
+LD   xFocal_Type                 
+EQ   200                         
+JMPCN NO_PREC4
+	 CAL  FOCLIM4(xIn=Aux_ValoreFocale,xMin=-26000,xMax=18000)
+     LD   FOCLIM4.Q
+	 ST   ValoreFocale
+     
+     FOC_LIN
+     
+     LD    ValoreFocale       
+     MULDIV(M=-2130,D=10000)  
+     ADD   3990               
+     ST    CntrlVoltage       
+NO_PREC4:
+
+***************************************
+*  500mm
+***************************************
+LD   xFocal_Type                 
+EQ   500                         
+JMPCN NO_PREC6
+	 CAL  FOCLIM6(xIn=Aux_ValoreFocale,xMin=-10210,xMax=12790)
+     LD   FOCLIM6.Q
+	 ST   ValoreFocale
+     
+     FOC_LIN
+     
+     LD   ValoreFocale               
+     MULDIV(M=-4000,D=10000)  
+     ADD  5440                       
+     ST   CntrlVoltage               
+NO_PREC6:
+
+* Cumulative focal value on output
+
+LD   CntrlVoltage        
+MULDIV(M=xAnRes,D=10000)                          
+ST   yFocAn              
+
+LDN  O_O_PREC_REFERENCE
+ANDN I_I_PREC_POSITION_REACHED
+ST   yPrec_Pos_Run
+CAL  TON_SHAKEHAND_TIMEOUT(IN=yPrec_Pos_Run, PT=4000)
+
+******************************************************************************
+* Alarm and Messages
+******************************************************************************
+LD   TON_REF_ERR.Q
+ST   yError.0
+
+LD   TON_REF_TIMEOUT.Q         
+ST   yError.1	
+
+LD   I_I_PREC_ERROR               
+ST   yError.2
+
+LDN  I_I_PREC_SW1                  
+ORN  I_I_PREC_SW4                                                   
+ST   yError.3 
+
+LD   TON_SHAKEHAND_TIMEOUT.Q
+ST   yError.4
+     
+LDN  I_I_PREC_SW1                  
+ST   yMsg.0
+
+LDN  I_I_PREC_SW4                  
+ST   yMsg.1
+
+LD   TON_REF_OK.Q
+ST   yMsg.2
+
+******************************************************************************
+*   PRECITEC: Updating user interface informations
+******************************************************************************
+LD   I_I_PREC_ERROR             
+ST   %fLeds.0                   
+
+LD   I_I_PREC_POSITION_REACHED  
+ST   %fLeds.1                   
+
+LD   O_O_PREC_REFERENCE         
+ST   %fLeds.2                  
+
+LD   O_O_PREC_AUTOMATIC         
+ST   %fLeds.3 
+
+END_FUNCTION_BLOCK
+******************************************************************************

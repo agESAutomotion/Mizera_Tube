@@ -1,0 +1,26 @@
+[PROMPT]
+KEY_WEAR      =Tool Life and Wear data
+
+WEAR_MODE    =Tool wear calculation mode
+WEAR_ELACYC  =Completed cycles
+WEAR_ELATIM  =Elapsed time
+WEAR_ELASPC  =Covered space
+WEAR_MAXCYC  =Maximum # of cycles
+WEAR_MAXTIM  =Maximum allowed time
+WEAR_MAXSPC  =Maximum allowed space
+WEAR_WEALENZ =Tool Z length wear coefficient
+WEAR_WEALENX =Tool X length wear coefficient
+WEAR_WEALENY =Tool Y length wear coefficient
+WEAR_ACTRAD  =Current tool radius wear
+WEAR_ACTLENZ =Current tool Z length wear
+WEAR_ACTLENX =Current tool X length wear
+WEAR_ACTLENY =Current tool Y length wear
+WEAR_MAXRAD  =Maximum allowed tool radius wear
+WEAR_MAXLENZ =Maximum tool Z length wear
+WEAR_MAXLENX =Maximum tool X length wear
+WEAR_MAXLENY =Maximum tool Y length wear
+WEAR_WRAD    =Tool radius wear coefficient
+
+
+[HELP]
+

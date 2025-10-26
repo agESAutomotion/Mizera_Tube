@@ -1,0 +1,34 @@
+ [T]0 [N]0 M : 836
+;-----------------------------------------------------------------------------
+; Set run-time flags
+; Equivalent to G806 T_ N_ ... F_, G800 T_ R_ outside G800-G840
+; Function 90 is reserved for background function synchronization.
+;
+; NOTE:
+; Some functions can also be made available as M<mcode><head>
+; (e.g.: M901 is the short for G836 N1 M90)
+;
+; (see Macro Instructions G806 and G800 for details)
+;
+;-----------------------------------------------------------------------------
+
+;//NOT IMPLEMENTED
+ERROR(55)
+
+;//$BASE
+IF( VA13 > 0 ) THEN ;//[N] > 0
+    IF( VA19 > 0 ) ERROR(55)    ;//[T] > 0
+    ;//load T with current technology
+    ;//search N-th head with T technology
+    VA19 = VA13     ;//[T] = [N]
+    VA13 = 0        ;//[N] = 0
+ENDIF
+
+DBL TravT = VA19
+DBL function = VA12
+
+SPC 30099,1
+
+SPC 30099,1
+
+RET

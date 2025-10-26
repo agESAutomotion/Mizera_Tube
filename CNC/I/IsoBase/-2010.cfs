@@ -1,0 +1,622 @@
+ [X] [Y] [Z] [U] [V] [W] [I] [J] [K] [A] [B] [C] :G1010
+;//
+;// JUMP ACROSS TUBE FACES SUPPORT:
+;// PERFORM JUMP
+;//
+;// NOTE:
+;// Assume tracks can have different vectorSelect and ECLMXM.
+;// Vector taper interpolation is always executed once initial and final
+;// vectors have been calculated by their independent vectorSelect and ECLMXM.
+;// Tracks may also have different G161, G186, ... and G179.
+;//
+                            ;// XXX tune these values
+DBL thick = 10;   30;100.0           ;// Outer ring thickness for curve interpolation
+DBL fLin = 10.0             ;// Minimum linearly travelled leave distance
+DBL tLin = 10.0             ;// Minimum linearly travelled approach distance
+
+DBL isDebug = 0             ;// show bounding ring and vectors in graphics
+DBL vecFlags = 0x3          ;// 0x01 display tool vector
+                            ;// 0x02 display surface normal vector
+
+DBL isGraphics = %cn[WHO()].pc[14].25
+IF (!isGraphics) isDebug = 0
+
+IF (!JstateAvail) ERROR(55)
+IF (JminR == 0) ERROR(55) ;no shape mark
+
+DBL fx = XGET("@X")
+DBL fy = XGET("@Y")
+DBL fz = XGET("@Z")
+DBL fu = XGET("@U")
+DBL fv = XGET("@V")
+DBL fw = XGET("@W")
+DBL fi, fj, fk
+;// Convert programmed surface normal from table frame (G180 does not handle n)
+IF (XGET("@ECLMXM") != 0) THEN
+    ;// f' = M^T * f
+    fi = mx_a11 * Jfi + mx_a21 * Jfj + mx_a31 * Jfk
+    fj = mx_a12 * Jfi + mx_a22 * Jfj + mx_a32 * Jfk
+    fk = mx_a13 * Jfi + mx_a23 * Jfj + mx_a33 * Jfk
+ELSE
+    ;// f' = f
+    fi = Jfi
+    fj = Jfj
+    fk = Jfk
+ENDIF
+DBL fa = XGET("@A")
+DBL fb = XGET("@B")
+DBL fc = XGET("@C")
+
+DBL tx = VEXPQ(CTOMM(VA23), fx)
+DBL ty = VEXPQ(CTOMM(VA24), fy)
+DBL tz = VEXPQ(CTOMM(VA25), fz)
+DBL tu = VEXPQ(CTOMM(VA20), fu)
+DBL tv = VEXPQ(CTOMM(VA21), fv)
+DBL tw = VEXPQ(CTOMM(VA22), fw)
+DBL ti = VEXPQ(VA8, fi)
+DBL tj = VEXPQ(VA9, fj)
+DBL tk = VEXPQ(VA10,fk)
+DBL ta = VEXPQ(VA0, fa)
+DBL tb = VEXPQ(VA1, fb)
+DBL tc = VEXPQ(VA2, fc)
+DBL sav_G70=XGET("@G70")
+DBL sav_f=XGET("@F")
+G71
+
+DBL pres_u = 0, pres_v = 0, pres_w = 0
+DBL pres_a = 0, pres_b = 0, pres_c = 0
+pres_u = 1
+;pres_v = 1                 ;//XXX enable companion axis (if you have one)
+;pres_w = 1
+DBL spindle_or = 0
+DBL spindle_ax = 0
+DBL head = TWIIDX(0)
+IF ((head != 0) && (%twi[head].htwi.oarh.yECAx == 7)) pres_a = 1
+IF ((head != 0) && (%twi[head].htwi.oarh.yECAx == 8)) pres_b = 1
+IF ((head != 0) && (%twi[head].htwi.oarh.yECAx == 9)) pres_c = 1
+IF ((head != 0) && (%twi[head].htwi.oarh.yEBAx == 7)) pres_a = 1
+IF ((head != 0) && (%twi[head].htwi.oarh.yEBAx == 8)) pres_b = 1
+IF ((head != 0) && (%twi[head].htwi.oarh.yEBAx == 9)) pres_c = 1
+DBL table = TABIDX(0)
+IF ((table != 0) && (%tab[table].t_ttab.t_oart.t_yECAx == 7)) pres_a = 1
+IF ((table != 0) && (%tab[table].t_ttab.t_oart.t_yECAx == 8)) pres_b = 1
+IF ((table != 0) && (%tab[table].t_ttab.t_oart.t_yECAx == 9)) pres_c = 1
+IF (table != 0) spindle_or = %tab[table].t_ttab.t_oart.t_yOrient
+IF (table != 0) spindle_ax = %tab[table].t_ttab.t_oart.t_yECAx
+
+DBL feed = 30000            ;//XXX tune this value
+DBL nPoints = 100;60            ;//XXX tune this value
+DBL i, j
+DBL t1, t2, t3
+DBL x, y, z
+DBL u, v, w
+DBL ei, ej, ek
+DBL a, b, c
+DBL sn, cs
+DBL phi, theta
+DBL ratio
+DBL d, r
+DBL px, py, pz
+DBL qx, qy, qz
+
+DBL rot
+DBL p
+
+DBL ni, nj, nk, nijk
+DBL oi, oj, ok
+
+;//calculate ONLY matrices in the fastest way (D0 P2 instead of D1)
+G180 D0 P2 A(ta) B(tb) C(tc)
+;//make the tool vector relative to table/matrix frame (o = mx^T * ef^T * tf.Z)
+t1 = ef_a11 * tf_a13 + ef_a21 * tf_a23 + ef_a31 * tf_a33
+t2 = ef_a12 * tf_a13 + ef_a22 * tf_a23 + ef_a32 * tf_a33
+t3 = ef_a13 * tf_a13 + ef_a23 * tf_a23 + ef_a33 * tf_a33
+oi = mx_a11 * t1 + mx_a21 * t2 + mx_a31 * t3
+oj = mx_a12 * t1 + mx_a22 * t2 + mx_a32 * t3
+ok = mx_a13 * t1 + mx_a23 * t2 + mx_a33 * t3
+SWITCH (vectorSelect)
+CASE 1
+    ni = oi
+    nj = oj
+    nk = ok
+CASE 2
+    IF (XGET("@ECLMXM") != 0) THEN
+        ni = ti
+        nj = tj
+        nk = tk
+    ELSE
+        ;//apply inverse user transformation matrix (n = mx^T * tijk)
+        ni = mx_a11 * ti + mx_a21 * tj + mx_a31 * tk
+        nj = mx_a12 * ti + mx_a22 * tj + mx_a32 * tk
+        nk = mx_a13 * ti + mx_a23 * tj + mx_a33 * tk
+    ENDIF
+    ;//convert to unit vector
+    nijk = SQRT(ni*ni + nj*nj + nk*nk)
+    IF (nijk > 0.001) THEN
+        ni = ni / nijk
+        nj = nj / nijk
+        nk = nk / nijk
+    ENDIF
+CASE 6
+    ;//mx^T * ef^T * [0 0 1]^T
+    ni = mx_a11 * ef_a31 + mx_a21 * ef_a32 + mx_a31 * ef_a33
+    nj = mx_a12 * ef_a31 + mx_a22 * ef_a32 + mx_a32 * ef_a33
+    nk = mx_a13 * ef_a31 + mx_a23 * ef_a32 + mx_a33 * ef_a33
+OTHERWISE
+    ERROR(55) ;vectorSelect
+ENDSWITCH
+
+;// B = A^T * C
+DBL a11 = mx_a11 * Jmx_a11 + mx_a21 * Jmx_a21 + mx_a31 * Jmx_a31
+DBL a12 = mx_a11 * Jmx_a12 + mx_a21 * Jmx_a22 + mx_a31 * Jmx_a32
+DBL a13 = mx_a11 * Jmx_a13 + mx_a21 * Jmx_a23 + mx_a31 * Jmx_a33
+DBL a21 = mx_a12 * Jmx_a11 + mx_a22 * Jmx_a21 + mx_a32 * Jmx_a31
+DBL a22 = mx_a12 * Jmx_a12 + mx_a22 * Jmx_a22 + mx_a32 * Jmx_a32
+DBL a23 = mx_a12 * Jmx_a13 + mx_a22 * Jmx_a23 + mx_a32 * Jmx_a33
+DBL a31 = mx_a13 * Jmx_a11 + mx_a23 * Jmx_a21 + mx_a33 * Jmx_a31
+DBL a32 = mx_a13 * Jmx_a12 + mx_a23 * Jmx_a22 + mx_a33 * Jmx_a32
+DBL a33 = mx_a13 * Jmx_a13 + mx_a23 * Jmx_a23 + mx_a33 * Jmx_a33
+;// b = A^T * (c - a)
+t1 = Jmx_o1 - mx_o1
+t2 = Jmx_o2 - mx_o2
+t3 = Jmx_o3 - mx_o3
+DBL o1 = mx_a11 * t1 + mx_a21 * t2 + mx_a31 * t3
+DBL o2 = mx_a12 * t1 + mx_a22 * t2 + mx_a32 * t3
+DBL o3 = mx_a13 * t1 + mx_a23 * t2 + mx_a33 * t3
+
+;// Convert to origin frame
+;// y = B^T * (x - b)
+t1 = fx - o1
+t2 = fy - o2
+t3 = fz - o3
+fx = a11 * t1 + a21 * t2 + a31 * t3
+fy = a12 * t1 + a22 * t2 + a32 * t3
+fz = a13 * t1 + a23 * t2 + a33 * t3
+fu = fu - Jpl_orig_u
+fv = fv - Jpl_orig_v
+fw = fw - Jpl_orig_w
+;//
+fi = Jni
+fj = Jnj
+fk = Jnk
+fa = fa - Jpl_orig_a
+fb = fb - Jpl_orig_b
+fc = fc - Jpl_orig_c
+;// y = B^T * (x - b)
+t1 = tx - o1
+t2 = ty - o2
+t3 = tz - o3
+tx = a11 * t1 + a21 * t2 + a31 * t3
+ty = a12 * t1 + a22 * t2 + a32 * t3
+tz = a13 * t1 + a23 * t2 + a33 * t3
+tu = tu - Jpl_orig_u
+tv = tv - Jpl_orig_v
+tw = tw - Jpl_orig_w
+;// y = B^T * x
+ti = a11 * ni + a21 * nj + a31 * nk
+tj = a12 * ni + a22 * nj + a32 * nk
+tk = a13 * ni + a23 * nj + a33 * nk
+ta = ta - Jpl_orig_a
+tb = tb - Jpl_orig_b
+tc = tc - Jpl_orig_c
+
+;// Adjust minimum radius
+DBL minR = JminR
+SWITCH (spindle_or)
+CASE 6
+    py = fy + fLin * fj
+    pz = fz + fLin * fk
+    r = SQRT(py * py + pz * pz)
+    IF (minR < r) minR = r
+    py = ty + tLin * tj
+    pz = tz + tLin * tk
+    r = SQRT(py * py + pz * pz)
+    IF (minR < r) minR = r
+CASE 8
+    pz = fz + fLin * fk
+    px = fx + fLin * fi
+    r = SQRT(pz * pz + px * px)
+    IF (minR < r) minR = r
+    pz = tz + tLin * tk
+    px = tx + tLin * ti
+    r = SQRT(pz * pz + px * px)
+    IF (minR < r) minR = r
+OTHERWISE
+    ERROR(55) ;spindle_ax
+ENDSWITCH
+DBL maxR = minR + thick
+
+DBL fH, tH
+IF (isDebug && JshowBoundingRing) THEN
+    G168
+    ;// Revert to origin frame
+    G160 I(a11) J(a21) K(a31) P(a12) Q(a22) R(a32) U(a13) V(a23) W(a33)
+    G161 X(o1) Y(o2) Z(o3)
+        G168
+        SWITCH (spindle_or)
+        CASE 6
+            G160 I0 J1 K0 P0 Q0 R1 U1 V0 W0
+            fH = fx + IFEXP(pres_u, fu, 0.0)
+            tH = tx + IFEXP(pres_u, tu, 0.0)
+        CASE 8
+            G160 I0 J0 K1 P1 Q0 R0 U0 V1 W0
+            fH = fy + IFEXP(pres_v, fv, 0.0)
+            tH = ty + IFEXP(pres_v, tv, 0.0)
+        OTHERWISE
+            ERROR(55) ;spindle_ax
+        ENDSWITCH
+        G2803 C13 X0 Y0 Z(MIN(fH,tH)-2.5) W(MAX(fH,tH)+2.5) R(minR)
+        G2803 C13 X0 Y0 Z(MIN(fH,tH)-2.5) W(MAX(fH,tH)+2.5) R(maxR)
+        G169
+    G169
+ENDIF
+
+DBL frot, trot
+SWITCH (spindle_ax)
+CASE 7
+    frot = fa + pl_orig_a
+    trot = ta + pl_orig_a
+CASE 8
+    frot = fb + pl_orig_b
+    trot = tb + pl_orig_b
+CASE 9
+    frot = fc + pl_orig_c
+    trot = tc + pl_orig_c
+OTHERWISE
+    ERROR(55) ;spindle_ax
+ENDSWITCH
+DBL fsn = SIN(frot)
+DBL fcs = COS(frot)
+DBL tsn = SIN(trot)
+DBL tcs = COS(trot)
+;// Convert to rotational frame
+;// y = ROT(phi) * x
+SWITCH (spindle_or)
+CASE 6
+    t2 = fy
+    t3 = fz
+    fz = fx
+    fx = +fcs * t2 -fsn * t3
+    fy = +fsn * t2 +fcs * t3
+    t2 = fj
+    t3 = fk
+    fk = fi
+    fi = +fcs * t2 -fsn * t3
+    fj = +fsn * t2 +fcs * t3
+    IF (fj <= +0.017) ERROR(55) ;invalid normals
+    t2 = ty
+    t3 = tz
+    tz = tx
+    tx = +tcs * t2 -tsn * t3
+    ty = +tsn * t2 +tcs * t3
+    t2 = tj
+    t3 = tk
+    tk = ti
+    ti = +tcs * t2 -tsn * t3
+    tj = +tsn * t2 +tcs * t3
+    IF (tj <= +0.017) ERROR(55) ;invalid normals
+CASE 8
+    t3 = fz
+    t1 = fx
+    fz = fy
+    fx = +fcs * t3 -fsn * t1
+    fy = +fsn * t3 +fcs * t1
+    t3 = fk
+    t1 = fi
+    fk = fj
+    fi = +fcs * t3 -fsn * t1
+    fj = +fsn * t3 +fcs * t1
+    IF (fi <= +0.017) ERROR(55) ;invalid normals
+    t3 = tz
+    t1 = tx
+    tz = ty
+    tx = +tcs * t3 -tsn * t1
+    ty = +tsn * t3 +tcs * t1
+    t3 = tk
+    t1 = ti
+    tk = tj
+    ti = +tcs * t3 -tsn * t1
+    tj = +tsn * t3 +tcs * t1
+    IF (ti <= +0.017) ERROR(55) ;invalid normals
+OTHERWISE
+    ERROR(55) ;spindle_or
+ENDSWITCH
+IF (ABS(fk) > 0.017) ERROR(55) ;invalid normals
+IF (ABS(tk) > 0.017) ERROR(55) ;invalid normals
+
+F(feed)
+
+;// phi-theta metric for normals
+DBL fphi   = ATANXY(SQRT(fi*fi + fj*fj), fk)
+DBL ftheta = ATANXY(fj,fi)
+DBL tphi   = ATANXY(SQRT(ti*ti + tj*tj), tk)
+DBL ttheta = ATANXY(tj,ti)
+
+ttheta = ttheta - ftheta
+ttheta = MOD(ttheta, 360.0)
+IF (ttheta < 0.0)   ttheta = ttheta + 360.0
+IF (ttheta > 180.0) ttheta = ttheta - 360.0
+ttheta = ttheta + ftheta
+
+;// 4-points cylindrical Bézier-3 curve
+;// Control polygon
+DBL tx0[4], ty0[4], tz0[4]
+DBL tr0[4]
+DBL tu0[4], tv0[4], tw0[4]
+DBL tp0[4], tt0[4]
+DBL ta0[4], tb0[4], tc0[4]
+
+tx0[0] = fx
+ty0[0] = fy
+tz0[0] = fz
+tr0[0] = 0.0
+tu0[0] = fu
+tv0[0] = fv
+tw0[0] = fw
+tp0[0] = fphi
+tt0[0] = ftheta
+ta0[0] = fa
+tb0[0] = fb
+tc0[0] = fc
+
+tx0[1] = fx
+ty0[1] = fy
+tz0[1] = fz
+tr0[1] = 1.0
+tu0[1] = fu
+tv0[1] = fv
+tw0[1] = fw
+tp0[1] = fphi
+tt0[1] = ftheta
+ta0[1] = fa
+tb0[1] = fb
+tc0[1] = fc
+
+tx0[2] = tx
+ty0[2] = ty
+tz0[2] = tz
+tr0[2] = 1.0
+tu0[2] = tu
+tv0[2] = tv
+tw0[2] = tw
+tp0[2] = tphi
+tt0[2] = ttheta
+ta0[2] = ta
+tb0[2] = tb
+tc0[2] = tc
+
+tx0[3] = tx
+ty0[3] = ty
+tz0[3] = tz
+tr0[3] = 0.0
+tu0[3] = tu
+tv0[3] = tv
+tw0[3] = tw
+tp0[3] = tphi
+tt0[3] = ttheta
+ta0[3] = ta
+tb0[3] = tb
+tc0[3] = tc
+
+DBL tx1[3], ty1[3], tz1[3]
+DBL tr1[3]
+DBL tu1[3], tv1[3], tw1[3]
+DBL tp1[3], tt1[3]
+DBL ta1[3], tb1[3], tc1[3]
+DBL tx2[2], ty2[2], tz2[2]
+DBL tr2[2]
+DBL tu2[2], tv2[2], tw2[2]
+DBL tp2[2], tt2[2]
+DBL ta2[2], tb2[2], tc2[2]
+
+DBL dp = 1.0 / nPoints
+
+DBL ei2, ej2
+
+DBL CurvModJump = 4000*Kdyn
+
+%R74=0
+
+  ACCTRJ= 4000*Kdyn
+  DECTRJ= 4000*Kdyn
+  FDCWEI[C] = 0.1
+  
+  SPC 33043,20   ; numero blocchi 
+  
+  ;SPC 33044,0.1
+  JRKTRJ = 0
+
+  SPC 30000,1     ;Preprocessor Disable
+  SPC 30001,0         ;//PreProcessG0
+  SPC 30002,2         ;//PreProcessingType
+  SPC 30050,4  ;0.25 ;0.1       ;//DiscretizationInterval 1
+  SPC 30055,4  ;0.25 ;0.1         ;//MaxInputSegmentSize
+  SPC 30057,35        ;//KnotsWindow
+  SPC 30059,2         ;//Interpolation Type (1..3) 2
+  SPC 30060,3         ;//Degree 3
+  SPC 30010,32       ;//Max compression depth
+  SPC 30064,CurvModJump ;4000 ;800       ;//CurvatureModulation <<=== XXX TROVARE UN VALORE
+  SPC 30063,0       ; max length
+  
+  IF(roundFlag) SPC 30064,4000 ;800       ;//CurvatureModulation <<=== XXX TROVARE UN VALORE
+  IF(roundFlag)  FDCWEI[C] = 1
+  SPC 30058,0         ;//AverageInputSegmentSize <== DEVE ESSERE A 0 per SPC 30064
+  SPC 30056,0.1       ;//OutputSegmentSize 1
+  SPC 30054,180       ;//LimitAngle
+  
+PAUSE
+
+FOR i = 0 TO nPoints
+    p = dp * i
+
+    FOR j = 0 TO 2
+        tx1[j] = tx0[j] + p*(tx0[j+1] - tx0[j])
+        ty1[j] = ty0[j] + p*(ty0[j+1] - ty0[j])
+        tz1[j] = tz0[j] + p*(tz0[j+1] - tz0[j])
+        tr1[j] = tr0[j] + p*(tr0[j+1] - tr0[j])
+        tu1[j] = tu0[j] + p*(tu0[j+1] - tu0[j])
+        tv1[j] = tv0[j] + p*(tv0[j+1] - tv0[j])
+        tw1[j] = tw0[j] + p*(tw0[j+1] - tw0[j])
+        tp1[j] = tp0[j] + p*(tp0[j+1] - tp0[j])
+        tt1[j] = tt0[j] + p*(tt0[j+1] - tt0[j])
+        ta1[j] = ta0[j] + p*(ta0[j+1] - ta0[j])
+        tb1[j] = tb0[j] + p*(tb0[j+1] - tb0[j])
+        tc1[j] = tc0[j] + p*(tc0[j+1] - tc0[j])
+    ENDFOR
+    FOR j = 0 TO 1
+        tx2[j] = tx1[j] + p*(tx1[j+1] - tx1[j])
+        ty2[j] = ty1[j] + p*(ty1[j+1] - ty1[j])
+        tz2[j] = tz1[j] + p*(tz1[j+1] - tz1[j])
+        tr2[j] = tr1[j] + p*(tr1[j+1] - tr1[j])
+        tu2[j] = tu1[j] + p*(tu1[j+1] - tu1[j])
+        tv2[j] = tv1[j] + p*(tv1[j+1] - tv1[j])
+        tw2[j] = tw1[j] + p*(tw1[j+1] - tw1[j])
+        tp2[j] = tp1[j] + p*(tp1[j+1] - tp1[j])
+        tt2[j] = tt1[j] + p*(tt1[j+1] - tt1[j])
+        ta2[j] = ta1[j] + p*(ta1[j+1] - ta1[j])
+        tb2[j] = tb1[j] + p*(tb1[j+1] - tb1[j])
+        tc2[j] = tc1[j] + p*(tc1[j+1] - tc1[j])
+    ENDFOR
+    x     = tx2[0] + p*(tx2[1] - tx2[0])
+    y     = ty2[0] + p*(ty2[1] - ty2[0])
+    z     = tz2[0] + p*(tz2[1] - tz2[0])
+    ratio = tr2[0] + p*(tr2[1] - tr2[0])
+    u     = tu2[0] + p*(tu2[1] - tu2[0])
+    v     = tv2[0] + p*(tv2[1] - tv2[0])
+    w     = tw2[0] + p*(tw2[1] - tw2[0])
+    phi   = tp2[0] + p*(tp2[1] - tp2[0])
+    theta = tt2[0] + p*(tt2[1] - tt2[0])
+    a     = ta2[0] + p*(ta2[1] - ta2[0])
+    b     = tb2[0] + p*(tb2[1] - tb2[0])
+    c     = tc2[0] + p*(tc2[1] - tc2[0])
+
+    sn = SIN(phi)
+    cs = COS(phi)
+    ei = sn * COS(theta)
+    ej = sn * SIN(theta)
+    ek = cs
+
+    ei2 = ei * ei
+    ej2 = ej * ej
+    t1 = x * ei + y * ej
+    t2 = 2 * x * ei * y * ej - ei2 * y * y - ej2 * x * x
+    t3 = 1 / (ei2 + ej2)
+
+    d = (-t1 + SQRT(t2 + (ei2 + ej2) * minR * minR)) * t3
+    IF (d < -0.001) ERROR(55) ;outside shape
+    px = x + d * ei
+    py = y + d * ej
+    pz = z + d * ek
+    d = (-t1 + SQRT(t2 + (ei2 + ej2) * maxR * maxR)) * t3
+    IF (d < -0.001) ERROR(55) ;outside shape
+    qx = x + d * ei
+    qy = y + d * ej
+    qz = z + d * ek
+
+    x = px + (qx - px) * ratio
+    y = py + (qy - py) * ratio
+    z = pz + (qz - pz) * ratio
+
+.emit_segment_a
+    SWITCH (spindle_ax)
+    CASE 7
+        rot = a + pl_orig_a
+    CASE 8
+        rot = b + pl_orig_b
+    CASE 9
+        rot = c + pl_orig_c
+    OTHERWISE
+        ERROR(55) ;spindle_ax
+    ENDSWITCH
+    sn = SIN(rot)
+    cs = COS(rot)
+    ;// Convert from rotational frame
+    ;// y = ROT(phi)^T * x
+    SWITCH (spindle_or)
+    CASE 6
+        t1 = x
+        t2 = y
+        x  = z
+        y  = +cs * t1 +sn * t2
+        z  = -sn * t1 +cs * t2
+        t1 = ei
+        t2 = ej
+        ei = ek
+        ej = +cs * t1 +sn * t2
+        ek = -sn * t1 +cs * t2
+    CASE 8
+        t1 = x
+        t2 = y
+        y  = z
+        z  = +cs * t1 +sn * t2
+        x  = -sn * t1 +cs * t2
+        t1 = ei
+        t2 = ej
+        ej = ek
+        ek = +cs * t1 +sn * t2
+        ei = -sn * t1 +cs * t2
+    OTHERWISE
+        ERROR(55) ;spindle_or
+    ENDSWITCH
+    ;// Convert from origin frame
+    ;// x = B * y + b
+    t1 = x
+    t2 = y
+    t3 = z
+    x = a11 * t1 + a12 * t2 + a13 * t3 + o1
+    y = a21 * t1 + a22 * t2 + a23 * t3 + o2
+    z = a31 * t1 + a32 * t2 + a33 * t3 + o3
+    u = u + Jpl_orig_u
+    v = v + Jpl_orig_v
+    w = w + Jpl_orig_w
+    ;// x = B * y
+    t1 = ei
+    t2 = ej
+    t3 = ek
+    ei = a11 * t1 + a12 * t2 + a13 * t3
+    ej = a21 * t1 + a22 * t2 + a23 * t3
+    ek = a31 * t1 + a32 * t2 + a33 * t3
+    a = a + Jpl_orig_a
+    b = b + Jpl_orig_b
+    c = c + Jpl_orig_c
+
+    IF (!pres_u) u = QNAN()
+    IF (!pres_v) v = QNAN()
+    IF (!pres_w) w = QNAN()
+    IF (!pres_a) a = QNAN()
+    IF (!pres_b) b = QNAN()
+    IF (!pres_c) c = QNAN()
+
+	%R74= %R74 + 1
+	
+    G1 X(x) Y(y) Z(z) U(u) V(v) W(w) EI(ei) EJ(ej) EK(ek) A(a) B(b) C(c)
+    IF (isDebug) G888 F(vecFlags)
+.emit_segment_z
+ENDFOR
+
+;// normal segment at the end
+x  = tx
+y  = ty
+z  = tz
+u  = tu
+v  = tv
+w  = tw
+ei = ti
+ej = tj
+ek = tk
+a  = ta
+b  = tb
+c  = tc
+RPT .emit_segment_a, .emit_segment_z, 1
+
+JstateAvail = 0
+F(sav_f)
+G(sav_G70)
+
+SPC 30000,0     ;Preprocessor Disable
+SPC 33043,0
+;SPC 33044,2
+JRKTRJ = 0
+  
+
+RET

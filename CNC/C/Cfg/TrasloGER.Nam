@@ -1,0 +1,95 @@
+[PROMPT]
+KEY_TRASLO  =Parametri Traslo
+
+AP_TRSLNAME     =Nome
+
+AP_ENABLETRASLOMODE =Abilita regolazione traslo
+AP_TRASLO_LIST      =0-Off,1-On
+
+HDR_TRAJ        =Traiettoria
+TRA_IIR_T_S     =T filtro S [s]
+
+HDR_REGULATOR   =Regolazione
+TRA_MAX_ESS     =Maximum considered Ess [mm]
+TRA_IIR_T_ESS   =T filtro Ess [s]
+TRA_DBAND_POS   =Insensibilità positiva [mm/min]
+TRA_DBAND_NEG   =Insensibilità negativa [mm/min]
+TRA_VO_OFFSET   =Velocity output offset [mm/min]
+TRA_ESTOP_JRK   =Jerk di emergenza [mm/s³]
+
+HDR_MONITOR     =Monitor
+TRA_CUR_L_VF    =Velocità interpolatore [m/s]
+TRA_CUR_L_AF    =Accelerazione interpolatore [m/s²]
+TRA_CUR_ZERO_CLAMP=Servodrive Zero Clamp Mode
+
+HDR_TROUBLESHOOT =Troubleshooting
+TRA_AUXA        =Analog Offset Compensation Speed Trigger [mm/min]
+TRA_AUXB        =Analog Offset Compensation Kp [1/s]
+TRA_AUXC        =Analog Offset Compensation Limiter [mm/min]
+TRA_AUXD        =Analog Offset Compensation Step [mm/min]
+
+HDR_SCHEDULING      =Scheduling
+TRA_IIR_T_A         =T filtro A sistema di aggancio [s]
+TRA_IIR_T_J         =T filtro J sistema di aggancio [s]
+TRA_S_CREEP_COARSE  =Finestra di aggancio grossolana [mm]
+TRA_S_CREEP_FINE    =Finestra di aggancio fine [mm]
+TRA_S_STANDSTILL    =Finestra di arresto completo [mm]
+TRA_S_HYSTERESIS    =Isteresi finestra di arresto completo [mm]
+TRA_V_LOCKWINDOW    =Velocità massima finestra di aggancio [mm/min]
+TRA_V_CREEP_COARSE  =Velocità in finestra di aggancio grossolana [mm/min]
+TRA_V_CREEP_FINE    =Velocità in finestra di aggancio fine [mm/min]
+TRA_V_STANDINGSTILL =Velocità massima in finestra di immobilità [mm/min]
+
+HDR_SIMUL           =Simulazione
+TRA_ENABLEKINESIM   =Abilita simulazione
+TRA_KINE_LIST       =0-Off,1-On
+TRA_PROBELOCATION   =Collocazione asse probe
+TRA_PROBEKP         =Kp asse probe
+TRA_PROBEKVFF       =Kvff asse probe
+TRA_GEARBOX_LAG     =Gioco Gearbox [mm]
+TRA_CA              =Coeff. smorzamento Gearbox [N/(mm/min)]
+TRA_KA              =Costante elastica Gearbox [N/mm]
+TRA_MA              =Massa Cart [Kg]
+TRA_CCA             =Attrito guida Cart [N/(mm/min)]
+TRA_CB              =Coeff. smorzamento Beam [N/(mm/min)]
+TRA_KB              =Costante elastica Beam [N/mm]
+TRA_MB              =Massa Cradle/Payload [Kg]
+TRA_CCB             =Attrito guida Cradle [N/(mm/min)]
+TRA_ENCLOCATION     =Collocazione encoder
+TRA_SIGNAL_DECAY    =Amplificazione segnale
+TRA_PRB_OR_ENC_LIST =0-Sm,1-X1,2-X2
+
+TRA_AUXE        =Error Recovery Gain Ramp Time Constant [s]
+TRA_AUXF        =Analog Offset Compensation Acceleration Trigger [mm/s²]
+TRA_AUXG        =Aux7
+TRA_AUXH        =Aux8
+
+HDR_TRANSDUCER      =Trasduttore
+TRA_TPB_TSAMPLE     =Transducer Sampling Period [s]
+TRA_TPB_IIR_T_V     =Noise Blanking Integration Time [s]
+TRA_TPB_DELAY       =Transducer Delay [s]
+TRA_TPB_IIR_T_DC    =Delay Compensation Filter [s]
+TRA_TPB_MAXA        =Maximum Estimated Acceleration [mm/s²]
+
+HDR_TRANSDUCER_SIMUL=Simulazione
+TRA_TPBS_BENABLE    =Abilita simulazione
+TRA_TPBS_LIST       =0-Off,1-On
+TRA_TPBS_DELAY      =Transducer Delay [s]
+TRA_TPBS_RESO       =Transducer Resolution [um]
+TRA_TPBS_DROPOUTHZ  =Dropout Frequency [Hz]
+TRA_TPBS_DROPOUTT   =Dropout Time [s]
+TRA_TPBS_NOISEHZ    =Noise Frequency [Hz]
+TRA_TPBS_NOISET     =Noise Time [s]
+TRA_TPBS_TSAMPLE    =Simulated Transducer Sampling Period [s]
+TRA_TPBS_NOISEAMP   =Random Noise Amplitude [mm]
+
+TRA_AUXI            =Aux9
+TRA_AUXJ            =Aux10
+TRA_AUXK            =Aux11
+TRA_AUXL            =Aux12
+TRA_AUXM            =Aux13
+TRA_AUXN            =Aux14
+TRA_AUXO            =Aux15
+TRA_AUXP            =Aux16
+
+[HELP]

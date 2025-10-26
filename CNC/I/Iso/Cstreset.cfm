@@ -1,0 +1,3 @@
+: cstreset
+$ PERSONALIZZAZIONE RESET
+RET

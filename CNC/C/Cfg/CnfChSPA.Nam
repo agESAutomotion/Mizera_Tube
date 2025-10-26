@@ -1,0 +1,74 @@
+[PROMPT]
+KEY_CONFCHAN  =Configura Canal
+
+CC_CHNAME     =Nombre canal
+CC_NUMBOARD   =Número Tarjeta de Elaboración
+CC_MASKAXES   =Máscara Ejes Canal
+CC_NX         =Número Eje X
+CC_NY         =Número Eje Y
+CC_NZ         =Número Eje Z
+CC_NU         =Número Eje U
+CC_NV         =Número Eje V
+CC_NW         =Número Eje W
+CC_NA         =Número Eje A
+CC_NB         =Número Eje B
+CC_NC         =Número Eje C
+CC_NM         =Número Eje S (mandril 1)
+CC_S2         =Número Eje S2 (mandril 2)
+CC_S3         =Número Eje S3 (mandril 3)
+CC_MAINPROC   =Número proceso principal
+CC_AUXPROC    =Número proceso auxiliar
+CC_PRIORITY   =Prioridad canal
+CC_TWIBASE    =Indice base Tabla Mandriles
+CC_TWIAMOUNT  =Número de Mandriles
+CC_THDBASE    =Indice base Tabla Porta-herram.
+CC_THDAMOUNT  =Número de Porta-herramientas
+CC_CEDBASE    =Indice base Tabla Herramientas
+CC_CEDAMOUNT  =Número de Herramientas
+CC_VARSPERLEVEL=Var. loc. por nivel subrutina
+CC_CHANPTKB   =Memoria para ejecuc. pasante
+CC_PTMONLINESC=Linee nel buffer di esecuzione passante (client browser)
+CC_PTMONLINESS=Linee nel buffer di esecuzione passante (server browser)
+CC_CHANRETRKB =Memoria para Retrace
+CC_MAG        =Tipo Almacén Herramienta
+CC_RV         =Número Almacén
+CC_TABBASE    =Indice base tabella tavole
+CC_TABAMOUNT  =Numero di tavole
+CC_GORGBASE   =Indice base tabella origini globali
+CC_GORGAMOUNT =Numero di origini globali
+CC_SOSID      =Indice estensione slave (0=none)
+CC_SOSQUEUE   =Dimensione coda [elementi]
+
+[HELP]
+
+CC_CHNAME     =Línea de 8 caracteres como máximo con la denominación del canal
+CC_NUMBOARD   =Número Tarjeta de elaboración: número de la tarjeta que ejecuta la elaboración de la lógica canal en los sistemas distribuidos.
+CC_MASKAXES   =Máscara ejes Canal: individualiza los ejes presentes en el canal
+CC_NX         =Número Eje X: número proceso eje X
+CC_NY         =Número Eje Y: número proceso eje Y
+CC_NZ         =Número Eje Z: número proceso eje Z
+CC_NU         =Número Eje U: número proceso eje U
+CC_NV         =Número Eje V: número proceso eje V
+CC_NW         =Número Eje W: número proceso eje W
+CC_NA         =Número Eje A: número proceso eje A
+CC_NB         =Número Eje B: número proceso eje B
+CC_NC         =Número Eje C: número proceso eje C
+CC_NM         =Número Eje S (mandril): número proceso eje mandril
+CC_MAINPROC   =Número proceso principal: número del proceso al que es asignado el control de la interpolación del canal
+CC_AUXPROC    =Número proceso auxiliar: utilizado en FB del PLC
+CC_PRIORITY   =Establece la prioridad de ejecución de un canal. A los valores bajos corresponde prioridad elevada. Valores posibles:(0-1-2-3)habilitado (10)deshabilitado
+CC_TWIBASE    =Indice del primer Mandril usado por el canal dentro de la tabla que contiene todos los mandriles
+CC_TWIAMOUNT  =Número de Mandriles usados por el canal
+CC_THDBASE    =Indice del primer Porta-heramienta usado por el canal dentro de la tabla que contiene todos los porta-herramientas
+CC_THDAMOUNT  =Número de Porta-herramientas usadas por el canal
+CC_CEDBASE    =Indice de la primera Herramienta usada por el canal dentro de la tabla que contiene todas las herramientas
+CC_CEDAMOUNT  =Número de Herramientas usadas por el canal
+CC_VARSPERLEVEL=Variables locales para cada nivel de subrutina
+CC_CHANPTKB   =Memoria para ejecucion pasante en KB.  Vedere anche l'omonimo parametro configurazione CN, che potrebbe dover essere aggiornato in seguito a cambiamenti di questo parametro.
+CC_CHANRETRKB =Memoria per buffer di retrace in KB.  Vedere anche l'omonimo parametro configurazione CN, che potrebbe dover essere aggiornato in seguito a cambiamenti di questo parametro.
+CC_MAG        =Tipo almacén herramientas: 0) ningún almacén 1) Revolver
+CC_RV         =Indice de la estructura datos Almacén Herramientas: fijar 1 para asociar el Revolver(0)
+CC_TABBASE    =Indice base tabella tavole
+CC_TABAMOUNT  =Numero di tavole
+CC_GORGBASE   =Indice base tabella origini globali
+CC_GORGAMOUNT =Numero di origini globali

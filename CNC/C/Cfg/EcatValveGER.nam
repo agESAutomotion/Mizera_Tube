@@ -1,0 +1,32 @@
+[PROMPT]
+
+KEY_ECAT_VALVE=Esautomotion_Valve
+EC_VLS_LBL_BOOTOPTIONS=BOOT OPTIONS
+EC_VLS_BOOTOPTIONSLIST =DISABLED, UPLOAD, DOWNLOAD, DOWNLOAD-SUBSET,DOWNLOAD-SAVE
+EC_VLS_BTN_NODE_UPLOAD=Upload
+EC_VLS_BTN_NODE_DOWNLOAD=Download
+EC_VLS_KEY_HEADER=ETHERCAT PARAMETERS
+VLS_KEY_HEADER008=(0x2000) 1XXX=Valvole PIH, XXX1=Simulazione attiva
+VLS_KEY_HEADER009=(0x2001) Frequenza PWM comando Y1 Y2 (Hz)
+VLS_KEY_HEADER00A=(0x2002) Frequenza PWM pressione/contropressione (Hz)
+VLS_KEY_HEADER00B=(0x2003) Banda di insensibilita (mV)
+VLS_KEY_HEADER00C=(0x2004) Y1 Guadagno proporzionale
+VLS_KEY_HEADER00D=(0x2005) Y1 Guadagno integrativo
+VLS_KEY_HEADER00F=(0x2007) Y2 Guadagno proporzionale
+VLS_KEY_HEADER010=(0x2008) Y2 Guadagno integrativo
+VLS_KEY_HEADER012=(0x200A) LVDT1 Limite minimo ADC (0-4096)
+VLS_KEY_HEADER013=(0x200B) LVDT1 Limite massimo ADC (0-4096)
+VLS_KEY_HEADER014=(0x200C) LVDT1 Limite minimo ADC (0-4096)
+VLS_KEY_HEADER015=(0x200D) LVDT1 Limite massimo ADC (0-4096)
+VLS_KEY_HEADER016=(0x200E) Limite massimo duty cycle PWM Y1UP (%)
+VLS_KEY_HEADER017=(0x200F) Limite massimo duty cycle PWM Y1DN (%)
+VLS_KEY_HEADER018=(0x2010) Limite massimo duty cycle PWM Y2UP (%)
+VLS_KEY_HEADER019=(0x2011) Limite massimo duty cycle PWM Y2DN (%)
+VLS_KEY_HEADER01A=(0x2012) Limite massimo duty cycle PWM P (%)
+VLS_KEY_HEADER01B=(0x2013) Limite massimo duty cycle PWM C (%)
+VLS_KEY_HEADER01C=(0x2014) Limite positivo anti-windup integrale (mV)
+VLS_KEY_HEADER01D=(0x2015) Limite negativo anti-windup integrale (mV)
+VLS_KEY_HEADER01E=(0x2016) Accelerazine limite in ingresso (ms)
+EC_VLS_BTN_NODE_CHECK=Check
+VLS_MSG_DOWNLOAD=Press Check button to enable Download/Save button.
+EC_VLS_BTN_NODE_SAVE=Save

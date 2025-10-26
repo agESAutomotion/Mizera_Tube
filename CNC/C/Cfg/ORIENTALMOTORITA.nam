@@ -1,0 +1,12 @@
+[PROMPT]
+
+OM_POS000 = (412Fh)
+OM_POS001 = (4130h)
+OM_KEY_HEADER000 = SVE Position Loop gain 
+OM_KEY_HEADER001 = SVE Speed Loop Gain
+
+
+[HELP]
+HLP_OM_POS000 = SVE Position Loop gain (1-50)
+HLP_OM_POS001 = SVE Speed Loop Gain (1-200)
+

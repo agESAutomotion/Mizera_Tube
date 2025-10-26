@@ -1,0 +1,18 @@
+[PROMPT]
+KEY_SAVE_PAR = Par. saving area
+
+#include "VrtcTab?.nam"
+#include "Reg_check2_new?.nam"
+//#include "Raster?.nam"
+#include "Calib_checkB?.nam"
+#include "Calib_check?.nam"
+#include "PWMlin?.nam"
+#include "POWlin?.nam"
+#include "GASlin?.nam"
+#include "GASlin2?.nam"
+#include "FOClin?.nam"
+#include "TabPipeWeight?.nam"
+#include "GraphMobPotDiamYZ?.nam"
+#include "GraphPressMobile?.nam"
+#include "GraphPressFix?.nam"
+#include "PipeCalibration?.str"

@@ -1,0 +1,25 @@
+
+[KEYS]
+TITLE=LISTE DI LAVORO
+TXT0=CARICA LISTA
+TXT1=SALVA LISTA
+TXT2=NUOVA LISTA
+MSG2=L'attuale lista verrà cancellata. Sei sicuro ?
+TXT16=Reset liste
+TXT17=Cancella tempo attuale linea selezionata
+MSG17=Sei sicuro ?
+TXT18=Cancella tutti i tempi della lista?
+MSG18=Sei sicuro ?
+
+[PROMPT]
+KEY_NODE=Node
+WORKLIST=Leaf
+LabelListName=NOME LISTA
+LabelProgName=PROGRAMMA
+LabelRip=RIP.
+LabelTempoExe=TEMPO TAGLIO
+LabelTempoLista=TEMPO TOTALE LISTE
+
+[STATUS]
+
+[HELP]

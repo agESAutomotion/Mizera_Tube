@@ -1,0 +1,389 @@
+[PROMPT]
+
+#include "CanEBSdrive?.nam"
+#include "CanTDEdrive?.nam"
+#include "CanERLdrive?.nam"
+#include "CanLXdrive?.nam"
+#include "CanYAdrive?.nam"
+#include "EcatBusDiag?.nam"
+#include "EcatBusService?.nam"
+#include "EcatBusRing?.nam"
+#include "EcatSGD7S?.nam"
+#include "EcatSGD7W?.nam"
+#include "EcatSKD?.nam"
+#include "EcatQDrives?.nam"
+#include "EcatQDrivesSeven?.nam"
+#include "EcatFestoCPX-AP-I-EC-M12?.nam"
+#include "EcatINTEC_DRIVES?.nam"
+#include "EcatRTA?.nam"
+#include "EcatHIWIN?.nam"
+#include "EcatValve?.nam"
+#include "EcatInovance?.nam"
+#include "EcatLenze?.nam"
+
+KEY_ECAT    =Ethercat
+KEY_ECAT0   =Ecat Ring0
+
+KEY_ECATRNODES	=Ecat Config
+KEY_ECAT_ND		=Ecat Node
+KEY_ECATPARAM	=Ecat Param.
+KEY_ECATSERVICE	=Ecat Service
+KEY_ECATMONITOR	=Ecat Monitor
+KEY_ECATDRIVESTATUS=Ecat Drive Status
+KEY_ECATDIAG	=Ecat Diag
+
+DR_REGTYLIST=(PP)Position Profile, (VL)Velocity Mode, (PV)Velocity Profile, (TM)Torque Mode, (IP)Interpolated Mode, (CSP)CS Position, (CSV)CS Velocity
+
+ND_PROFLIST =None,301-Generic,401-InOut,402-Driver,406-Enc,408-Valve,900-Kvara,ETG.5001-MDP
+ND_GUARDLIST=None,Guarding,Heartbeat,PdoWatchDog
+EC_ND_NODE  =Node address
+ND_MDSLOTID=SubNode address (modular device)
+ND_ALIAS 	=Enable check alias Id.
+ND_PROFILE  =CIA profile
+ND_GUARD    =Guarding
+ND_LIFE     =Guard time
+ND_NUMDEV   =NumPdo
+ND_NUMOBJS  =Set Command
+ND_OUTOFORDER=Out of order
+ND_VIRTUAL	=Virtual enable
+
+EC_DR_TYPELIST =Danaher, KebServo, Erl/Lahr, CiA-DS402, CiA-DS402X, Inverter, ED-Drive, OSAI, EBS-DRIVE, CMZ-DRIVE, TDE-DRIVE, MAXTON-DRIVE, ERL_DRIVE, RTA_DRIVE, LEXIUM_DRIVE, HSD_SM137, SW-ECAT-CAN
+DV_TYPELIST =WILA Smart Locator
+VL_TYPELIST =None
+EC_DR_TYPE0 =Drive type
+DV_TYPE0    =Device type
+VL_TYPE0    =Device type
+DR_SWIDE0   =Sys wide ax0
+DR_SWIDE1   =Sys wide ax1
+DR_REGTY0   =Regol.trajectory
+DR_FEED0    =Feed constant
+DR_SHAFT0   =Shaft revolutions
+DR_FEEDDELAY=Feedback delay
+EC_DR_ENABGEARBOX=Enable GearBox Function
+EC_DR_GEARMODULEREV=GearBox Module (rev)
+
+
+EN_EC_TYPELIST =0-Temposonics, 1-R Series Temposonics, 2-ENC GIVI Misure, 3-RIGA GIVI Misure, 4-TRElectronic, 5-ELGO-CA0, 6-DS406
+EN_TYPE0    =Encoder type
+EN_SWIDE0   =Sys wide
+EN_FEED0    =Feed constant
+EN_SHAFT0   =Shaft revolutions
+EN_TYPE1    =Encoder type
+EN_SWIDE1   =Sys wide
+EN_FEED1    =Feed constant
+EN_SHAFT1   =Shaft revolutions
+
+kRPDO1      =RxPDO1
+kRPDO1o1    =Offset
+kRPDO2      =RxPDO2
+kRPDO2o1    =Offset
+kRPDO3      =RxPDO3
+kRPDO3o1    =Offset
+kRPDO4      =RxPDO4
+kRPDO4o1    =Offset
+kRPDOLIST   =Disab,Enab
+kTPDO1      =TxPDO1
+kTPDO1TX    =Type
+kTPDO1o1    =Offset
+kTPDO2      =TxPDO2
+kTPDO2TX    =Type
+kTPDO2o1    =Offset
+kTPDO3      =TxPDO3
+kTPDO3TX    =Type
+kTPDO3o1    =Offset
+kTPDO4      =TxPDO4
+kTPDO4TX    =Type
+kTPDO4o1    =Offset
+
+PDO_LIST=Disab,Inp(Tx),Out(Rx)
+PDO1TY =PDO1
+PDO1TX =Type
+PDO1TM =Event Time
+PDO1IW1=IO1
+PDO1IW2=IO2
+PDO1IW3=IO3
+PDO1IW4=IO4
+PDO1IW5=IO5
+PDO1IW6=IO6
+PDO1IW7=IO7
+PDO1IW8=IO8
+
+PDO1MP1=Object IO1
+PDO1MP2=Object IO2
+PDO1MP3=Object IO3
+PDO1MP4=Object IO4
+PDO1MP5=Object IO5
+PDO1MP6=Object IO6
+PDO1MP7=Object IO7
+PDO1MP8=Object IO8
+
+PDO2MP1=Object IO1
+PDO2MP2=Object IO2
+PDO2MP3=Object IO3
+PDO2MP4=Object IO4
+PDO2MP5=Object IO5
+PDO2MP6=Object IO6
+PDO2MP7=Object IO7
+PDO2MP8=Object IO8
+
+PDO3MP1=Object IO1
+PDO3MP2=Object IO2
+PDO3MP3=Object IO3
+PDO3MP4=Object IO4
+PDO3MP5=Object IO5
+PDO3MP6=Object IO6
+PDO3MP7=Object IO7
+PDO3MP8=Object IO8
+
+PDO4MP1=Object IO1
+PDO4MP2=Object IO2
+PDO4MP3=Object IO3
+PDO4MP4=Object IO4
+PDO4MP5=Object IO5
+PDO4MP6=Object IO6
+PDO4MP7=Object IO7
+PDO4MP8=Object IO8
+
+PDO2TY =PDO2
+PDO2TX =Type
+PDO2TM =Event Time
+PDO2IW1=IO1
+PDO2IW2=IO2
+PDO2IW3=IO3
+PDO2IW4=IO4
+PDO2IW5=IO5
+PDO2IW6=IO6
+PDO2IW7=IO7
+PDO2IW8=IO8
+
+PDO3TY =PDO3
+PDO3TX =Type
+PDO3TM =Event Time
+PDO3IW1=IO1
+PDO3IW2=IO2
+PDO3IW3=IO3
+PDO3IW4=IO4
+PDO3IW5=IO5
+PDO3IW6=IO6
+PDO3IW7=IO7
+PDO3IW8=IO8
+
+PDO4TY =PDO4
+PDO4TX =Type
+PDO4TM =Time
+PDO4IW1=IO1
+PDO4IW2=IO2
+PDO4IW3=IO3
+PDO4IW4=IO4
+PDO4IW5=IO5
+PDO4IW6=IO6
+PDO4IW7=IO7
+PDO4IW8=IO8
+
+PDO5TY =PDO5
+PDO5TX =Type
+PDO5TM =Time
+PDO5IW1=IO1
+PDO5IW2=IO2
+PDO5IW3=IO3
+PDO5IW4=IO4
+PDO5IW5=IO5
+PDO5IW6=IO6
+PDO5IW7=IO7
+PDO5IW8=IO8
+
+KEY_PARSET1 =Parameter Set1
+KEY_PARSET2 =Parameter Set2
+KEY_PARSET3 =Parameter Set3
+KEY_PARSET4 =Parameter Set4
+
+IXOBJ0 = Par1 Ix
+IXOBJ1 = Par2 Ix
+IXOBJ2 = Par3 Ix
+IXOBJ3 = Par4 Ix
+IXOBJ4 = Par5 Ix
+IXOBJ5 = Par6 Ix
+IXOBJ6 = Par7 Ix
+IXOBJ7 = Par8 Ix
+IXOBJ8 = Par9 Ix
+IXOBJ9 = Par10 Ix
+IXOBJ10 = Par11 Ix
+IXOBJ11 = Par12 Ix
+IXOBJ12 = Par13 Ix
+IXOBJ13 = Par14 Ix
+IXOBJ14 = Par15 Ix
+IXOBJ15 = Par16 Ix
+IXOBJ16 = Par17 Ix
+IXOBJ17 = Par18 Ix
+IXOBJ18 = Par19 Ix
+IXOBJ19 = Par20 Ix
+IXOBJ20 = Par21 Ix
+IXOBJ21 = Par22 Ix
+IXOBJ22 = Par23 Ix
+IXOBJ23 = Par24 Ix
+IXOBJ24 = Par25 Ix
+IXOBJ25 = Par26 Ix
+IXOBJ26 = Par27 Ix
+IXOBJ27 = Par28 Ix
+IXOBJ28 = Par29 Ix
+IXOBJ29 = Par30 Ix
+IXOBJ30 = Par31 Ix
+IXOBJ31 = Par32 Ix
+
+VXOBJ0 = Par1 Vx
+VXOBJ1 = Par2 Vx
+VXOBJ2 = Par3 Vx
+VXOBJ3 = Par4 Vx
+VXOBJ4 = Par5 Vx
+VXOBJ5 = Par6 Vx
+VXOBJ6 = Par7 Vx
+VXOBJ7 = Par8 Vx
+VXOBJ8 = Par9 Vx
+VXOBJ9 = Par10 Vx
+VXOBJ10 = Par11 Vx
+VXOBJ11 = Par12 Vx
+VXOBJ12 = Par13 Vx
+VXOBJ13 = Par14 Vx
+VXOBJ14 = Par15 Vx
+VXOBJ15 = Par16 Vx
+VXOBJ16 = Par17 Vx
+VXOBJ17 = Par18 Vx
+VXOBJ18 = Par19 Vx
+VXOBJ19 = Par20 Vx
+VXOBJ20 = Par21 Vx
+VXOBJ21 = Par22 Vx
+VXOBJ22 = Par23 Vx
+VXOBJ23 = Par24 Vx
+VXOBJ24 = Par25 Vx
+VXOBJ25 = Par26 Vx
+VXOBJ26 = Par27 Vx
+VXOBJ27 = Par28 Vx
+VXOBJ28 = Par29 Vx
+VXOBJ29 = Par30 Vx
+VXOBJ30 = Par31 Vx
+VXOBJ31 = Par32 Vx
+
+ECATVXOBJ0 = FcP (Num)
+ECATVXOBJ1 = FcP (Den)
+ECATVXOBJ2 = FcV (Num) 
+ECATVXOBJ3 = FcV (Den)
+ECATVXOBJ4 = FcA (Num)
+ECATVXOBJ5 = FcA (Den)
+
+EC_BTN_LOAD_XMLFILENAME= Browse Conf. File
+
+EC_BTN_NODE_LOAD       = Load Par.
+EC_BTN_NODE_SAVE       = Save Par.
+EC_BTN_NODE_UPLOAD     = Upload
+EC_BTN_NODE_DOWNLOAD   = Download
+EC_BTN_NODE_SAVE_FLASH = Save/Flash
+
+SRV_ENABLE  =ENAB
+SRV_RESET   =RESET
+SRV_LINE    =SERVICE
+DIAG_LINE   =DIAGNOSTICS
+PAR_LINE    =PARAMETER SET
+PAR_OPTIONS =OPTIONS
+PAR_PDO1    =PDO1----------
+PAR_PDO2    =PDO2----------
+PAR_PDO3    =PDO3----------
+PAR_PDO4    =PDO4----------
+PAR_PDO5    =PDO5----------
+PAR_COMMAND=COMMANDS
+
+ND_FBLIST=0-Service,1-NMT_Command,2-SdoRead,3-SdoWrite,4-PdoSend,5-PdoRead,6-PdoRegister,7-SyncCycle,8-RTR,9-SdoReadStr, 10-AlarmHist
+SRV_HEADER1 =Command
+SRV_HEADER2 =Response
+EC_NDD_AXNAM   =Axis name
+EC_NDD_DNAME   =Device name
+EC_NDD_HVERS   =HW Version
+EC_NDD_SVERS   =SW Version
+
+NODE_FBCMD  =ComCode
+NODE_FBOBJ  =Cob ID
+NODE_FBIN0  =DI_Data0
+NODE_FBIN1  =DI_Data1
+NODE_FBSTS  =Status
+NODE_FBERR  =Error
+NODE_FBDT0  =DO_Data0
+NODE_FBDT1  =DO_Data1
+
+NODE_FB0    =Fb[0]
+NODE_FB1    =Fb[1]
+NODE_FB2    =Fb[2]
+NODE_FB3    =Fb[3]
+NODE_FB4    =Fb[4]
+NODE_FB5    =Fb[5]
+NODE_FB6    =Fb[6]
+NODE_FB7    =Fb[7]
+
+SPACE     =-
+
+SLAVE_FRAME=Slave
+MASTER_FRAME=Master
+
+EC_DCENAB=Distribuited clocks enable
+EC_REFCLOCK=Reference clock master
+EC_WRMTIME=Write master time to reference device
+EC_PROPDELAY=Enable propagation delay compensation
+EC_MSKOPTION=Opzioni
+EC_MSKOPTIONLIST=NULL,Build XML file 
+
+EC_INPDOCONTENT=Input PDO Content
+EC_OUTPDOCONTENT=Output PDO Content
+
+EC_XMLDRIVECONF=Drive configuration file (XML)
+
+EC_PARAM_LBL_NODE_ADDR=Node address
+EC_PARAM_LBL_DEVNAME=Device name
+EC_PARAM_LBL_HWVER=HW Version
+EC_PARAM_LBL_SWVER=SW Version
+EC_PARAM_LBL_VENDORID=Vendor ID
+EC_PARAM_LBL_PRODUCTCODE=Product Code
+EC_PARAM_LBL_REVISIONNUMBER=Revision Number
+EC_PARAM_LBL_SERNUM4=Serial Number
+
+
+[HELP]
+RG_RINGTYPE =Ring Type:0=CAN Trajectory, 1=CAN Positioning, 2-Ethercat
+RG_ENAB     =Enable: 0=Disab, 1=Can1, 2=Can2,   AAPTINNN: AAdd(C0:FF)  Prio(0,9:13)  Tick(0,1:15)  Irq(0,5,9,10,11,15)  NNNode(1,2,100:13C / 200:23C)
+RG_BAUD     =Ring baud rate (CiA)
+RG_SYNC     =Sync time (msec)
+RG_NODES    =Number of configured nodes (max 60)
+
+EDT_EC_MSKOPTION=Regenerate, at next boot, the network configuration file (ECatRingConfig.xml). The file is created in the system's DLLs folder.
+EDT_EC_MBXCYCLETIME=Cycle time of asynchronous command system, typically 20000 us
+EDT_EC_DCENAB=When (1) enable synchronisation between drives with _Distribuited clock_.
+EDT_EC_REFCLOCK=When (1) the reference clock of network is the master (CNC), when (0) the reference clock is the first slave of the network.
+EDT_EC_WRMTIME=Used only when reference clock is the first slave, when (1) the slave clock time is setted from the master.
+EDT_EC_PROPDELAY=When (1) enable time propagation for network's delays compensation.
+EDT_EC_MASTER_SHIFT_TIME=Offset time for generation of the ethercat frame referred to the sync signal, typically 200us
+EC_PLL_GAIN=Gain of the compensation system of the synchronism of the time bases between drive and CNC, typically 100
+EC_PLL_OFFS=Offset of compensation of the synchronism, typically 0
+
+
+ND_NODE     =0=OutOfService, 1=Reserved, 2-60=Node Address (dec)
+ND_OUTOFORDER=Indicates that the drive is not present on the network, to be used when the drive is planned in configuration but not mounted, or for maintenance of the drive. Usually also simulation of the associated axis is required.
+EC_XMLDRIVECONF=configuration xml file of the drive
+
+ND_PROFILE  =Device profile (CiA)
+ND_LIFE     =Node guarding time (msec)
+EC_DR_TYPE0 =Drive Type
+DV_TYPE0    =Device Type
+DR_SWIDE0   =Kvara system-wide index
+DR_SWIDE1   =Redirection system-wide number
+DR_REGTY0   =(PP)Position Profile: used to move to positions relative to the last target position or to an absolute position.\n(VL)Velocity Mode: used for speed changes relative to the current speed.\n(PV)Profile Velocity Mode: generates a speed trajectory.\n(TM)Torque Mode: used for torque variations relative to the actual torque.\n(IP)Interpolated Mode: generates a position trajectory.\n(CSP)CS Position: reserved for ethercat, as IP generates a position trajectory.\n(CSV)CS Velocity: reserved for ethercat, as PV generates a speed trajectory.
+DR_FEED0    =Feed constant (mm)
+DR_SHAFT0   =Shaft revolutions
+DR_FEEDDELAY=Feedback delay (TickReg * 1000)
+ND_NUMDEV   =Number of configured Pdos
+ND_NUMOBJS  =Parameter set to be loaded: B0=Set1.  B1=Set2.  B2=Set3.  B3=Set4.  B4-B11=Reserved.  B12-B15: (000=Noop, 001=BootRead, 010=BootCheck, 011=BootWrite, 100=BootWrite & save).  B15=Reserved.
+PDOTX       =Transmission type (0=SyncAcyclic, 1-240=SyncCiclic, 252=SyncRtr, 253=AsyncRtr, 254-255=Async)
+PDOTM       =Inhibit time (0.1msec)
+PDOIW1      =IW / QW mapping number
+PDOMP1      =mapping: Index,Subindex,Length (xxxxyyzz)
+
+ND_MDSLOTID=SubNode for modular device
+
+kRPDO1o1    =CanFb mappimg: 0=no mapping, 1=CanFb1, ...47=CanFb47
+kTPDOTX     =Transmission type (1-240=SyncCiclic, 255=Async)

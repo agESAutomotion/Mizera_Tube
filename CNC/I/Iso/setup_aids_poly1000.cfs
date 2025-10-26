@@ -1,0 +1,124 @@
+: setup_aids_poly
+;//laser tube dynamic machining aids setup
+;//uses data from G22xx polygonal setup (gmaPolygons[] and polygonIndex)
+DBL pi = tubePI
+
+;//$APPLICAZIONE
+IF (%cn[WHO()].rc[0].21) RET
+
+;//$APPLICAZIONE
+
+DBL c
+DBL aid_v_neg
+DBL ax, ay
+DBL bx, by, br
+DBL cx, cy
+DBL lx, ly
+DBL angleAB, angleBC
+DBL angleABC
+DBL length
+DBL delta
+DBL lb
+DBL deltaAngle
+DBL Cbx, Cby
+DBL i, n, ti
+
+LSYN
+c = QPREF(C)        ;//C axis
+;//+0 = aid_v_neg, +90 = aid_u_neg, +180 = aid_v_pos, +270 = aid_u_pos
+c = c + 0
+
+n = %gmaPolygons[pi].gmanVertices
+IF (n < 3) ERROR(55);// at least 3p for a polygon
+
+FOR i = 0 TO n - 1
+    ;// load data for ABC, where current segment is BC and polygon is closed
+    ti = i-1
+    IF (ti < 0) ti = ti + n
+    ax = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    ay = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+    ti = i
+    bx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    by = %gmaPolygons[pi].gmaVertices[ti].gma_v
+    br = %gmaPolygons[pi].gmaVertices[ti].gma_r
+
+    ti = i+1
+    IF (ti >= n) ti = ti - n
+    cx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    cy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+    ;// obtain AB, BC orientations
+    lx = bx - ax
+    ly = by - ay
+    length = SQRT(lx * lx + ly * ly)
+    IF (length < 0.1) ERROR(55);// null segment
+    angleAB = ATANXY(ly, lx)
+
+    lx = cx - bx
+    ly = cy - by
+    length = SQRT(lx * lx + ly * ly)
+    IF (length < 0.1) ERROR(55);// null segment
+    angleBC = ATANXY(ly, lx)
+
+    ;// obtain ABC angle.  NOTE: polygon winding must be CCW.
+        ;// modulo difference algorithm => [+180..-180)
+    delta = angleBC - angleAB
+    delta = MOD(delta, 360.0)
+    IF (delta < 0.0)   delta = delta + 360.0
+    IF (delta > 180.0) delta = delta - 360.0
+
+    IF (delta <= 0.0) ERROR(55);// winding must be CCW
+    IF (delta > 175.0) ERROR(55);// vertex too sharp
+    angleABC = 180 - delta
+    deltaAngle = delta
+
+    lb = br / TAN(angleABC/2)
+
+    ;// ASSUME winding CCW
+
+    ;// obtain center near B
+    Cbx = COS(angleBC) * lb  -SIN(angleBC) * br + bx
+    Cby = SIN(angleBC) * lb  +COS(angleBC) * br + by
+
+    ;// check if inside current rounding span
+        ;// modulo difference algorithm => [+180..-180)
+    delta = -c - angleAB
+    delta = MOD(delta, 360.0)
+    IF (delta < 0.0)   delta = delta + 360.0
+    IF (delta > 180.0) delta = delta - 360.0
+
+    IF ((delta > -0.001) && (delta < (deltaAngle +0.001))) THEN
+        POP(2)
+        JMPF .found
+    ENDIF
+ENDFOR
+ERROR(55);//Rounding span not found
+
+.found
+aid_v_neg = SIN(c) * Cbx + COS(c) * Cby - br
+
+IF (%cn[WHO()].rc[0].21) RET
+
+;//$APPLICAZIONE
+;//predisponi asse sostegno dinamico
+G153
+G4010 M(AXIDX(Z)) S(AXIDX(5,X)) I1
+G152
+G4099
+
+G153 G1 F5000 Z(-aid_v_neg)
+
+;//$APPLICAZIONE
+G153
+G4005 S(AXIDX(5,X))
+G152
+G4099
+
+;//engage tube machining aids
+;//E    = polygon table index
+;//F    = aid skew (i.e.: 0°=bottom, 90°=left, 180°=top, 270°=right)
+;//G    = rotation invert flag
+;//H    = aid direction invert flag (0=positive towards center)
+
+RET

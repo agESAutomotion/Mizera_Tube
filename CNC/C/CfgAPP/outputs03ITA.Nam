@@ -1,0 +1,39 @@
+
+[KEYS]
+TITLE=Test uscite
+TXT0=IW0-IW1
+TXT1=IW4-IW5
+TXT2=IW510-IW500
+TXT4=QW2-QW3
+TXT5=QW6-QW7
+TXT6=QW410
+TXT12=Help IO
+TXT14=Forza uscite
+MSG14=Vuoi forzare le uscite ?
+TXT15=Ripristina uscite
+
+[PROMPT]
+KEY_NODE=
+OUTPUTS02=Leaf
+lb3=QW410.2 Blocca pallet 2
+lb1=QW410.0 Blocca pallet 1
+lb4=QW410.3 Sblocca pallet 2
+lb5=QW410.4 Discesa magazzino
+lb6=QW410.5 Salita magazzino
+lb7=QW410.6
+lb8=QW410.7
+lb9=QW410.8
+lb10=QW410.9
+lb11=QW410.10
+lb12=QW410.11
+lb13=QW410.12
+lb14=QW410.13
+lb15=QW410.14
+lb2=QW410.1 Sblocca pallet 1
+lb16=QW410.15
+lbForcedOut=Uscite forzate
+lbOut2=Uscite digitali (QW410)
+
+[STATUS]
+
+[HELP]

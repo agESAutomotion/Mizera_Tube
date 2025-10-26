@@ -1,0 +1,55 @@
+
+[KEYS]
+TITLE=Test ingressi
+TXT0=IW0-IW1
+TXT1=IW4-IW5
+TXT2=IW510-IW500
+TXT4=QW2-QW3
+TXT5=QW6-QW7
+TXT6=QW410
+TXT12=Help IO
+TXT14=Forza ingressi
+MSG14=Vuoi forzare gli ingressi ?
+TXT15=Ripristina ingressi
+
+[PROMPT]
+KEY_NODE=
+INPUTS01=Leaf
+lb0=IW0.0 nLight: FW ready
+lb1=IW0.1
+lb2=IW0.2 nLight: Error
+lb3=IW0.3 nLight: READY
+lb4=IW0.4 
+lb5=IW0.5 nLight: EMISSION
+lb6=IW0.6
+lb7=IW0.7
+lb8=IW0.8 nLight: EXT control ready
+lb9=IW0.9 PALLET OK (EMERG)
+lb10=IW0.10 MACCHINA OK (EMERG)
+lb11=IW0.11 Procutter error
+lb12=IW0.12 Procutter pos. reached
+lb13=IW0.13 EG8030 far (A10)
+lb14=IW0.14 EG8030 collision (A11)
+lb15=IW0.15 EG8030 cable cut
+lb16=IW1.0 EG8030 ready
+lb17=IW1.1 EG8030 body touch (A14)
+lb18=IW1.2 EG8030 nozzle lost (A15)
+lb19=IW1.3 Condizionatore OK
+lb20=IW1.4 Alimentazione 220V OK
+lb21=IW1.5
+lb22=IW1.6 Pressione aria linea principale
+lb23=IW1.7 pressione ossigeno (taglio)
+lb24=IW1.8 pressione azoto (taglio)
+lb25=IW1.9 pressione aria (taglio)
+lb26=IW1.10 pressione aria raffreddamento ugello
+lb27=IW1.11 pressione aria assistenza piercing
+lb28=IW1.12 aspiratore in errore
+lb29=IW1.13 aspiratore in marcia
+lb30=IW1.14 protezione pompa idraulica OK
+lb31=IW1.15 pompa idraulica in funzione
+lbInp0=Ingressi digitali (IW0-IW1)
+lbForcedInp=Ingressi forzati
+
+[STATUS]
+
+[HELP]

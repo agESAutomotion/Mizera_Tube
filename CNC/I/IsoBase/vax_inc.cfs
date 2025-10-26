@@ -1,0 +1,7 @@
+: VAX_INC
+
+DBL vax_included = 1
+
+DBL vax_c_pend = 0
+
+RET

@@ -1,0 +1,8 @@
+[PROMPT]
+KEYWORD =Parameters
+#include "cnfax?.nam"
+#include "parax?.nam"
+
+[HELP]
+
+[KEYS]

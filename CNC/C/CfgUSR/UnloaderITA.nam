@@ -1,0 +1,81 @@
+
+[KEYS]
+TITLE=TP6022-6 Scaricatore
+
+[PROMPT]
+KEY_NODE=Node
+ULOADER=TP6022-6 Scaricatore
+GroupBox4=Sega Correlato
+Label=Abilita inseguitore di scaricamento
+Label1=Supporta la posizione di parcheggio [mm]
+Label2=Supporta l'offset G0 [mm]
+Button=L2 Ribalta casa
+Button1=L2 Inclinazione della patta
+Label3=L2 Ribalta casa
+Label4=L2 Inclinazione della patta
+Label5=L2 Inclinazione della pattad
+Label6=L2 Ribalta casa
+Button2=L2 Lembo in avanti
+Button3=L2 Patta indietro
+Label7=Cilindro L2 Avanti
+Label8=Cilindro L2 Indietro
+Label9=Cilindro L2 Avanti
+Label10=Cilindro L2 indietro
+Label14=Pezzo massimo da scaricare con X1 [mm]
+Button4=L3 Ribalta casa
+Button5=L3 Inclinazione della patta
+Button6=L4 Ribalta casa
+Button7=L4 Inclinazione della patta
+Button8=L5 Ribalta casa
+Button9=L5 Inclinazione della patta
+Button10=Morsetto per sega Y Aprire
+Button11=Morsetto per sega Y chiuso
+Button12=Morsetto per sega Z Giu
+Button13=Morsetto per sega Z Su
+Label15=L3 Ribalta casa
+Label16=L3 Inclinazione della patta
+Label17=L3 Inclinazione della patta
+Label18=L3 Ribalta casa
+Label19=L4 Ribalta casa
+Label20=L4 Inclinazione della patta
+Label21=L5 Ribalta casa
+Label22=L5 Inclinazione della patta
+Label23=Morsetto per sega Y Aprire
+Label24=Morsetto per sega Y chiuso
+Label25=Morsetto per sega Z Giu
+Label26=Morsetto per sega Z Su
+Label27=L4 Ribalta casa
+Label28=L4 Inclinazione della patta
+Label29=L5 Ribalta casa
+Label30=L5 Inclinazione della patta
+Label31=Morsetto per sega Y Aprire
+Label32=Morsetto per sega Y chiuso
+Label33=Morsetto per sega Z Giu
+Label34=Morsetto per sega Z Su
+Button14=Morsetto per sega Z Rotate Aprire
+Button15=Morsetto per sega Z Rotate chiuso
+Label35=Morsetto per sega Z Rotate Aprire
+Label36=Morsetto per sega Z Rotate chiuso
+Label37=Morsetto per sega Z Rotate Aprire
+Label38=Morsetto per sega Z Rotate chiuso
+Label39=Offset pinza di scarico [mm]
+Label40=Lunghezza minima del tubo per utilizzare lo slave [mm]
+Label42=Parametri scaricatore
+Label41=Uscite scaricatore
+Label43=Comandi dello scaricatore
+Label44=Ingressi scaricatore
+Label45=Disabilita per scaricare il resto
+Label46=Larghezza patta [mm]
+Label47=Larghezza supporto taglio sega [mm]
+Label48=Supporto sega Anticollisione Slave Qta
+Label49=(Z, Z1 su, supporto sega giù per disabilitare)
+Label50=( Sega: <? + Offset X mandrino + sup/2> )
+P_REF1=Vel. +
+Label51=%
+P_REF2=Vel. -
+Label52=(Utilizzato anche come Quota massima X1 per scarico pezzo tagliato dalla sega)
+Label11=Disabilita lo scarico con le alette (Forza inclinata)
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,159 @@
+:
+;******************************************************************************
+;   InitFunction.CFS
+;   ESAutomotion
+;******************************************************************************
+DBL lift = trav_safe_z
+DBL spindle_welding = 5
+DBL search_feed = 1000
+
+
+RET
+
+
+
+
+
+;******************************************************************************
+;   WELDING
+;******************************************************************************
+; Welding pipe enable        
+IF( WeldingRequest ) THEN
+
+    cut_type = 2
+    G806 A11 T3 N1 H1 D1 E1 S(workpiece_safe_dist) 
+
+    ; Tube calibration
+    G2301 X(%Cost_User14/1000) U(%Cost_User15/1000)
+    ; Spindle calibration
+    G2300 X(%Cost_User14/1000) U(%Cost_User15/1000)
+
+
+    ; Copy offsets into TWI
+    ?%twi[spindle_welding].htwi.rh.dX = %Cost_User10 / 1000
+    ?%twi[spindle_welding].htwi.rh.dY = %Cost_User11 / 1000
+    ?%twi[spindle_welding].htwi.rh.dZ = -(%Cost_User12 / 1000) - (%Cost_User13 / 1000)   ; - Z offset - Z distance
+
+
+    IF (isTubeY == 0) THEN
+        ;//X-tube
+    
+        border = 3    
+        IF( roundFlag ) border = 0
+       
+        G806 T3 N1 H1 D1 E1 A11
+        G172 T(spindle_welding) H1 D1 E1            ; N.B. TWI[5]
+        gTravT = -1
+        G153 G0 Z(lift)
+
+        G64 F(search_feed)
+        
+        MSGOUT "WELDING search in progress..."
+
+        ?%LsIso2.3 = 1  ; O_O_WELDING_PISTON
+        G4 F1
+        
+        ?%LsPlc5 = 0    ; Solder joint counted during pipe welding
+        
+
+        G180 X(%Cost_User14/1000) Y0 Z(ze) C360
+        G1000 G0 X(kine_x) Y(kine_y) C(kine_c) U(%Cost_User15/1000)
+        G153 G0 Z(kine_z)
+        GRP[U] = 0
+        
+        ?%LsIso2.0 = 1  ; searching...
+        
+        ;;G0 X-5 Y5 Z(ze)
+        G19
+        ;;G1 X-10 Y0
+
+        ?%LsIso2.2 = 0      ; Enable read sensor
+        
+        IF (border != 0) THEN
+            G1 Y(ys+xr+border)
+            ?%LsIso2.2 = 1
+        ENDIF
+        G1 Y(ys+xr)
+        ?%LsIso2.2 = 1     ; Enable read sensor
+        G3 Y(ys) Z(ze-xr) J(ys+xr) K(ze-xr) C270
+        ?%LsIso2.2 = 0      ; Enable read sensor
+        IF (xr < (ze-0.0001)) THEN
+            IF ((border != 0) && (xr < (ze-border))) THEN
+                G1 Z(ze-xr-border)
+                ?%LsIso2.2 = 0
+                G1 Z(zs+xr+border)
+                ?%LsIso2.2 = 1
+            ENDIF
+            G1 Z(zs+xr)
+        ENDIF
+        ?%LsIso2.2 = 1      ; Enable read sensor
+        G3 Y(ys+xr) Z(zs) J(ys+xr) K(zs+xr) C180
+        ?%LsIso2.2 = 0      ; Enable read sensor
+        IF (border != 0) THEN
+            G1 Y(ys+xr+border)
+            ?%LsIso2.2 = 0
+            G1 Y(ye-xr-border)
+            ?%LsIso2.2 = 1
+        ENDIF
+        IF (xr < (ye-0.0001)) THEN
+            G1 Y(ye-xr)
+        ENDIF
+        ?%LsIso2.2 = 1      ; Enable read sensor
+        G3 Y(ye) Z(zs+xr) J(ye-xr) K(zs+xr) C90
+        ?%LsIso2.2 = 0      ; Enable read sensor
+        IF (xr < (ze-0.0001)) THEN
+            IF ((border != 0) && (xr < (ze-border))) THEN
+                G1 Z(zs+xr+border)
+                ?%LsIso2.2 = 0
+                G1 Z(ze-xr-border)
+                ?%LsIso2.2 = 1
+            ENDIF
+            G1 Z(ze-xr)
+        ENDIF
+        ?%LsIso2.2 = 1      ; Enable read sensor
+        G3 Y(ye-xr) Z(ze) J(ye-xr) K(ze-xr) C0
+        ?%LsIso2.2 = 0      ; Enable read sensor
+        IF (border != 0) THEN
+            G1 Y(ye-xr-border)
+            ?%LsIso2.2 = 0
+        ENDIF
+
+        G1 Y0
+        G17
+        ?%LsIso2.0 = 0  ; end searching...
+        G153 G0 Z(lift)
+        G173
+        
+        SYN
+        GRP[U] = 1
+    ELSE        
+        ERROR(55)  ; Y PIPE TODO
+    ENDIF
+   
+
+    ?%LsIso2.3 = 0  ; O_O_WELDING_PISTON
+    G4 F1
+    
+    ; Solder joint counted during pipe welding
+    IF( %LsPlc5 == 1 ) THEN
+        ?%funz[%IndexORG].rotEA = ((%rLsGui63/1000) - pl_add1_c) - 180
+        orig_c=%funz[%IndexORG].rotEA
+        G179 C(orig_c)
+        MSGOUT "SOLDER JOINT FOUND=" %rLsGui63
+        G4 F3
+        M0
+    ENDIF
+    IF( %LsPlc5 == 0 ) THEN
+        MSGOUT "SOLDER JOINT NOT FOUND !"
+        M0
+    ENDIF
+    IF( %LsPlc5 > 1 ) THEN
+        MSGOUT "MANY SOLDER JOINT FOUND" %LsPlc5
+        M0
+    ENDIF
+    
+    MSGOUT
+    
+ENDIF
+
+RET

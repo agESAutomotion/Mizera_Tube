@@ -1,0 +1,19 @@
+:Log_inc
+
+DBL log_included = 1
+
+DBL bYY, bMM, bDD, bhh, bmm, bss
+DBL dYY, dMM, dDD, dhh, dmm, dss
+STR sYY, sMM, sDD, shh, smm, sss
+DBL overflow
+DBL fscanLock = 0
+
+STR sProgram
+
+IF (%PLCFLAGS.16) THEN 
+ STR path1 = "C:/kvara/Log.csv"
+ELSE
+ STR path1 = "D:/CFU/Log.csv"
+ENDIF
+
+RET

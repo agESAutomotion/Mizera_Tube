@@ -1,0 +1,24 @@
+
+[KEYS]
+TITLE=Raster Print
+
+[PROMPT]
+KEY_NODE=
+RASCHIATORE=Leaf
+GroupBox=Parameters
+Label=Vertical Scan
+Label1=Rotation 90°
+Label2=Lead [mm]
+Label3=Pitch [mm]
+Label4=Gamma
+Label5=Reference for black [%]
+Label6=Reference for white [%]
+Label7=Edge [mm]
+Label8=Height [mm]
+Label9=Demo
+Label10=Aspect
+Label11=Raster Latency [ms]
+
+[STATUS]
+
+[HELP]

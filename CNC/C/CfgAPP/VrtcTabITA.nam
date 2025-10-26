@@ -1,0 +1,19 @@
+
+[KEYS]
+TITLE=TABELLE VRTC
+TXT0=Data
+
+[PROMPT]
+KEY_NODE=Node
+VRTCTAB=VrtcTab
+LabelTab1=PROBE [0]
+LabelTab2=JUMP [1]
+LabelTab3=FAR [2]
+LabelTab4=NEAR [3]
+LabelTab5=CUT [4]
+LabelTabHold1=HOLD  [5]
+LabelTabHold3=Simulation [6]
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="L7EC_V1_12.xml">
+	
+	<Device>L7EC-400S</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+
+    <RxPdo Index="#x1600">
+		<SMObject>
+		<Comment><![CDATA[Ctrl Word]]></Comment>
+		<Address>#x60400010</Address>
+		</SMObject>
+		<SMObject>
+		<Comment><![CDATA[Target Position]]></Comment>
+		<Address>#x607A0020</Address>
+		</SMObject>
+		<SMObject>
+		<Comment><![CDATA[Touch Probe Function]]></Comment>
+		<Address>#x60B80010</Address>
+		</SMObject>
+		<SMObject>
+		<Comment><![CDATA[MaxTorque]]></Comment>
+		<Address>#x60730010</Address>
+		</SMObject>
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+			<SMObject>
+		  <Comment><![CDATA[Status Word]]></Comment>
+		  <Address>#x60410010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Position actual value]]></Comment>
+		  <Address>#x60640020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Torque Actual Value]]></Comment>
+		  <Address>#x60770010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Digital Input]]></Comment>
+		  <Address>#x60FD0020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Touch Probe Status]]></Comment>
+		  <Address>#x60B90010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Touch Probe Qta]]></Comment>
+		  <Address>#x60BA0020</Address>
+		</SMObject>
+	</TxPdo>
+	
+	<DistribuitedClock>1</DistribuitedClock>
+	
+    <CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+</Config>

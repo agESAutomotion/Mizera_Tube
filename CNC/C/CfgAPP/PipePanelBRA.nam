@@ -1,0 +1,17 @@
+
+[KEYS]
+TITLE=Painel Tubo
+
+[PROMPT]
+KEY_NODE=Node
+PIPEPANEL=Leaf
+Button=Abre Fixação C
+Button1=Fecha Fixação C
+Button2=Abre Fixação C1
+Button3=Fecha Fixação C1
+Button4=Abre Fixação C-C1
+Button5=Fecha Fixação C-C1
+
+[STATUS]
+
+[HELP]

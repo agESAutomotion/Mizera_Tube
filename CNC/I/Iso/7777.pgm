@@ -1,0 +1,40 @@
+%7
+INCLUDE "LoadUnload_inc.cfs"
+IF( %cn[WHO()].rc[0].21 )  END
+
+DBL holdSup[10], posTar[10]
+DBL lifter_z_Park = %ax[AXIDX(7,Z)].pa22 / 1000
+
+.Loop
+
+SYN
+AWAIT( %SUPPORTS_SYSTEM.boolean1.30 )
+
+;//============================================================================
+;// Position Supports (Horizontal Unloading) Ready for G4011 T36
+;//============================================================================
+IF( %SUPPORTS_SYSTEM.boolean1.30 ) THEN	
+	iter=2
+	GRPQ[Z,U,V,W] = 1
+    G4 F0.1
+	SYN
+    WHILE( iter <= 5 )
+    	 holdSup[iter] = ABS(%ax[83+iter].ra24 / 1000) > 15 
+		 posTar[iter] = IFEXP( ists_7cn[iter], lifter_z_Park, QNAN() )
+		 IF( (!holdSup[iter]) && (!ISQNAN(posTar[iter])) ) posTar[iter] = 0
+		 iter = iter + 1
+    ENDW
+	
+	SYN
+    G90 G1 Z(posTar[2]) U(posTar[3]) V(posTar[4]) W(posTar[5]) F15000     
+	 
+	SYN
+    ?%SUPPORTS_SYSTEM.boolean1.30 = 0
+	GRPQ[Z,U,V,W] = 0
+ENDIF
+
+;//============================================================================
+
+JMPB .Loop
+
+M30

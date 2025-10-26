@@ -1,0 +1,89 @@
+[C]0 : G11000
+;******************************************************************************
+;   G11000 Capacitive calibration
+;   ESAutomotion
+;   LASER machine
+;******************************************************************************
+DBL ABSINC  = 0x01
+DBL VOUT0   = 0x04
+DBL VOUT    = 0x08
+DBL VMAX    = 0x10
+DBL x,y,z,touch_pos
+DBL calib_c_ang = VA2
+
+DBL sav_G70=XGET("@G70")
+G271
+
+IF (AEXISTS(3,B)) THEN
+   	ACCTRJ = 5000
+	DECTRJ = 5000
+	JRKTRJ = 50000
+ENDIF
+
+;******************************************************************************
+;   PROCON 
+;******************************************************************************
+IF( %config_machine26 == 0 ) THEN
+
+?%LsIso10.1 = 0              ; Iso said calibration control done 
+
+IF (%IndexORG != 19) G806 T3 N1 H1 D1 
+
+IF( %IndexORG == 19 ) THEN
+    ;G806 T3 N1 H1 D1 E1 A11
+    JSR "Sel_Y3Z3.cfs"
+    G153 G1 Z(MaxQta_Z - 10) F5000
+    IF (AEXISTS(3,B)) G153 G1 B0
+    IF (AEXISTS(3,A)) G153 G1 A0
+    G153 G1 C(calib_c_ang) F5000
+ENDIF
+
+IF( %config_machine31 == 1 ) THEN
+    JSR "calib_one_point.cfs"
+ELSE
+    JSR "calib.cfs"
+ENDIF
+   	
+; Linearization by CNC
+IF( %LSRPlcOp1.9 )  JSR "calib_cnc_linear.cfs"
+
+ENDIF
+
+;*****************************************************************************************************
+;  Empower Ethercat
+;*****************************************************************************************************
+
+IF( %config_machine26 == 3 ) THEN
+ 
+?%LsIso10.1 = 0              ; Iso said calibration control done  
+ 
+IF (%IndexORG != 19) G806 T3 N1 H1 D1 
+  
+IF (%IndexORG == 19) THEN 
+	    JSR "Sel_Y3Z3.cfs"
+    G153 G1 Z(MaxQta_Z - 10) F5000
+	G153 G1 Y0 F10000
+    IF (AEXISTS(3,B)) G153 G1 B0
+    G153 G1 C(calib_c_ang) F5000
+ENDIF
+ 
+   JSR "Empower_calib.cfs"
+
+   JSR "Emp_calib_cnc_linear.cfs"
+   
+; Calibration Control
+   IF( %LSRPlcOp1.9 ) JSR "calibration_control.cfs"
+
+ENDIF 
+
+;****************************************************************************** 
+
+IF (AEXISTS(3,B)) THEN
+   ACCTRJ = %cn[WHO()].pc6
+   DECTRJ = %cn[WHO()].pc7
+   JRKTRJ = %cn[WHO()].pc16
+ENDIF 
+ 
+G(200+sav_G70)
+
+RET

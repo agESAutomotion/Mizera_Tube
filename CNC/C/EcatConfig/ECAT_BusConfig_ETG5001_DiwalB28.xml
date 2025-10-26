@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="EECB28M_STD.xml">
+
+    <Device>EEC B28M STD</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+    
+	<RxPdo Index="#x1600">
+		<SMObject>
+		  <Comment><![CDATA[Enable]]></Comment>
+		  <Address>#x70000110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Output pressure (mbar)]]></Comment>
+		  <Address>#x70200110</Address>
+		</SMObject>
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+		<SMObject>
+		  <Comment><![CDATA[PressureSwitch,Undervoltage,Overtemperature]]></Comment>
+		  <Address>#x60010110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Output pressure]]></Comment>
+		  <Address>#x60200110</Address>
+		</SMObject>
+	</TxPdo>
+
+	<DistribuitedClock>1</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+</Config>
+
+
+

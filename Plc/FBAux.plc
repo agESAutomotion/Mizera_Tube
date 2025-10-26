@@ -1,0 +1,338 @@
+
+* CAL COMPARE(A:=,B:=)
+
+FUNCTION_BLOCK     COMPARE 
+
+VAR_INPUT
+A:                 DWORD;
+B:                 DWORD;
+END_VAR
+
+VAR_OUTPUT
+Q:                 BOOL;   * A>=B -> 1
+yMax:              DWORD;
+yMin:              DWORD;
+END_VAR
+
+LD   A
+GE   B
+ST   Q
+JMPCN _CASE
+     LD   A
+     ST   yMax
+	 LD   B
+	 ST   yMin
+JMP _COM	 
+_CASE:
+     LD   A
+     ST   yMin
+     LD   B
+     ST   yMax
+_COM:
+
+END_FUNCTION_BLOCK 
+
+FUNCTION_BLOCK WARNING_ALM
+
+VAR_INPUT
+xVal: DWORD;
+xWarnVal: DWORD;
+xAlmVal: DWORD;
+END_VAR
+
+VAR_OUTPUT
+yW: DWORD;
+yA: DWORD;
+END_VAR
+
+VAR
+
+END_VAR
+
+LD  xAlmVal
+GE  xWarnVal
+JMPCN _LTNORMAL
+    LD  xVal
+	GT  xWarnVal
+	ST  yW
+	
+	LD  xVal
+	GT  xAlmVal
+	ST  yA
+_LTNORMAL:
+
+LD  xAlmVal
+LT  xWarnVal
+JMPCN _GTNORMAL
+    LD  xVal
+	LT  xWarnVal
+	ST  yW
+	
+	LD  xVal
+	LT  xAlmVal
+	ST  yA
+_GTNORMAL:
+
+*// Disable if inputs empty
+
+LD  xAlmVal
+AND xWarnVal
+EQ  0
+JMPCN _DISEN
+    LD   0
+    ST  yW 
+	ST  yA
+_DISEN:
+
+END_FUNCTION_BLOCK
+
+* CAL FOC_SWLIM(xIn=,xMin=,xMax=)
+
+FUNCTION_BLOCK FOC_SWLIM
+
+VAR_INPUT
+xIn: DWORD;
+xMax: DWORD;
+xMin: DWORD;
+END_VAR
+
+VAR_OUTPUT
+Q: DWORD;
+END_VAR
+
+VAR
+buffer: DWORD;
+END_VAR
+
+LD   xIn
+ST   buffer
+
+LD   xIn             
+GT   xMax
+JMPCN _MAGGIORE
+LD   xMax
+ST   buffer              
+_MAGGIORE:
+
+LD   xIn           
+LT   xMin
+JMPCN _MINORE
+LD   xMin
+ST   buffer  
+_MINORE:
+
+LD   buffer
+ST   Q
+
+END_FUNCTION_BLOCK
+
+FUNCTION_BLOCK ANY_CLOCK_CHK
+
+VAR_INPUT
+xPeriod: DWORD;
+xData: DWORD;
+END_VAR
+
+VAR_OUTPUT
+Q: DWORD;
+END_VAR
+
+VAR
+TON_CHK: TON;
+buffer: DWORD;
+buffer_1: DWORD;
+Appoggio: BOOL;
+END_VAR
+
+LDN  TON_CHK.Q
+ST   Appoggio
+CAL  TON_CHK(IN:=Appoggio,PT:=xPeriod)
+LD   TON_CHK.Q
+JMPCN _LASTREC
+     LD   xData
+	 ST   buffer
+_LASTREC:
+
+LD   TON_CHK.ET
+EQ (
+LD   xPeriod
+DIV  2
+)
+JMPCN _CURREC
+     LD   xData
+	 ST   buffer_1
+_CURREC:
+
+LD   buffer
+EQ   buffer_1
+ST   Q
+
+END_FUNCTION_BLOCK
+
+* CAL ABC_MINMAX(xA=,xB=,xC=)
+
+FUNCTION_BLOCK ABC_MIN_MAX
+
+VAR_INPUT
+xA: DWORD;
+xB: DWORD;
+xC: DWORD;
+END_VAR
+
+VAR_OUTPUT
+yMin: DWORD;
+yMax: DWORD;
+END_VAR
+
+VAR
+tem_A: DWORD;
+tem_B: DWORD;
+tem_C: DWORD;
+buffer: DWORD;
+END_VAR
+
+LD   xA
+ST   tem_A
+LD   xB
+ST   tem_B
+LD   xC
+ST   tem_C
+
+LD   tem_A
+GT   tem_B
+JMPCN _SWAP_AB
+     LD   tem_A
+     ST   buffer
+     
+     LD   tem_B
+     ST   tem_A
+     
+     LD   buffer
+     ST   tem_B
+_SWAP_AB:
+
+LD   tem_A
+GT   tem_C
+JMPCN _SWAP_AC
+     LD   tem_A
+     ST   buffer
+     
+     LD   tem_C
+     ST   tem_A
+     
+     LD   buffer
+     ST   tem_C
+_SWAP_AC:
+
+LD   tem_B
+GT   tem_C
+JMPCN _SWAP_BC
+     LD   tem_B
+     ST   buffer
+     
+     LD   tem_C
+     ST   tem_B
+     
+     LD   buffer
+     ST   tem_C
+_SWAP_BC:
+
+LD   tem_A
+ST   yMin
+
+LD   tem_C
+ST   yMax
+   
+END_FUNCTION_BLOCK
+
+* CAL COSIN(In=,Angle=)
+
+FUNCTION_BLOCK COSIN
+
+VAR_INPUT
+In: DWORD;
+Angle: DWORD;
+END_VAR
+
+VAR_OUTPUT
+Q: DWORD;
+END_VAR
+
+VAR
+buffer: DWORD;
+END_VAR
+
+*LD   bevAngleHead1_calc1
+LD   %C153
+COS
+ST   buffer
+
+LD   In
+MULDIV(M=1000,D=buffer)
+ST   Q
+
+END_FUNCTION_BLOCK
+
+*//=============================================================================
+*// CAL CALC_BLDFEED(xEn:=,xH:=,xV:=,xVPercent:=)
+*//=============================================================================
+
+FUNCTION_BLOCK CALC_BLD_FEED
+
+VAR_INPUT
+xEn:          BOOL;
+xH:          DWORD;
+xV:          DWORD;
+xVPercent:   DWORD;
+END_VAR
+
+VAR
+DIS_H:       DWORD;
+DIS_V:       DWORD;
+MinMax:    COMPARE;
+END_VAR
+
+VAR_OUTPUT
+yPercent:    DWORD;
+END_VAR
+
+*//=============================================================================
+*// Unloading Flaps On Each Support
+*//=============================================================================
+CAL  MinMax(A:=%gIso23,B:=%gIso24)
+
+PATH %ax[xV]
+
+LD   %ra24
+SUB  %ax50.ra24
+SUB  %ax61.ra24
+ABS 
+ST   DIS_V
+
+PATH %ax[xH]
+
+LD   %ra24
+SUB (
+	 LD  MinMax.yMax
+     MULDIV(M=1000,D=2)  
+)  
+ABS 
+ST   DIS_H
+
+LD   100
+ST   yPercent
+
+LD   DIS_H
+GT   DIS_V
+AND  xEn
+ANDN %ra3.0
+ANDN %ra3.2
+JMPCN _REDUCEV
+     LD  DIS_V
+	 MULDIV(M=100,D=DIS_H)
+	 MULDIV(M=xVPercent,D=100)
+     ST  yPercent      * 0-100%
+_REDUCEV:
+
+END_FUNCTION_BLOCK
+

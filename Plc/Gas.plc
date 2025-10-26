@@ -1,0 +1,531 @@
+*******************************************************************************
+*   GAS.PLC
+*   ESAutomotion
+*   LASER machine - Cutting gas managment
+*******************************************************************************
+
+VAR
+#include "Cnc.inc"
+#include "RemContr.inc"
+
+Appoggio:                  BOOL;
+NoLastGasSet:              BOOL;
+CloseAuxValve:             BOOL; * Close AUX valve
+LaserShotCycleOn:          BOOL; * Laser shot cycle in progress
+KeepCutGasEnab:            BOOL; * Keep cutting gas enable from table
+KeepCutGasOxy:             BOOL; * Keep cutting oxygen enable from program
+KeepCutGasNit:             BOOL; * Keep cutting nitrogen enable from program
+KeepCutGasAir:             BOOL; * Keep cutting air enable from program
+M550_REQ:                  BOOL; * M550: Gas blowing request
+KeepSelManOxi:             BOOL; * Keep gas manual selection oxigen
+KeepSelManNit:             BOOL; * Keep gas manual selection nitrogen
+KeepSelManAir:             BOOL; * Keep gas manual selection air
+KeepGasTestOn:             BOOL; * Keep gas test running
+KeepValveTestOn:           BOOL; * Keep valve test running
+GasTestButton:             BOOL; * Gas test button pressed
+ValveTestButton:           BOOL; * Valve test button pressed
+GasValveEnable:            BOOL; * Gas valves enable conditions
+GasAuxValveEnable:         BOOL; * Gas extra valves enable conditions
+PulsePurge_O2:             BOOL; * Pulse for start purge cycle on oxygen enable
+PulsePurge_N2:             BOOL; * Pulse for start purge cycle on nitrogen enable
+PulsePurge_AIR:            BOOL; * Pulse for start purge cycle on air enable
+GasSelPgm:                 DWORD; * Gas selection in program (0-2)
+
+RT_GAS_BTN:                R_TRIG;
+#defcom RT_GAS_BTN.Q Pulse on a test gas button
+RT_ON_O2:                  R_TRIG;
+#defcom RT_ON_O2.Q Pulse on oxygen valve activation
+RT_ON_N2:                  R_TRIG;
+#defcom RT_ON_N2.Q Pulse on nitrogen valve activation
+RT_ON_AIR:                 R_TRIG;
+#defcom RT_ON_AIR.Q Pulse on cutting air valve activation
+
+T_GASoff:                  TOF;
+#defcom T_GASoff.Q Program run delayed for gas closing
+T_Spurgo:                  TON;
+#defcom T_Spurgo.Q End of purge time
+T_BLOWNOLS:                TON;
+#defcom T_BLOWNOLS.Q End of delay for piercing blowing
+
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+***************************************************************************************************
+* Working gas valve managment
+***************************************************************************************************
+FUNCTION GestGas
+
+* Program running with delay at the end
+
+CAL  T_GASoff(IN=PRGRUN_CN0,PT=1000) ** M0.0 cn0.rc8.0  Programma in corso
+
+LD   T_GASoff.Q                    ** Program run delayed for gas closing
+ST   ProgRunForGas                 ** M107.10 Program running for gas managment
+
+* Laser shot cycle running
+
+LD   GasForLaserShot               ** (LsPlc11.2) Gas enable for laser shot
+ST   LaserShotCycleOn              ** Laser shot cycle in progress
+
+****************************************************************************************************
+* M497:         Enable cutting gas from part program
+* M496 or M498: Disable cutting gas from part program
+* M480-481-482: Force cutting gas oxy/nit/air
+****************************************************************************************************
+
+LD   ch0_ValFunM                   ** %cn0.rc9 CH0 Registro Funcion M desde ISO
+EQ   480
+AND  ch0_StrobeM                   ** %cn0.rc8.4 CH0 Strobe Funcion M desde ISO
+S    KeepCutGasOxy                 ** Keep cutting oxygen enable from program
+R    KeepCutGasNit                 ** Keep cutting nitrogen enable from program
+R    KeepCutGasAir                 ** Keep cutting air enable from program
+R    KeepCutGasEnab                ** Keep cutting gas enable from table
+
+LD   ch0_ValFunM                   ** %cn0.rc9 CH0 Registro Funcion M desde ISO
+EQ   481
+AND  ch0_StrobeM                   ** %cn0.rc8.4 CH0 Strobe Funcion M desde ISO
+S    KeepCutGasNit                 ** Keep cutting nitrogen enable from program
+R    KeepCutGasOxy                 ** Keep cutting oxygen enable from program
+R    KeepCutGasAir                 ** Keep cutting air enable from program
+R    KeepCutGasEnab                ** Keep cutting gas enable from table
+
+LD   ch0_ValFunM                   ** %cn0.rc9 CH0 Registro Funcion M desde ISO
+EQ   482
+AND  ch0_StrobeM                   ** %cn0.rc8.4 CH0 Strobe Funcion M desde ISO
+S    KeepCutGasAir                 ** Keep cutting air enable from program
+R    KeepCutGasOxy                 ** Keep cutting oxygen enable from program
+R    KeepCutGasNit                 ** Keep cutting nitrogen enable from program
+R    KeepCutGasEnab                ** Keep cutting gas enable from table
+
+LD   ch0_ValFunM                   ** %cn0.rc9 CH0 Registro Funcion M desde ISO
+EQ   497
+AND  ch0_StrobeM                   ** %cn0.rc8.4 CH0 Strobe Funcion M desde ISO
+OR   (
+LD   EnCommutValvole               ** (TstP15.1) Abilita Commutazione Valvole
+ANDN AcqOrigOn                     ** (C18.7)  Acquisizione origine in corso
+)
+R    CloseAuxValve
+S    KeepCutGasEnab                ** Keep cutting gas enable from table
+R    KeepCutGasOxy                 ** Keep cutting oxygen enable from program
+R    KeepCutGasNit                 ** Keep cutting nitrogen enable from program
+R    KeepCutGasAir                 ** Keep cutting air enable from program
+
+LD   ch0_ValFunM                   ** %cn0.rc9 CH0 Registro Funcion M desde ISO
+EQ   496
+AND  ch0_StrobeM                   ** %cn0.rc8.4 CH0 Strobe Funcion M desde ISO
+S    CloseAuxValve
+R    KeepCutGasOxy                 ** Keep cutting oxygen enable from program
+R    KeepCutGasNit                 ** Keep cutting nitrogen enable from program
+R    KeepCutGasAir                 ** Keep cutting air enable from program
+
+LD   ch0_ValFunM                   ** %cn0.rc9 CH0 Registro Funcion M desde ISO
+EQ   498
+AND  ch0_StrobeM                   ** %cn0.rc8.4 CH0 Strobe Funcion M desde ISO
+ORN  ProgRunForGas                 ** M107.10 Program running for gas managment
+ORN  MACCHINA_OK                   ** M100.1  Macchina OK
+R    CloseAuxValve
+R    KeepCutGasEnab                ** Keep cutting gas enable from table
+R    KeepCutGasOxy                 ** Keep cutting oxygen enable from program
+R    KeepCutGasNit                 ** Keep cutting nitrogen enable from program
+R    KeepCutGasAir                 ** Keep cutting air enable from program
+
+LD   KeepCutGasOxy                 ** Keep cutting oxygen enable from program
+OR   KeepCutGasNit                 ** Keep cutting nitrogen enable from program
+OR   KeepCutGasAir                 ** Keep cutting air enable from program
+OR   KeepCutGasEnab                ** Keep cutting gas enable from table
+ST   GAS_prun                      ** M107.1 Cutting gas active from part program
+
+LD   GAS_prun                      ** M107.1 Cutting gas active from part program
+AND  ParClosePropV
+AND (
+LD   CloseAuxValve
+AND  KeepCutGasEnab                ** Keep cutting gas enable from table
+OR   PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+)
+OR( 
+LD   GAS_prun                      ** M107.1 Cutting gas active from part program
+ANDN ParClosePropV
+ANDN EnabExtraValve
+AND (
+LD   CloseAuxValve
+AND  KeepCutGasEnab                ** Keep cutting gas enable from table
+OR   PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+)
+)
+ST   GAS_prun_close_propv
+
+LDN  ProgRunForGas                 ** M107.10 Program running for gas managment
+R    EnCommutValvole               ** (TstP15.1) Abilita Commutazione Valvole
+
+****************************************************************************************************
+* M550 - Gas blowing without laser beam
+****************************************************************************************************
+
+LD   ch0_ValFunM                   ** %cn0.rc9 CH0 Registro Funcion M desde ISO
+EQ   550
+AND  ch0_StrobeM                   ** %cn0.rc8.4 CH0 Strobe Funcion M desde ISO
+ST   M550_REQ                      ** M550: Gas blowing request
+
+CAL  T_BLOWNOLS (IN:=M550_REQ,PT:=%TabLsr0.L_SourceInt13) ** M550: Gas blowing request
+
+LD   M550_REQ                      ** M550: Gas blowing request
+ANDN T_BLOWNOLS.Q                  ** End of delay for piercing blowing
+ST   WaitGasFlow                   ** (C56.0) M function iso wait
+
+****************************************************************************************************
+* Manual gas test cycle
+****************************************************************************************************
+
+LD   P_TestOxi                     ** (LsGui18.4) Gas oxigen test from valve page
+OR   P_TestNit                     ** (LsGui18.5) Gas nitrogen test from valve page
+OR   P_TestAir                     ** (LsGui18.3) Gas air test from valve page
+OR   RemContrOxyON                 ** Xhc_Puls.14 Oxy On
+OR   RemContrN2On                  ** Xhc_Puls.16 N2 on       
+OR   RemContrAirOn                 ** Xhc_Puls.15 Air On
+OR   ButtGuiPurgeN2
+OR   ButtGuiPurgeO2
+OR   ButtGuiPurgeAIR
+ST   GasTestButton                 ** Gas test button pressed
+
+LD   P_ValTestAir                  ** (LsGui18.6) Valve air test from setting page
+OR   P_ValTestOxy                  ** (LsGui18.7) Valve oxygen test from setting page
+OR   P_ValTestNit                  ** (LsGui18.8) Valve nitrogen test from setting page
+ST   ValveTestButton               ** Valve test button pressed
+
+LD   GasTestButton                 ** Gas test button pressed
+OR   ValveTestButton               ** Valve test button pressed
+ST   Appoggio
+
+CAL  RT_GAS_BTN(CLK:=Appoggio)
+
+LD   RT_GAS_BTN.Q                  ** Pulse on a test gas button
+ANDN KeepGasTestOn                 ** Keep gas test running
+S    KeepGasTestOn                 ** Keep gas test running
+ST   Appoggio
+
+LD   RT_GAS_BTN.Q                  ** Pulse on a test gas button
+ANDN Appoggio
+OR   ProgRunForGas                 ** M107.10 Program running for gas managment
+ORN  MACCHINA_OK                   ** M100.1  Macchina OK
+OR   RESET_MACCHINA                ** M100.2  Reset macchina
+OR   LaserShotCycleOn              ** Laser shot cycle in progress
+R    KeepGasTestOn                 ** Keep gas test running
+
+LD   ValveTestButton               ** Valve test button pressed
+S    KeepValveTestOn               ** Keep valve test running
+
+LDN  KeepGasTestOn                 ** Keep gas test running
+R    KeepValveTestOn               ** Keep valve test running
+
+LD   KeepGasTestOn                 ** Keep gas test running
+ANDN KeepValveTestOn               ** Keep valve test running
+OR   LaserShotCycleOn              ** Laser shot cycle in progress
+ST   GAS_test                      ** M107.0 Test gas in progress for prop. valve
+
+LD   GasTestButton                 ** Gas test button pressed
+OR   LaserShotCycleOn              ** Laser shot cycle in progress
+ST   PropTestRes                   ** M107.13 Proportional valve test reset from gas commands
+
+****************************************************************************************************
+* Keeps for manual cutting gas selection
+****************************************************************************************************
+
+LD   P_TestOxi                     ** (LsGui18.4) Gas oxigen test from valve page
+OR   RemContrOxyON                 ** Xhc_Puls.14 Oxy On
+OR   ButtGuiPurgeO2
+OR   P_ValTestOxy                  ** (LsGui18.7) Valve oxygen test from setting page
+S    KeepSelManOxi                 ** Keep gas manual selection oxigen
+R    KeepSelManNit                 ** Keep gas manual selection nitrogen
+R    KeepSelManAir                 ** Keep gas manual selection air
+
+LD   P_TestNit                     ** (LsGui18.5) Gas nitrogen test from valve page
+OR   RemContrN2On                  ** Xhc_Puls.16 N2 on       
+OR   ButtGuiPurgeN2
+OR   P_ValTestNit                  ** (LsGui18.8) Valve nitrogen test from setting page
+S    KeepSelManNit                 ** Keep gas manual selection nitrogen
+R    KeepSelManOxi                 ** Keep gas manual selection oxigen
+R    KeepSelManAir                 ** Keep gas manual selection air
+
+LD   P_TestAir                     ** (LsGui18.3) Gas air test from valve page
+OR   RemContrAirOn                 ** Xhc_Puls.15 Air On
+OR   ButtGuiPurgeAIR
+OR   P_ValTestAir                  ** (LsGui18.6) Valve air test from setting page
+S    KeepSelManAir                 ** Keep gas manual selection air
+R    KeepSelManOxi                 ** Keep gas manual selection oxigen
+R    KeepSelManNit                 ** Keep gas manual selection nitrogen
+
+LDN  KeepGasTestOn                 ** Keep gas test running
+R    KeepSelManAir                 ** Keep gas manual selection air
+R    KeepSelManOxi                 ** Keep gas manual selection oxigen
+R    KeepSelManNit                 ** Keep gas manual selection nitrogen
+
+****************************************************************************************************
+* Gas valves command conditions
+****************************************************************************************************
+
+LD   %LSRPlcOp0.8                  ** Z axis in simulation (always in UP position)
+AND  EnBlowDryRun                  ** (LsGui29.2) Enable gas blowing in dry run
+AND  ProgRunForGas                 ** M107.10 Program running for gas managment
+ST   GasEnabOnZUp                  ** M107.11 Gas enable conditions on Z up simulation
+
+LD   %config_machine16
+GT   0
+AND  APAinRun                      ** (C18.31) APA in run (per gestione aria durante APA)
+AND  ProgRunForGas                 ** M107.10 Program running for gas managment
+ST   AirEnabForAPA                 ** M107.12 Cutting air enable for APA cycle
+
+LD   GAS_prun                      ** M107.1 Cutting gas active from part program
+OR   KeepGasTestOn                 ** Keep gas test running
+OR   LaserShotCycleOn              ** Laser shot cycle in progress
+OR   AirEnabForAPA                 ** M107.12 Cutting air enable for APA cycle
+ANDN MACCH_IN_SIM                  ** M100.28 MACCHINA IN SIMULAZIONE
+OR   GasEnabOnZUp                  ** M107.11 Gas enable conditions on Z up simulation
+ANDN %PLCerr5.0                   ** PLC Err 160 Precitec - cassetto lente o protezione non presente
+***ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+ANDN ReqAcqOrig                    ** (gPlc13.1)Richiesta acquisizione origine
+ANDN AcqOrigOn                     ** (C18.7)  Acquisizione origine in corso
+***ANDN RETRACERUN                    ** M0.11 Ciclo di retrace in Run
+ANDN DryRunOption                  ** Macchina in modo Dry Run
+ANDN %LSRPlcOp0.22                 ** Pipe Welding function enabling
+ST   Appoggio
+
+LD   Appoggio
+ANDN EnabExtraValve
+ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+OR (
+LD   Appoggio
+ANDN EnabExtraValve
+AND (
+LD   PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+OR   KeepCutGasEnab                ** Keep cutting gas enable from table
+)
+AND  ParClosePropV
+)
+OR (
+LD   Appoggio
+AND  EnabExtraValve
+)
+ST   GasValveEnable                ** Gas valves enable conditions
+
+LD   Appoggio
+AND  EnabExtraValve
+ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+AND (
+LDN  CloseAuxValve
+OR   KeepGasTestOn                 ** Keep gas test running
+)
+ST   GasAuxValveEnable             ** Gas extra valves enable conditions
+
+
+****************************************************************************************************
+* Cutting gas valves command
+****************************************************************************************************
+
+LD  %TabLsr1.L_CutGas              	** Codice tipo Gas
+ST   GasSelPgm                     ** Gas selection in program (0-2)
+
+LD   PierceCutGasSelect            ** (LsIso31) Select piercing gas or cutting gas (0=cut gas,1=piercing gas)
+JMPCN NoPiercingGas
+LD   %TabLsr1.L_PierceGas            	** Codice tipo Gas
+ST   GasSelPgm                     ** Gas selection in program (0-2)
+NoPiercingGas:
+
+
+
+
+LD   GasSelPgm                     ** Gas selection in program (0-2)
+EQ   0
+AND  KeepCutGasEnab                ** Keep cutting gas enable from table
+OR   KeepCutGasOxy                 ** Keep cutting oxygen enable from program
+ANDN AirEnabForAPA                 ** M107.12 Cutting air enable for APA cycle
+AND  ProgRunForGas                 ** M107.10 Program running for gas managment
+OR   (
+LD   SelGasPagLaser                ** (rLsGui40) Gas selection on laser page (for shoot test)
+EQ   0
+AND  LaserShotCycleOn              ** Laser shot cycle in progress
+)
+OR   KeepSelManOxi                 ** Keep gas manual selection oxigen
+AND  GasValveEnable                ** Gas valves enable conditions
+ST   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+
+LD   GasSelPgm                     ** Gas selection in program (0-2)
+EQ   1
+AND  KeepCutGasEnab                ** Keep cutting gas enable from table
+OR   KeepCutGasNit                 ** Keep cutting nitrogen enable from program
+ANDN AirEnabForAPA                 ** M107.12 Cutting air enable for APA cycle
+AND  ProgRunForGas                 ** M107.10 Program running for gas managment
+OR   (
+LD   SelGasPagLaser                ** (rLsGui40) Gas selection on laser page (for shoot test)
+EQ   1
+AND  LaserShotCycleOn              ** Laser shot cycle in progress
+)
+OR   KeepSelManNit                 ** Keep gas manual selection nitrogen
+AND  GasValveEnable                ** Gas valves enable conditions
+ST   O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+
+LD   GasSelPgm                     ** Gas selection in program (0-2)
+EQ   2
+AND  KeepCutGasEnab                ** Keep cutting gas enable from table
+OR   KeepCutGasAir                 ** Keep cutting air enable from program
+OR   AirEnabForAPA                 ** M107.12 Cutting air enable for APA cycle
+AND  ProgRunForGas                 ** M107.10 Program running for gas managment
+OR   (
+LD   SelGasPagLaser                ** (rLsGui40) Gas selection on laser page (for shoot test)
+EQ   2
+AND  LaserShotCycleOn              ** Laser shot cycle in progress
+)
+OR   KeepSelManAir                 ** Keep gas manual selection air
+AND  GasValveEnable                ** Gas valves enable conditions
+ST   O_O_EV_OPEN_ARIA              ** Elettrovalvola apertura Aria taglio
+
+LD   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+OR   O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+OR   O_O_EV_OPEN_ARIA              ** Elettrovalvola apertura Aria taglio
+ST   O_O_EV_OR_ALLGAS              ** M90.15 Elettrovalvola apertura di almeno un gas
+
+LD   O_O_EV_OR_ALLGAS              ** M90.15 Elettrovalvola apertura di almeno un gas
+AND  GasAuxValveEnable             ** Gas extra valves enable conditions
+ST   O_O_EV_AUX_GAS                ** Elettrovalvola ausiliaria (a valle della proporzionale)
+
+
+****************************************************************************************************
+* Allarme : Errore nella selezione del gas di taglio
+****************************************************************************************************
+LD   GasSelPgm                     ** Gas selection in program (0-2)
+LT   0
+OR (
+LD   GasSelPgm                     ** Gas selection in program (0-2)
+GT   2
+)
+AND  ProgRunForGas                 ** M107.10 Program running for gas managment
+S    %PLCerr5.10       ** PLC Err 170 Errata selezione gas di taglio
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+R    %PLCerr5.10       ** PLC Err 170 Errata selezione gas di taglio
+
+****************************************************************************************************
+* Richiesto Spurgo
+****************************************************************************************************
+CAL  RT_ON_O2(CLK=O_O_EV_OPEN_O2)  ** Elettrovalvola apertura Ossigeno
+CAL  RT_ON_N2(CLK=O_O_EV_OPEN_N2)  ** Elettrovalvola apertura Azoto
+CAL  RT_ON_AIR(CLK=O_O_EV_OPEN_ARIA) ** Elettrovalvola apertura Aria taglio
+
+LD   RT_ON_O2.Q                    ** Pulse on oxygen valve activation
+AND (
+LD   LastGasNit                    ** (LsPlc11.6) Keep last gas open valve nitrogen
+OR   LastGasAir                    ** (LsPlc11.4) Keep last gas open valve air
+OR   NoLastGasSet
+)
+ST   PulsePurge_O2                 ** Pulse for start purge cycle on oxygen enable
+
+LD   RT_ON_N2.Q                    ** Pulse on nitrogen valve activation
+AND (
+LD   LastGasOxy                    ** (LsPlc11.5) Keep last gas open valve oxygen
+OR   LastGasAir                    ** (LsPlc11.4) Keep last gas open valve air
+OR   NoLastGasSet
+)
+ST   PulsePurge_N2                 ** Pulse for start purge cycle on nitrogen enable
+
+LD   RT_ON_AIR.Q                   ** Pulse on cutting air valve activation
+AND (
+LD   LastGasOxy                    ** (LsPlc11.5) Keep last gas open valve oxygen
+OR   LastGasNit                    ** (LsPlc11.6) Keep last gas open valve nitrogen
+OR   NoLastGasSet
+)
+ST   PulsePurge_AIR                ** Pulse for start purge cycle on air enable
+
+LD   PulsePurge_O2                 ** Pulse for start purge cycle on oxygen enable
+OR   PulsePurge_N2                 ** Pulse for start purge cycle on nitrogen enable
+OR   PulsePurge_AIR                ** Pulse for start purge cycle on air enable
+ANDN MACCH_IN_SIM                  ** M100.28 MACCHINA IN SIMULAZIONE
+S    SPURGOrun                     ** M107.2 Gas purge in progress
+
+CAL  T_Spurgo(IN=SPURGOrun,PT=Purge_time) ** M107.2 Gas purge in progress
+
+LD   T_Spurgo.Q                    ** End of purge time
+ORN  ProgRunForGas                 ** M107.10 Program running for gas managment
+R    SPURGOrun                     ** M107.2 Gas purge in progress
+
+LD   SPURGOrun                     ** M107.2 Gas purge in progress
+ST   SpurgoGas                     ** (gPlc23.0) Spurgo gas in corso
+ST   %PLCmsg4.4                   * Plc Msg 132 Spurgo gas in corso
+
+****************************************************************************************************
+* Keeps for last valve open
+****************************************************************************************************
+
+LD   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+S    LastGasOxy                    ** (LsPlc11.5) Keep last gas open valve oxygen
+R    LastGasNit                    ** (LsPlc11.6) Keep last gas open valve nitrogen
+R    LastGasAir                    ** (LsPlc11.4) Keep last gas open valve air
+
+LD   O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+S    LastGasNit                    ** (LsPlc11.6) Keep last gas open valve nitrogen
+R    LastGasOxy                    ** (LsPlc11.5) Keep last gas open valve oxygen
+R    LastGasAir                    ** (LsPlc11.4) Keep last gas open valve air
+
+LD   O_O_EV_OPEN_ARIA              ** Elettrovalvola apertura Aria taglio
+S    LastGasAir                    ** (LsPlc11.4) Keep last gas open valve air
+R    LastGasNit                    ** (LsPlc11.6) Keep last gas open valve nitrogen
+R    LastGasOxy                    ** (LsPlc11.5) Keep last gas open valve oxygen
+
+LD   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+R    LastGasOxy                    ** (LsPlc11.5) Keep last gas open valve oxygen
+R    LastGasNit                    ** (LsPlc11.6) Keep last gas open valve nitrogen
+R    LastGasAir                    ** (LsPlc11.4) Keep last gas open valve air
+
+LDN  LastGasOxy                    ** (LsPlc11.5) Keep last gas open valve oxygen
+ANDN LastGasNit                    ** (LsPlc11.6) Keep last gas open valve nitrogen
+ANDN LastGasAir                    ** (LsPlc11.4) Keep last gas open valve air
+ST   NoLastGasSet
+
+****************************************************************************************************
+* Allarmi per bassa pressione
+****************************************************************************************************
+LD   GasSimulated
+JMPC CONDGASSIM
+
+LD   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+ANDN I_I_PRESSIONE_O2              ** Pressione Ossigeno OK
+S    %PLCerr5.11                  ** PLC Err 171 Bassa pressione ossigeno
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+R    %PLCerr5.11                  ** PLC Err 171 Bassa pressione ossigeno
+
+LD   O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+ANDN I_I_PRESSIONE_N2              ** Pressione Azoto OK
+S    %PLCerr5.12                  ** PLC Err 172 Bassa pressione azoto
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+R    %PLCerr5.12                  ** PLC Err 172 Bassa pressione azoto
+
+LD   O_O_EV_OPEN_ARIA              ** Elettrovalvola apertura Aria taglio
+ANDN I_I_PRESSIONE_ARIA            ** Pressione Aria di taglio OK
+S    %PLCerr5.13                  ** PLC Err 173 Bassa pressione aria taglio
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+R    %PLCerr5.13                  ** PLC Err 173 Bassa pressione aria taglio
+CONDGASSIM:
+
+****************************************************************************************************
+* Segnalazioni su pagina video
+****************************************************************************************************
+
+LD   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+ST   GasYV2LED                     ** (LsPlc11.15) LED Comando Valvola Ossigeno
+
+LD   O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+ST   GasYV3LED                     ** (LsPlc11.16) LED Comando Valvola Azoto
+
+LD   O_O_EV_OPEN_ARIA              ** Elettrovalvola apertura Aria taglio
+ST   GasYV0LED                     ** (LsPlc11.14) LED Comando Valvola Aria Taglio
+
+LD   O_O_EV_AUX_GAS                ** Elettrovalvola ausiliaria (a valle della proporzionale)
+ST   GasYV22LED                    ** (LsPlc11.11) LED aux valve
+
+END_FUNCTION

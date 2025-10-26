@@ -1,0 +1,66 @@
+:
+;******************************************************************************
+;   HEADING_END.CFS
+;   ESAutomotion
+;   LASER machine
+;******************************************************************************
+
+G172 T1 H1 D1
+G180 X(QCALC(X)+QCALC(U)) D1
+
+IF (%CalPipe[0].General[0].4) THEN  ; pipe along x axis
+    %funz[%IndexORG].origprgX = kine_x
+    %funz[%IndexORG].origprgY = 0
+    %funz[%IndexORG].rotEA = 0 
+ENDIF 
+
+IF (%CalPipe[0].General[0].5) THEN  ; pipe along Y axis
+    %funz[%IndexORG].origprgX = 0
+    %funz[%IndexORG].origprgY = kine_y
+    %funz[%IndexORG].rotEA = 0
+ENDIF   
+
+
+RET
+
+
+
+;******************************************************************************
+; Versione con gestione origine tubo dove viene fatta l'intestatura
+;******************************************************************************
+; HeadingOffset       AT %rLsGui65;     * (rLsGui65) Heading: origin offset
+G172 T1 H1 D1
+G180 X(QCALC(X)+QCALC(U)) D1
+
+IF (%CalPipe[0].General[0].4) THEN  ; pipe along x axis
+    %funz[%IndexORG].origprgX = kine_x
+    %funz[%IndexORG].origprgY = 0
+    %funz[%IndexORG].rotEA = 0 
+ENDIF 
+
+IF (%CalPipe[0].General[0].5) THEN  ; pipe along Y axis
+    %funz[%IndexORG].origprgX = 0
+    %funz[%IndexORG].origprgY = kine_y
+    %funz[%IndexORG].rotEA = 0
+ENDIF   
+
+
+
+
+
+;******************************************************************************
+; Versione con gestione OFFSET origine impostata
+;******************************************************************************
+IF (%CalPipe[0].General[0].4) THEN  ; pipe along x axis
+    %funz[%IndexORG].origprgX = %funz[%IndexORG].origprgX - %rLsGui65/1000
+    %funz[%IndexORG].origprgY = 0
+    %funz[%IndexORG].rotEA = 0 
+ENDIF 
+
+IF (%CalPipe[0].General[0].5) THEN  ; pipe along Y axis
+    %funz[%IndexORG].origprgX = 0
+    %funz[%IndexORG].origprgY = %funz[%IndexORG].origprgY - %rLsGui65/1000
+    %funz[%IndexORG].rotEA = 0
+ENDIF   
+
+

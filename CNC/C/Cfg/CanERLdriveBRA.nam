@@ -1,0 +1,38 @@
+[PROMPT]
+
+ERL_NUMOBJS =Boot Options
+
+ERL_NUMOBJSLIST =DISABLED, UPLOAD, DOWNLOAD
+
+ERL_ENABLE2 =ENAB
+
+PAR_ERLSET=ERL Set Parameters
+
+ERL_VXOBJ8 = P Vel
+ERL_VXOBJ9 = I Vel
+ERL_VXOBJ10 = P Ferr
+ERL_VXOBJ11 = I Ferr
+ERL_VXOBJ12 = Ferr Window/Enable
+ERL_VXOBJ13 = Block Event
+ERL_VXOBJ14 = Stall Current
+ERL_VXOBJ15 = Brake release delay
+ERL_VXOBJ16 = Brake engage delay
+ERL_VXOBJ17 = P Pos2 
+ERL_VXOBJ18 = I Pos2
+ERL_VXOBJ19 = D Pos2
+ERL_VXOBJ20 = Prescaler P
+ERL_VXOBJ21 = Prescaler I
+ERL_VXOBJ22 = Acc Gain
+ERL_VXOBJ23 = Acc Gain VelFilter
+ERL_VXOBJ24 = Acc Gain AccFilter
+ERL_VXOBJ25 = Fcomp BaseCurr
+ERL_VXOBJ26 = Fcomp BaseRamp
+ERL_VXOBJ27 = Fcomp VelRamp
+ERL_VXOBJ28 = Enable FactorGroup 
+ERL_VXOBJ29 = FactorGroup GearRatio 
+ERL_VXOBJ30 = FactorGroup GearRatio
+ERL_VXOBJ31 = FactorGroup FeedConstant
+ERL_VXOBJ32 = FactorGroup FeedConstant
+
+[HELP]
+

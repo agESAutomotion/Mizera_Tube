@@ -1,0 +1,114 @@
+ : pcmDoLeveling
+;// pipe calibration cycles:
+;// adjusts tube rotation using face facing upwards with given C coordinate
+;// if no C coordinate is given, face is automatically chosen.
+;// Leveling error angle is returned
+;// INPUT:
+;//     pcRequiredCL (QNAN = auto)
+;//     pcRequiredZ
+;//     pcRequiredW
+;// OUTPUT:
+;//     pcErrorL
+DBL c = pcRequiredCL
+DBL z = pcRequiredZ
+DBL w = pcRequiredW
+
+DBL fSimul = %cn[WHO()].rc[0].21
+
+;// See pcsEligibleFace
+;// INPUTS
+DBL pcRequiredC
+DBL pcSearchMode
+;// OUTPUTS
+DBL pcCommonAngle
+DBL pcFaces[2]
+DBL pcVLeads[2]
+DBL pcIsEdge[2]
+DBL pcIsEligible
+;// See pcsEvalFace
+;// INPUT:
+DBL pcFaceToEval
+;// OUTPUT:
+DBL pcAngleBC
+DBL pcLengthBC
+DBL pcPb[2], pcPc[2]
+DBL pcPbr, pcPcr
+DBL pcLb, pcLc
+DBL pcSignB, pcSignC
+;// See pcuNormalProbe
+;// INPUT:
+DBL pcC
+DBL pcV[3]
+DBL pcW
+;// OUTPUT:
+DBL pcAcquired[3]
+
+DBL sn, cs
+DBL xs[2], ys[2]
+DBL thxs[2], thys[2]
+DBL dx, dy, vx, vy
+DBL dst
+
+DBL i
+
+pcRequiredC = c
+pcSearchMode = 1    ;//PC_LEVELING
+JSR "pcsEligibleFace.cfs"
+IF (!pcIsEligible) ERROR(55)
+
+;// Level code
+sn = SIN(pcCommonAngle)
+cs = COS(pcCommonAngle)
+
+FOR i = 0 TO 1
+    pcFaceToEval = pcFaces[i]
+    JSR "pcsEvalFace.cfs"
+
+    IF (i == 0) THEN
+        pcV[0] = cs * (+pcVLeads[i]) + pcPb[0]
+        pcV[1] = sn * (+pcVLeads[i]) + pcPb[1]
+    ELSE
+        pcV[0] = cs * (-pcVLeads[i]) + pcPc[0]
+        pcV[1] = sn * (-pcVLeads[i]) + pcPc[1]
+    ENDIF
+    pcV[2] = z
+    pcW = w
+    pcC = -(pcCommonAngle - 180.0)
+
+    thxs[i] = pcV[0]
+    thys[i] = pcV[1]
+
+    JSR "pcuNormalProbe.cfs"
+
+    xs[i] = pcAcquired[0]
+    ys[i] = pcAcquired[1]
+ENDFOR
+
+;// Rotate 180°
+sn = -sn
+cs = -cs
+
+;//         T
+;// v[0] = R [0] * (s0 - s1)
+;//         T
+;// v[1] = R [1] * ((s0 - ths0) - (s1 - ths1))
+dx = xs[0] - xs[1]
+dy = ys[0] - ys[1]
+vx = +cs * dx +sn * dy
+dx = (xs[0] - thxs[0]) - (xs[1] - thxs[1])
+dy = (ys[0] - thys[0]) - (ys[1] - thys[1])
+vy = -sn * dx +cs * dy
+
+pcErrorL = ATAN(vy / vx)
+
+;// Adjust rotation
+IF (!fSimul) THEN
+    dst = TABIDX(0)
+    G153
+    SYN
+    %tab[dst].t_ttab.t_oart.t_dEC = %tab[dst].t_ttab.t_oart.t_dEC + pcErrorL
+    G152
+    G178 C(pl_add1_c - pcErrorL)
+ENDIF
+
+RET

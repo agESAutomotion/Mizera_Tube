@@ -1,0 +1,11 @@
+*File di messaggi errori fisici
+*I messaggi sono divisi in 3 blocchi:
+*1) 0-499: messaggi generali e I/O
+*2) 500-531: messaggi di errore di ogni asse
+*3) 532-627: nomi assi
+*Le stringhe del secondo e terzo blocco vengono concatenate runtime
+*per creare il messaggio di errore completo
+*
+*Una riga che comincia per asterisco ('*') viene considerata commento
+*Tutte le altre righe non vuote vengono considerate valide
+

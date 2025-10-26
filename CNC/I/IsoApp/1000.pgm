@@ -1,0 +1,453 @@
+%1
+
+INCLUDE "plasma_inc.cfs"
+IF(!DEFINED("vars_included")) INCLUDE "vars_inc.cfs"
+IF(!DEFINED("generic_included")) INCLUDE "generic_inc.cfs"
+
+;Canale in test
+IF( %cn[WHO()].rc[0].21 )   JMP .return
+
+DBL trg_C1
+DBL diff_C1_C
+DBL trg_x, trg_y,trg_z, trg_v, trg_w
+DBL count
+
+DBL sav_G70=XGET("@G70")
+G271
+
+?%C18.2 = 0                             ;Acquisizione origine effettuata
+
+;******************************************************************************
+;   Origin resetting
+;******************************************************************************
+G161 L(ml_usr_origin)
+G186 L(ml_usr_origin)
+G58 C(0)
+pl_orig_c = 0
+
+;******************************************************************************
+;   Service functions
+;******************************************************************************
+IF( %ServiceMillePGM.0 )    JMP .LsrShootOn         ;Laser SHOOT
+IF( %ServiceMillePGM.1 )    JMP .SpindleAligment    ;Spindle aligment
+IF( %ServiceMillePGM.2 )    JMP .CalibChecking      ;Calibration Check
+IF( %ServiceMillePGM.5 )    JMP .UserIso            ;UserIso
+IF( %ServiceMillePGM.6 )    JMP .RtcpControl        ;RTCP control function
+IF( %ServiceMillePGM.7 )    JMP .PrkSpindle         ;Park Spindle to 0 quota
+IF( %ServiceMillePGM.8 )    JMP .semiLoad           ;Semi Loading Request
+IF( %ServiceMillePGM.10 )   JMP .SemiLoadTube       ;Semi Tube Loading 
+IF( %ServiceMillePGM.11 )   JMP .WeldSeamDect       ;Weld seam identification
+IF( %ServiceMillePGM.15 )   JMP .ParkUnloadSup      ;Park Unload Supports with Flaps
+IF(%gPlc13.1)               JMP .acqisizorig        ;Acquisizione origine
+IF(%LsPlc11.0)              JMP .calibraz           ;Gestione calibrazione capacitivo
+IF(%gPlc13.24)              JMP .cleanhead          ;Richiesta routine di pulizia ugello su spazzola
+IF(%C57.3)                  JMP .refresh_origin     ;refresh origin 
+IF(%gPlc13.29)              JMP .ServicePosition    ;Request go Axes to Service Position
+IF(%LsPlc47.17)             JMP .breakP             ;Request break point positioning
+IF((%rLsGui29.0) || (%rLsGui29.1)) JMP .manual_cut  ;manual cut
+JMP .ExitFrom1000
+
+
+;******************************************************************************
+;   Acquisizione Origine selezionata
+;******************************************************************************
+.acqisizorig
+
+; Fixed spindle or Mobile command open
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+
+?%LsIso81.1 = 1 
+
+apa_enable = 1
+apa_list_enable = 0
+IF( %LSRPlcOp0.5 ) apa_list_enable = 1
+apa_call_byprog = 0
+
+; Acquisizione fissa per 1 punto
+apa_mode = 1
+apa_submode = 0
+apa_safe_z = 80.0
+
+; Se acquisizione origine lanciata da pagina LISTE, per default � per 1 punto
+IF( %Uipl.Page == 5000 ) THEN
+    apa_mode = 1
+    apa_submode = 1
+ENDIF
+
+JSR "APA.cfs"
+
+JSR "graph_set_kine.cfs" ; to refresh pointer
+
+
+JMP .ExitFrom1000
+
+
+;******************************************************************************
+;   Sezione esecuzione ciclo di Calibrazione capacitivo
+;******************************************************************************
+.calibraz
+
+; Fixed spindle AND Mobile command close
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+
+?%LsIso81.2 = 1 
+    
+; Nozzle cleaning enable
+IF( %LSRPlcOp[1].5) THEN
+    JSR "CleanHead.cfs"     
+    G153 G1 X(%Cost_User[22]/1000) Y(%Cost_User[24]/1000) F40000    ; X Y for fixed point calibration
+ENDIF 
+
+; Calibration
+DBL lCurAng = 0
+SYN
+lCurAng = ROUND( QCALC(AXIDX(3,C)) / 90 )*90
+G11000 C(lCurAng)
+
+?%LsIso81.21 = 1          
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   PULIZIA TESTA
+;******************************************************************************
+.cleanhead             
+; Fixed spindle or Mobile command open
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+
+?%LsIso81.8 = 1 
+
+JSR "CleanHead.cfs"
+
+?%LsIso81.9 = 1  
+ 
+JMP .ExitFrom1000
+
+;*******************************************************************************
+.refresh_origin
+?%LsIso81.10 = 1 
+
+G254
+JSR "graph_set_kine.cfs"
+ 
+JMP .ExitFrom1000
+
+;************************************************************************************
+.breakP
+
+?%LsIso81.13 = 1 
+
+G161 L(ml_usr_origin) X(orig_x) Y(orig_y) Z(orig_z)                            
+G172 T1 H1 D1       ; (Abilita RTCP)                                                        
+JSR "Sel_Y3Z3.cfs"  ; Acquisisce anche LE quote Y dell'asse Vero (Funziona solo per 1 punto)
+
+F40000
+G1 X(%R13/1000) Y(%R14/1000)
+
+?%LsIso81.14 = 1
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   Service position
+;******************************************************************************
+.ServicePosition
+
+?%LsIso81.15 = 1 
+SYN
+G806 A11 T3 N1 H1 D1 E1
+gOptimEnableG806 = 0
+JSR "ServicePos.cfs"
+?%LsIso81.16 = 1 
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   Capacitive test
+;******************************************************************************
+.manual_cut
+
+?%LsIso81.19 = 1 
+JSR "ManCut.cfs"
+?%LsIso81.20 = 1 
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   SPINDLE ALIGMENT
+;******************************************************************************
+.SpindleAligment
+
+$ SPINDLE ALIGMENT...
+
+SYN
+JSR "Sel_Y3Z3.cfs"
+G153 G0 Z(trav_safe_z)
+
+SYN
+%LsIso2.1 = 1           ; Unlock gearing C-C1
+AWAIT(%M201)            ; * M201 Feedback gearing C-C1
+
+trg_C1 = QCALC( AXIDX(5,C) )
+diff_C1_C = ABS( QCALC( AXIDX(3,C) ) - trg_C1 )
+
+IF( diff_C1_C > 10 ) THEN
+    MSGOUT "Is not possible execute this function (diff > 10 degree)"
+    G4 F4
+ELSE
+    G153 G1 C(trg_C1) F100
+    G4 F1
+ENDIF
+
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+
+SYN
+%LsIso2.1 = 0           ; lock gearing C-C1
+AWAIT(%M201==0)         ; * M201 Feedback gearing C-C1
+
+G4 F1
+
+SYN
+$ 
+
+JMP .ExitFrom1000
+
+
+;******************************************************************************
+;   LASER SHOOT ON/OFF
+;******************************************************************************
+.LsrShootOn
+
+; Fixed spindle or Mobile command open
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+
+$ SHOOT ON...
+M301    ; Load data for shooting
+
+?%TabLsr[0].L_CutFocal = %TabLsr0.L_UserInt2 /1000
+
+IF( %LsrGest0.ShootGasType != 3 ) THEN     
+    IF( %LsrGest0.ShootGasType == 0 ) M480  ; O2
+    IF( %LsrGest0.ShootGasType == 1 ) M481  ; N2
+    IF( %LsrGest0.ShootGasType == 2 ) M482  ; Air
+    
+;    ; Wait GAS feedback
+;    FOR count=0 TO 100
+;        SYN
+;        ; if gas setted - gas feedback < 0.4 bar OK
+;        IF( (%LsPlc38 - %LsPlc35) < 400 ) THEN       
+;            POP(2)
+;            JMP .okFeedback
+;        ENDIF
+;        G4 F0.1
+;    ENDFOR
+;    ERROR(789)
+;.okFeedback
+ENDIF
+
+M410    ; Shoot ON
+G4 F (%LsrGest0.ShootTime/100 )
+M411    ; Shoot OFF
+
+SYN
+$ 
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   RTCP CONTROL FUNCTION
+;******************************************************************************
+.RtcpControl
+
+; Fixed spindle or Mobile command open
+SYN
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+
+IF( ABS(QCALC(AXIDX(3,C))) > 45 ) THEN
+    RPT .S_Prk_Follower, .E_Prk_Follower, 1
+ENDIF
+JSR "rtcp_control.cfs"
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   PARK SPINDLE 0 QUOTA
+;******************************************************************************
+.PrkSpindle
+
+; Fixed spindle or Mobile command open
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+
+RPT .S_Prk_Follower, .E_Prk_Follower, 1
+
+SYN
+JSR "Sel_Y3Z3.cfs"
+G153 G0 Z(trav_safe_z)
+SYN
+POSA[Y] = 0  POSA[C] = 0  
+
+IF (AEXISTS(3,B)) THEN
+   POSA[B] = 0
+   WAITP[Y,B,C]   
+ELSE
+   WAITP[Y,C]
+ENDIF
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   Semi Loading Request
+;******************************************************************************
+.semiLoad
+
+JSR "SemiLD.cfu"
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   CALIBRATION CHECKING
+;******************************************************************************
+
+.CalibChecking
+; Fixed spindle or Mobile command open
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+
+IF( %LSRPlcOp1.8 ) THEN
+
+    SYN
+    IF( ABS(QCALC(AXIDX(3,C))) > 3 ) THEN
+        RPT .S_Prk_Follower, .E_Prk_Follower, 1
+    ENDIF
+
+    IF( %IndexORG == 19 ) THEN
+        JSR "Sel_Y3Z3.cfs"
+        G153 G1 Z(MaxQta_Z - 10) F5000
+        IF (AEXISTS(3,B)) G153 G1 B0
+        IF (AEXISTS(3,A)) G153 G1 A0
+        G153 G1 C0 F5000
+    ENDIF
+
+    JSR "calibration_control.cfs"
+ENDIF
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   Semi Tube Loading
+;******************************************************************************
+.SemiLoadTube
+
+JSR "LoadInit.cfs"
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   Weld seam identification
+;******************************************************************************
+.WeldSeamDect 
+
+RPT .S_Prk_Follower, .E_Prk_Follower, 1
+
+JSR "WeldDetec.cfu"
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   Park Unload Supports with Flaps
+;******************************************************************************
+.ParkUnloadSup
+	;AllFlapsHome AT %UNLOADER.boolean.21;
+	?%UNLOADER.boolean.21 = 1
+	
+	;I_I_Flap_Home   AT %USR_M12.9;
+	;I_I_FlapL2_Home AT %USR_M1.29; 
+	;I_I_FlapL3_Home AT %USR_M12.27;
+	;I_I_FlapL4_Home AT %USR_M12.29;
+	;I_I_FlapL5_Home AT %USR_M12.31;
+	SYN
+	IF( AEXISTS(8,Y) ) WAITBIT("%USR_M12.9",1)
+	IF( AEXISTS(8,Z) ) WAITBIT("%USR_M1.29",1)
+	IF( AEXISTS(8,U) ) WAITBIT("%USR_M12.27",1)
+	IF( AEXISTS(8,V) ) WAITBIT("%USR_M12.29",1)
+	IF( AEXISTS(8,W) ) WAITBIT("%USR_M12.31",1)
+	
+    ?%UNLOADER.boolean.21 = 0
+	  
+    ;ParkAllCmd AT %UNLOADER.boolean.6;
+    ?%UNLOADER.boolean.6 = 1
+   
+	SYN
+    IF (AEXISTS(8,Z)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,Z)].ra4 / 1000)) < 0.1)
+    IF (AEXISTS(8,Y)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,Y)].ra4 / 1000)) < 0.1)
+    IF (AEXISTS(8,U)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,U)].ra4 / 1000)) < 0.1)
+    IF (AEXISTS(8,V)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,V)].ra4 / 1000)) < 0.1)
+    IF (AEXISTS(8,W)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,W)].ra4 / 1000)) < 0.1)
+    SYN
+    ?%UNLOADER.boolean.6 = 0
+JMP .ExitFrom1000
+
+;******************************************************************************
+;   USER ISO
+;******************************************************************************
+.UserIso
+
+  JSR "UserIso1000.cfs"
+
+JMP .ExitFrom1000
+
+;******************************************************************************
+.S_Prk_Follower
+   IF( %config_machine0.6 ) THEN   
+       ;ParkAll Loader Supports
+	   M725
+	  
+	   ;AllFlapsHome AT %UNLOADER.boolean.21;
+	   ?%UNLOADER.boolean.21 = 1
+	   
+	   ;I_I_Flap_Home   AT %USR_M12.9;
+	   ;I_I_FlapL2_Home AT %USR_M1.29; 
+	   ;I_I_FlapL3_Home AT %USR_M12.27;
+	   ;I_I_FlapL4_Home AT %USR_M12.29;
+	   ;I_I_FlapL5_Home AT %USR_M12.31;
+	   SYN
+	   IF( AEXISTS(8,Y) ) WAITBIT("%USR_M12.9",1)
+	   IF( AEXISTS(8,Z) ) WAITBIT("%USR_M1.29",1)
+	   IF( AEXISTS(8,U) ) WAITBIT("%USR_M12.27",1)
+	   IF( AEXISTS(8,V) ) WAITBIT("%USR_M12.29",1)
+	   IF( AEXISTS(8,W) ) WAITBIT("%USR_M12.31",1)
+	   
+       ?%UNLOADER.boolean.21 = 0
+	  
+       ;ParkAllCmd AT %UNLOADER.boolean.6;
+       ?%UNLOADER.boolean.6 = 1
+   
+       SYN
+       IF (AEXISTS(5,Z)) AWAIT(ABS((%LOADER.values15 / 1000) - (%ax[AXIDX(5,Z)].ra4 / 1000)) < 0.1)
+       IF (AEXISTS(5,Y)) AWAIT(ABS((%LOADER.values15 / 1000) - (%ax[AXIDX(5,Y)].ra4 / 1000)) < 0.1)
+       IF (AEXISTS(5,U)) AWAIT(ABS((%LOADER.values15 / 1000) - (%ax[AXIDX(5,U)].ra4 / 1000)) < 0.1)
+       IF (AEXISTS(5,V)) AWAIT(ABS((%LOADER.values15 / 1000) - (%ax[AXIDX(5,V)].ra4 / 1000)) < 0.1)
+   
+	   SYN
+       IF (AEXISTS(8,Z)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,Z)].ra4 / 1000)) < 0.1)
+       IF (AEXISTS(8,Y)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,Y)].ra4 / 1000)) < 0.1)
+       IF (AEXISTS(8,U)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,U)].ra4 / 1000)) < 0.1)
+       IF (AEXISTS(8,V)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,V)].ra4 / 1000)) < 0.1)
+       IF (AEXISTS(8,W)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,W)].ra4 / 1000)) < 0.1)
+       SYN
+       ?%UNLOADER.boolean.6 = 0
+   ENDIF
+.E_Prk_Follower
+
+;******************************************************************************
+.ExitFrom1000
+G(200+sav_G70)
+.return
+
+M30
+M2

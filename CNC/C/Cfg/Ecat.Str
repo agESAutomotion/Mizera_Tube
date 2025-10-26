@@ -1,0 +1,3687 @@
+
+[STRUCT]
+
+#include "CanEBSdrive.str" 
+#include "CanTDEdrive.str" 
+#include "CanERLdrive.str" 
+#include "CanLXdrive.str" 
+#include "CanYAdrive.str" 
+#include "CanBusMonitor.str" 
+#include "CanBusDriveStatus.str" 
+
+KEY_ECAT {
+    KEY_ECAT0;
+}
+
+KEY_ECAT0 {
+	KEY_ECATRNODES,ecat_ring0;
+    KEY_ECAT_ND,ecat_ring0.EcatNode,ecat_ring.can_drives;
+	KEY_ECATPARAM,ecat_ring0.EcatNode,ecat_ring.can_drives;
+    KEY_ECATSERVICE,ecat_ring0.EcatNode,ecat_ring.can_drives;
+    KEY_ECATMONITOR,ecat_ring0.EcatNode,ecat_ring.can_drives;
+    KEY_ECATDRIVESTATUS,ecat_ring0.EcatNode,ecat_ring.can_drives;
+	KEY_ECATDIAG,ecat_ring0.EcatNode,ecat_ring.can_drives;
+}
+
+#include "EcatBusRing.str" 
+
+
+
+KEY_ECAT_ND {
+	SPACE,(220,0);
+    EC_ND_NODE;
+    ND_MDSLOTID;
+    ND_ALIAS;
+	ND_OUTOFORDER;
+	ND_VIRTUAL;
+	$,*,EC_XMLDRIVECONF;
+	$,EC_BTN_LOAD_XMLFILENAME;
+	SPACE;
+
+    if( CanProf==402 ) {
+        ?R-1,EC_NDD_AXNAM;
+    }
+    ?R-1,EC_NDD_DNAME;
+    ?R-1,EC_NDD_HVERS;
+    ?R-1,EC_NDD_SVERS;
+                                  
+    *,ND_PROFILE;
+    ND_GUARD;
+    ND_LIFE;
+                                      
+    if( CanProf==301 ) {
+		*,DV_TYPE0;
+        DR_SWIDE0;
+        DR_SWIDE1;
+        DR_FEED0;
+        DR_SHAFT0;
+		SPACE;
+
+		PAR_LINE;
+		ND_NUMOBJS;
+		KEY_PARSET1;
+		IXOBJ0;
+		VXOBJ0;
+		IXOBJ1;
+		VXOBJ1;
+		IXOBJ2;
+		VXOBJ2;
+		IXOBJ3;
+		VXOBJ3;
+		IXOBJ4;
+		VXOBJ4;
+		IXOBJ5;
+		VXOBJ5;
+		IXOBJ6;
+		VXOBJ6;
+		IXOBJ7;
+		VXOBJ7;
+		KEY_PARSET2;
+		IXOBJ8; 
+		VXOBJ8;
+		IXOBJ9;
+		VXOBJ9;
+		IXOBJ10;
+		VXOBJ10;
+		IXOBJ11;
+		VXOBJ11;
+		IXOBJ12;
+		VXOBJ12;
+		IXOBJ13;
+		VXOBJ13;
+		IXOBJ14;
+		VXOBJ14;
+		IXOBJ15;
+		VXOBJ15;
+		KEY_PARSET3;
+		IXOBJ16;
+		VXOBJ16;
+		IXOBJ17;
+		VXOBJ17;
+		IXOBJ18;
+		VXOBJ18;
+		IXOBJ19;
+		VXOBJ19;
+		IXOBJ20;
+		VXOBJ20;
+		IXOBJ21;
+		VXOBJ21;
+		IXOBJ22;
+		VXOBJ22;
+		IXOBJ23;
+		VXOBJ23;
+		KEY_PARSET4;
+		IXOBJ24;
+		VXOBJ24;
+		IXOBJ25;
+		VXOBJ25;
+		IXOBJ26;
+		VXOBJ26;
+		IXOBJ27;
+		VXOBJ27;
+		IXOBJ28;
+		VXOBJ28;
+		IXOBJ29;
+		VXOBJ29;
+		IXOBJ30;
+		VXOBJ30;
+		IXOBJ31;
+		VXOBJ31;
+    }
+
+    if( CanProf==402 ) {
+		*,EC_DR_TYPE0;
+        DR_SWIDE0;
+        DR_SWIDE1;
+        DR_REGTY0;
+        DR_FEED0;
+        DR_SHAFT0;
+        DR_FEEDDELAY;
+		SPACE;
+		EC_DR_ENABGEARBOX;
+		EC_DR_GEARMODULEREV;
+		SPACE;
+		
+        if( CanAx0.AxTy == 50 ) {        // ED Series Drives
+			PAR_OPTIONS;
+            *,EBS_NUMOBJS;
+                    
+			EBS_IXOBJ0;
+			EBS_VXOBJ0;
+
+			EBS_VXOBJ1;
+			EBS_IXOBJ1;
+			EBS_MONVAROUTPUT;
+			
+			SPACE;
+            PAR_COMMAND;
+			EC_BTN_NODE_LOAD;
+			EC_BTN_NODE_SAVE;
+			EC_BTN_NODE_UPLOAD;
+			EC_BTN_NODE_DOWNLOAD;
+			EC_BTN_NODE_SAVE_FLASH;
+			$,EBS_MOTORNAME;
+			$,?R-1,EDT_NODE_REPORT;
+			SPACE;
+			PAR_CURRENT;
+			$,EBS_VXOBJ12;
+			$,EBS_VXOBJ13;
+			$,EBS_VXOBJ14;
+			$,EBS_VXOBJ15;
+			$,?R0,EBS_VXOBJ16;
+			PAR_SPEED;
+			$,EBS_VXOBJ23;
+			$,EBS_VXOBJ17;
+			$,EBS_VXOBJ18;
+			$,EBS_VXOBJ19;
+			$,EBS_VXOBJ21;
+			$,EBS_VXOBJ47;
+			PAR_POSITION;
+			$,EBS_VXOBJ39;
+			$,EBS_VXOBJ38;
+			$,EBS_VXOBJ43;
+            $,EBS_VXOBJ53;
+            $,EBS_VXOBJ54;
+
+			PAR_SECONDSET;
+            $,EBS_VXOBJ49;
+            $,EBS_VXOBJ50;
+            $,EBS_VXOBJ51;
+            $,EBS_VXOBJ52;
+            
+			PAR_MOTOR;
+			$,?R0,EBS_VXOBJ33;
+			$,EBS_VXOBJ34;
+			$,?R0,EBS_VXOBJ32;
+			$,EBS_VXOBJ20;
+			$,?R0,EBS_VXOBJ31;
+			$,EBS_VXOBJ37;
+			$,EBS_VXOBJ48;
+			$,EBS_VXOBJ22;
+			$,EBS_VXOBJ35;
+			$,EBS_VXOBJ36;
+			$,?R0,EBS_VXOBJ24;
+			PAR_CONFALARM;
+			$,EBS_VXOBJ58;
+			$,EBS_VXOBJ45;
+			$,EBS_VXOBJ46;
+        }
+        if( CanAx0.AxTy == 70 ) {      // EBS Drives
+			PAR_OPTIONS;
+            *,EBS_NUMOBJS;
+                    
+			EBS_IXOBJ0;
+			EBS_VXOBJ0;
+            
+			EBS_VXOBJ1;
+			EBS_IXOBJ1;
+			EBS_MONVAROUTPUT;
+    
+			SPACE;
+            PAR_COMMAND;
+			EC_BTN_NODE_LOAD;
+			EC_BTN_NODE_SAVE;
+			EC_BTN_NODE_UPLOAD;
+			EC_BTN_NODE_DOWNLOAD;
+			EC_BTN_NODE_SAVE_FLASH;
+			$,EBS_MOTORNAME;
+			$,?R-1,EDT_NODE_REPORT;
+			SPACE;
+			PAR_OPTIONAL;
+			$,EBS_VXOBJ40;
+			$,EBS_VXOBJ41;
+			$,EBS_VXOBJ42;
+			PAR_SUPPLY;
+			$,EBS_VXOBJ8;
+			$,EBS_VXOBJ44;
+			PAR_BRAKINGCIRCUIT;
+			$,EBS_VXOBJ9;
+			$,EBS_VXOBJ10;
+			$,EBS_VXOBJ11;
+			PAR_CURRENT;
+			$,EBS_VXOBJ12;
+			$,EBS_VXOBJ13;
+			$,EBS_VXOBJ14;
+			$,EBS_VXOBJ15;
+			$,?R0,EBS_VXOBJ16;
+			PAR_SPEED;
+			$,EBS_VXOBJ23;
+			$,EBS_VXOBJ17;
+			$,EBS_VXOBJ18;
+			$,EBS_VXOBJ19;
+			$,EBS_VXOBJ21;
+            $,EBS_VXOBJ47;
+			PAR_POSITION;
+			$,EBS_VXOBJ39;
+			$,EBS_VXOBJ38;
+			$,EBS_VXOBJ43;
+            $,EBS_VXOBJ53;
+            $,EBS_VXOBJ54;
+
+			PAR_SECONDSET;
+            $,EBS_VXOBJ49;
+            $,EBS_VXOBJ50;
+            $,EBS_VXOBJ51;
+            $,EBS_VXOBJ52;
+            
+			PAR_MOTOR;
+			$,?R0,EBS_VXOBJ55;
+			$,?R0,EBS_VXOBJ33;
+			$,EBS_VXOBJ34;
+			$,EBS_VXOBJ57;
+			$,?R0,EBS_VXOBJ32;
+			$,EBS_VXOBJ20;
+			$,EBS_VXOBJ56;
+			$,?R0,EBS_VXOBJ31;
+			$,EBS_VXOBJ37;
+			$,EBS_VXOBJ48;
+			$,EBS_VXOBJ22;
+			$,EBS_VXOBJ35;
+			$,EBS_VXOBJ36;
+			$,?R0,EBS_VXOBJ24;
+			PAR_CONFALARM;
+			$,EBS_VXOBJ58;
+			$,EBS_VXOBJ45;
+			$,EBS_VXOBJ46;
+			PAR_INPUTFUN;
+			$,EBS_VXOBJ26;
+			$,EBS_VXOBJ27;
+			$,EBS_VXOBJ28;
+			$,EBS_VXOBJ29;
+			$,EBS_VXOBJ30;
+			$,EBS_VXOBJ25_1;
+			$,EBS_VXOBJ25_2;
+			$,EBS_VXOBJ25_3;
+			$,EBS_VXOBJ25_4;
+			$,EBS_VXOBJ25_5;
+		}
+        if( CanAx0.AxTy == 180 ) {    // Switch Ethercat CanOpen Bystorm
+			PAR_OPTIONS;
+            *,EBS_NUMOBJS;
+                    
+			EBS_IXOBJ0;
+			EBS_VXOBJ0;
+            
+			EBS_VXOBJ1;
+			EBS_IXOBJ1;
+			EBS_MONVAROUTPUT;
+    
+			SPACE;
+            PAR_COMMAND;
+			EC_BTN_NODE_LOAD;
+			EC_BTN_NODE_SAVE;
+			EC_BTN_NODE_UPLOAD;
+			EC_BTN_NODE_DOWNLOAD;
+			EC_BTN_NODE_SAVE_FLASH;
+			$,EBS_MOTORNAME;
+			$,?R-1,EDT_NODE_REPORT;
+			SPACE;
+			PAR_OPTIONAL;
+			$,EBS_VXOBJ40;
+			$,EBS_VXOBJ41;
+			$,EBS_VXOBJ42;
+			PAR_SUPPLY;
+			$,EBS_VXOBJ8;
+			$,EBS_VXOBJ44;
+			PAR_BRAKINGCIRCUIT;
+			$,EBS_VXOBJ9;
+			$,EBS_VXOBJ10;
+			$,EBS_VXOBJ11;
+			PAR_CURRENT;
+			$,EBS_VXOBJ12;
+			$,EBS_VXOBJ13;
+			$,EBS_VXOBJ14;
+			$,EBS_VXOBJ15;
+			$,?R0,EBS_VXOBJ16;
+			PAR_SPEED;
+			$,EBS_VXOBJ23;
+			$,EBS_VXOBJ17;
+			$,EBS_VXOBJ18;
+			$,EBS_VXOBJ19;
+			$,EBS_VXOBJ21;
+            $,EBS_VXOBJ47;
+			PAR_POSITION;
+			$,EBS_VXOBJ39;
+			$,EBS_VXOBJ38;
+			$,EBS_VXOBJ43;
+            $,EBS_VXOBJ53;
+            $,EBS_VXOBJ54;
+
+			PAR_SECONDSET;
+            $,EBS_VXOBJ49;
+            $,EBS_VXOBJ50;
+            $,EBS_VXOBJ51;
+            $,EBS_VXOBJ52;
+            
+			PAR_MOTOR;
+			$,?R0,EBS_VXOBJ55;
+			$,?R0,EBS_VXOBJ33;
+			$,EBS_VXOBJ34;
+			$,EBS_VXOBJ57;
+			$,?R0,EBS_VXOBJ32;
+			$,EBS_VXOBJ20;
+			$,EBS_VXOBJ56;
+			$,?R0,EBS_VXOBJ31;
+			$,EBS_VXOBJ37;
+			$,EBS_VXOBJ48;
+			$,EBS_VXOBJ22;
+			$,EBS_VXOBJ35;
+			$,EBS_VXOBJ36;
+			$,?R0,EBS_VXOBJ24;
+			PAR_CONFALARM;
+			$,EBS_VXOBJ58;
+			$,EBS_VXOBJ45;
+			$,EBS_VXOBJ46;
+			PAR_INPUTFUN;
+			$,EBS_VXOBJ26;
+			$,EBS_VXOBJ27;
+			$,EBS_VXOBJ28;
+			$,EBS_VXOBJ29;
+			$,EBS_VXOBJ30;
+			$,EBS_VXOBJ25_1;
+			$,EBS_VXOBJ25_2;
+			$,EBS_VXOBJ25_3;
+			$,EBS_VXOBJ25_4;
+			$,EBS_VXOBJ25_5;
+		}
+        if( CanAx0.AxTy==90 ) {
+            PAR_OPTIONS;
+			TDE_IXOBJ1;
+			TDE_MONVAROUTPUT;
+        }
+        if( CanAx0.AxTy==120 ) {
+			PAR_OPTIONS;
+            *,ERL_NUMOBJS;
+                    
+			SPACE;
+            PAR_COMMAND;
+			EC_BTN_NODE_UPLOAD;
+			EC_BTN_NODE_DOWNLOAD;
+			EC_BTN_NODE_SAVE_FLASH;
+			$,?R-1,EDT_NODE_REPORT;
+			SPACE;
+			PAR_ERLSET;
+			$,ERL_VXOBJ8;
+			$,ERL_VXOBJ9;
+			$,ERL_VXOBJ10;
+			$,ERL_VXOBJ11;
+			$,ERL_VXOBJ12;
+			$,ERL_VXOBJ13;
+			$,ERL_VXOBJ14;
+			$,ERL_VXOBJ15;
+			$,ERL_VXOBJ16;
+			$,ERL_VXOBJ17;
+			$,ERL_VXOBJ18;
+			$,ERL_VXOBJ19;
+			$,ERL_VXOBJ20;
+			$,ERL_VXOBJ21;
+			$,ERL_VXOBJ22;
+			$,ERL_VXOBJ23;
+			$,ERL_VXOBJ24;
+			$,ERL_VXOBJ25;
+			$,ERL_VXOBJ26;
+			$,ERL_VXOBJ27;
+			$,ERL_VXOBJ28;
+			$,ERL_VXOBJ29;
+			$,ERL_VXOBJ30;
+			$,ERL_VXOBJ31;
+			$,ERL_VXOBJ32;
+        }
+        
+        if( CanAx0.AxTy==140 ) {
+			PAR_OPTIONS;
+
+            ECATVXOBJ0;
+            ECATVXOBJ1;
+            ECATVXOBJ2;
+            ECATVXOBJ3;
+            ECATVXOBJ4;
+            ECATVXOBJ5;
+            SPACE;
+
+            *,ERL_NUMOBJS;
+                    
+			SPACE;
+            PAR_COMMAND;
+			EC_BTN_NODE_UPLOAD;
+			EC_BTN_NODE_DOWNLOAD;
+			EC_BTN_NODE_SAVE_FLASH;
+			$,?R-1,EDT_NODE_REPORT;
+
+            SPACE,(600,800);
+			PAR_LXRECORD1,(-200,+16);
+			$,LX_VXOBJ8,(+200,+16);
+			$,LX_VXOBJ9;
+			$,LX_VXOBJ10;
+			$,LX_VXOBJ11;
+			$,LX_VXOBJ12;
+			$,LX_VXOBJ13;
+			$,LX_VXOBJ14;
+			$,LX_VXOBJ15;
+			$,LX_VXOBJ16;
+			$,LX_VXOBJ17;
+			$,LX_VXOBJ18;
+			$,LX_VXOBJ19;
+			$,LX_VXOBJ20;
+			$,LX_VXOBJ21;
+			$,LX_VXOBJ22;
+            
+            PAR_LXDGTIN,(-200,+64);
+			$,LX_VXOBJ23,(+200,+16);
+			$,LX_VXOBJ24;
+			$,LX_VXOBJ25;
+			$,LX_VXOBJ26;
+			$,LX_VXOBJ27;
+			$,LX_VXOBJ28;
+			$,LX_VXOBJ29;
+			$,LX_VXOBJ30;
+			$,LX_VXOBJ31;
+			$,LX_VXOBJ32;
+			$,LX_VXOBJ33;
+			$,LX_VXOBJ34;
+			$,LX_VXOBJ35;
+        }
+        
+        if(VendorID == 1337) {		//Drives YASKAWA
+			//Parametri YASKAWA nella finestra PARAM
+        }
+
+        if(VendorID == 22) {		//Drives LTI Motion
+            PAR_OPTIONS;
+        }
+        
+        if( CanAx0.AxTy!=50 ) {
+        if( CanAx0.AxTy!=70 ) {
+        if( CanAx0.AxTy!=180 ) {
+        if( CanAx0.AxTy!=90 ) {
+        if( CanAx0.AxTy!=120 ) {
+        if( CanAx0.AxTy!=140 ) {
+        if( VendorID!=22 ) {
+            ECATVXOBJ0;
+            ECATVXOBJ1;
+            ECATVXOBJ2;
+            ECATVXOBJ3;
+            ECATVXOBJ4;
+            ECATVXOBJ5;
+            SPACE;
+        }
+        }
+        }
+        }
+
+        if(VendorID == 41) {		//Drives INTEC
+			PAR_OPTIONS;
+            *,YA_NUMOBJS;
+                    
+			SPACE;
+            PAR_COMMAND;
+			EC_BTN_NODE_UPLOAD;
+			EC_BTN_NODE_DOWNLOAD;
+			EC_BTN_NODE_SAVE_FLASH;
+			$,?R-1,EDT_NODE_REPORT;
+
+			SPACE;
+
+			KEY_HEADER;
+			#include "EcatINTEC_DRIVES.str"
+        }
+
+		if(VendorID == 65535) {		//Drives SKD
+			PAR_OPTIONS;
+            *,YA_NUMOBJS;
+                    
+			SPACE;
+            PAR_COMMAND;
+			EC_BTN_NODE_UPLOAD;
+			EC_BTN_NODE_DOWNLOAD;
+			EC_BTN_NODE_SAVE_FLASH;
+			$,?R-1,EDT_NODE_REPORT;
+
+			SPACE;
+
+			KEY_HEADER;
+            #include "EcatSKD.str"
+        }
+
+		if(VendorID == 136) {		//QDrives drives
+		if ( CanDName1==3 ) {
+			PAR_OPTIONS;
+            *,YA_NUMOBJS;
+                    
+			SPACE;
+            PAR_COMMAND;
+			EC_BTN_NODE_UPLOAD;
+			EC_BTN_NODE_DOWNLOAD;
+			//EC_BTN_NODE_SAVE_FLASH; su QDrives non gestito l'oggetto 0x1010
+			$,?R-1,EDT_NODE_REPORT;
+
+			SPACE;
+
+			KEY_HEADER;
+			#include "EcatQDrives.str"
+        }
+        }
+    }        
+    }        
+    }        
+    }        
+    
+
+    if( CanProf==406 ) {
+		SPACE;
+		EN_EC_TYPE0;
+		EN_SWIDE0;
+		EN_FEED0;
+		EN_SHAFT0;
+		SPACE;
+		EN_EC_TYPE1;
+		EN_SWIDE1;
+		EN_FEED1;
+		EN_SHAFT1;
+
+		PAR_LINE;
+		ND_NUMOBJS;
+		KEY_PARSET1;
+		IXOBJ0;
+		VXOBJ0;
+		IXOBJ1;
+		VXOBJ1;
+		IXOBJ2;
+		VXOBJ2;
+		IXOBJ3;
+		VXOBJ3;
+		IXOBJ4;
+		VXOBJ4;
+		IXOBJ5;
+		VXOBJ5;
+		IXOBJ6;
+		VXOBJ6;
+		IXOBJ7;
+		VXOBJ7;
+		KEY_PARSET2;
+		IXOBJ8; 
+		VXOBJ8;
+		IXOBJ9;
+		VXOBJ9;
+		IXOBJ10;
+		VXOBJ10;
+		IXOBJ11;
+		VXOBJ11;
+		IXOBJ12;
+		VXOBJ12;
+		IXOBJ13;
+		VXOBJ13;
+		IXOBJ14;
+		VXOBJ14;
+		IXOBJ15;
+		VXOBJ15;
+		KEY_PARSET3;
+		IXOBJ16;
+		VXOBJ16;
+		IXOBJ17;
+		VXOBJ17;
+		IXOBJ18;
+		VXOBJ18;
+		IXOBJ19;
+		VXOBJ19;
+		IXOBJ20;
+		VXOBJ20;
+		IXOBJ21;
+		VXOBJ21;
+		IXOBJ22;
+		VXOBJ22;
+		IXOBJ23;
+		VXOBJ23;
+		KEY_PARSET4;
+		IXOBJ24;
+		VXOBJ24;
+		IXOBJ25;
+		VXOBJ25;
+		IXOBJ26;
+		VXOBJ26;
+		IXOBJ27;
+		VXOBJ27;
+		IXOBJ28;
+		VXOBJ28;
+		IXOBJ29;
+		VXOBJ29;
+		IXOBJ30;
+		VXOBJ30;
+		IXOBJ31;
+		VXOBJ31;
+    }                     
+
+    if( CanProf==408 ) {
+		*,VL_TYPE0;
+        DR_SWIDE0;
+        DR_SWIDE1;
+		SPACE;
+
+		PAR_LINE;
+		ND_NUMOBJS;
+		KEY_PARSET1;
+		IXOBJ0;
+		VXOBJ0;
+		IXOBJ1;
+		VXOBJ1;
+		IXOBJ2;
+		VXOBJ2;
+		IXOBJ3;
+		VXOBJ3;
+		IXOBJ4;
+		VXOBJ4;
+		IXOBJ5;
+		VXOBJ5;
+		IXOBJ6;
+		VXOBJ6;
+		IXOBJ7;
+		VXOBJ7;
+		KEY_PARSET2;
+		IXOBJ8; 
+		VXOBJ8;
+		IXOBJ9;
+		VXOBJ9;
+		IXOBJ10;
+		VXOBJ10;
+		IXOBJ11;
+		VXOBJ11;
+		IXOBJ12;
+		VXOBJ12;
+		IXOBJ13;
+		VXOBJ13;
+		IXOBJ14;
+		VXOBJ14;
+		IXOBJ15;
+		VXOBJ15;
+		KEY_PARSET3;
+		IXOBJ16;
+		VXOBJ16;
+		IXOBJ17;
+		VXOBJ17;
+		IXOBJ18;
+		VXOBJ18;
+		IXOBJ19;
+		VXOBJ19;
+		IXOBJ20;
+		VXOBJ20;
+		IXOBJ21;
+		VXOBJ21;
+		IXOBJ22;
+		VXOBJ22;
+		IXOBJ23;
+		VXOBJ23;
+		KEY_PARSET4;
+		IXOBJ24;
+		VXOBJ24;
+		IXOBJ25;
+		VXOBJ25;
+		IXOBJ26;
+		VXOBJ26;
+		IXOBJ27;
+		VXOBJ27;
+		IXOBJ28;
+		VXOBJ28;
+		IXOBJ29;
+		VXOBJ29;
+		IXOBJ30;
+		VXOBJ30;
+		IXOBJ31;
+		VXOBJ31;
+    }        
+    }        
+    }        
+	
+    if( CanProf==401 ) {
+		ND_NUMDEV;
+		PAR_PDO1;
+		PDO1TY;
+		PDO1TX;
+		PDO1TM;
+		PDO1IW1;
+		PDO1MP1;
+		PDO1IW2;
+		PDO1MP2;
+		PDO1IW3;
+		PDO1MP3;
+		PDO1IW4;
+		PDO1MP4;
+		PDO1IW5;
+		PDO1MP5;
+		PDO1IW6;
+		PDO1MP6;
+		PDO1IW7;
+		PDO1MP7;
+		PDO1IW8;
+		PDO1MP8;
+
+		PAR_PDO2;
+		PDO2TY; 
+		PDO2TX; 
+		PDO2TM; 
+		PDO2IW1;
+		PDO2MP1; 
+		PDO2IW2;
+		PDO2MP2; 
+		PDO2IW3;
+		PDO2MP3; 
+		PDO2IW4;
+		PDO2MP4; 
+		PDO2IW5;
+		PDO2MP5; 
+		PDO2IW6;
+		PDO2MP6; 
+		PDO2IW7;
+		PDO2MP7;
+		PDO2IW8;
+		PDO2MP8;
+
+		PAR_PDO3;
+		PDO3TY; 
+		PDO3TX;
+		PDO3TM;
+		PDO3IW1;
+		PDO3MP1;
+		PDO3IW2;
+		PDO3MP2;
+		PDO3IW3;
+		PDO3MP3;
+		PDO3IW4;
+		PDO3MP4;
+		PDO3IW5;
+		PDO3MP5;
+		PDO3IW6;
+		PDO3MP6;
+		PDO3IW7;
+		PDO3MP7;
+		PDO3IW8;
+		PDO3MP8;
+
+		PAR_PDO4;
+		PDO4TY;
+		PDO4TX;
+		PDO4TM;
+		PDO4IW1;
+		PDO4MP1;
+		PDO4IW2;
+		PDO4MP2;
+		PDO4IW3;
+		PDO4MP3;
+		PDO4IW4;
+		PDO4MP4;
+		PDO4IW5;
+		PDO4MP5;
+		PDO4IW6;
+		PDO4MP6;
+		PDO4IW7;
+		PDO4MP7;
+		PDO4IW8;
+		PDO4MP8;
+
+		PAR_PDO5;
+		PDO5TY;
+		PDO5TX;
+		PDO5TM;
+		PDO5IW1;
+		PDO5MP1;
+		PDO5IW2;
+		PDO5MP2;
+		PDO5IW3;
+		PDO5MP3;
+		PDO5IW4;
+		PDO5MP4;
+		PDO5IW5;
+		PDO5MP5;
+		PDO5IW6;
+		PDO5MP6;
+		PDO5IW7;
+		PDO5MP7;
+		PDO5IW8;
+		PDO5MP8;
+
+		PAR_LINE;
+		ND_NUMOBJS;
+		KEY_PARSET1;
+		IXOBJ0;
+		VXOBJ0;
+		IXOBJ1;
+		VXOBJ1;
+		IXOBJ2;
+		VXOBJ2;
+		IXOBJ3;
+		VXOBJ3;
+		IXOBJ4;
+		VXOBJ4;
+		IXOBJ5;
+		VXOBJ5;
+		IXOBJ6;
+		VXOBJ6;
+		IXOBJ7;
+		VXOBJ7;
+		KEY_PARSET2;
+		IXOBJ8; 
+		VXOBJ8;
+		IXOBJ9;
+		VXOBJ9;
+		IXOBJ10;
+		VXOBJ10;
+		IXOBJ11;
+		VXOBJ11;
+		IXOBJ12;
+		VXOBJ12;
+		IXOBJ13;
+		VXOBJ13;
+		IXOBJ14;
+		VXOBJ14;
+		IXOBJ15;
+		VXOBJ15;
+		KEY_PARSET3;
+		IXOBJ16;
+		VXOBJ16;
+		IXOBJ17;
+		VXOBJ17;
+		IXOBJ18;
+		VXOBJ18;
+		IXOBJ19;
+		VXOBJ19;
+		IXOBJ20;
+		VXOBJ20;
+		IXOBJ21;
+		VXOBJ21;
+		IXOBJ22;
+		VXOBJ22;
+		IXOBJ23;
+		VXOBJ23;
+		KEY_PARSET4;
+		IXOBJ24;
+		VXOBJ24;
+		IXOBJ25;
+		VXOBJ25;
+		IXOBJ26;
+		VXOBJ26;
+		IXOBJ27;
+		VXOBJ27;
+		IXOBJ28;
+		VXOBJ28;
+		IXOBJ29;
+		VXOBJ29;
+		IXOBJ30;
+		VXOBJ30;
+		IXOBJ31;
+		VXOBJ31;
+    }
+    
+    if( CanProf==900 ) {
+		SPACE;
+		kRPDO1;
+		kRPDO1o1;
+		kRPDO1o2;
+		SPACE;
+		kRPDO2;
+		kRPDO2o1;
+		kRPDO2o2;
+		SPACE;
+		kRPDO3;
+		kRPDO3o1;
+		kRPDO3o2;
+		SPACE;
+		kRPDO4;
+		kRPDO4o1;
+		kRPDO4o2;
+		SPACE;
+		kTPDO1;
+		kTPDO1TX;
+		kTPDO1o1;
+		kTPDO1o2;
+		SPACE;
+		kTPDO2;
+		kTPDO2TX;
+		kTPDO2o1;
+		kTPDO2o2;
+		SPACE;
+		kTPDO3;
+		kTPDO3TX;
+		kTPDO3o1;
+		kTPDO3o2;
+		SPACE;
+		kTPDO4;
+		kTPDO4TX;
+		kTPDO4o1;
+		kTPDO4o2;
+    }
+}
+
+KEY_ECATPARAM {
+	// Parte comune con campi per rinfresco pagina
+    $,?R-1,EC_PARAM_EDT_DEVNAME,<0>,(164,41,277,61);
+    $,?R-1,EC_PARAM_EDT_HWVER,<0>,(164,62,277,82);
+    $,?R-1,EC_PARAM_EDT_SWVER,<0>,(164,83,277,103);
+    $,?R-1,*,EC_PARAM_EDT_VENDOR,<0>,(164,104,277,124);
+    $,?R-1,*,EC_PARAM_EDT_PRODUCT,<0>,(164,126,277,146);
+    $,?R-1,EC_PARAM_EDT_REVISION,<0>,(164,148,277,168);
+    $,?R-1,EC_PARAM_EDT_SERNUM,<0>,(164,170,277,190);
+    ?R-1,EC_PARAM_LBL_DEVNAME,<0>,(20,42,152,57);
+    ?R-1,EC_PARAM_LBL_HWVER,<0>,(22,63,152,78);
+    ?R-1,EC_PARAM_LBL_SWVER,<0>,(24,84,152,99);
+    ?R-1,EC_PARAM_LBL_VENDORID,<0>,(13,105,152,120);
+    ?R-1,EC_PARAM_LBL_PRODUCTCODE,<0>,(13,127,152,142);
+    ?R-1,EC_PARAM_LBL_REVISIONNUMBER,<0>,(-18,150,152,165);
+    ?R-1,EC_PARAM_LBL_SERNUM4,<0>,(13,171,152,186);
+
+	if(VendorID == 1454) {				// Esautomotion
+		if ( ProductCode == 0) {        // Scheda Valvole
+			#include "EcatValve.str"
+		}
+	}
+
+	if(VendorID == 383) {		// Drives RTA
+		#include "EcatRTA.str"
+	}
+
+	if(VendorID == 43690) {		// Drives HIWIN
+		#include "EcatHIWIN.str"
+	}
+
+	if(VendorID == 136) {		//QDrives drives
+		if ( ProductCode == -2005794816) {            //QDrives i7DW-**A30i7DW
+			#include "EcatQDrivesSeven.str"
+		}
+		if ( ProductCode == -2005860352) {            //QDrives i7DS-**A30i7DS
+			#include "EcatQDrivesSeven.str"
+		}
+	}
+
+	if(VendorID == 29) {		//Festo
+		if ( ProductCode == 8086609) {            		//Festo CPX-AP
+			#include "EcatFestoCPX-AP-I-EC-M12.str"
+		}
+	}
+
+	if(VendorID == 1048576) {							//Drives Inovance
+		#include "EcatInovance.str"
+	}
+
+	if(VendorID == 59) {								//Drives Lenze
+		#include "EcatLenze.str"
+	}
+	
+	if(VendorID == 1337) {								// YASKAWA
+		SPACE,(160,250);
+		*,EC_YA_NUMOBJS;
+				
+		SPACE;
+		PAR_COMMAND;
+		EC_BTN_NODE_UPLOAD;
+		EC_BTN_NODE_DOWNLOAD;
+		EC_BTN_NODE_SAVE_FLASH;
+		$,?R-1,EDT_NODE_REPORT;
+
+		SPACE;
+
+		KEY_HEADER;
+	
+		if ( ProductCode == 35652609 ) {  //ProductCode="#x02200401"
+			#include "EcatSGD7S.str"
+		}
+		if ( ProductCode == 35652353 ) {
+			#include "EcatSGD7S.str"
+		}
+		if ( ProductCode == 35653889 ) {	// ProductCode="#x02200901" SGDXS
+			#include "EcatSGD7S.str"
+		}
+		if ( ProductCode == 35652610 ) {  //ProductCode="#x02200402"
+			#include "EcatSGD7W.str"
+		}
+	}
+
+	
+}
+
+
+KEY_ECATSERVICE {
+	#include "EcatBusService.str" 
+}
+
+KEY_ECATMONITOR {
+
+    ?R-1,EC_PARAM_LBL_DEVNAME,<0>,(23,47,105,62);
+    ?R-1,EC_PARAM_LBL_HWVER,<0>,(23,68,105,83);
+    ?R-1,EC_PARAM_LBL_SWVER,<0>,(23,89,105,104);
+    ?R-1,EC_PARAM_LBL_SERNUM4,<0>,(23,110,105,125);
+
+    $,?R-1,EC_EDT_GEN_DEVNAME,<0>,(111,47,224,67);
+    $,?R-1,EC_EDT_GEN_HWVER,<0>,(111,68,224,88);
+    $,?R-1,EC_EDT_GEN_SWVER,<0>,(111,89,224,109);
+    $,?R-1,EC_EDT_GEN_SERNUM,<0>,(111,110,224,130);
+    
+    if( CanProf==5001 ) {
+        // Pagina monitor MDP I/O
+        LBL_INPUT,<0>,(58,175,230,203);
+        $,?R-1,EDT_In1,<0>,(83,208,156,229);
+        ?R-1,LBL_IN1,<0>,(41,208,73,223);
+        LBL_OUTPUT,<0>,(274,175,445,203);
+        $,?R-1,EDT_InHex1,<0>,(160,208,233,229);
+        $,?R-1,EDT_In2,<0>,(83,230,156,251);
+        ?R-1,LBL_IN2,<0>,(41,230,73,245);
+        $,?R-1,EDT_InHex2,<0>,(160,230,233,251);
+        $,?R-1,EDT_In3,<0>,(83,252,156,273);
+        ?R-1,LBL_IN3,<0>,(41,252,73,267);
+        $,?R-1,EDT_InHex3,<0>,(160,252,233,273);
+        $,?R-1,EDT_In4,<0>,(83,274,156,295);
+        ?R-1,LBL_IN4,<0>,(41,274,73,289);
+        $,?R-1,EDT_InHex4,<0>,(160,274,233,295);
+        $,?R-1,EDT_In5,<0>,(83,296,156,317);
+        ?R-1,LBL_IN5,<0>,(41,296,73,311);
+        $,?R-1,EDT_InHex5,<0>,(160,296,233,317);
+        $,?R-1,EDT_In6,<0>,(83,318,156,339);
+        ?R-1,LBL_IN6,<0>,(41,318,73,333);
+        $,?R-1,EDT_InHex6,<0>,(160,318,233,339);
+        $,?R-1,EDT_In7,<0>,(83,340,156,361);
+        ?R-1,LBL_IN7,<0>,(41,340,73,355);
+        $,?R-1,EDT_InHex7,<0>,(160,340,233,361);
+        $,?R-1,EDT_In8,<0>,(83,362,156,383);
+        ?R-1,LBL_IN8,<0>,(41,362,73,377);
+        $,?R-1,EDT_InHex8,<0>,(160,362,233,383);
+        $,?R-1,EDT_In9,<0>,(83,384,156,405);
+        ?R-1,LBL_IN9,<0>,(41,384,73,399);
+        $,?R-1,EDT_InHex9,<0>,(160,384,233,405);
+        $,?R-1,EDT_In10,<0>,(83,406,156,427);
+        ?R-1,LBL_IN10,<0>,(41,406,73,421);
+        $,?R-1,EDT_InHex10,<0>,(160,406,233,427);
+        $,?R-1,EDT_In11,<0>,(83,428,156,449);
+        ?R-1,LBL_IN11,<0>,(41,428,73,443);
+        $,?R-1,EDT_InHex11,<0>,(160,428,233,449);
+        $,?R-1,EDT_In12,<0>,(83,450,156,471);
+        ?R-1,LBL_IN12,<0>,(41,450,73,465);
+        $,?R-1,EDT_InHex12,<0>,(160,450,233,471);
+        $,?R-1,EDT_In13,<0>,(83,472,156,493);
+        ?R-1,LBL_IN13,<0>,(41,472,73,487);
+        $,?R-1,EDT_InHex13,<0>,(160,472,233,493);
+        $,?R-1,EDT_In14,<0>,(83,494,156,515);
+        ?R-1,LBL_IN14,<0>,(41,494,73,509);
+        $,?R-1,EDT_InHex14,<0>,(160,494,233,515);
+        $,?R-1,EDT_In15,<0>,(83,516,156,537);
+        ?R-1,LBL_IN15,<0>,(41,516,73,531);
+        $,?R-1,EDT_InHex15,<0>,(160,516,233,537);
+        ?R-1,LBL_OUT0,<0>,(256,208,288,223);
+        $,?R-1,EDT_Out0,<0>,(298,208,371,229);
+        $,?R-1,EDT_OutHex0,<0>,(375,208,448,229);
+        ?R-1,LBL_OUT1,<0>,(256,230,288,245);
+        $,?R-1,EDT_Out1,<0>,(298,230,371,251);
+        $,?R-1,EDT_OutHex1,<0>,(375,230,448,251);
+        ?R-1,LBL_OUT2,<0>,(256,252,288,267);
+        $,?R-1,EDT_Out2,<0>,(298,252,371,273);
+        $,?R-1,EDT_OutHex2,<0>,(375,252,448,273);
+        ?R-1,LBL_OUT3,<0>,(256,274,288,289);
+        $,?R-1,EDT_Out3,<0>,(298,274,371,295);
+        $,?R-1,EDT_OutHex3,<0>,(375,274,448,295);
+        ?R-1,LBL_OUT4,<0>,(256,296,288,311);
+        $,?R-1,EDT_Out4,<0>,(298,296,371,317);
+        $,?R-1,EDT_OutHex4,<0>,(375,296,448,317);
+        ?R-1,LBL_OUT5,<0>,(256,318,288,333);
+        $,?R-1,EDT_Out5,<0>,(298,318,371,339);
+        $,?R-1,EDT_OutHex5,<0>,(375,318,448,339);
+        ?R-1,LBL_OUT6,<0>,(256,340,288,355);
+        $,?R-1,EDT_Out6,<0>,(298,340,371,361);
+        $,?R-1,EDT_OutHex6,<0>,(375,340,448,361);
+        ?R-1,LBL_OUT7,<0>,(256,362,288,377);
+        $,?R-1,EDT_Out7,<0>,(298,362,371,383);
+        $,?R-1,EDT_OutHex7,<0>,(375,362,448,383);
+        ?R-1,LBL_OUT8,<0>,(256,384,288,399);
+        $,?R-1,EDT_Out8,<0>,(298,384,371,405);
+        $,?R-1,EDT_OutHex8,<0>,(375,384,448,405);
+        ?R-1,LBL_OUT9,<0>,(256,406,288,421);
+        $,?R-1,EDT_Out9,<0>,(298,406,371,427);
+        $,?R-1,EDT_OutHex9,<0>,(375,406,448,427);
+        ?R-1,LBL_OUT10,<0>,(256,428,288,443);
+        $,?R-1,EDT_Out10,<0>,(298,428,371,449);
+        $,?R-1,EDT_OutHex10,<0>,(375,428,448,449);
+        ?R-1,LBL_OUT11,<0>,(256,450,288,465);
+        $,?R-1,EDT_Out11,<0>,(298,450,371,471);
+        $,?R-1,EDT_OutHex11,<0>,(375,450,448,471);
+        ?R-1,LBL_OUT12,<0>,(256,472,288,487);
+        $,?R-1,EDT_Out12,<0>,(298,472,371,493);
+        $,?R-1,EDT_OutHex12,<0>,(375,472,448,493);
+        ?R-1,LBL_OUT13,<0>,(256,494,288,509);
+        $,?R-1,EDT_Out13,<0>,(298,494,371,515);
+        $,?R-1,EDT_OutHex13,<0>,(375,494,448,515);
+        ?R-1,LBL_OUT14,<0>,(256,516,288,531);
+        $,?R-1,EDT_Out14,<0>,(298,516,371,537);
+        $,?R-1,EDT_OutHex14,<0>,(375,516,448,537);
+    }
+    
+    if (CanAx0.AxTy == 140) {    // MONITOR LEXIUM DRIVE
+        LBL_LX_DGTIN,<0>,(117,204,235,232);
+        $,EC_LX_PicDGTIN0,<0>,(171,236,191,256);
+        $,EC_LX_PicDGTIN1,<0>,(171,258,191,278);
+        $,EC_LX_PicDGTIN2,<0>,(171,280,191,300);
+        $,EC_LX_PicDGTIN3,<0>,(171,302,191,322);
+        $,EC_LX_PicDGTIN4,<0>,(171,324,191,344);
+        ?R-1,LBL_LX_DI0,<0>,(40,236,155,256);
+        ?R-1,LBL_LX_DI1,<0>,(40,258,155,278);
+        ?R-1,LBL_LX_DI2,<0>,(40,280,155,300);
+        ?R-1,LBL_LX_DI3,<0>,(40,302,155,322);
+        ?R-1,LBL_LX_DI4,<0>,(40,324,155,344);
+        LX_MONITOR,<0>,(117,370,235,398);
+        $,?R-1,EC_EDT_LX_MONITORVARIABLE,<0>,(129,403,233,424);
+        ?R-1,LBL_LX_TORQUEVALUE,<0>,(19,405,123,420);
+    }
+    
+    if( CanProf!=5001 ) {
+    if (CanAx0.AxTy == 50) {    // ED_DRIVE
+        // Pagina monitor drive EBS
+        $,EC_BTN_NO_REFRESH,<0>,(111,171,203,200);
+        $,?R-1,EDT_BD_REPORT2,<0>,(111,207,294,228);
+        $,EC_ProgressBar2,<0>,(111,234,294,263);
+        NO_STATUS,<0>,(114,277,170,305);
+        LBL_DGTIN,<0>,(174,277,230,305);
+        LBL_DGTOUT,<0>,(240,277,296,305);
+        $,PicEnable,<0>,(145,309,165,329);
+        $,PicDcLinkOK,<0>,(145,331,165,351);
+        $,PicMaxSpeed,<0>,(145,353,165,373);
+        $,PicSoftCharge,<0>,(145,375,165,395);
+        $,PicFeedbackInit,<0>,(145,397,165,417);
+        $,PicFeedback,<0>,(145,419,165,439);
+        $,PicBrakeRelease,<0>,(145,441,165,461);
+        $,PicDGTIN1,<0>,(211,309,231,329);
+        $,PicDGTIN2,<0>,(211,331,231,351);
+        $,PicDGTIN3,<0>,(211,353,231,373);
+        $,PicDGTIN4,<0>,(211,375,231,395);
+        $,PicDGTIN5,<0>,(211,397,231,417);
+        $,PicDGTOUT1,<0>,(265,309,285,329);
+        $,PicSTOA,<0>,(265,419,285,439);
+        $,PicSTOB,<0>,(265,441,285,461);
+        ?R-1,LBL_NO_STAT,<0>,(20,309,135,329);
+        ?R-1,LBL_NO_STAT1,<0>,(34,441,135,461);
+        ?R-1,LBL_NO_STAT2,<0>,(20,331,135,351);
+        ?R-1,LBL_NO_STAT3,<0>,(13,353,135,373);
+        ?R-1,LBL_NO_STAT5,<0>,(6,375,135,395);
+        ?R-1,LBL_NO_STAT8,<0>,(4,397,135,417);
+        ?R-1,LBL_NO_STAT7,<0>,(1,419,135,439);
+        ?R-1,LBL_DGTIN1,<0>,(187,309,204,329);
+        ?R-1,LBL_DGTIN2,<0>,(187,331,204,351);
+        ?R-1,LBL_DGTIN3,<0>,(187,353,204,373);
+        ?R-1,LBL_DGTIN4,<0>,(187,375,204,395);
+        ?R-1,LBL_DGTIN5,<0>,(187,397,204,417);
+        ?R-1,LBL_DGTOUT1,<0>,(241,309,259,329);
+        ?R-1,LBL_STOA,<0>,(209,419,256,439);
+        ?R-1,LBL_STOB,<0>,(209,441,256,461);
+        NO_MONITOR,<0>,(79,474,197,502);
+        $,?R-1,EC_EDT_MO_MONITORVARIABLE,<0>,(141,507,245,528);
+        $,?R-1,EC_EDT_MO_MONITORTORQUECMD,<0>,(141,531,245,552);
+        $,?R-1,EDT_NO_QCURRENT,<0>,(141,555,245,576);
+        $,?R-1,EDT_NO_IQTDRIVE,<0>,(141,579,245,600);
+        $,?R-1,EDT_NO_DCLINK2,<0>,(141,603,245,624);
+        $,?R-1,EDT_NO_DC24,<0>,(141,627,245,648);
+        $,?R-1,EDT_NO_SPEED,<0>,(141,651,245,672);
+        $,?R-1,EDT_NO_MECHANICALANGLE,<0>,(141,675,245,696);
+        $,?R-1,EDT_NO_POSITION,<0>,(141,699,245,720);
+        $,?R-1,EDT_NO_IQTREGENERATIVE,<0>,(141,723,245,744);
+        $,?R-1,EDT_REGENPOWER,<0>,(141,747,245,768);
+        $,?R-1,EDT_NO_HEATSINKTEMP,<0>,(141,771,245,792);
+        $,?R-1,EDT_NO_INTERNALTEMP,<0>,(141,795,245,816);
+        $,?R-1,EDT_NO_MOTORPCT,<0>,(141,819,245,840);
+        $,?R-1,EDT_NO_POWERONTIME,<0>,(141,843,245,864);
+        $,?R-1,EDT_NO_ANALOGINPUT,<0>,(141,867,245,888);
+        ?R-1,LBL_DCLINKV3,<0>,(27,603,131,618);
+        ?R-1,LBL_DC1,<0>,(27,627,131,642);
+        ?R-1,LBL_SPEED1,<0>,(27,651,131,666);
+        ?R-1,LBL_POSITION1,<0>,(27,699,131,714);
+        ?R-1,LBL_QCURRENT1,<0>,(27,555,131,570);
+        ?R-1,LBL_MONITORVARIABLE,<0>,(27,507,131,522);
+        ?R-1,LBL_NO_MECHANICALANGLE,<0>,(27,675,131,690);
+        ?R-1,LBL_REGENPOWER,<0>,(27,747,131,762);
+        ?R-1,LBL_MONITORTORQUECMD,<0>,(27,531,131,546);
+        ?R-1,LBL_HEATSINKTEMP,<0>,(27,771,131,786);
+        ?R-1,LBL_NO_INTERNALTEMP,<0>,(27,795,131,810);
+        ?R-1,LBL_NO_MOTORPCT,<0>,(27,819,131,834);
+        ?R-1,LBL_NO_POWERONTIME,<0>,(27,843,131,858);
+        ?R-1,LBL_NO_IQTREGEN,<0>,(27,723,131,738);
+        ?R-1,LBL_NO_ANALOGINPUT,<0>,(27,867,131,882);
+        ?R-1,LBL_NO_IQT (%),<0>,(27,579,131,594);
+    }
+	}
+
+    if( CanProf!=5001 ) {
+    if (CanAx0.AxTy == 70) {    // ESA EBS
+        // Pagina monitor drive EBS
+        $,EC_BTN_NO_REFRESH,<0>,(111,171,203,200);
+        $,?R-1,EDT_BD_REPORT2,<0>,(111,207,294,228);
+        $,EC_ProgressBar2,<0>,(111,234,294,263);
+        NO_STATUS,<0>,(114,277,170,305);
+        LBL_DGTIN,<0>,(174,277,230,305);
+        LBL_DGTOUT,<0>,(240,277,296,305);
+        $,PicEnable,<0>,(145,309,165,329);
+        $,PicDcLinkOK,<0>,(145,331,165,351);
+        $,PicMaxSpeed,<0>,(145,353,165,373);
+        $,PicSoftCharge,<0>,(145,375,165,395);
+        $,PicFeedbackInit,<0>,(145,397,165,417);
+        $,PicFeedback,<0>,(145,419,165,439);
+        $,PicBrakeRelease,<0>,(145,441,165,461);
+        $,PicDGTIN1,<0>,(211,309,231,329);
+        $,PicDGTIN2,<0>,(211,331,231,351);
+        $,PicDGTIN3,<0>,(211,353,231,373);
+        $,PicDGTIN4,<0>,(211,375,231,395);
+        $,PicDGTIN5,<0>,(211,397,231,417);
+        $,PicDGTOUT1,<0>,(265,309,285,329);
+        $,PicSTOA,<0>,(265,419,285,439);
+        $,PicSTOB,<0>,(265,441,285,461);
+        ?R-1,LBL_NO_STAT,<0>,(20,309,135,329);
+        ?R-1,LBL_NO_STAT1,<0>,(34,441,135,461);
+        ?R-1,LBL_NO_STAT2,<0>,(20,331,135,351);
+        ?R-1,LBL_NO_STAT3,<0>,(13,353,135,373);
+        ?R-1,LBL_NO_STAT5,<0>,(6,375,135,395);
+        ?R-1,LBL_NO_STAT8,<0>,(4,397,135,417);
+        ?R-1,LBL_NO_STAT7,<0>,(1,419,135,439);
+        ?R-1,LBL_DGTIN1,<0>,(187,309,204,329);
+        ?R-1,LBL_DGTIN2,<0>,(187,331,204,351);
+        ?R-1,LBL_DGTIN3,<0>,(187,353,204,373);
+        ?R-1,LBL_DGTIN4,<0>,(187,375,204,395);
+        ?R-1,LBL_DGTIN5,<0>,(187,397,204,417);
+        ?R-1,LBL_DGTOUT1,<0>,(241,309,259,329);
+        ?R-1,LBL_STOA,<0>,(209,419,256,439);
+        ?R-1,LBL_STOB,<0>,(209,441,256,461);
+        NO_MONITOR,<0>,(79,474,197,502);
+        $,?R-1,EC_EDT_MO_MONITORVARIABLE,<0>,(141,507,245,528);
+        $,?R-1,EC_EDT_MO_MONITORTORQUECMD,<0>,(141,531,245,552);
+        $,?R-1,EDT_NO_QCURRENT,<0>,(141,555,245,576);
+        $,?R-1,EDT_NO_IQTDRIVE,<0>,(141,579,245,600);
+        $,?R-1,EDT_NO_DCLINK2,<0>,(141,603,245,624);
+        $,?R-1,EDT_NO_DC24,<0>,(141,627,245,648);
+        $,?R-1,EDT_NO_SPEED,<0>,(141,651,245,672);
+        $,?R-1,EDT_NO_MECHANICALANGLE,<0>,(141,675,245,696);
+        $,?R-1,EDT_NO_POSITION,<0>,(141,699,245,720);
+        $,?R-1,EDT_NO_IQTREGENERATIVE,<0>,(141,723,245,744);
+        $,?R-1,EDT_REGENPOWER,<0>,(141,747,245,768);
+        $,?R-1,EDT_NO_HEATSINKTEMP,<0>,(141,771,245,792);
+        $,?R-1,EDT_NO_INTERNALTEMP,<0>,(141,795,245,816);
+        $,?R-1,EDT_NO_MOTORPCT,<0>,(141,819,245,840);
+        $,?R-1,EDT_NO_POWERONTIME,<0>,(141,843,245,864);
+        $,?R-1,EDT_NO_ANALOGINPUT,<0>,(141,867,245,888);
+        ?R-1,LBL_DCLINKV3,<0>,(27,603,131,618);
+        ?R-1,LBL_DC1,<0>,(27,627,131,642);
+        ?R-1,LBL_SPEED1,<0>,(27,651,131,666);
+        ?R-1,LBL_POSITION1,<0>,(27,699,131,714);
+        ?R-1,LBL_QCURRENT1,<0>,(27,555,131,570);
+        ?R-1,LBL_MONITORVARIABLE,<0>,(27,507,131,522);
+        ?R-1,LBL_NO_MECHANICALANGLE,<0>,(27,675,131,690);
+        ?R-1,LBL_REGENPOWER,<0>,(27,747,131,762);
+        ?R-1,LBL_MONITORTORQUECMD,<0>,(27,531,131,546);
+        ?R-1,LBL_HEATSINKTEMP,<0>,(27,771,131,786);
+        ?R-1,LBL_NO_INTERNALTEMP,<0>,(27,795,131,810);
+        ?R-1,LBL_NO_MOTORPCT,<0>,(27,819,131,834);
+        ?R-1,LBL_NO_POWERONTIME,<0>,(27,843,131,858);
+        ?R-1,LBL_NO_IQTREGEN,<0>,(27,723,131,738);
+        ?R-1,LBL_NO_ANALOGINPUT,<0>,(27,867,131,882);
+        ?R-1,LBL_NO_IQT (%),<0>,(27,579,131,594);
+    }
+    if (CanAx0.AxTy == 180) {    // Switch Ethercat CanOpen
+        // Pagina monitor drive EBS
+        $,EC_BTN_NO_REFRESH,<0>,(111,171,203,200);
+        $,?R-1,EDT_BD_REPORT2,<0>,(111,207,294,228);
+        $,EC_ProgressBar2,<0>,(111,234,294,263);
+        NO_STATUS,<0>,(114,277,170,305);
+        LBL_DGTIN,<0>,(174,277,230,305);
+        LBL_DGTOUT,<0>,(240,277,296,305);
+        $,PicEnable,<0>,(145,309,165,329);
+        $,PicDcLinkOK,<0>,(145,331,165,351);
+        $,PicMaxSpeed,<0>,(145,353,165,373);
+        $,PicSoftCharge,<0>,(145,375,165,395);
+        $,PicFeedbackInit,<0>,(145,397,165,417);
+        $,PicFeedback,<0>,(145,419,165,439);
+        $,PicBrakeRelease,<0>,(145,441,165,461);
+        $,PicDGTIN1,<0>,(211,309,231,329);
+        $,PicDGTIN2,<0>,(211,331,231,351);
+        $,PicDGTIN3,<0>,(211,353,231,373);
+        $,PicDGTIN4,<0>,(211,375,231,395);
+        $,PicDGTIN5,<0>,(211,397,231,417);
+        $,PicDGTOUT1,<0>,(265,309,285,329);
+        $,PicSTOA,<0>,(265,419,285,439);
+        $,PicSTOB,<0>,(265,441,285,461);
+        ?R-1,LBL_NO_STAT,<0>,(20,309,135,329);
+        ?R-1,LBL_NO_STAT1,<0>,(34,441,135,461);
+        ?R-1,LBL_NO_STAT2,<0>,(20,331,135,351);
+        ?R-1,LBL_NO_STAT3,<0>,(13,353,135,373);
+        ?R-1,LBL_NO_STAT5,<0>,(6,375,135,395);
+        ?R-1,LBL_NO_STAT8,<0>,(4,397,135,417);
+        ?R-1,LBL_NO_STAT7,<0>,(1,419,135,439);
+        ?R-1,LBL_DGTIN1,<0>,(187,309,204,329);
+        ?R-1,LBL_DGTIN2,<0>,(187,331,204,351);
+        ?R-1,LBL_DGTIN3,<0>,(187,353,204,373);
+        ?R-1,LBL_DGTIN4,<0>,(187,375,204,395);
+        ?R-1,LBL_DGTIN5,<0>,(187,397,204,417);
+        ?R-1,LBL_DGTOUT1,<0>,(241,309,259,329);
+        ?R-1,LBL_STOA,<0>,(209,419,256,439);
+        ?R-1,LBL_STOB,<0>,(209,441,256,461);
+        NO_MONITOR,<0>,(79,474,197,502);
+        $,?R-1,EC_EDT_MO_MONITORVARIABLE,<0>,(141,507,245,528);
+        $,?R-1,EC_EDT_MO_MONITORTORQUECMD,<0>,(141,531,245,552);
+        $,?R-1,EDT_NO_QCURRENT,<0>,(141,555,245,576);
+        $,?R-1,EDT_NO_IQTDRIVE,<0>,(141,579,245,600);
+        $,?R-1,EDT_NO_DCLINK2,<0>,(141,603,245,624);
+        $,?R-1,EDT_NO_DC24,<0>,(141,627,245,648);
+        $,?R-1,EDT_NO_SPEED,<0>,(141,651,245,672);
+        $,?R-1,EDT_NO_MECHANICALANGLE,<0>,(141,675,245,696);
+        $,?R-1,EDT_NO_POSITION,<0>,(141,699,245,720);
+        $,?R-1,EDT_NO_IQTREGENERATIVE,<0>,(141,723,245,744);
+        $,?R-1,EDT_REGENPOWER,<0>,(141,747,245,768);
+        $,?R-1,EDT_NO_HEATSINKTEMP,<0>,(141,771,245,792);
+        $,?R-1,EDT_NO_INTERNALTEMP,<0>,(141,795,245,816);
+        $,?R-1,EDT_NO_MOTORPCT,<0>,(141,819,245,840);
+        $,?R-1,EDT_NO_POWERONTIME,<0>,(141,843,245,864);
+        $,?R-1,EDT_NO_ANALOGINPUT,<0>,(141,867,245,888);
+        ?R-1,LBL_DCLINKV3,<0>,(27,603,131,618);
+        ?R-1,LBL_DC1,<0>,(27,627,131,642);
+        ?R-1,LBL_SPEED1,<0>,(27,651,131,666);
+        ?R-1,LBL_POSITION1,<0>,(27,699,131,714);
+        ?R-1,LBL_QCURRENT1,<0>,(27,555,131,570);
+        ?R-1,LBL_MONITORVARIABLE,<0>,(27,507,131,522);
+        ?R-1,LBL_NO_MECHANICALANGLE,<0>,(27,675,131,690);
+        ?R-1,LBL_REGENPOWER,<0>,(27,747,131,762);
+        ?R-1,LBL_MONITORTORQUECMD,<0>,(27,531,131,546);
+        ?R-1,LBL_HEATSINKTEMP,<0>,(27,771,131,786);
+        ?R-1,LBL_NO_INTERNALTEMP,<0>,(27,795,131,810);
+        ?R-1,LBL_NO_MOTORPCT,<0>,(27,819,131,834);
+        ?R-1,LBL_NO_POWERONTIME,<0>,(27,843,131,858);
+        ?R-1,LBL_NO_IQTREGEN,<0>,(27,723,131,738);
+        ?R-1,LBL_NO_ANALOGINPUT,<0>,(27,867,131,882);
+        ?R-1,LBL_NO_IQT (%),<0>,(27,579,131,594);
+    }
+	}
+}
+
+
+
+KEY_ECATDRIVESTATUS {
+    ?R-1,EC_PARAM_LBL_DEVNAME,<0>,(23,47,105,62);
+    ?R-1,EC_PARAM_LBL_HWVER,<0>,(23,68,105,83);
+    ?R-1,EC_PARAM_LBL_SWVER,<0>,(23,89,105,104);
+    ?R-1,EC_PARAM_LBL_SERNUM4,<0>,(23,110,105,125);
+
+    $,?R-1,EC_EDT_GEN_DEVNAME,<0>,(111,47,224,67);
+    $,?R-1,EC_EDT_GEN_HWVER,<0>,(111,68,224,88);
+    $,?R-1,EC_EDT_GEN_SWVER,<0>,(111,89,224,109);
+    $,?R-1,EC_EDT_GEN_SERNUM,<0>,(111,110,224,130);
+    ?R-1,LBL_DS_REPORT,<0>,(23,178,105,193);
+    $,?R-1,EDT_BS_REPORT,<0>,(111,178,294,199);
+
+    if (CanAx0.AxTy == 90) {    // TDE
+    DS_ALARMS,<0>,(23,221,105,236);
+        ?R-1,LBL_A,<0>,(113,221,139,241);
+        $,?R-1,EDT_PRIMARY1,<0>,(147,220,183,240);
+        ?R-1,LBL_SEP,<0>,(186,220,193,240);
+        $,?R-1,EDT_SECONDARY1,<0>,(197,220,233,240);
+    }
+
+    if (CanAx0.AxTy == 50) {    // ESA ED
+        DS_ALARMS,<0>,(23,221,105,236);
+        $,EC_BTN_NO_REFRESH,<0>,(114,252,206,281);
+        $,EC_ProgressBar2,<0>,(114,289,297,318);
+        ?R-1,LBL_F1,<0>,(63,322,266,342);
+        ?R-1,LBL_F2,<0>,(63,343,266,363);
+        ?R-1,LBL_F3,<0>,(63,364,266,384);
+        ?R-1,LBL_F4,<0>,(63,385,266,405);
+        ?R-1,LBL_F5,<0>,(63,406,266,426);
+        ?R-1,LBL_F6,<0>,(63,427,266,447);
+        ?R-1,LBL_F7,<0>,(63,448,266,468);
+        ?R-1,LBL_F8,<0>,(63,469,266,489);
+        ?R-1,LBL_F9,<0>,(63,490,266,510);
+        ?R-1,LBL_F10,<0>,(63,511,266,531);
+        ?R-1,LBL_F11,<0>,(63,532,266,552);
+        ?R-1,LBL_F12,<0>,(63,553,266,573);
+        ?R-1,LBL_F13,<0>,(63,574,266,594);
+        ?R-1,LBL_F14,<0>,(63,595,266,615);
+        ?R-1,LBL_F15,<0>,(63,616,266,636);
+        ?R-1,LBL_F16,<0>,(63,637,266,657);
+        ?R-1,LBL_F17,<0>,(63,658,266,678);
+        ?R-1,LBL_F18,<0>,(63,679,266,699);
+        ?R-1,LBL_F19,<0>,(63,700,266,720);
+        ?R-1,LBL_F20,<0>,(63,721,266,741);
+        ?R-1,LBL_F21,<0>,(63,742,266,762);
+        ?R-1,LBL_F22,<0>,(63,763,266,783);
+
+        ?R-1,LBL_F23,<0>,(63,784,266,804);
+        ?R-1,LBL_F24,<0>,(63,805,266,825);
+        ?R-1,LBL_F25,<0>,(63,826,266,846);
+        ?R-1,LBL_F26,<0>,(63,847,266,867);
+
+        ?R-1,LBL_F27,<0>,(63,868,266,888);
+
+        ?R-1,LBL_F28,<0>,(63,889,266,909);
+        ?R-1,LBL_F29,<0>,(63,910,266,930);
+        ?R-1,LBL_F30,<0>,(63,931,266,951);
+
+        ?R-1,LBL_F31,<0>,(63,952,266,972);
+
+        $,PicF0,<0>,(274,322,294,342);
+        $,PicF1,<0>,(274,343,294,363);
+        $,PicF2,<0>,(274,364,294,384);
+        $,PicF3,<0>,(274,385,294,405);
+        $,PicF4,<0>,(274,406,294,426);
+        $,PicF5,<0>,(274,427,294,447);
+        $,PicF6,<0>,(274,448,294,468);
+        $,PicF7,<0>,(274,469,294,489);
+        $,PicF8,<0>,(274,490,294,510);
+        $,PicF9,<0>,(274,511,294,531);
+        $,PicF10,<0>,(274,532,294,552);
+        $,PicF11,<0>,(274,553,294,573);
+        $,PicF12,<0>,(274,574,294,594);
+        $,PicF13,<0>,(274,595,294,615);
+        $,PicF14,<0>,(274,616,294,636);
+        $,PicF15,<0>,(274,637,294,657);
+        $,PicF16,<0>,(274,658,294,678);
+        $,PicF17,<0>,(274,679,294,699);
+        $,PicF18,<0>,(274,700,294,720);
+        $,PicF19,<0>,(274,721,294,741);
+        $,PicF20,<0>,(274,742,294,762);
+        $,PicF21,<0>,(274,763,294,783);
+
+        $,PicF22,<0>,(274,784,294,804);
+        $,PicF23,<0>,(274,805,294,825);
+        $,PicF24,<0>,(274,826,294,846);
+        $,PicF25,<0>,(274,847,294,867);
+
+        $,PicF26,<0>,(274,868,294,888);
+
+        $,PicF27,<0>,(274,889,294,909);
+        $,PicF28,<0>,(274,910,294,930);
+        $,PicF29,<0>,(274,931,294,951);
+
+        $,PicF30,<0>,(274,952,294,972);
+
+        $,PicF31,<0>,(274,973,294,993);
+    }
+
+    if (CanAx0.AxTy == 70) {    // ESA EBS
+        DS_ALARMS,<0>,(23,221,105,236);
+        $,EC_BTN_NO_REFRESH,<0>,(114,252,206,281);
+        $,EC_ProgressBar2,<0>,(114,289,297,318);
+        ?R-1,LBL_F1,<0>,(63,322,266,342);
+        ?R-1,LBL_F2,<0>,(63,343,266,363);
+        ?R-1,LBL_F3,<0>,(63,364,266,384);
+        ?R-1,LBL_F4,<0>,(63,385,266,405);
+        ?R-1,LBL_F5,<0>,(63,406,266,426);
+        ?R-1,LBL_F6,<0>,(63,427,266,447);
+        ?R-1,LBL_F7,<0>,(63,448,266,468);
+        ?R-1,LBL_F8,<0>,(63,469,266,489);
+        ?R-1,LBL_F9,<0>,(63,490,266,510);
+        ?R-1,LBL_F10,<0>,(63,511,266,531);
+        ?R-1,LBL_F11,<0>,(63,532,266,552);
+        ?R-1,LBL_F12,<0>,(63,553,266,573);
+        ?R-1,LBL_F13,<0>,(63,574,266,594);
+        ?R-1,LBL_F14,<0>,(63,595,266,615);
+        ?R-1,LBL_F15,<0>,(63,616,266,636);
+        ?R-1,LBL_F16,<0>,(63,637,266,657);
+        ?R-1,LBL_F17,<0>,(63,658,266,678);
+        ?R-1,LBL_F18,<0>,(63,679,266,699);
+        ?R-1,LBL_F19,<0>,(63,700,266,720);
+        ?R-1,LBL_F20,<0>,(63,721,266,741);
+        ?R-1,LBL_F21,<0>,(63,742,266,762);
+        ?R-1,LBL_F22,<0>,(63,763,266,783);
+
+        ?R-1,LBL_F23,<0>,(63,784,266,804);
+        ?R-1,LBL_F24,<0>,(63,805,266,825);
+        ?R-1,LBL_F25,<0>,(63,826,266,846);
+        ?R-1,LBL_F26,<0>,(63,847,266,867);
+
+        ?R-1,LBL_F27,<0>,(63,868,266,888);
+
+        ?R-1,LBL_F28,<0>,(63,889,266,909);
+        ?R-1,LBL_F29,<0>,(63,910,266,930);
+        ?R-1,LBL_F30,<0>,(63,931,266,951);
+
+        ?R-1,LBL_F31,<0>,(63,952,266,972);
+
+        $,PicF0,<0>,(274,322,294,342);
+        $,PicF1,<0>,(274,343,294,363);
+        $,PicF2,<0>,(274,364,294,384);
+        $,PicF3,<0>,(274,385,294,405);
+        $,PicF4,<0>,(274,406,294,426);
+        $,PicF5,<0>,(274,427,294,447);
+        $,PicF6,<0>,(274,448,294,468);
+        $,PicF7,<0>,(274,469,294,489);
+        $,PicF8,<0>,(274,490,294,510);
+        $,PicF9,<0>,(274,511,294,531);
+        $,PicF10,<0>,(274,532,294,552);
+        $,PicF11,<0>,(274,553,294,573);
+        $,PicF12,<0>,(274,574,294,594);
+        $,PicF13,<0>,(274,595,294,615);
+        $,PicF14,<0>,(274,616,294,636);
+        $,PicF15,<0>,(274,637,294,657);
+        $,PicF16,<0>,(274,658,294,678);
+        $,PicF17,<0>,(274,679,294,699);
+        $,PicF18,<0>,(274,700,294,720);
+        $,PicF19,<0>,(274,721,294,741);
+        $,PicF20,<0>,(274,742,294,762);
+        $,PicF21,<0>,(274,763,294,783);
+
+        $,PicF22,<0>,(274,784,294,804);
+        $,PicF23,<0>,(274,805,294,825);
+        $,PicF24,<0>,(274,826,294,846);
+        $,PicF25,<0>,(274,847,294,867);
+
+        $,PicF26,<0>,(274,868,294,888);
+
+        $,PicF27,<0>,(274,889,294,909);
+        $,PicF28,<0>,(274,910,294,930);
+        $,PicF29,<0>,(274,931,294,951);
+
+        $,PicF30,<0>,(274,952,294,972);
+
+        $,PicF31,<0>,(274,973,294,993);
+    }
+
+    if (CanAx0.AxTy == 180) {    // Switch Ethercat CanOpen
+        DS_ALARMS,<0>,(23,221,105,236);
+        $,EC_BTN_NO_REFRESH,<0>,(114,252,206,281);
+        $,EC_ProgressBar2,<0>,(114,289,297,318);
+        ?R-1,LBL_F1,<0>,(63,322,266,342);
+        ?R-1,LBL_F2,<0>,(63,343,266,363);
+        ?R-1,LBL_F3,<0>,(63,364,266,384);
+        ?R-1,LBL_F4,<0>,(63,385,266,405);
+        ?R-1,LBL_F5,<0>,(63,406,266,426);
+        ?R-1,LBL_F6,<0>,(63,427,266,447);
+        ?R-1,LBL_F7,<0>,(63,448,266,468);
+        ?R-1,LBL_F8,<0>,(63,469,266,489);
+        ?R-1,LBL_F9,<0>,(63,490,266,510);
+        ?R-1,LBL_F10,<0>,(63,511,266,531);
+        ?R-1,LBL_F11,<0>,(63,532,266,552);
+        ?R-1,LBL_F12,<0>,(63,553,266,573);
+        ?R-1,LBL_F13,<0>,(63,574,266,594);
+        ?R-1,LBL_F14,<0>,(63,595,266,615);
+        ?R-1,LBL_F15,<0>,(63,616,266,636);
+        ?R-1,LBL_F16,<0>,(63,637,266,657);
+        ?R-1,LBL_F17,<0>,(63,658,266,678);
+        ?R-1,LBL_F18,<0>,(63,679,266,699);
+        ?R-1,LBL_F19,<0>,(63,700,266,720);
+        ?R-1,LBL_F20,<0>,(63,721,266,741);
+        ?R-1,LBL_F21,<0>,(63,742,266,762);
+        ?R-1,LBL_F22,<0>,(63,763,266,783);
+
+        ?R-1,LBL_F23,<0>,(63,784,266,804);
+        ?R-1,LBL_F24,<0>,(63,805,266,825);
+        ?R-1,LBL_F25,<0>,(63,826,266,846);
+        ?R-1,LBL_F26,<0>,(63,847,266,867);
+
+        ?R-1,LBL_F27,<0>,(63,868,266,888);
+
+        ?R-1,LBL_F28,<0>,(63,889,266,909);
+        ?R-1,LBL_F29,<0>,(63,910,266,930);
+        ?R-1,LBL_F30,<0>,(63,931,266,951);
+
+        ?R-1,LBL_F31,<0>,(63,952,266,972);
+
+        $,PicF0,<0>,(274,322,294,342);
+        $,PicF1,<0>,(274,343,294,363);
+        $,PicF2,<0>,(274,364,294,384);
+        $,PicF3,<0>,(274,385,294,405);
+        $,PicF4,<0>,(274,406,294,426);
+        $,PicF5,<0>,(274,427,294,447);
+        $,PicF6,<0>,(274,448,294,468);
+        $,PicF7,<0>,(274,469,294,489);
+        $,PicF8,<0>,(274,490,294,510);
+        $,PicF9,<0>,(274,511,294,531);
+        $,PicF10,<0>,(274,532,294,552);
+        $,PicF11,<0>,(274,553,294,573);
+        $,PicF12,<0>,(274,574,294,594);
+        $,PicF13,<0>,(274,595,294,615);
+        $,PicF14,<0>,(274,616,294,636);
+        $,PicF15,<0>,(274,637,294,657);
+        $,PicF16,<0>,(274,658,294,678);
+        $,PicF17,<0>,(274,679,294,699);
+        $,PicF18,<0>,(274,700,294,720);
+        $,PicF19,<0>,(274,721,294,741);
+        $,PicF20,<0>,(274,742,294,762);
+        $,PicF21,<0>,(274,763,294,783);
+
+        $,PicF22,<0>,(274,784,294,804);
+        $,PicF23,<0>,(274,805,294,825);
+        $,PicF24,<0>,(274,826,294,846);
+        $,PicF25,<0>,(274,847,294,867);
+
+        $,PicF26,<0>,(274,868,294,888);
+
+        $,PicF27,<0>,(274,889,294,909);
+        $,PicF28,<0>,(274,910,294,930);
+        $,PicF29,<0>,(274,931,294,951);
+
+        $,PicF30,<0>,(274,952,294,972);
+
+        $,PicF31,<0>,(274,973,294,993);
+    }
+
+
+    if (CanAx0.AxTy != 90) {
+    if (CanAx0.AxTy != 50) {
+    if (CanAx0.AxTy != 70) {
+    if (CanAx0.AxTy != 180) {
+        DS_DRIVE_ERR_CODE,<0>,(23,221,167,236);
+        $,?R-1,EDT_DRIVE_ERR_CODE,<0>,(179,220,262,240);
+    }
+    }
+    }
+    }
+}
+
+
+KEY_ECATDIAG {
+	#include "EcatBusDiag.str"
+}
+
+
+[KEY_ECAT_ND]
+ADR=CanAName
+ADR2=CanDName
+
+[KEY_ECATPARAM]
+ADR=CanAName
+ADR2=CanDName
+
+[KEY_ECATSERVICE]
+ADR=CanAName
+ADR2=CanDName
+
+[KEY_ECATMONITOR]
+ADR=CanAName
+ADR2=CanDName
+
+[KEY_ECATDRIVESTATUS]
+ADR=CanAName
+ADR2=CanDName
+
+[KEY_ECATDIAG]
+ADR=CanAName
+ADR2=CanDName
+
+
+
+[EC_ND_NODE]
+ADR = CoENode
+RNG = {0:65535}
+HLP = ND_NODE
+RST = 1
+
+[ND_MDSLOTID]
+ADR = CanDevs
+RNG = {0:127}
+MSK=0,8
+HLP = ND_MDSLOTID
+RST = 1
+
+[ND_PROFILE]
+ADR = CanProf
+FRM = CBX,8
+RNG = {0,301,401,402,406,408,900,5001}
+LST = ND_PROFLIST
+HLP = ND_PROFILE
+
+[ND_LIFE]
+ADR = CanLife
+HLP = ND_LIFE
+RST = 1
+
+[ND_GUARD]
+ADR = CanGuard
+RNG = {1,2,3,4}
+FRM = CBX,4
+LST = ND_GUARDLIST
+RST = 1
+
+[ND_NUMDEV]
+ADR = CanDevs
+HLP = ND_NUMDEV
+RST = 1
+
+[ND_OUTOFORDER];
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=ec_nodemskoption
+MSK=0,1
+TBS=1
+FRM=CHK,0
+FBR=0
+DSV=0
+RST=1
+HLP=ND_OUTOFORDER
+
+[ND_VIRTUAL];
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=ec_nodemskoption
+MSK=2,1
+TBS=1
+FRM=CHK,0
+FBR=0
+DSV=0
+RST=1
+HLP=ND_VIRTUAL
+
+
+[ND_ALIAS]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=ec_nodemskoption
+MSK=1,1
+TBS=1
+FRM=CHK,0
+FBR=0
+DSV=0
+RST=0
+
+[ND_NUMOBJS]
+ADR = CanObjs
+FRM = HEX,4
+HLP = ND_NUMOBJS
+
+[EC_DR_TYPE0]
+ADR = CanAx0.AxTy
+FRM = CBX,18
+RNG = {0,10,20,30,31,40,50,60,70,80,90,100,120,130,140,150,180}
+LST = EC_DR_TYPELIST
+HLP = EC_DR_TYPE0
+RST = 1
+
+[DV_TYPE0]
+ADR = CanAx0.AxTy
+FRM = CBX,2
+RNG = {0,200}
+LST = DV_TYPELIST
+HLP = DV_TYPE0
+RST = 1
+
+[VL_TYPE0]
+ADR = CanAx0.AxTy
+FRM = CBX,1
+RNG = {0}
+LST = VL_TYPELIST
+HLP = VL_TYPE0
+RST = 1
+
+[DR_REGTY0]
+ADR = CanAx0.AxRegTy
+FRM = CBX,7
+RNG = {2, 5, 0, 4, 1, 250, 254}
+LST = DR_REGTYLIST
+HLP = DR_REGTY0
+RST = 1
+LEN = 20
+
+[DR_SWIDE0]
+ADR = CanAx0.AxSw
+HLP = DR_SWIDE0
+RST = 1
+[DR_SWIDE1]
+ADR = CanAx1.AxSw
+HLP = DR_SWIDE1
+RST = 1
+
+[DR_FEED0]
+ADR = CanAx0.AxFeed
+FRM = DEC, 3
+HLP = DR_FEED0
+RST = 1
+[DR_SHAFT0]
+ADR = CanAx0.AxShaft
+FRM = DEC, 0
+HLP = DR_SHAFT0
+RST = 1
+[DR_FEEDDELAY]
+ADR = CanAx0.AxFeedDelay
+FRM = DEC, 3
+HLP = DR_FEEDDELAY
+RST = 1
+
+
+[EC_DR_ENABGEARBOX]
+ADR = EcGearBoxEnable
+FRM = DEC, 0
+HLP = EC_DR_ENABGEARBOX
+RST = 1
+[EC_DR_GEARMODULEREV]
+ADR = EcGearModuleRev
+FRM = DEC, 0
+HLP = EC_DR_GEARMODULEREV
+RST = 1
+
+
+
+[EN_EC_TYPE0]
+ADR = CanAx0.AxTy
+FRM = CBX,7
+RNG = {0,1,2,3,4,5,6}
+LST = EN_EC_TYPELIST
+RST = 1
+[EN_SWIDE0]
+ADR = CanAx0.AxSw
+RST = 1
+[EN_FEED0]
+ADR = CanAx0.AxFeed
+FRM = DEC, 3
+RST = 1
+[EN_SHAFT0]
+ADR = CanAx0.AxShaft
+FRM = DEC, 0
+RST = 1
+[EN_EC_TYPE1]
+ADR = CanAx1.AxTy
+FRM = CBX,7
+RNG = {0,1,2,3,4,5,6}
+LST = EN_EC_TYPELIST
+RST = 1
+[EN_SWIDE1]
+ADR = CanAx1.AxSw
+RST = 1
+[EN_FEED1]
+ADR = CanAx1.AxFeed
+FRM = DEC, 3
+RST = 1
+[EN_SHAFT1]
+ADR = CanAx1.AxShaft
+FRM = DEC, 0
+RST = 1
+
+[PDO1TY]
+ADR = CanIo0.PdoTy
+FRM = CBX,3
+RNG = {0,32,33}
+LST = PDO_LIST
+[PDO1TX]
+ADR = CanIo0.PdoTx
+HLP = PDOTX
+[PDO1TM]
+ADR = CanIo0.PdoTm
+HLP = PDOTM
+[PDO1IW1]
+ADR = CanIo0.PdoIw0
+LEN = 3
+HLP = PDOIW1
+[PDO1MP1]
+ADR = CanIo0.PdoMp0
+FRM = HEX,4
+HLP = PDOMP1
+[PDO1IW2]
+ADR = CanIo0.PdoIw1
+LEN = 3
+HLP = PDOIW1
+[PDO1MP2]
+ADR = CanIo0.PdoMp1
+FRM = HEX,4
+HLP = PDOMP1
+[PDO1IW3]
+ADR = CanIo0.PdoIw2
+LEN = 3
+HLP = PDOIW1
+[PDO1MP3]
+ADR = CanIo0.PdoMp2
+FRM = HEX,4
+HLP = PDOMP1
+[PDO1IW4]
+ADR = CanIo0.PdoIw3
+LEN = 3
+HLP = PDOIW1
+[PDO1MP4]
+ADR = CanIo0.PdoMp3
+FRM = HEX,4
+HLP = PDOMP1
+[PDO1IW5]
+ADR = CanIo0.PdoIw4
+LEN = 3
+HLP = PDOIW1
+[PDO1MP5]
+ADR = CanIo0.PdoMp4
+FRM = HEX,4
+HLP = PDOMP1
+[PDO1IW6]
+ADR = CanIo0.PdoIw5
+LEN = 3
+HLP = PDOIW1
+[PDO1MP6]
+ADR = CanIo0.PdoMp5
+FRM = HEX,4
+HLP = PDOMP1
+[PDO1IW7]
+ADR = CanIo0.PdoIw6
+LEN = 3
+HLP = PDOIW1
+[PDO1MP7]
+ADR = CanIo0.PdoMp6
+FRM = HEX,4
+HLP = PDOMP1
+[PDO1IW8]
+ADR = CanIo0.PdoIw7
+LEN = 3
+HLP = PDOIW1
+[PDO1MP8]
+ADR = CanIo0.PdoMp7
+FRM = HEX,4
+HLP = PDOMP1
+
+[PDO2TY]
+ADR = CanIo1.PdoTy
+FRM = CBX,3
+RNG = {0,32,33}
+LST = PDO_LIST
+[PDO2TX]
+ADR = CanIo1.PdoTx
+HLP = PDOTX
+[PDO2TM]
+ADR = CanIo1.PdoTm
+HLP = PDOTM
+[PDO2IW1]
+ADR = CanIo1.PdoIw0
+HLP = PDOIW1
+LEN = 3
+HLP = PDOIW1
+[PDO2MP1]
+ADR = CanIo1.PdoMp0
+FRM = HEX,4
+HLP = PDOMP1
+[PDO2IW2]
+ADR = CanIo1.PdoIw1
+LEN = 3
+HLP = PDOIW1
+[PDO2MP2]
+ADR = CanIo1.PdoMp1
+FRM = HEX,4
+HLP = PDOMP1
+[PDO2IW3]
+ADR = CanIo1.PdoIw2
+LEN = 3
+HLP = PDOIW1
+[PDO2MP3]
+ADR = CanIo1.PdoMp2
+FRM = HEX,4
+HLP = PDOMP1
+[PDO2IW4]
+ADR = CanIo1.PdoIw3
+LEN = 3
+HLP = PDOIW1
+[PDO2MP4]
+ADR = CanIo1.PdoMp3
+FRM = HEX,4
+HLP = PDOMP1
+[PDO2IW5]
+ADR = CanIo1.PdoIw4
+LEN = 3
+HLP = PDOIW1
+[PDO2MP5]
+ADR = CanIo1.PdoMp4
+FRM = HEX,4
+HLP = PDOMP1
+[PDO2IW6]
+ADR = CanIo1.PdoIw5
+LEN = 3
+HLP = PDOIW1
+[PDO2MP6]
+ADR = CanIo1.PdoMp5
+FRM = HEX,4
+HLP = PDOMP1
+[PDO2IW7]
+ADR = CanIo1.PdoIw6
+LEN = 3
+HLP = PDOIW1
+[PDO2MP7]
+ADR = CanIo1.PdoMp6
+FRM = HEX,4
+HLP = PDOMP1
+[PDO2IW8]
+ADR = CanIo1.PdoIw7
+LEN = 3
+HLP = PDOIW1
+[PDO2MP8]
+ADR = CanIo1.PdoMp7
+FRM = HEX,4
+HLP = PDOMP1
+
+[PDO3TY]
+ADR = CanIo2.PdoTy
+FRM = CBX,3
+RNG = {0,32,33}
+LST = PDO_LIST
+[PDO3TX]
+ADR = CanIo2.PdoTx
+HLP = PDOTX
+[PDO3TM]
+ADR = CanIo2.PdoTm
+HLP = PDOTM
+[PDO3IW1]
+ADR = CanIo2.PdoIw0
+HLP = PDOIW1
+LEN = 3
+HLP = PDOIW1
+[PDO3MP1]
+ADR = CanIo2.PdoMp0
+FRM = HEX,4
+HLP = PDOMP1
+[PDO3IW2]
+ADR = CanIo2.PdoIw1
+LEN = 3
+HLP = PDOIW1
+[PDO3MP2]
+ADR = CanIo2.PdoMp1
+FRM = HEX,4
+HLP = PDOMP1
+[PDO3IW3]
+ADR = CanIo2.PdoIw2
+LEN = 3
+HLP = PDOIW1
+[PDO3MP3]
+ADR = CanIo2.PdoMp2
+FRM = HEX,4
+HLP = PDOMP1
+[PDO3IW4]
+ADR = CanIo2.PdoIw3
+LEN = 3
+HLP = PDOIW1
+[PDO3MP4]
+ADR = CanIo2.PdoMp3
+FRM = HEX,4
+HLP = PDOMP1
+[PDO3IW5]
+ADR = CanIo2.PdoIw4
+LEN = 3
+HLP = PDOIW1
+[PDO3MP5]
+ADR = CanIo2.PdoMp4
+FRM = HEX,4
+HLP = PDOMP1
+[PDO3IW6]
+ADR = CanIo2.PdoIw5
+LEN = 3
+HLP = PDOIW1
+[PDO3MP6]
+ADR = CanIo2.PdoMp5
+FRM = HEX,4
+HLP = PDOMP1
+[PDO3IW7]
+ADR = CanIo2.PdoIw6
+LEN = 3
+HLP = PDOIW1
+[PDO3MP7]
+ADR = CanIo2.PdoMp6
+FRM = HEX,4
+HLP = PDOMP1
+[PDO3IW8]
+ADR = CanIo2.PdoIw7
+LEN = 3
+HLP = PDOIW1
+[PDO3MP8]
+ADR = CanIo2.PdoMp7
+FRM = HEX,4
+HLP = PDOMP1
+
+[PDO4TY]
+ADR = CanIo3.PdoTy
+FRM = CBX,3
+RNG = {0,32,33}
+LST = PDO_LIST
+[PDO4TX]
+HLP = PDOTX
+ADR = CanIo3.PdoTx
+[PDO4TM]
+ADR = CanIo3.PdoTm
+HLP = PDOTM
+[PDO4IW1]
+ADR = CanIo3.PdoIw0
+HLP = PDOIW1
+LEN = 3
+HLP = PDOIW1
+[PDO4MP1]
+ADR = CanIo3.PdoMp0
+FRM = HEX,4
+HLP = PDOMP1
+[PDO4IW2]
+ADR = CanIo3.PdoIw1
+LEN = 3
+HLP = PDOIW1
+[PDO4MP2]
+ADR = CanIo3.PdoMp1
+FRM = HEX,4
+HLP = PDOMP1
+[PDO4IW3]
+ADR = CanIo3.PdoIw2
+LEN = 3
+HLP = PDOIW1
+[PDO4MP3]
+ADR = CanIo3.PdoMp2
+FRM = HEX,4
+HLP = PDOMP1
+[PDO4IW4]
+ADR = CanIo3.PdoIw3
+LEN = 3
+HLP = PDOIW1
+[PDO4MP4]
+ADR = CanIo3.PdoMp3
+FRM = HEX,4
+HLP = PDOMP1
+[PDO4IW5]
+ADR = CanIo3.PdoIw4
+LEN = 3
+HLP = PDOIW1
+[PDO4MP5]
+ADR = CanIo3.PdoMp4
+FRM = HEX,4
+HLP = PDOMP1
+[PDO4IW6]
+ADR = CanIo3.PdoIw5
+LEN = 3
+HLP = PDOIW1
+[PDO4MP6]
+ADR = CanIo3.PdoMp5
+FRM = HEX,4
+HLP = PDOMP1
+[PDO4IW7]
+ADR = CanIo3.PdoIw6
+LEN = 3
+HLP = PDOIW1
+[PDO4MP7]
+ADR = CanIo3.PdoMp6
+FRM = HEX,4
+HLP = PDOMP1
+[PDO4IW8]
+ADR = CanIo3.PdoIw7
+LEN = 3
+HLP = PDOIW1
+[PDO4MP8]
+ADR = CanIo3.PdoMp7
+FRM = HEX,4
+HLP = PDOMP1
+
+[PDO5TY]
+ADR = CanIo4.PdoTy
+FRM = CBX,3
+RNG = {0,32,33}
+LST = PDO_LIST
+[PDO5TX]
+HLP = PDOTX
+ADR = CanIo4.PdoTx
+[PDO5TM]
+ADR = CanIo4.PdoTm
+HLP = PDOTM
+[PDO5IW1]
+ADR = CanIo4.PdoIw0
+HLP = PDOIW1
+LEN = 3
+HLP = PDOIW1
+[PDO5MP1]
+ADR = CanIo4.PdoMp0
+FRM = HEX,4
+HLP = PDOMP1
+[PDO5IW2]
+ADR = CanIo4.PdoIw1
+LEN = 3
+HLP = PDOIW1
+[PDO5MP2]
+ADR = CanIo4.PdoMp1
+FRM = HEX,4
+HLP = PDOMP1
+[PDO5IW3]
+ADR = CanIo4.PdoIw2
+LEN = 3
+HLP = PDOIW1
+[PDO5MP3]
+ADR = CanIo4.PdoMp2
+FRM = HEX,4
+HLP = PDOMP1
+[PDO5IW4]
+ADR = CanIo4.PdoIw3
+LEN = 3
+HLP = PDOIW1
+[PDO5MP4]
+ADR = CanIo4.PdoMp3
+FRM = HEX,4
+HLP = PDOMP1
+[PDO5IW5]
+ADR = CanIo4.PdoIw4
+LEN = 3
+HLP = PDOIW1
+[PDO5MP5]
+ADR = CanIo4.PdoMp4
+FRM = HEX,4
+HLP = PDOMP1
+[PDO5IW6]
+ADR = CanIo4.PdoIw5
+LEN = 3
+HLP = PDOIW1
+[PDO5MP6]
+ADR = CanIo4.PdoMp5
+FRM = HEX,4
+HLP = PDOMP1
+[PDO5IW7]
+ADR = CanIo4.PdoIw6
+LEN = 3
+HLP = PDOIW1
+[PDO5MP7]
+ADR = CanIo4.PdoMp6
+FRM = HEX,4
+HLP = PDOMP1
+[PDO5IW8]
+ADR = CanIo4.PdoIw7
+LEN = 3
+HLP = PDOIW1
+[PDO5MP8]
+ADR = CanIo4.PdoMp7
+FRM = HEX,4
+HLP = PDOMP1
+
+[PAR_LINE]
+CLR = 7
+[PAR_MOTOR]
+CLR = 7
+[PAR_OPTIONS]
+CLR = 7
+[PAR_COMMAND]
+CLR = 7
+[PAR_OPTIONAL]
+CLR = 7
+[PAR_SUPPLY]
+CLR = 7
+[PAR_BRAKINGCIRCUIT]
+CLR = 7
+[PAR_ERLSET]
+CLR = 7
+[PAR_CURRENT]
+CLR = 7
+[PAR_SPEED]
+CLR = 7
+[PAR_POSITION]
+CLR = 7
+[PAR_MOTOR]
+CLR = 7
+[PAR_INPUTFUN]
+CLR = 7
+[KEY_PARSET1]
+CLR = 7
+[KEY_PARSET2]
+CLR = 7
+[KEY_PARSET3]
+CLR = 7
+[KEY_PARSET4]
+CLR = 7
+
+[VXOBJ0]
+ADR = CanVx0
+HLP = VXOBJ0
+[IXOBJ0]
+ADR = CanIx0
+FRM = HEX,4
+HLP = IXOBJ0
+[VXOBJ1]
+ADR = CanVx1
+HLP = VXOBJ1
+[IXOBJ1]
+ADR = CanIx1
+FRM = HEX,4
+HLP = IXOBJ1
+[VXOBJ2]
+ADR = CanVx2
+HLP = VXOBJ2
+[IXOBJ2]
+ADR = CanIx2
+FRM = HEX,4
+HLP = IXOBJ2
+[VXOBJ3]
+ADR = CanVx3
+HLP = VXOBJ3
+[IXOBJ3]
+ADR = CanIx3
+FRM = HEX,4
+HLP = IXOBJ3
+[VXOBJ4]
+ADR = CanVx4
+HLP = VXOBJ4
+[IXOBJ4]
+ADR = CanIx4
+FRM = HEX,4
+HLP = IXOBJ4
+[VXOBJ5]
+ADR = CanVx5
+HLP = VXOBJ5
+[IXOBJ5]
+ADR = CanIx5
+FRM = HEX,4
+HLP = IXOBJ5
+[VXOBJ6]
+ADR = CanVx6
+HLP = VXOBJ6
+[IXOBJ6]
+ADR = CanIx6
+FRM = HEX,4
+HLP = IXOBJ6
+[VXOBJ7]
+ADR = CanVx7
+HLP = VXOBJ7
+[IXOBJ7]
+ADR = CanIx7
+FRM = HEX,4
+HLP = IXOBJ7
+[VXOBJ8]
+ADR = CanVx8
+HLP = VXOBJ8
+[IXOBJ8]
+ADR = CanIx8
+FRM = HEX,4
+HLP = IXOBJ8
+[VXOBJ9]
+ADR = CanVx9
+HLP = VXOBJ9
+[IXOBJ9]
+ADR = CanIx9
+FRM = HEX,4
+HLP = IXOBJ9
+[VXOBJ10]
+ADR = CanVx10
+HLP = VXOBJ10
+[IXOBJ10]
+ADR = CanIx10
+FRM = HEX,4
+HLP = IXOBJ10
+[VXOBJ11]
+ADR = CanVx11
+HLP = VXOBJ11
+[IXOBJ11]
+ADR = CanIx11
+FRM = HEX,4
+HLP = IXOBJ11
+[VXOBJ12]
+ADR = CanVx12
+HLP = VXOBJ12
+[IXOBJ12]
+ADR = CanIx12
+FRM = HEX,4
+HLP = IXOBJ12
+[VXOBJ13]
+ADR = CanVx13
+HLP = VXOBJ13
+[IXOBJ13]
+ADR = CanIx13
+FRM = HEX,4
+HLP = IXOBJ13
+[VXOBJ14]
+ADR = CanVx14
+HLP = VXOBJ14
+[IXOBJ14]
+ADR = CanIx14
+FRM = HEX,4
+HLP = IXOBJ14
+[VXOBJ15]
+ADR = CanVx15
+HLP = VXOBJ15
+[IXOBJ15]
+ADR = CanIx15
+FRM = HEX,4
+HLP = IXOBJ15
+[VXOBJ16]
+ADR = CanVx16
+HLP = VXOBJ16
+[IXOBJ16]
+ADR = CanIx16
+FRM = HEX,4
+HLP = IXOBJ16
+[VXOBJ17]
+ADR = CanVx17
+HLP = VXOBJ17
+[IXOBJ17]
+ADR = CanIx17
+FRM = HEX,4
+HLP = IXOBJ17
+[VXOBJ18]
+ADR = CanVx18
+HLP = VXOBJ18
+[IXOBJ18]
+ADR = CanIx18
+FRM = HEX,4
+HLP = IXOBJ18
+[VXOBJ19]
+ADR = CanVx19
+HLP = VXOBJ19
+[IXOBJ19]
+ADR = CanIx19
+FRM = HEX,4
+HLP = IXOBJ19
+[VXOBJ20]
+ADR = CanVx20
+HLP = VXOBJ20
+[IXOBJ20]
+ADR = CanIx20
+FRM = HEX,4
+HLP = IXOBJ20
+[VXOBJ21]
+ADR = CanVx21
+HLP = VXOBJ21
+[IXOBJ21]
+ADR = CanIx21
+FRM = HEX,4
+HLP = IXOBJ21
+[VXOBJ22]
+ADR = CanVx22
+HLP = VXOBJ22
+[IXOBJ22]
+ADR = CanIx22
+FRM = HEX,4
+HLP = IXOBJ22
+[VXOBJ23]
+ADR = CanVx23
+HLP = VXOBJ23
+[IXOBJ23]
+ADR = CanIx23
+FRM = HEX,4
+HLP = IXOBJ23
+[VXOBJ24]
+ADR = CanVx24
+HLP = VXOBJ24
+[IXOBJ24]
+ADR = CanIx24
+FRM = HEX,4
+HLP = IXOBJ24
+[VXOBJ25]
+ADR = CanVx25
+HLP = VXOBJ25
+[IXOBJ25]
+ADR = CanIx25
+FRM = HEX,4
+HLP = IXOBJ25
+[VXOBJ26]
+ADR = CanVx26
+HLP = VXOBJ26
+[IXOBJ26]
+ADR = CanIx26
+FRM = HEX,4
+HLP = IXOBJ26
+[VXOBJ27]
+ADR = CanVx27
+HLP = VXOBJ27
+[IXOBJ27]
+ADR = CanIx27
+FRM = HEX,4
+HLP = IXOBJ27
+[VXOBJ28]
+ADR = CanVx28
+HLP = VXOBJ28
+[IXOBJ28]
+ADR = CanIx28
+FRM = HEX,4
+HLP = IXOBJ28
+[VXOBJ29]
+ADR = CanVx29
+HLP = VXOBJ29
+[IXOBJ29]
+ADR = CanIx29
+FRM = HEX,4
+HLP = IXOBJ29
+[VXOBJ30]
+ADR = CanVx30
+HLP = VXOBJ30
+[IXOBJ30]
+ADR = CanIx30
+FRM = HEX,4
+HLP = IXOBJ30
+[VXOBJ31]
+ADR = CanVx31
+HLP = VXOBJ31
+[IXOBJ31]
+ADR = CanIx31
+FRM = HEX,4
+HLP = IXOBJ31
+
+[HVOBJ0]
+ADR = CanVx0
+FRM = HEX,4
+[HIOBJ0]
+ADR = CanIx0
+FRM = HEX,4
+[HVOBJ1]
+ADR = CanVx1
+FRM = HEX,4
+[HIOBJ1]
+ADR = CanIx1
+FRM = HEX,4
+[HVOBJ2]
+ADR = CanVx2
+FRM = HEX,4
+[HIOBJ2]
+ADR = CanIx2
+FRM = HEX,4
+[HVOBJ3]
+ADR = CanVx3
+FRM = HEX,4
+[HIOBJ3]
+ADR = CanIx3
+FRM = HEX,4
+[HVOBJ4]
+ADR = CanVx4
+FRM = HEX,4
+[HIOBJ4]
+ADR = CanIx4
+FRM = HEX,4
+[HVOBJ5]
+ADR = CanVx5
+FRM = HEX,4
+[HIOBJ5]
+ADR = CanIx5
+FRM = HEX,4
+[HVOBJ6]
+ADR = CanVx6
+FRM = HEX,4
+[HIOBJ6]
+ADR = CanIx6
+FRM = HEX,4
+[HVOBJ7]
+ADR = CanVx7
+FRM = HEX,4
+[HIOBJ7]
+ADR = CanIx7
+FRM = HEX,4
+[HVOBJ8]
+ADR = CanVx8
+FRM = HEX,4
+[HIOBJ8]
+ADR = CanIx8
+FRM = HEX,4
+[HVOBJ9]
+ADR = CanVx9
+FRM = HEX,4
+[HIOBJ9]
+ADR = CanIx9
+FRM = HEX,4
+[HVOBJ10]
+ADR = CanVx10
+FRM = HEX,4
+[HIOBJ10]
+ADR = CanIx10
+FRM = HEX,4
+[HVOBJ11]
+ADR = CanVx11
+FRM = HEX,4
+[HIOBJ11]
+ADR = CanIx11
+FRM = HEX,4
+[HVOBJ12]
+ADR = CanVx12
+FRM = HEX,4
+[HIOBJ12]
+ADR = CanIx12
+FRM = HEX,4
+[HVOBJ13]
+ADR = CanVx13
+FRM = HEX,4
+[HIOBJ13]
+ADR = CanIx13
+FRM = HEX,4
+[HVOBJ14]
+ADR = CanVx14
+FRM = HEX,4
+[HIOBJ14]
+ADR = CanIx14
+FRM = HEX,4
+[HVOBJ15]
+ADR = CanVx15
+FRM = HEX,4
+[HIOBJ15]
+ADR = CanIx15
+FRM = HEX,4
+[HVOBJ16]
+ADR = CanVx16
+FRM = HEX,4
+[HIOBJ16]
+ADR = CanIx16
+FRM = HEX,4
+[HVOBJ17]
+ADR = CanVx17
+FRM = HEX,4
+[HIOBJ17]
+ADR = CanIx17
+FRM = HEX,4
+[HVOBJ18]
+ADR = CanVx18
+FRM = HEX,4
+[HIOBJ18]
+ADR = CanIx18
+FRM = HEX,4
+[HVOBJ19]
+ADR = CanVx19
+FRM = HEX,4
+[HIOBJ19]
+ADR = CanIx19
+FRM = HEX,4
+[HVOBJ20]
+ADR = CanVx20
+FRM = HEX,4
+[HIOBJ20]
+ADR = CanIx20
+FRM = HEX,4
+[HVOBJ21]
+ADR = CanVx21
+FRM = HEX,4
+[HIOBJ21]
+ADR = CanIx21
+FRM = HEX,4
+[HVOBJ22]
+ADR = CanVx22
+FRM = HEX,4
+[HIOBJ22]
+ADR = CanIx22
+FRM = HEX,4
+[HVOBJ23]
+ADR = CanVx23
+FRM = HEX,4
+[HIOBJ23]
+ADR = CanIx23
+FRM = HEX,4
+[HVOBJ24]
+ADR = CanVx24
+FRM = HEX,4
+[HIOBJ24]
+ADR = CanIx24
+FRM = HEX,4
+[HVOBJ25]
+ADR = CanVx25
+FRM = HEX,4
+[HIOBJ25]
+ADR = CanIx25
+FRM = HEX,4
+[HVOBJ26]
+ADR = CanVx26
+FRM = HEX,4
+[HIOBJ26]
+ADR = CanIx26
+FRM = HEX,4
+[HVOBJ27]
+ADR = CanVx27
+FRM = HEX,4
+[HIOBJ27]
+ADR = CanIx27
+FRM = HEX,4
+[HVOBJ28]
+ADR = CanVx28
+FRM = HEX,4
+[HIOBJ28]
+ADR = CanIx28
+FRM = HEX,4
+[HVOBJ29]
+ADR = CanVx29
+FRM = HEX,4
+[HIOBJ29]
+ADR = CanIx29
+FRM = HEX,4
+[HVOBJ30]
+ADR = CanVx30
+FRM = HEX,4
+[HIOBJ30]
+ADR = CanIx30
+FRM = HEX,4
+[HVOBJ31]
+ADR = CanVx31
+FRM = HEX,4
+[HIOBJ31]
+ADR = CanIx31
+FRM = HEX,4
+
+[SRV_HEADER1]
+CLR = 7
+[SRV_HEADER2]
+CLR = 7
+
+[EC_NDD_AXNAM]
+FNM=Times New Roman
+FSZ=12
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR = CanAName
+FRM = STR
+LEN = 10
+[EC_NDD_DNAME]
+FNM=Times New Roman
+FSZ=12
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR = CanDName
+FRM = STR
+LEN = 20
+[EC_NDD_HVERS]
+FNM=Times New Roman
+FSZ=12
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR = CanHVers
+FRM = STR
+LEN = 20
+[EC_NDD_SVERS]
+FNM=Times New Roman
+FSZ=12
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR = CanSVers
+FRM = STR
+LEN = 20
+
+//=========================Diagnostic============
+// CanFB Command
+[NODE_FBCMD]
+ADR = CanFb59
+FRM = CBX,11
+RNG = {0:10}
+LST = ND_FBLIST
+[NODE_FBOBJ]
+ADR = CanFb58
+FRM = HEX,4
+[NODE_FBIN0]
+ADR = CanFb56
+[NODE_FBIN1]
+ADR = CanFb57
+FRM = HEX,4
+
+// CanFB Status
+[NODE_FBSTS]
+ADR = CanFb60
+FRM = HEX,4
+[NODE_FBERR]
+ADR = CanFb61
+FRM = HEX,4
+[NODE_FBDT0]
+ADR = CanFb62
+FRM = HEX,4
+[NODE_FBDT1]
+ADR = CanFb63
+FRM = HEX,4
+[NODE_FBDT1a]
+ADR = CanFb63
+
+// CanFB Data
+[NODE_FB0]
+ADR = CanFb0
+FRM = HEX,4
+[NODE_FB1]
+ADR = CanFb1
+FRM = HEX,4
+[NODE_FB2]
+ADR = CanFb2
+FRM = HEX,4
+[NODE_FB3]
+ADR = CanFb3
+FRM = HEX,4
+[NODE_FB4]
+ADR = CanFb4
+FRM = HEX,4
+[NODE_FB5]
+ADR = CanFb5
+FRM = HEX,4
+[NODE_FB6]
+ADR = CanFb6
+FRM = HEX,4
+[NODE_FB7]
+ADR = CanFb7
+FRM = HEX,4
+
+[SRV_ENABLE]
+ADR = CanFb59
+MSK = 29,1
+FRM = BTN,1
+HGH = 20
+LEN = 2
+TBS = 1
+
+[SRV_RESET]
+ADR = CanFb59
+MSK = 28,1
+FRM = BTN,1
+HGH = 20
+LEN = 2
+TBS = 1
+
+[SRV_LINE]
+CLR=7
+
+[DIAG_LINE]
+CLR=7
+
+[SLAVE_FRAME]
+CLR=7
+
+[MASTER_FRAME]
+CLR=7
+
+[PAR_LINE]
+LEN = 150
+HGH = 5
+FRM = GBX
+DTX = RGB(0,0,255)
+
+[kRPDO1]
+ADR = CanIo0.PdoTy
+FRM = CBX,2
+LEN = 5
+RNG = {0,32}
+LST = kRPDOLIST
+[kRPDO1o1]
+ADR = CanIo0.PdoIw0
+HLP = kRPDO1o1
+[kRPDO1o2]
+ADR = CanIo0.PdoIw1
+HLP = kRPDO1o1
+
+[kRPDO2]
+ADR = CanIo1.PdoTy
+FRM = CBX,2
+LEN = 5
+RNG = {0,32}
+LST = kRPDOLIST
+[kRPDO2o1]
+ADR = CanIo1.PdoIw0
+HLP = kRPDO1o1
+[kRPDO2o2]
+ADR = CanIo1.PdoIw1
+HLP = kRPDO1o1
+
+[kRPDO3]
+ADR = CanIo2.PdoTy
+FRM = CBX,2
+LEN = 5
+RNG = {0,32}
+LST = kRPDOLIST
+[kRPDO3o1]
+ADR = CanIo2.PdoIw0
+HLP = kRPDO1o1
+[kRPDO3o2]
+ADR = CanIo2.PdoIw1
+HLP = kRPDO1o1
+
+[kRPDO4]
+ADR = CanIo3.PdoTy
+FRM = CBX,2
+LEN = 5
+RNG = {0,32}
+LST = kRPDOLIST
+[kRPDO4o1]
+ADR = CanIo3.PdoIw0
+HLP = kRPDO1o1
+[kRPDO4o2]
+ADR = CanIo3.PdoIw1
+HLP = kRPDO1o1
+
+[kTPDO1]
+ADR = CanIo4.PdoTy
+FRM = CBX,2
+LEN = 5
+RNG = {0,33}
+LST = kRPDOLIST
+[kTPDO1TX]
+ADR = CanIo4.PdoTx
+HLP = kTPDOTX
+LEN = 3
+[kTPDO1o1]
+ADR = CanIo4.PdoIw0
+HLP = kRPDO1o1
+[kTPDO1o2]
+ADR = CanIo4.PdoIw1
+HLP = kRPDO1o1
+
+[kTPDO2]
+ADR = CanIo5.PdoTy
+FRM = CBX,2
+LEN = 5
+RNG = {0,33}
+LST = kRPDOLIST
+[kTPDO2TX]
+ADR = CanIo5.PdoTx
+HLP = kTPDOTX
+LEN = 3
+[kTPDO2o1]
+ADR = CanIo5.PdoIw0
+HLP = kRPDO1o1
+[kTPDO2o2]
+ADR = CanIo5.PdoIw1
+HLP = kRPDO1o1
+
+[kTPDO3]
+ADR = CanIo6.PdoTy
+FRM = CBX,2
+LEN = 5
+RNG = {0,33}
+LST = kRPDOLIST
+[kTPDO3TX]
+ADR = CanIo6.PdoTx
+HLP = kTPDOTX
+LEN = 3
+[kTPDO3o1]
+ADR = CanIo6.PdoIw0
+HLP = kRPDO1o1
+[kTPDO3o2]
+ADR = CanIo6.PdoIw1
+HLP = kRPDO1o1
+
+[kTPDO4]
+ADR = CanIo7.PdoTy
+FRM = CBX,2
+LEN = 5
+RNG = {0,33}
+LST = kRPDOLIST
+[kTPDO4TX]
+ADR = CanIo7.PdoTx
+HLP = kTPDOTX
+LEN = 3
+[kTPDO4o1]
+ADR = CanIo7.PdoIw0
+HLP = kRPDO1o1
+[kTPDO4o2]
+ADR = CanIo7.PdoIw1
+HLP = kRPDO1o1
+
+[EC_XMLDRIVECONF]
+ADR = xmlDriveConf
+FRM = STR
+LEN = 60
+HLP=EC_XMLDRIVECONF
+
+
+[ECATDIAG_LINE]
+CLR=7
+
+[EC_BTN_LOAD_XMLFILENAME]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH = 24
+LEN = 10
+TXC=RGB(255,255,255)
+BKC=RGB(0,0,0)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=CoENodeDiag
+MSK=10,1
+TBS=1
+FRM=BTN,1
+GRD=0
+LNK=40
+STY=CENTER
+FBR=0
+
+[EC_BTN_NODE_LOAD]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH = 24
+LEN = 10
+TXC=RGB(255,255,255)
+BKC=RGB(0,0,0)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=CoENodeDiag
+MSK=5,1
+TBS=1
+FRM=BTN,1
+GRD=0
+LNK=-1
+STY=CENTER
+FBR=0
+
+
+[EC_BTN_NODE_SAVE]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH = 24
+LEN = 10
+TXC=RGB(255,255,255)
+BKC=RGB(0,0,0)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=CoENodeDiag
+MSK=6,1
+TBS=1
+FRM=BTN,1
+GRD=0
+LNK=-1
+STY=CENTER
+FBR=0
+
+[EC_BTN_NODE_UPLOAD]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH = 24
+LEN = 10
+TXC=RGB(255,255,255)
+BKC=RGB(0,0,0)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=CoENodeDiag
+MSK=7,1
+TBS=1
+FRM=BTN,1
+GRD=0
+LNK=-1
+STY=CENTER
+FBR=0
+
+[EC_BTN_NODE_DOWNLOAD]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH = 24
+LEN = 10
+TXC=RGB(255,255,255)
+BKC=RGB(0,0,0)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=CoENodeDiag
+MSK=8,1
+TBS=1
+FRM=BTN,1
+GRD=0
+LNK=-1
+STY=CENTER
+FBR=0
+
+[EC_BTN_NODE_SAVE_FLASH]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH = 24
+LEN = 10
+TXC=RGB(255,255,255)
+BKC=RGB(0,0,0)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=CoENodeDiag
+MSK=9,1
+TBS=1
+FRM=BTN,1
+GRD=0
+LNK=-1
+STY=CENTER
+FBR=0
+
+[EDT_NODE_REPORT]
+FNM=Times New Roman
+FSZ=12
+ADR=CanNodeReport
+LEN=38
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(192,192,192)
+FRM=STR,0,0
+MSK=0,8
+TBS=1
+STY=LEFT
+FBR=1
+FBL=1
+
+[ECATVXOBJ0]
+ADR = CanVx0
+HLP = ECATVXOBJ0
+
+[ECATVXOBJ1]
+ADR = CanVx1
+HLP = ECATVXOBJ1
+
+[ECATVXOBJ2]
+ADR = CanVx2
+HLP = ECATVXOBJ2
+
+[ECATVXOBJ3]
+ADR = CanVx3
+HLP = ECATVXOBJ3
+
+[ECATVXOBJ4]
+ADR = CanVx4
+HLP = ECATVXOBJ4
+
+[ECATVXOBJ5]
+ADR = CanVx5
+HLP = ECATVXOBJ5
+
+
+[NODE_ALSTATUS]
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,255)
+ADR=CoESts8
+FRM=LST,6
+RNG={0,1,2,3,4,8}
+LST=LIST_ALSTATUS 
+
+[ECATSLVALSTATUS_LED]
+ADR=CoESts8
+MSK=4,1
+TBS=1
+FRM=PIC,20
+PIC=SquareLed.bmp
+HGH=20
+LEN=0
+
+[EC_PARAM_EDT_NODEADDR]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CoENode
+MSK=0,32
+TBS=1
+FRM=DEC,0,0
+RNG={0:65535}
+STY=LEFT
+FBR=1
+DSV=0
+RST=1
+HLP=EC_PARAM_EDT_NODEADDR
+
+[EC_PARAM_EDT_SUBNODEADDR]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanDevs
+MSK=0,32
+TBS=1
+FRM=DEC,0,0
+RNG={0:127}
+STY=LEFT
+FBR=1
+DSV=0
+RST=1
+HLP=EC_PARAM_EDT_SUBNODEADDR
+
+
+[EC_PARAM_EDT_DEVNAME]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanDName
+MSK=0,32
+TBS=1
+FRM=STR,0,0
+RNG=
+STY=CENTER
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_PARAM_EDT_HWVER]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanHVers
+MSK=0,32
+TBS=1
+FRM=STR,0,0
+RNG=
+STY=CENTER
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_PARAM_EDT_SWVER]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanSVers
+MSK=0,32
+TBS=1
+FRM=STR,0,0
+RNG=
+STY=CENTER
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_PARAM_EDT_VENDOR]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=VendorID
+MSK=0,32
+TBS=1
+FRM=HEX,0,0
+RNG=
+STY=CENTER
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_PARAM_EDT_PRODUCT]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=ProductCode
+MSK=0,32
+TBS=1
+FRM=HEX,0,0
+RNG=
+STY=CENTER
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_PARAM_EDT_REVISION]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=RevisionNumber
+MSK=0,32
+TBS=1
+FRM=HEX,0,0
+RNG=
+STY=CENTER
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_PARAM_EDT_SERNUM]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanSNumber
+MSK=0,32
+TBS=1
+FRM=HEX,0,0
+RNG=
+STY=CENTER
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_PARAM_LBL_NODE_ADDR]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=RIGHT
+
+
+[EC_PARAM_LBL_DEVNAME]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=RIGHT
+
+
+[EC_PARAM_LBL_HWVER]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=RIGHT
+
+
+[EC_PARAM_LBL_SWVER]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=RIGHT
+
+
+[EC_PARAM_LBL_VENDORID]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=RIGHT
+
+
+[EC_PARAM_LBL_PRODUCTCODE]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=RIGHT
+
+
+[EC_PARAM_LBL_REVISIONNUMBER]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=RIGHT
+
+
+[EC_PARAM_LBL_SERNUM4]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=RIGHT
+
+[EC_EDT_GEN_NODEADDR]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CoENode
+MSK=0,32
+TBS=1
+FRM=DEC,0,0
+RNG={0:65535}
+STY=LEFT
+FBR=0
+DSV=0
+RST=1
+
+[EC_EDT_GEN_SUBNODEADDR]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanDevs
+MSK=0,32
+TBS=1
+FRM=DEC,0,0
+RNG={0:127}
+STY=LEFT
+FBR=1
+DSV=0
+RST=1
+
+
+[EC_EDT_GEN_DEVNAME]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanDName
+MSK=0,32
+TBS=1
+FRM=STR,0,0
+RNG=
+STY=LEFT
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_EDT_GEN_HWVER]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanHVers
+MSK=0,32
+TBS=1
+FRM=STR,0,0
+RNG=
+STY=LEFT
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_EDT_GEN_SWVER]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanSVers
+MSK=0,32
+TBS=1
+FRM=STR,0,0
+RNG=
+STY=LEFT
+FBR=1
+DSV=0
+RST=0
+
+
+[EC_EDT_GEN_SERNUM]
+FNM=Times New Roman
+FSZ=12
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(0,0,0)
+BKC=RGB(255,255,255)
+DTX=RGB(0,0,0)
+DBK=RGB(255,255,128)
+ADR=CanSNumber
+MSK=0,32
+TBS=1
+FRM=DEC,0,0
+RNG=
+STY=LEFT
+FBR=1
+DSV=0
+RST=0
+

@@ -1,0 +1,26 @@
+[PROMPT]
+KEY_WEAR      =Datos Desgaste y duración
+
+WEAR_MODE    =Criterio cálculo desgaste útiles
+WEAR_ELACYC  =Ciclos efectuados
+WEAR_ELATIM  =Tiempo transcurrido
+WEAR_ELASPC  =Espacio recorrido
+WEAR_MAXCYC  =Ciclos máximos
+WEAR_MAXTIM  =Tiempo transcurrido máximo
+WEAR_MAXSPC  =Espacio recorrido máximo
+WEAR_WEALENZ =Coeficiente desgaste longitud Z
+WEAR_WEALENX =Coeficiente desgaste longitud X
+WEAR_WEALENY =Coeficiente desgaste longitud Y
+WEAR_ACTRAD  =Desgaste radio actual
+WEAR_ACTLENZ =Desgaste longitud actual Z
+WEAR_ACTLENX =Desgaste longitud actual X
+WEAR_ACTLENY =Desgaste longitud actual Y
+WEAR_MAXRAD  =Desgaste radio máximo
+WEAR_MAXLENZ =Desgaste longitud máximo Z
+WEAR_MAXLENX =Desgaste longitud máximo X
+WEAR_MAXLENY =Desgaste longitud máximo Y
+WEAR_WRAD    =Coeficiente desgaste radio
+
+
+[HELP]
+

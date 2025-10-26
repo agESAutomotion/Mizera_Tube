@@ -1,0 +1,28 @@
+[PROMPT]
+KEY_GEOCHAN   =Géométrie Canal
+
+GC_GEOTYPE    = Type géométrie
+GC_MODE       = Mode (0=Désact 1=Act)
+GC_X_ANG_SGN  = Inversion Ang(B)
+GC_X_ANG      = Angle (B) axe X
+GC_X_DST_SGN  = Inversion Axe(X)
+GC_X_DST      = Distance X de CM
+GC_Y_ANG_SGN  = Inversion Ang(A)
+GC_Y_ANG      = Angle (A) axe Y
+GC_Y_DST_SGN  = Inversion Axe(Y)
+GC_Y_DST      = Distance Y de CM
+GC_Z_ANG_SGN  = Inversion Ang(xx)
+GC_Z_ANG      = Angle axe Z
+GC_Z_DST_SGN  = Inversion Axe(Z)
+GC_Z_DST      = Distance Z de CM
+GC_EA_DEF_SGN = Inversion Ang(EA)
+GC_EA_DEF     = Angle Outil (EA)
+GC_EB_DEF_SGN = Inversion Ang(EB)
+GC_EB_DEF     = Angle Outil (EB)
+GC_EC_DEF_SGN = Inversion Ang(EC)
+GC_EC_DEF     = Angle Outil (EC)
+
+
+[HELP]
+
+

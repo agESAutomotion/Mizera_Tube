@@ -1,0 +1,93 @@
+: ConnectFollower.cfs
+
+IF( %cn[WHO()].rc[0].21 ) RET
+IF(!AEXISTS(5,X)) RET
+
+; Motor cylinder composite support virtual axis granted
+WAITBIT("%ax60.ra3.28",0)
+WAITBIT("%ax61.ra3.28",0)
+
+; CyComOftAx51  AT %UNLOADER.values34;
+; CyComOftAx52  AT %UNLOADER.values35;
+; CyComOftAx53  AT %UNLOADER.values36;
+; CyComOftAx54  AT %UNLOADER.values37;				 
+; CyComOftAx55  AT %UNLOADER.values38;
+; 
+; CyComOftAx71  AT %UNLOADER.values39;
+; CyComOftAx72  AT %UNLOADER.values40;
+; CyComOftAx73  AT %UNLOADER.values41;
+; CyComOftAx74  AT %UNLOADER.values42;
+; CyComOftAx75  AT %UNLOADER.values43;
+
+iter=1 
+WHILE( iter <= 5 )
+     lifter[iter] = %UNLOADER.values[33+iter] 
+	 ulifter[iter] = %UNLOADER.values[38+iter] 
+	 iter = iter + 1
+ENDW
+
+; Connect the follower axes for the calibration of the tube
+G153
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+G152
+G4099
+
+;//Setup machining aids
+;//Uses: xs, ... xe, ... xr, ...
+
+IF( !AEXISTS(9,X) ) JMPF .no_lateral
+
+;SETUP_AIDS
+G153
+G4005 S(AXIDX(9,X))
+;AID_ENGAGE
+IF (AEXISTS(9,Z)) G4005 S(AXIDX(9,Z))
+IF (AEXISTS(9,Y)) G4005 S(AXIDX(9,Y))
+IF (AEXISTS(9,U)) G4005 S(AXIDX(9,U))
+IF (AEXISTS(9,V)) G4005 S(AXIDX(9,V))
+G152
+G4099
+
+SYN
+;ParkAllLoadSuppCmd_LAT AT %SUPPORTS_SYSTEM.values13.8;
+;ParkingPosLoad_lat AT %LOADER.values16;
+?%SUPPORTS_SYSTEM.values13.8 = 1
+IF( AEXISTS(9,Y) ) AWAIT(ABS((%LOADER.values16 / 1000) - (%ax[AXIDX(9,Z)].ra24 / 1000)) < 0.1)
+IF( AEXISTS(9,Z) ) AWAIT(ABS((%LOADER.values16 / 1000) - (%ax[AXIDX(9,Y)].ra24 / 1000)) < 0.1)
+IF( AEXISTS(9,U) ) AWAIT(ABS((%LOADER.values16 / 1000) - (%ax[AXIDX(9,U)].ra24 / 1000)) < 0.1)
+IF( AEXISTS(9,V) ) AWAIT(ABS((%LOADER.values16 / 1000) - (%ax[AXIDX(9,V)].ra24 / 1000)) < 0.1)
+SYN
+?%SUPPORTS_SYSTEM.values13.8 = 0
+
+IF(!SetupAidsLatDone) JSR "setup_aids_Lat.cfs"    
+
+.no_lateral
+
+WAITBIT( "%ax[AXIDX(5,Y)].ra3.0", 1 )
+WAITBIT( "%ax[AXIDX(5,Z)].ra3.0", 1 )
+WAITBIT( "%ax[AXIDX(5,U)].ra3.0", 1 )
+WAITBIT( "%ax[AXIDX(5,V)].ra3.0", 1 )
+
+G153
+G4005 S(AXIDX(5,X))
+IF (AEXISTS(5,Z)) G4005 S(AXIDX(5,Z))
+IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))
+IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))
+IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))
+G152
+G4099
+
+IF(!SetupAidsDone) JSR "setup_aids_poly.cfs"      
+
+IF( (AEXISTS(5,X)) && (!%ServiceMillePGM.14) ) JSR "aidEngageSupp.cfs"
+
+; Support LATERAL axes in position
+IF( (AEXISTS(9,X)) && (!%ServiceMillePGM.12) ) JSR "aidEngageSuppLat.cfs"
+   
+RET 

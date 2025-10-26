@@ -1,0 +1,3 @@
+: cstboot
+; PERSONALIZZAZIONE BOOT
+RET

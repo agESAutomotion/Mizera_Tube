@@ -1,0 +1,59 @@
+: 
+;============================================================================================
+; M704 - BlendSwitch (FOLLOWING), posiziona asse a quota di Segui
+; ---> CouplingFollowEn in "aidEngageUnload.cfs"
+; ---> Always CmdBlendSwitch, switching between M and N only 
+;============================================================================================
+IF( %cn[WHO()].rc[0].21 ) RET     
+;IN_M4_MODE AT %M91.6;
+IF( %M91.6 ) RET
+IF( !CouplingFollowEn ) ERROR(55)
+
+DBL sec_cn5[10], sec_cn8[10]  
+
+;// Check if supports are in SecParking
+RPT .Chk_MN_Init_Start, .Chk_MN_Init_End, 1 
+
+SYN	  
+?%gIso38 = 704
+?%LsIso35.4 = 0                     ;M700_BLEND 
+
+?%gIso29.1 = 0                      ;ParkUn71Sup_ISO
+?%gIso29.2 = 0                      ;ParkUn72Sup_ISO
+?%gIso29.3 = 0                      ;ParkUn73Sup_ISO
+?%gIso29.4 = 0                      ;ParkUn74Sup_ISO
+?%gIso29.5 = 0                      ;ParkUn75Sup_ISO
+
+?%gIso29.11 = 0                     ;ParkUn51Sup_ISO
+?%gIso29.12 = 0                     ;ParkUn52Sup_ISO
+?%gIso29.13 = 0                     ;ParkUn53Sup_ISO
+?%gIso29.14 = 0                     ;ParkUn54Sup_ISO
+
+;============================================================================================
+; Init Engage Condition from PLC Support Status
+; Ensure each support either FOLLOW or PARKING position
+;============================================================================================    
+iter=1
+SYN
+WHILE( iter <= 5 )
+	 IF( ists_5cn[iter] && sec_cn5[iter] ) AWAIT( (%ax[50+iter].rgau2 == 1000) || (%ax[50+iter].ra0.1) )
+	 ;IF( ists_8cn[iter] && sec_cn8[iter] ) AWAIT( (%ax[70+iter].rgau2 == 1000) || (%ax[70+iter].ra0.1) )
+	 iter = iter + 1
+ENDW
+
+SYN
+?%gIso38 = 0
+
+RET
+
+.Chk_MN_Init_Start
+   iter=1
+   SYN
+   WHILE( iter <= 5 )
+         L_COM_PrkPos = %LOADER.values15 / 1000
+   	     IF( ists_5cn[iter] ) sec_cn5[iter] = IFEXP( (%ax[50+iter].ra24 / 1000) < (L_COM_PrkPos-15), 1, 0 ) 
+		 L_COM_PrkPos = %UNLOADER.values5 / 1000
+		 IF( ists_8cn[iter] ) sec_cn8[iter] = IFEXP( (%ax[70+iter].ra24 / 1000) < (L_COM_PrkPos-15), 1, 0 ) 
+   	     iter = iter + 1
+   ENDW
+.Chk_MN_Init_End

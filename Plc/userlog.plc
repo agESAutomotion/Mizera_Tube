@@ -1,0 +1,442 @@
+******************************************************************
+* File USERLOG.PLC
+* Version: 1.0
+******************************************************************
+
+VAR
+#include "Cnc.inc"
+#include "Iof.inc"
+
+Appoggio:             BOOL;
+R_TRIG_1SEC:          R_TRIG;
+TP_PROGRAM_ENDPROD:   TP;
+TP_PROGRAM_LOAD:      TP;
+F_TRIG_ENDPROD: 	  F_TRIG;
+R_TRIG_CONTAFOGLI:    R_TRIG;
+
+END_VAR
+
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+
+#include "Iol.inc"
+
+FUNCTION USERLOGGER
+
+****************************************************
+* STATI MACCHINA
+****************************************************
+
+* Macchina in emergenza generale
+
+LDN  I_EMERGENZA         *(IW0.14) 1= Macchina accesa
+ST   %StateMachine0.0    * Macchina in emergenza generale
+
+* Macchina in idle
+
+LD   %cn0.rc0.12         * Selettore modi operativi su AUT (automatic)
+ANDN %cn0.rc8.0          * Programma in corso
+OR   %cn0.rc0.8          * Selettore modi operativi su REF (taratura)
+ANDN %StateMachine0.6    * Macchina in allarme
+ANDN %EventMachine0.0    * Caricamento programma
+ANDN %EventMachine0.1    * Fine produzione
+ST   %StateMachine0.1    * Macchina in idle
+
+* Macchina in manuale
+
+LD   %cn0.rc0.9          * Selettore modi operativi su JOG (manuale)
+ANDN %cn0.rc0.12         * Selettore modi operativi su AUT (automatic)
+ANDN %StateMachine0.6    * Macchina in allarme
+ST   %StateMachine0.2    * Macchina in manuale
+
+* Macchina in semiautomatico
+
+LD   %cn0.rc0.10         * Selettore modi operativi su INC (inc.fissi)
+OR   %cn0.rc0.11         * Selettore modi operativi su MDI (semiautom)
+ANDN %StateMachine0.6    * Macchina in allarme
+ST   %StateMachine0.3    * Macchina in semiautomatico
+
+* Macchina in automatico
+
+LD   %cn0.rc8.0          * Programma in corso
+ANDN %StateMachine0.6    * Macchina in allarme
+ST   %StateMachine0.4    * Macchina in automatico
+
+* Macchina in hold
+
+LD   %cn0.rc8.1          * Programma interrotto
+ANDN %StateMachine0.6    * Macchina in allarme
+ST   %StateMachine0.5    * Macchina in hold
+
+LD   %PLCerr0
+OR   %PLCerr1
+OR   %PLCerr2
+OR   %PLCerr3
+OR   %PLCerr4
+OR   %PLCerr5
+OR   %PLCerr6
+NE   0
+OR   MACC_ALARM          * (gPlc0.10)Macchina in allarme
+ST   %StateMachine0.6    * Macchina in allarme
+
+****************************************************
+* EVENTI MACCHINA
+****************************************************
+* Caricamento programma
+
+CAL   TP_PROGRAM_ENDPROD( IN=%ui16.30, PT=2500 ) * Impulso caricamento programma
+
+CAL   F_TRIG_ENDPROD( CLK=TP_PROGRAM_ENDPROD.Q )
+
+CAL   TP_PROGRAM_LOAD( IN=F_TRIG_ENDPROD.Q, PT=2500)
+
+LD    TP_PROGRAM_LOAD.Q
+ST    %EventMachine0.0    * Caricamento programma
+
+LD    F_TRIG_ENDPROD.Q
+JMPCN AZZERAFOGLI
+
+LD    0
+ST    %CounterMachine6
+
+AZZERAFOGLI:
+
+* Fine produzione
+
+LD    TP_PROGRAM_ENDPROD.Q
+ST    %EventMachine0.1    * Fine produzione
+
+LD   M30_CN0             * (M0.13) M30:   EndProgram CN0
+ANDN ExeAuxMode          * (gPlc0.29)Esecuzione ausiliaria 1000.PGM
+ST   Appoggio
+
+CAL R_TRIG_CONTAFOGLI(CLK=Appoggio)
+
+LD  R_TRIG_CONTAFOGLI.Q
+JMPCN NOCONTAFOGLI
+
+LD    %CounterMachine6
+ADD   1
+ST    %CounterMachine6
+
+NOCONTAFOGLI:
+
+*************************************************************************************
+* CONTATORI PER DATALOGGER
+*************************************************************************************
+
+CAL   R_TRIG_1SEC(CLK=%PLCFLAGS.10)
+
+* Tempo lavoro
+
+LD    R_TRIG_1SEC.Q
+AND   %cn0.rc8.0         * Programma in corso
+ANDN  %cn0.rc8.1         * Programma interrotto
+JMPCN TEMPOLAVORO
+
+LD    %CounterMachine0
+ADD   1
+ST    %CounterMachine0
+
+TEMPOLAVORO:
+
+* Tempo attrezzaggio
+
+LD    %cn0.rc0.8         * Selettore modi operativi su REF (taratura)
+OR    %cn0.rc0.10        * Selettore modi operativi su INC (inc.fissi)
+OR    %cn0.rc0.11        * Selettore modi operativi su MDI (semiautom)
+AND   R_TRIG_1SEC.Q
+JMPCN TEMPOATTREZZAGGIO
+
+LD    %CounterMachine1
+ADD   1
+ST    %CounterMachine1
+
+TEMPOATTREZZAGGIO:
+
+* Tempo macchina in idle
+
+LD    R_TRIG_1SEC.Q
+AND  %StateMachine0.1    * Macchina in idle
+JMPCN TEMPOPROGRAMMAZIONE
+
+LD    %CounterMachine2
+ADD   1
+ST    %CounterMachine2
+
+TEMPOPROGRAMMAZIONE:
+
+* Tempom acchina in allarme
+
+
+LD    R_TRIG_1SEC.Q
+AND  %StateMachine0.6    * Macchina in allarme
+JMPCN TEMPOALLARME
+
+LD    %CounterMachine3
+ADD   1
+ST    %CounterMachine3
+
+TEMPOALLARME:
+
+* Tempo macchina in manuale
+
+LD    R_TRIG_1SEC.Q
+AND  %StateMachine0.2    * Macchina in manuale
+JMPCN TEMPOFERMA
+
+LD    %CounterMachine4
+ADD   1
+ST    %CounterMachine4
+
+TEMPOFERMA:
+
+* Tempo macchina in hold
+
+LD    R_TRIG_1SEC.Q
+AND  %StateMachine0.5    * Macchina in hold
+JMPCN TEMPOHOLD
+
+LD    %CounterMachine5
+ADD   1
+ST    %CounterMachine5
+
+TEMPOHOLD:
+
+LD    %UserCmdExt.0      * Comando Reset Contatori(se serve lo comanda il server)
+JMPCN RESCOUNTER
+
+LD    0
+ST    %CounterMachine0
+ST    %CounterMachine1
+ST    %CounterMachine2
+ST    %CounterMachine3
+ST    %CounterMachine4
+ST    %CounterMachine5
+
+LD    %PLCFLAGS.1
+S     %UserCmdInt.0      * Ack Comando Reset Contatori
+
+RESCOUNTER:
+
+LDN   %UserCmdExt.0      * Comando Reset Contatori(se serve lo comanda il server)
+R     %UserCmdInt.0     * Ack Comando Reset Contatori
+
+* SEZIONE EVENTI
+
+LD    %PLCerr0
+OR    %PLCerr1
+OR    %PLCerr2
+OR    %PLCerr3
+OR    %PLCerr4
+OR    %PLCerr5
+OR    %PLCerr6
+OR    %PLCerr7
+OR    %PLCerr20
+OR    %PLCerr21
+ST    %M104.0          * Riepilogativo allarmi PLC
+
+LD    %PilzSrv.PilzErrCodes0
+NE    0
+OR(
+LD    %PilzSrv.PilzErrCodes1
+NE    0
+)
+OR(
+LD    %PilzSrv.PilzErrCodes2
+NE    0
+)
+ST    %M104.1          * Riepilogativo allarmi PLC Safe
+
+LD    %ax0.ra6
+NE    0
+OR(
+LD    %ax1.ra6
+NE    0
+)
+OR(
+LD    %ax2.ra6
+NE    0
+)
+OR(
+LD    %ax3.ra6
+NE    0
+)
+OR(
+LD    %ax4.ra6
+NE    0
+)
+OR(
+LD    %ax5.ra6
+NE    0
+)
+OR(
+LD    %ax6.ra6
+NE    0
+)
+OR(
+LD    %ax7.ra6
+NE    0
+)
+OR(
+LD    %ax8.ra6
+NE    0
+)
+OR(
+LD    %ax9.ra6
+NE    0
+)
+OR(
+LD    %ax10.ra6
+NE    0
+)
+OR(
+LD    %ax11.ra6
+NE    0
+)
+OR(
+LD    %ax12.ra6
+NE    0
+)
+OR(
+LD    %ax13.ra6
+NE    0
+)
+OR(
+LD    %ax14.ra6
+NE    0
+)
+OR(
+LD    %ax15.ra6
+NE    0
+)
+OR(
+LD    %ax16.ra6
+NE    0
+)
+OR(
+LD    %ax17.ra6
+NE    0
+)
+OR(
+LD    %ax18.ra6
+NE    0
+)
+OR(
+LD    %ax19.ra6
+NE    0
+)
+OR(
+LD    %ax20.ra6
+NE    0
+)
+OR(
+LD    %ax21.ra6
+NE    0
+)
+OR(
+LD    %ax22.ra6
+NE    0
+)
+OR(
+LD    %ax23.ra6
+NE    0
+)
+OR(
+LD    %ax24.ra6
+NE    0
+)
+OR(
+LD    %ax25.ra6
+NE    0
+)
+OR(
+LD    %ax26.ra6
+NE    0
+)
+OR(
+LD    %ax27.ra6
+NE    0
+)
+OR(
+LD    %ax28.ra6
+NE    0
+)
+OR(
+LD    %ax29.ra6
+NE    0
+)
+OR(
+LD    %ax30.ra6
+NE    0
+)
+OR(
+LD    %ax31.ra6
+NE    0
+)
+OR(
+LD    %ax32.ra6
+NE    0
+)
+OR(
+LD    %ax33.ra6
+NE    0
+)
+OR(
+LD    %ax34.ra6
+NE    0
+)
+OR(
+LD    %ax35.ra6
+NE    0
+)
+OR(
+LD    %ax36.ra6
+NE    0
+)
+OR(
+LD    %ax37.ra6
+NE    0
+)
+OR(
+LD    %ax38.ra6
+NE    0
+)
+OR(
+LD    %ax39.ra6
+NE    0
+)
+OR(
+LD    %ax40.ra6
+NE    0
+)
+OR(
+LD    %ax41.ra6
+NE    0
+)
+OR(
+LD    %ax54.ra6
+NE    0
+)
+OR(
+LD    %ax72.ra6
+NE    0
+)
+ST    %M104.2          * Riepilogativo allarmi assi
+
+LD    %cn0.rc8.3
+OR    %cn1.rc8.3
+OR    %cn2.rc8.3
+OR    %cn3.rc8.3
+OR    %cn4.rc8.3
+OR    %cn5.rc8.3
+OR    %cn7.rc8.3
+OR    %cn8.rc8.3
+ST    %M104.3          * Riepilogativo allarmi canale
+
+* FINE SEZIONE EVENTI
+
+END_FUNCTION

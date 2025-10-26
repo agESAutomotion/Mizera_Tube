@@ -1,0 +1,51 @@
+[PROMPT]
+KEY_CED       =Tool Data
+
+CED_RAD       =Tool Radius [mm]
+CED_TRAD      =Union radius for toric mill
+CED_LENZ      =Tool Z Length [mm]
+CED_THICK     =Disc tool thickness
+CED_LENX      =Tool X length for turning
+CED_LENY      =Tool Y length for turning
+CED_LATHE_ANG_A =Clearance angle A (lathe)
+CED_LATHE_ANG_B =Clearance angle B (lathe)
+CED_DSC       =Description
+CED_WEAIDX    =Extension index for wear management
+
+CED_MINRPM    =Minimum rpm rate
+CED_MAXRPM    =Maximum rpm rate
+CED_STDRPM    =Rpm rate
+CED_CCW       =Left-handed tool
+CED_MAXFEED   =Max. linear advancement speed
+CED_STDFEED   =Default linear advanc. speed
+CED_DIR       =Cutting direction check enabling
+CED_TG        =Allowed machining type
+CED_TGTHRE    =Angular tolerance [°]
+CED_STATUS    =Events that involve the tool
+CED_MAXACC    =Maximum acceleration [rev/s²]
+CED_MAXDEC    =Maximum deceleration [rev/s²]
+
+[HELP]
+
+CED_RAD       =Tool radius: The tool radius allows the real dimension of the tool to be considered during the machining phase
+CED_TRAD      =Union radius for toric mill
+CED_LENZ      =Tool Z Length [mm]
+CED_THICK     =The figure shows an example of the parameters setup of a disk saw blade;  please note the dThick parameter which represents the disk tool thickness
+CED_LENX      =X Length: Turning tool 1 auxiliary length
+CED_LENY      =Y Length: Turning tool 2 auxiliary length
+CED_LATHE_ANG_A =Clearance angle A (lathe)
+CED_LATHE_ANG_B =Clearance angle B (lathe)
+CED_WEAIDX    =Tool data extension index for tool wear
+
+CED_MINRPM    =Minimum rpm rate
+CED_MAXRPM    =Maximum rpm rate
+CED_STDRPM    =Rpm rate
+CED_CCW       =Left-handed tool
+CED_MAXFEED   =Max. linear advancement speed
+CED_STDFEED   =Default linear advanc. speed
+CED_DIR       =Cutting direction check enabling
+CED_TG        =Type of admitted trajectory during feed machining:  0-any (e.g.:  cylindrical mill);  1-only axial movements (e.g.:  boring bit);  2-only radial movements (e.g.:  disk saw blade)
+CED_TGTHRE    =Angular tolerance to be used for trajectory surveillance during feed machining [°]
+CED_STATUS    =Events that can condition tool use
+CED_MAXACC    =Maximum acceleration [rev/s²]; obtained by dividing the maximum revolution speed [rev/s] by the time [s] needed to reach it.
+CED_MAXDEC    =Maximum deceleration [rev/s²]; obtained by dividing the maximum revolution speed [rev/s] by the time [s] needed to to stop once running at the maximum revolution speed.

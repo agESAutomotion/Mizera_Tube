@@ -1,0 +1,16 @@
+
+[KEYS]
+TITLE=Impostazioni di Lettura ProCutter
+
+[PROMPT]
+KEY_NODE=Nodo
+PROCUTREADICSETTING=Foglia
+LabelPerr1=Tipo di ProCutter (1: ProCutter 2.0, 2: ProCutter 2.0 Zoom)
+LabelPerr2=Guadagno Sensore Luce Parassita Finestra Protettiva (1: basso, 2: medio, 3: alto)
+LabelPerr4=Posizione Focale Attuale [mm]
+LabelPerr3=Rapporto Immagine Attuale
+LabelPerr6=Offset Fuoco Cliente [mm]
+
+[STATUS]
+
+[HELP]

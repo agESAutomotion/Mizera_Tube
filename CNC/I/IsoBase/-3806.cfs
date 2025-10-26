@@ -1,0 +1,20 @@
+ [C]12 [X]0 [Y]0 [Z]0 [U]0 [V]0 [W]0 : G2806
+;//Line graphics
+DBL color = VA2
+DBL xs = CTOMM(VA23), ys = CTOMM(VA24), zs = CTOMM(VA25)
+DBL xe = CTOMM(VA20), ye = CTOMM(VA21), ze = CTOMM(VA22)
+DBL shx = 0, shy = 0, shz = 0
+DBL sav_G70=XGET("@G70")
+G71
+
+IF(f_ortho) THEN
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+ENDIF
+
+MOVE(  15,color,xs+shx,ys+shy,zs+shz)
+LINETO(15,color,xe+shx,ye+shy,ze+shz)
+
+G(sav_G70)
+RET

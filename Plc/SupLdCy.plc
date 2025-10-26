@@ -1,0 +1,291 @@
+#funcdec "FBSuppor.plc"
+#funcdec "assi.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+#funcdec "SupForce.plc"
+#funcdec "suppFB.plc"
+
+#include "Iol.inc"
+#include "usrMem.inc"
+
+VAR
+#include "iof.inc"
+#include "usrIof.inc"
+#include "cnc.inc"
+
+SUPPORT_1:     TUBE_SUPPORT;
+SUPPORT_2:     TUBE_SUPPORT;
+SUPPORT_3:     TUBE_SUPPORT;
+SUPPORT_4:     TUBE_SUPPORT;
+SUPPORT_5:     TUBE_SUPPORT;
+SUPPORT_6:     TUBE_SUPPORT;
+SUPPORT_7:     TUBE_SUPPORT;
+END_VAR
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"              
+END_VAR
+
+FUNCTION LOAD_CYLINDER_SUPPORTS
+
+*******************************************************
+*           CYLINDER SUPPORTS MANAGEMENT              *
+*******************************************************
+LD   SUPPORTS_JogPlus
+ST   SUPPORTS_JogPlusLed
+
+LD   SUPPORTS_JogMinus
+ST   SUPPORTS_JogMinusLed
+
+LD   ALWAYS_ONE
+ST   SUPPORT_1.xUaxDir
+ST   SUPPORT_2.xUaxDir
+ST   SUPPORT_3.xUaxDir
+ST   SUPPORT_4.xUaxDir
+
+LD   PosUMis
+ST   SUPPORT_1.xPosU	
+ST   SUPPORT_2.xPosU	
+ST   SUPPORT_3.xPosU	
+ST   SUPPORT_4.xPosU	
+
+LD   ThreshLoadingSupDown
+ST   SUPPORT_1.xSuperviseOft 
+ST   SUPPORT_2.xSuperviseOft 
+ST   SUPPORT_3.xSuperviseOft 
+ST   SUPPORT_4.xSuperviseOft 
+
+LDN  I_I_EMERGENZA                ** Machine OK (no EMERG.) 
+ST   SUPPORT_1.xEmerg
+ST   SUPPORT_2.xEmerg
+ST   SUPPORT_3.xEmerg
+ST   SUPPORT_4.xEmerg
+
+LD   ch0_in_aut                   ** channel 0 in aut
+ST   SUPPORT_1.xAuto	
+ST   SUPPORT_2.xAuto	
+ST   SUPPORT_3.xAuto	
+ST   SUPPORT_4.xAuto	
+
+LD   I_I_PRESSIONE_ARIA_IMPIANTO            
+ST   SUPPORT_1.xAirPressure  
+ST   SUPPORT_2.xAirPressure  
+ST   SUPPORT_3.xAirPressure  
+ST   SUPPORT_4.xAirPressure  
+
+LD   Reset                        ** Reset Command       
+OR   Start_Ch0                    ** Start Request to Ch0
+ST   SUPPORT_1.xReset  
+ST   SUPPORT_2.xReset  
+ST   SUPPORT_3.xReset  
+ST   SUPPORT_4.xReset  
+
+LD   TimeOutPistonDown
+ST   SUPPORT_1.xTimeOut  
+ST   SUPPORT_2.xTimeOut  
+ST   SUPPORT_3.xTimeOut  
+ST   SUPPORT_4.xTimeOut  
+
+*******************************************************
+*                      SUPPORT 1                      *
+*******************************************************
+LD   I_I_Support_1_Dwn            ** M50.7 Support 1 Down Sensor
+ST   SUPPORT_1.xSensorDwn 
+
+LD   I_I_Support_1_Up
+ST   SUPPORT_1.xSensorOpen
+
+LD   SUPPORTS_S1_Selected
+AND  SUPPORTS_JogPlus
+ST   SUPPORT_1.xManualUp	
+
+LD   SUPPORTS_S1_Selected
+AND  SUPPORTS_JogMinus
+ST   SUPPORT_1.xManualDwn	
+
+LD   Fun_M724_Ch0                 ** Auto Up command for supports
+OR   Fun_M733_Ch0
+ANDN yActivatedCyCom_51
+ST   SUPPORT_1.xAutoUp  
+
+LD   Fun_M725_Ch0                 ** Auto Up command for supports
+OR   yActivatedCyCom_51
+ST   SUPPORT_1.xAutoDwn 
+
+LD   SUPPORT_1_AutoEnable
+ST   SUPPORT_1.xEnable
+
+LD   SUPPORT_1_Quota        
+ST   SUPPORT_1.xLimitQuota
+
+CAL  SUPPORT_1
+
+LD   SUPPORT_1.yEvUp
+ST   O_O_Ev_Support1_Up         
+
+LD   SUPPORT_1.yEvDwn
+ST   O_O_Ev_Support1_Dwn
+
+LD   SUPPORT_1.yAlarmDwn 
+ST   SUPPORT_1_AlarmDwn       
+ST   %PLCerr21.0     
+     
+*******************************************************
+*                      SUPPORT 2                      *
+*******************************************************
+LD   I_I_Support_2_Dwn             ** M50.8 Support 2 Down Sensor
+ST   SUPPORT_2.xSensorDwn 
+
+LD   I_I_Support_2_Up              ** PLCFLAGS.1  Flag sempre stato on
+ST   SUPPORT_2.xSensorOpen	
+
+LD   SUPPORTS_S2_Selected
+AND  SUPPORTS_JogPlus
+ST   SUPPORT_2.xManualUp	
+
+LD   SUPPORTS_S2_Selected
+AND  SUPPORTS_JogMinus
+ST   SUPPORT_2.xManualDwn
+	
+LD   Fun_M724_Ch0                  ** Auto Up command for supports
+OR   Fun_M734_Ch0
+ANDN yActivatedCyCom_52
+ST   SUPPORT_2.xAutoUp  
+
+LD   Fun_M725_Ch0                  ** Auto Up command for supports
+OR   yActivatedCyCom_52
+ST   SUPPORT_2.xAutoDwn 
+
+LD   SUPPORT_2_AutoEnable
+ST   SUPPORT_2.xEnable
+
+LD   SUPPORT_2_Quota             
+ST   SUPPORT_2.xLimitQuota
+
+CAL  SUPPORT_2
+
+LD   SUPPORT_2.yAlarmDwn    
+ST   SUPPORT_2_AlarmDwn
+ST   %PLCerr21.1
+
+LD   SUPPORT_2.yEvUp
+ST   O_O_Ev_Support2_Up         
+
+LD   SUPPORT_2.yEvDwn
+ST   O_O_Ev_Support2_Dwn
+
+*******************************************************
+*                      SUPPORT 3                      *
+*******************************************************
+LD   I_I_Support_3_Dwn             ** M50.9 Support 3 Down Sensor
+ST   SUPPORT_3.xSensorDwn 
+
+LD   I_I_Support_3_Up
+ST   SUPPORT_3.xSensorOpen	
+
+LD   SUPPORTS_S3_Selected
+AND  SUPPORTS_JogPlus
+ST   SUPPORT_3.xManualUp	
+
+LD   SUPPORTS_S3_Selected
+AND  SUPPORTS_JogMinus
+ST   SUPPORT_3.xManualDwn	
+
+LD   Fun_M724_Ch0                  ** Auto Up command for supports
+OR   Fun_M735_Ch0
+ANDN yActivatedCyCom_53
+ST   SUPPORT_3.xAutoUp  
+
+LD   Fun_M725_Ch0                  ** Auto Up command for supports
+OR   yActivatedCyCom_53
+ST   SUPPORT_3.xAutoDwn 
+
+LD   SUPPORT_3_AutoEnable
+ST   SUPPORT_3.xEnable 
+
+LD   SUPPORT_3_Quota           
+ST   SUPPORT_3.xLimitQuota
+ 
+CAL  SUPPORT_3
+
+LD   SUPPORT_3.yAlarmDwn    
+ST   SUPPORT_3_AlarmDwn
+ST   %PLCerr21.2
+  
+LD   SUPPORT_3.yEvUp
+ST   O_O_Ev_Support3_Up         
+
+LD   SUPPORT_3.yEvDwn
+ST   O_O_Ev_Support3_Dwn
+
+*******************************************************
+*                      SUPPORT 4                      *
+*******************************************************
+LD   I_I_Support_4_Dwn             ** M50.10 Support 4 Down Sensor
+ST   SUPPORT_4.xSensorDwn 
+
+LD   I_I_Support_4_Up              ** PLCFLAGS.1  Flag sempre stato on
+ST   SUPPORT_4.xSensorOpen	
+
+LD   SUPPORTS_S4_Selected
+AND  SUPPORTS_JogPlus
+ST   SUPPORT_4.xManualUp	
+
+LD   SUPPORTS_S4_Selected
+AND  SUPPORTS_JogMinus
+ST   SUPPORT_4.xManualDwn	
+
+LD   Fun_M724_Ch0                  ** Auto Up command for supports
+OR   Fun_M736_Ch0
+ANDN yActivatedCyCom_54
+ST   SUPPORT_4.xAutoUp  
+
+LD   Fun_M725_Ch0                  ** Auto Up command for supports
+OR   yActivatedCyCom_54
+ST   SUPPORT_4.xAutoDwn  
+
+LD   SUPPORT_4_AutoEnable
+ST   SUPPORT_4.xEnable
+
+LD   SUPPORT_4_Quota        
+ST   SUPPORT_4.xLimitQuota   
+
+CAL  SUPPORT_4
+
+LD   SUPPORT_4.yAlarmDwn    
+ST   SUPPORT_4_AlarmDwn
+ST   %PLCerr21.3
+
+LD   SUPPORT_4.yEvUp
+ST   O_O_Ev_Support4_Up         
+
+LD   SUPPORT_4.yEvDwn
+ST   O_O_Ev_Support4_Dwn
+
+*******************************************************
+*                    HOLD CONDITION                   *
+*******************************************************
+LD   %PLCerr21.0  
+OR   %PLCerr21.1  
+OR   %PLCerr21.2  
+OR   %PLCerr21.3  
+OR   %PLCerr21.4  
+OR   %PLCerr21.5  
+OR   %PLCerr21.6  
+OR   SUPPORT_1.yHoldMovSuperv
+OR   SUPPORT_2.yHoldMovSuperv
+OR   SUPPORT_3.yHoldMovSuperv
+OR   SUPPORT_4.yHoldMovSuperv
+ST   M_HoldAx_U
+
+LD   I_I_Support_1_Dwn
+AND  I_I_Support_2_Dwn
+AND  I_I_Support_3_Dwn
+AND  I_I_Support_4_Dwn
+*AND  I_I_Support_5_Dwn
+*AND  I_I_Support_6_Dwn
+*AND  I_I_Support_7_Dwn
+ST   All_Sup_DWN
+
+END_FUNCTION

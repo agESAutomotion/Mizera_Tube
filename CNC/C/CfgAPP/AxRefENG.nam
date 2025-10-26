@@ -1,0 +1,8 @@
+[PROMPT]
+KEY_REFAXES = Limit switches config.
+
+REF_MODE = Reference mode
+NO_NC = Limit switch (1=NC, 0=NO)  
+
+REF_LIST = NO open,NC close,pos. ls.,neg. ls
+

@@ -1,0 +1,47 @@
+
+[KEYS]
+TITLE=
+TXT8=Página Especialista
+TXT9=Página Simplificada
+
+[PROMPT]
+KEY_NODE=Node
+PIPECALIBRATION=Calibração Tubo
+GroupBox3=Informação
+GroupBox4=Calibração
+GroupBox1=Calibração Spindle
+GroupBox2=Pipe: Opções Gerais Calibração
+GroupBox=Tubos Calibração
+Label=Tabela de Backup
+Label1=Máx Erro Vertical [mm]
+Label2=Máx Erro Horizontal [mm]
+Label3=Coordenadas X [mm]
+Label4=Coordenadas Y [mm]
+Label5=Bordas [mm]
+Label6=Lado Menor [mm]
+Label14=Quadrado
+Label15=Volta
+Label16=Comprimento [mm]
+Label17=Comprimento [mm]
+Label18=Raios [mm]
+Label19=Lado 1  [mm]
+Label20=Lado 2  [mm]
+Label21=Volta [mm]
+Label22=Comprimento [mm]
+Label23=Lado 1  [mm]
+Label24=Lado 2  [mm]
+Label25=Volta [mm]
+Label26=Tipo Calibração
+LIST0=Tubo,Spindle ,Tubo + Spindle
+Button=Run Calibração
+Label7=Último Tamanho Tubo:
+Label8=X
+Label9=Y
+Label10=Z
+Label11=Não Apagar
+Label12=, Precisa do par.dat
+Button1=Reseta Calibração
+
+[STATUS]
+
+[HELP]

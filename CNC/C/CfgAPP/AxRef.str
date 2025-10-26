@@ -1,0 +1,23 @@
+[STRUCT]
+KEY_REFAXES {
+      REF_MODE;
+      NO_NC;
+}  
+
+[REF_MODE]   
+ADR=lsrefmode
+MSK=0,32
+TBS=1
+FRM=CBX,4
+LST=REF_LIST
+RNG={0,1,2,3}
+FBR=0
+DSV=0
+HLP =
+
+[NO_NC]  
+ADR = lsreflevel
+MSK = 0,1     
+FRM = CHK, 0   
+DSV = 0 
+

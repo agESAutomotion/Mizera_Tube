@@ -1,0 +1,139 @@
+Ciclo Fisso Foratura :81
+
+IF (%C43.0) RET                 ; "Start Programma in Verify"(daPlc)
+
+DBL x, y, save_d
+
+save_d = XGET("@D")
+;//La Z é riferita al banco.
+;//In questo caso non é disponibile lo spessore del pezzo, ma vengono programmate le quote assolute
+;//come se si trattasse di una vera e propria lavorazione 3D.
+;//Se si volesse programmare la profondità (es.: Z-5) usare G161 Z.
+;//XXX Per le forature con touch, si suggerisce poi di NON cambiare tipo di programmazione delle Z,
+;//XXX ma aggiungere un parametro con la coordinata Z teorica della superficie del pezzo.
+x = VA0 * mx_a11 + VA1 * mx_a12 + (mx_o1+ori_x+add1_x+add2_x)
+y = VA0 * mx_a21 + VA1 * mx_a22 + (mx_o2+ori_y+add1_y+add2_y)
+VA0 = x
+VA1 = y
+G161 L(ml_usr_origin)
+G186 L(ml_usr_origin)
+ERROR(55) ;non consistente con tubo
+G179 C(0)  
+G182
+
+SPC 30000,0
+G16 XYW+
+EP0 EQ0 ER0
+RTCP=0
+D(save_d)
+
+G61
+?%C18.22 = 1                ; Ciclo G81/84 attivo
+N3  IF (VA18 == 192) JMP 5  ; Macro Reticolo Fori
+    IF (VA18 == 193) JMP 30 ; Macro Foratura Flangia
+N5  VA25 = 1                ; Counter Riga
+    VA26 = 1                ; Counter Colonna
+    VA20 = VA0              ; Px
+    VA21 = VA1              ; Py
+    VA22 = 1                ; Direzione Incremento
+
+    VG0=VA20                ; Assegno le quote target di lavoro a VG0 e VG1 per posizionamenti da altri canali
+    VG1=VA21                ; Assegno le quote target di lavoro a VG0 e VG1 per posizionamenti da altri canali
+    %gIso[15] = VA4         ; Qta Risalita (DH) passata a G845 da cicli G81-G84
+
+    IF ( !%cn[WHO()].rc[0].21 ) THEN  ;Canale in test
+      AWAIT(%gPlc0.8)         ; M40000_CN4: Unit_2 in attesa
+    ENDIF
+    M600                    ; Sblocco M40000_CN4 per posizionare Y1
+N10 G0 XVA20 ;;;YVA21          ; Posiziona Pi (Xi,Yi)
+    IF (%PlcOp0.2) F1000      ; Test se Simulaz. Attiva
+    IF ( !%cn[WHO()].rc[0].21 ) THEN  ;Canale in test
+      SYN
+      AWAIT(%gPlc0.8)       ; M40000_CN4: Unit_2 in attesa
+    ENDIF
+    IF (!%PlcOp0.2) THEN      ; Test se Simulaz. Attiva
+      M21                     ; Attiva pressore
+      ;;;;;;;;;;;;;;;;;;;;;;; ; Inizio Lavorazione Tecnologica
+      G0 WVA2                 ; Avanzam Z quota DR
+      M4
+      FVA5 G1 WVA3            ; Avanzam Z quota DE Velocita' FW
+      G4 FVA7                 ; Sosta
+      FVA6 G1 WVA4            ; Ritorno Z quota DH Velocita' FR
+      M22                     ; Disattiva pressore
+      G4 F0.5                 ; Attesa per richiamo pressore
+      ;;;;;;;;;;;;;;;;;;;;;;; ; Termine Lavorazione Tecnologica
+    ENDIF
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Visualizza IN grafica i fori IN base al diametro correttore
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    IF ( %cn[WHO()].rc[0].21 ) THEN  ;Canale in test
+        G0XVG0
+        G0YVG1
+        D(gTravD + 20)
+        VA23= gTravD + 20 ;;;XGET("@D")              ; Decodifica correttore IN uso
+        VA29= (%ced[VA23].dRad) * 2                  ;(Siccome La funzione "T (TexeTc.cfm)"         )
+        VA28=XGET("@G90")                            ;(Non viene eseguita dalla grafica, bisogna    )
+        ;;;VA29=6
+        G91                                          ;(passare il valore del correttore ricavandolo )
+        G0 X-VA29 Y0                                 ;(da  "gTravD e sommando 20" che è esattamente )
+        G2 XVA29*2  Y0 IVA29 J0                      ;(quello che fa "TexeTc.cfm"                   )
+        G2 X-VA29*2 Y0 I-VA29 J0
+        G0 X0 Y0
+        G(VA28)
+    ENDIF
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    VA26 = VA26 + 1         ; Incremento Counter Colonna
+    IF (VA26 > VA10) JMP 20 ; Gestione righe NRA
+    VA20 = VA20 + VA8*VA22  ; Calcolo P(i+1) X(i+1) = Xi + IA
+    VA21 = VA21 + VA9*VA22  ;                Y(i+1) = Yi + JA
+    JMP 10                  ;
+N20 VA25 = VA25 + 1         ; Inc Counter Righe
+    VA22 = -VA22            ;
+    VA26 = 1                ;
+    IF (VA25 > VA13) JMP 100; Gestione righe NRB
+    VA20 = VA20 + VA11      ; Calcolo P(i+1) X(i+1) = Xi + IB
+    VA21 = VA21 + VA12      ;                Y(i+1) = Yi + JB
+    JMP 10
+
+N30 VA20 = VA0              ; Px
+    VA21 = VA1              ; Py
+    VA22 = 0                ; Ai
+    VA24 = 1                ; Counter Fori
+    IF (VA14 == 0) VA14 = 360 / VA17 ; Se AR non esplicitato
+                            ; AR = 360 / Nr
+    VA25 = VA0 - VA15       ;dx = qx - qi
+    VA26 = VA1 - VA16       ;dy = qy - qj
+    VA27 = SQRT( VA25 * VA25 + VA26 * VA26 ) ; R = sqrt(dx*dx + dy+dy)
+    IF (VA26 > 0) VA27 = -VA27
+    VA30 = 270 + ASIN( ( VA0 - VA15 ) / VA27 )
+
+N40 G0 XVA20 ;;;YVA21          ; Posiziona Pi (Xi,Yi)
+    IF (!%PlcOp0.2) THEN      ; Test se Simulaz. Attiva
+                              ; Inizio Lavorazione Tecnologica
+      G0 WVA2                 ; Avanzam Z quota DR
+      FVA5 G1 WVA3            ; Avanzam Z quota DE Velocita' FW
+      G4 FVA7                 ; Sosta
+      FVA6 G1 WVA4            ; Ritorno Z quota DH Velocita' FR
+                              ; Termine Lavorazione Tecnologica
+    ENDIF
+    VA24 = VA24 + 1         ; Inc Counter Fori
+    IF (VA24 > VA17) JMP 100; Gestione Fori NR
+    VA22 = VA22 + VA14      ; Ai + Ar
+    VA20 = VA15 + ( VA27 * COS( VA30 + VA22 ) )
+    VA21 = VA16 + ( VA27 * SIN( VA30 + VA22 ) )
+    JMP 40
+
+N100
+
+    M22                     ; Disattiva pressore
+    G4 F0.5                 ; Attesa per richiamo pressore
+    ?%C18.22 = 0             ; Ciclo G81/84 attivo
+G64
+G16 XYZ+
+
+G161 L(ml_usr_origin) X(orig_x) Y(orig_y) Z(orig_z)
+G186 L(ml_usr_origin) C(orig_c)
+G179 C(orig_c)
+
+D(save_d)
+RET

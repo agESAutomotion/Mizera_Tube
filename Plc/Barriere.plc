@@ -1,0 +1,78 @@
+*******************************************************************************
+*   BARRIERE.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+
+S_Carico_lam_in_esecuzione:     BOOL;   * S\Carico lamiera in esecuzione
+Rit_pls_reset_barriere:         BOOL;   * Ritardo Fronte di discesa pressione Pls Reset barriere
+TOF_ps_reset_barriere:          TOF;    * Ritardo pressione Pls Reset barriere
+FPN_RESET_BARR:                 TRIG;   * Fronte salita\discesa pulsante Reset Barriere
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+******************************************************************************
+*   * Gestione Barriere ottiche
+******************************************************************************
+FUNCTION Barriere 
+
+LD  I_I_BARRIERE_SCARICO_OK	       ** M81.31 Barriere ottiche scarico lamiera OK
+ST  Barriere_ottiche_OK  		        ** M100.6  Barriere ottiche in sicurezza
+
+***************************************
+* Fronte pulsante Reset Barriere
+***************************************
+CAL  FPN_RESET_BARR(CLK=I_I_PLS_RESET_BARRIERE) ** Fronte salita\discesa pulsante Reset Barriere
+
+LD   FPN_RESET_BARR.Q 		** Fronte salita\discesa pulsante Reset Barriere
+AND  I_I_PLS_RESET_BARRIERE	       ** M89.26 Pulsante reset barriere
+ST   FP_PS_RESET_BARRIERE		        ** M100.9  Fronte di salita pulsante Reset Barriere
+
+LD   FPN_RESET_BARR.Q 		** Fronte salita\discesa pulsante Reset Barriere
+ANDN I_I_PLS_RESET_BARRIERE	       ** M89.26 Pulsante reset barriere
+ST   FN_PS_RESET_BARRIERE		        ** M100.10  Fronte di discesa pulsante Reset Barriere
+
+***************************************
+* Ritardo pressione Pulsante Reset barriere
+***************************************
+CAL  TOF_ps_reset_barriere(IN=FN_PS_RESET_BARRIERE,PT=500) ** Ritardo pressione Pls Reset barriere
+
+LD   TOF_ps_reset_barriere.Q
+ST   Rit_pls_reset_barriere      	 ** Ritardo Fronte di discesa pressione Pls Reset barriere
+
+***************************************
+* Allarme : BARRIERA OTTICA LATO
+* PULSANTIERA INTERVENUTA CON
+* SCARICO LAMIERA IN ESECUZIONE
+***************************************
+LD   MACCHINA_OK      		           ** M100.1  Macchina OK
+AND  S_Carico_lam_in_esecuzione    ** S\Carico lamiera in esecuzione
+ANDN Barriere_ottiche_OK 	         ** M100.6  Barriere ottiche in sicurezza
+S    %PLCerr6.8                  	** PLC Err 200 Barriera ottica lato pulsantiera intervenuta
+
+LD   RESET_ALLARMI 		              ** M100.4  Cancellazione allarmi attiva
+OR   Rit_pls_reset_barriere      	 ** Ritardo Fronte di discesa pressione Pls Reset barriere
+R    %PLCerr6.8                  	** PLC Err 200 Barriera ottica lato pulsantiera intervenuta
+
+***************************************
+* Messaggio: Ripristinare Barriera
+* ottica lato pulsantiera intervenuta
+***************************************
+LD   MACCHINA_OK      	            ** M100.1  Macchina OK
+ANDN S_Carico_lam_in_esecuzione    ** S\Carico lamiera in esecuzione
+ANDN Barriere_ottiche_OK 	         ** M100.6  Barriere ottiche in sicurezza
+S    %PLCmsg6.8               	** PLC Msg 200 Ripristinare barriera lato pulsant. intervenuta
+
+LD   RESET_ALLARMI 		              ** M100.4  Cancellazione allarmi attiva
+OR   Rit_pls_reset_barriere      	 ** Ritardo Fronte di discesa pressione Pls Reset barriere
+OR   %PLCerr6.8                  	** PLC Err 200 Barriera ottica lato pulsantiera intervenuta
+R    %PLCmsg6.8               	** PLC Msg 200 Ripristinare barriera lato pulsant. intervenuta
+
+END_FUNCTION

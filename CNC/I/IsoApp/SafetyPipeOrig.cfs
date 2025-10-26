@@ -1,0 +1,49 @@
+: 
+; this Routine check the origin for plate cuttinG is not 
+; in pipe zone 
+
+
+ 
+ ; check IF there is W axis
+ IF (%cn[3].cc[1].5) THEN  
+ 
+  IF (%CalPipe[0].General[0].4) THEN                    ; IF pipe along X axis
+   ;check the actual origin is in pipe zone
+    IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dY) < 0) && ((%gPlc8/1000) < (((%ax28.pa21+%LSRCostK9)/1000)))) THEN   
+
+       MSGOUT "Actual origin is in pipe zone"
+       M0
+       MSGOUT ""
+       doM30 = 1 
+    ENDIF
+    
+    IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dY) > 0) && ((%gPlc8/1000) >= (((%ax28.pa22-%LSRCostK9)/1000)))) THEN 
+  
+       MSGOUT "Actual origin is in pipe zone"
+       M0
+       MSGOUT ""
+       doM30 = 1
+    ENDIF 
+ ENDIF 
+  
+ IF (%CalPipe[0].General[0].5) THEN                ; IF pipe along Y axis 
+  
+   IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dX) < 0) && ((%gPlc7/1000)< (((%ax27.pa21+%LSRCostK9)/1000)))) THEN  
+     
+      MSGOUT "Actual origin is in pipe zone"
+      M0
+      MSGOUT ""
+      doM30 = 1
+   ENDIF
+  
+   IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dX) > 0) && ( (%gPlc7/1000) >= (((%ax27.pa22-%LSRCostK9)/1000)))) THEN 
+    
+      MSGOUT "Actual origin is in pipe zone"
+      M0
+      MSGOUT ""
+      doM30 = 1
+   ENDIF   
+ ENDIF   
+ENDIF
+
+RET

@@ -1,0 +1,65 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+PIPECALEXPERT=Leaf
+GroupBox2=Reference Table Data
+GroupBox1=Table Pipe Setup
+Label=Pipe Along X
+Label1=Pipe Along Y
+Button=Copy to Factory
+Label2=Type of kinematic mechanism
+Label3=X coordinate of first pivot [mm]
+Label4=Y coordinate of first pivot [mm]
+Label5=Z coordinate of first pivot [mm]
+Label6=Z axis table positioning
+Label7=Reference frame Z (Y) rotation
+Label8=Reference frame Y (P) rotation
+Label9=Reference frame X (R) rotation
+Label10=Rotation around  Z axis
+Label11=Reversal towards rotation actuator
+Label12=Actuator for rot.  around Z axis
+Label13=X coordinate of second pivot [mm]
+Label14=Y coordinate of  second pivot [mm]
+Label15=Nutation angle
+Label16=Rotation around Y axis
+Label17=Reversal towards rotation actuator
+Label18=Actuator for rot. around Y axis
+Label19=X coordinate of workpiece holder [mm]
+Label20=Y coordinate of workpiece holder [mm]
+Label21=Z coordinate of workpiece holder [mm]
+Label22=Camber angle
+Label23=Workpiece reference frame Z (Y) rotation
+Label24=Workpiece reference frame Y (P) rotation
+Label25=Workpiece reference frame X (R) rotation
+GroupBox3=Factory Table Data
+Label26=Type of kinematic mechanism
+Label27=X coordinate of first pivot [mm]
+Label28=Y coordinate of first pivot [mm]
+Label29=Z coordinate of first pivot [mm]
+Label30=Z axis table positioning
+Label31=Reference frame Z (Y) rotation
+Label32=Reference frame Y (P) rotation
+Label33=Reference frame X (R) rotation
+Label34=Rotation around  Z axis
+Label35=Reversal towards rotation actuator
+Label36=Actuator for rot.  around Z axis
+Label37=X coordinate of second pivot [mm]
+Label38=Y coordinate of  second pivot [mm]
+Label39=Nutation angle
+Label40=Rotation around Y axis
+Label41=Reversal towards rotation actuator
+Label42=Actuator for rot. around Y axis
+Label43=X coordinate of workpiece holder [mm]
+Label44=Y coordinate of workpiece holder [mm]
+Label45=Z coordinate of workpiece holder [mm]
+Label46=Camber angle
+Label47=Workpiece reference frame Z (Y) rotation
+Label48=Workpiece reference frame Y (P) rotation
+Label49=Workpiece reference frame X (R) rotation
+
+[STATUS]
+
+[HELP]

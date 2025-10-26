@@ -1,0 +1,29 @@
+ : G371
+ 
+INCLUDE "plasma_inc.cfs"
+ 
+DBL sav_G70_inc=XGET("@G70")
+
+IF( sav_G70_inc == 71 ) RET
+IF( procvar_unit == 71 ) RET
+
+G71
+
+;//start
+trav_safe_z=CFRIN(trav_safe_z)
+trav_safe_z_start=CFRIN(trav_safe_z_start)
+;//G806
+head_safe_dist=CFRIN(head_safe_dist)
+;//G650
+workpiece_safe_dist=CFRIN(workpiece_safe_dist)
+workpiece_safe_dist_leave=CFRIN(workpiece_safe_dist_leave)
+lead_in_speed=CFRIN(lead_in_speed)
+cut_speed=CFRIN(cut_speed)
+feed1=CFRIN(feed1)
+feed2=CFRIN(feed2)
+feed3=CFRIN(feed3)
+feed4=CFRIN(feed4)
+feed5=CFRIN(feed5)
+feed6=CFRIN(feed6)
+
+RET

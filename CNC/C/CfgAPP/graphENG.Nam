@@ -1,0 +1,21 @@
+
+[KEYS]
+TITLE=Graphics
+TXT2=3D
+TXT3=2D
+TXT4=Pann graph
+TXT5=YZ view
+TXT6=ZX view
+TXT7=XY view
+
+[PROMPT]
+KEY_NODE=
+GRAPH=Leaf
+Graphic2=Graphic
+bttFstMax2=NO DELETE
+Axes=Axes
+
+[STATUS]
+bttFstMax2=NON RIMUOVERE SERVE PER FOCUS
+
+[HELP]

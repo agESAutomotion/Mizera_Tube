@@ -1,0 +1,6 @@
+%9
+
+SYN
+AWAIT(%PLCFLAGS.0)
+
+M30

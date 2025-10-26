@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="L7EC_V1.20.xml">
+
+    <Device>L7EC-1500ST3</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+    
+	<RxPdo Index="#x1600">
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+	</TxPdo>
+
+	<DistribuitedClock>1</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+	<DictionaryExceptions>
+		<Emcy>
+			<Object>#x603F0010</Object>
+		</Emcy>
+		
+		<Objects>
+			<Object exclude="false" include="true" default="0">#x60920000</Object>
+			<Object exclude="false" include="true" default="0">#x60920100</Object>
+			<Object exclude="false" include="true" default="0">#x60920200</Object>
+       </Objects>
+	</DictionaryExceptions>
+
+	<PublicDictionary>
+     	<Objects>
+        </Objects>
+	</PublicDictionary>
+</Config>
+
+

@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=Valvola proporzionale
+
+[PROMPT]
+KEY_NODE=Node
+GASLIN2=Linearizzazione GAS2
+Plot=Funzione linearizzazione gas
+L_TYPE_INTERP1=Punti
+L_Voltage=REALE [Bar]
+L_Pressure=SETTATA [Bar]
+LIST0=Lineare,Segmento,Smussata
+L_TYPE_INTERP2=Modello
+
+[STATUS]
+Plot=Reale(Bar),Settata(Bar)
+
+[HELP]

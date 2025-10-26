@@ -1,0 +1,40 @@
+*******************************************************************************                 
+*   RemContR.plc                                                                                
+*   ESAutomotion                                                                                
+*   LASER machine                                                                               
+*   Remote Controller Manag                                                                       
+*******************************************************************************                 
+#funcdec "FLP.plc"                                                                              
+                                                                                                
+VAR                                                                                             
+#include "RemContr.inc"                                                                                                                                                           
+END_VAR                                                                                         
+                                                                                                
+#include "Iol.inc"                                                                              
+                                                                                                
+VAR_IN_OUT                                                                                             
+#include "mem.inc"                                                                                               
+END_VAR                                                                                         
+                                                                                                
+FUNCTION   REMOTE_CONTROLLER     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                          

@@ -1,0 +1,13 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+DYNSUPPMANAG=Leaf
+Plot1=Range - Real Position
+
+[STATUS]
+Plot1=Real Position [mm], Range [mm]
+
+[HELP]

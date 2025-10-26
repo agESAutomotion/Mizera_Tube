@@ -1,0 +1,51 @@
+[PROMPT]
+KEY_FDC =Données Contrôle vitesse
+
+FDC_DLE =Activer contrôle décélérations
+FDC_DLM =Modalité contrôle décélérations (do NOT use)
+FDC_DLS =Nombre pas d'anticipation
+FDC_CON =Limitazione estesa di velocità e transitori
+FDC_FCE =Activation contrôle vitesse
+FDC_FC0 =VRef[mm/mn] arc R=1m, a=90°
+FDC_FC1 =VRef[mm/mn] arc R=0.01m, a=90°
+FDC_FC2 =VRef[mm/mn] arc R=1m, a->0°
+FDC_FC3 =VRef[mm/mn] arc R=0.01m, a->0°
+FDC_TCE =Activer contrôle discontinuité
+FDC_TC0 =VRef[mm/min] disc. a=90°
+FDC_TC1 =VRef[°/min] disc. arc-lin
+FDC_TC2 =VRef[mm/min] disc. a->0°
+FDC_TC3 =VRef[°/min] disc. lin-arc
+FDC_TC0_VIMO =VIMO: max NEG jump [mm/min]
+FDC_TC1_VIMO =VIMO: max NEG jump [°/min]
+FDC_TC2_VIMO =VIMO: max POS jump [mm/min]
+FDC_TC3_VIMO =VIMO: max POS jump [°/min]
+FDC_ARC =Tolér. rayon arcs [mm]
+FDC_SAJ =Side Acceleration Jump limit [mm/s²]
+FDC_JRK =Arc jerk [mm/s³]
+FDC_CURV=Curvature-based acceleration limit [mm/s²]
+FDC_ANG =Angular threshold [°]
+FDC_TC_APN =VIMO: max pos/neg jump (A axis) [°/min]
+FDC_TC_BPN =VIMO: max pos/neg jump (B axis) [°/min]
+FDC_TC_CPN =VIMO: max pos/neg jump (C axis) [°/min]
+
+[HELP]
+FDC_DLE =Permet de contrôler les vitesses des trajets, en tenant compte de la dynamique des axes, des cinématismes utilisés, des propriétés de l'usinage inclus dans un certain nombre de pas. 1=Active, 0=Désactive
+FDC_DLM =Modalité contrôle décélérations (do NOT use)
+FDC_DLS =Nombre pas d'anticipation
+FDC_FCE =(Non utilisé)  Activation contrôle vitesse
+FDC_FC0 =Vitesse de référence des arcs d'un rayon de 1 mètre et angle 90 degrés [mm/min]
+FDC_FC1 =Vitesse de référence des arcs d'un rayon de 0.01 mètres et angle 90 degrés [mm/min]
+FDC_FC2 =Vitesse de référence des arcs d'un rayon de 1 mètre et angle voisin de 0 degrés [mm/min]
+FDC_FC3 =Vitesse de référence des arcs d'un rayon de 0.01 mètres et angle voisin de 0 degrés [mm/min]
+FDC_TCE =(Non utilisé)  Activer contrôle discontinuité
+FDC_TC0 =Vitesse de référence passage discontinuité avec un angle de 90 degrés [mm/min]
+FDC_TC1 =Vitesse angulaire de référence passage arc-ligne [°/min]
+FDC_TC2 =Vitesse de référence passage discontinuité avec un angle voisin de 0 degrés [mm/min]
+FDC_TC3 =Vitesse angulaire de référence passage ligne-arc [°/min]
+FDC_ARC =Tolérance rayon des arcs [mm] pour la limitation automatique de la vitesse ; la vitesse est limitée en fonction du rayon et des gains pour réduire l'erreur sur le rayon dans la limite établie. Mettre à 0 pour désactiver la limitation de vitesse.
+FDC_SAJ =Side Acceleration Jump limit [mm/s²]
+FDC_ANG =Angular threshold [°]
+FDC_TC_APN =VIMO: max pos/neg jump (A axis) [°/min]
+FDC_TC_BPN =VIMO: max pos/neg jump (B axis) [°/min]
+FDC_TC_CPN =VIMO: max pos/neg jump (C axis) [°/min]
+

@@ -1,0 +1,79 @@
+[KEYS]
+TITLE=
+TXT0=[0] Scaricatore
+TXT1=[1] Caricatore
+TXT2=[2] Supporti
+TXT3=[3] Mandrini
+TXT16=Comando Rapido
+TXT17=Parametri Anticollisione
+
+[PROMPT]
+KEY_NODE=Nodo
+GENERAL=Leaf
+GroupBox2=Rotazione C
+Button1=Flap L2 Home
+Button4=Flap L2 Inclinazione
+Button5=Flap L1 Home
+Button6=Flap L1 Inclinazione
+Button9=Flap L3 Home
+Button10=Flap L3 Inclinazione
+Button19=Apri Cm
+Button20=Chiudi Cm
+Button21=Apri C2
+Button22=Chiudi C2
+Button23=Apri C1
+Button24=Chiudi C1
+P_REF2=FEED +
+Label4=%
+P_REF1=FEED -
+P_REF3=<< X
+P_REF4=X >>
+P_REF5=<< X1
+P_REF6=X1 >>
+P_REF7=Inizio Carico
+GroupBox1=Info ISO
+P_REF8=AVVIO
+Button7=Pistone Telecamera
+P_REF9=<< X3
+P_REF10=X3 >>
+Button8=Contenitore Rifiuti
+ButtonSpindleAlig1=Parcheggia Assi YZCB
+Label15=AX56
+Label16=AX53
+Label17=AX51
+Label18=AX52
+Label19=AX72
+Label20=AX71
+Label21=AX73
+Label22=W-AX36
+Label23=AX54
+Label24=V-AX31
+Label25=X-AX30
+Label26=AX34
+Label27=AX55
+Label28=AX33
+Label29=AX28
+Label30=AX29
+Button13=Apri Centraggio Z3
+Button14=Chiudi Centraggio Z3
+Button15=Apri Centraggio Z1
+Button16=Chiudi Centraggio Z1
+Button17=Apri Centraggio Z2
+Button18=Chiudi Centraggio Z2
+Button25=Apri Centraggio Z4
+Button26=Chiudi Centraggio Z4
+Button11=Attiva Rilevamento Saldatura
+ButtonSpindleAlig2=Inclina Tutti i Flap
+Button12=Parcheggia Tutti i Supporti Z
+Button27=Tutti i Supporti Z su Posizione di Seguito
+Button28=Parcheggia Tutti i Supporti L
+Button29=Tutti i Supporti L su Segui
+Button30=Parcheggia Tutti i Centratori
+Button31=Tutti i Centratori su Segui
+Button32=Salita
+Button33=Discesa
+GroupBox3=Supporti (Cilindro)
+
+[STATUS]
+
+[HELP]

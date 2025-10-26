@@ -1,0 +1,115 @@
+%8
+INCLUDE "LoadUnload_inc.cfs"
+IF( %cn[WHO()].rc[0].21 )  END
+
+DBL ulifter_A[10], holdSup[10], posTar[10]
+DBL lifter_z_Park = %UNLOADER.values5 / 1000 
+				   
+.Loop
+
+SYN
+AWAIT( (%SUPPORTS_SYSTEM.boolean.31) || (%LOADER.boolean.31) )
+
+;//============================================================================
+;// Position Supports (Unload) Ready for G4011 T36
+;//============================================================================
+IF( %SUPPORTS_SYSTEM.boolean.31 ) THEN
+	SYN
+    GRPQ[Y,Z,U,V,W] = 1
+    
+	; Motor cylinder composite support virtual axis granted
+    WAITBIT("%ax60.ra3.28",0)
+    WAITBIT("%ax61.ra3.28",0)
+    
+    ; CyComOftAx51  AT %UNLOADER.values34;
+    ; CyComOftAx52  AT %UNLOADER.values35;
+    ; CyComOftAx53  AT %UNLOADER.values36;
+    ; CyComOftAx54  AT %UNLOADER.values37;				 
+    ; CyComOftAx55  AT %UNLOADER.values38;
+    ; 
+    ; CyComOftAx71  AT %UNLOADER.values39;
+    ; CyComOftAx72  AT %UNLOADER.values40;
+    ; CyComOftAx73  AT %UNLOADER.values41;
+    ; CyComOftAx74  AT %UNLOADER.values42;
+    ; CyComOftAx75  AT %UNLOADER.values43;
+	
+	; HoldZ1Supp AT %UNLOADER.values27.0;
+    ; HoldZ2Supp AT %UNLOADER.values27.1;
+    ; HoldZ3Supp AT %UNLOADER.values27.2;
+    ; HoldZ4Supp AT %UNLOADER.values27.3;
+    ; HoldZ5Supp AT %UNLOADER.values27.4;
+   
+	iter=1
+	SYN
+    WHILE( iter <= 5 )
+	     ulifter_A[iter] = QCALC(AXIDX(5,X)) + %UNLOADER.values[38+iter] / 1000
+		 
+		 IF( %ServiceMillePGM.13 ) THEN
+		     holdSup[iter] = uldPos[iter] < (QCALC(AXIDX(3,V)) + 200) 
+		 ELSE
+    	     holdSup[iter] = ABS(%ax[70+iter].ra24 / 1000 - ulifter_A[iter]) > 15 
+		 ENDIF
+		 
+		 posTar[iter] = IFEXP( ists_8cn[iter], lifter_z_Park, QNAN() )
+		 IF( (!holdSup[iter]) && (!ISQNAN(posTar[iter])) ) posTar[iter] = ulifter_A[iter]
+		 iter = iter + 1
+    ENDW
+
+	SYN
+    G90 G1 Y(posTar[1]) Z(posTar[2]) U(posTar[3]) V(posTar[4]) W(posTar[5]) F15000     
+	 
+	SYN
+    ?%SUPPORTS_SYSTEM.boolean.31 = 0
+	GRPQ[Y,Z,U,V,W] = 0
+ENDIF
+
+;//============================================================================
+;// Loader parallel tube preperation meanwhile cutting 
+;//============================================================================
+IF( %LOADER.boolean.31 ) THEN
+    SYN
+    %LOADER.boolean.30 = 1    ;shake hands
+	SYN
+    AWAIT( !%LOADER.boolean.30 )
+	
+    M335
+    SYN
+    MSGOUT "Support G going down"	 
+    ;I_I_CylinderDwn_G AT %USR_M13.16;	
+    WAITBIT("%USR_M13.16",1)
+	
+	M435
+    SYN
+    MSGOUT "Support G going back (F)"	
+    ;I_I_CylinderBack_F AT %USR_M13.20;
+	WAITBIT("%USR_M13.20",1)
+    
+    M443   
+    SYN
+    MSGOUT "Chain Forward in process..."
+    ;I_I_TubeOnChain_D AT %USR_M13.14;
+	;STORE_Empty AT %STORE.boolean.0;
+    AWAIT( (%USR_M13.14) || (%STORE.boolean.0) )
+	
+	SYN
+	IF( %STORE.boolean.0 ) THEN
+	M443
+	SYN
+	;I_I_HomeChain_E AT %USR_M13.21;
+    AWAIT( %USR_M13.21 )
+	ENDIF
+	
+	; Clear Bistate 
+    M499
+		
+	M1010
+	
+    SYN
+    %LOADER.boolean.31 = 0
+ENDIF
+
+;//============================================================================
+
+JMPB .Loop
+
+M30

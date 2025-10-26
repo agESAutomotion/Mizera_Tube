@@ -1,0 +1,159 @@
+ X Y Z A B C M N O [P] [Q] [R] [I] [J] [K] [U] [V] [W] [G]0 [D]0 [E]0 [F]0 [L]0 [H] [S] [T] :G196
+;//
+;// G196    X<ax> Y<ay> Z<az> A<bx> B<by> C<bz> M<cx> N<cy> O<cz>
+;//        [P<dx> Q<dy> R<dz> I<ex> J<ey> K<ez>]
+;//        [U<fx> V<fy> W<fz>]
+;//        [L<flags>] [H<gx> S<gy> T<gz>]
+;//        [G<sphere_radius> [D<x_side>] [E<y_side>] [F<z_side>]]
+;//
+;//Frame completo parallelepipedo nello spazio per sei punti:
+;//tre (a,b,c) sul piano XY, due (d,e) sul piano ZX e uno (f) sul piano YZ.
+;//Un ulteriore punto puo' essere specificato per determinare il verso
+;//dell'asse Z.
+;//Scrive su uf_a<1..3><1..3> e uf_o<1..3>
+DBL ax = VA23   ,   ay = VA24   ,   az = VA25
+DBL bx = VA0    ,   by = VA1    ,   bz = VA2
+DBL cx = VA12   ,   cy = VA13   ,   cz = VA14
+DBL dx = VA15   ,   dy = VA16   ,   dz = VA17
+DBL ex = VA8    ,   ey = VA9    ,   ez = VA10
+DBL fx = VA20   ,   fy = VA21   ,   fz = VA22
+DBL gx = VA7    ,   gy = VA18   ,   gz = VA19
+DBL flags = VA11
+DBL sph_rad = VA6
+DBL x_side = VA3,   y_side = VA4,   z_side = VA5
+
+DBL DeX_1, DeX_2, DeX_3
+DBL DeW_1, DeW_2, DeW_3
+DBL DeO_1, DeO_2, DeO_3
+DBL Z_Par1, Z_Par2, Z_Par3
+DBL Y_Par1, Y_Par2, Y_Par3
+DBL Par, ParA, ParB
+DBL Discr
+DBL Tmp1, Tmp2, Tmp3
+
+IF( flags & 0x00000001 ) THEN
+    DeW_1 = cx - ax
+    DeW_2 = cy - ay
+    DeW_3 = cz - az
+    ParA = SQRT(DeW_1*DeW_1 + DeW_2*DeW_2 + DeW_3*DeW_3)
+    DeW_1 = cx - bx
+    DeW_2 = cy - by
+    DeW_3 = cz - bz
+    ParB = SQRT(DeW_1*DeW_1 + DeW_2*DeW_2 + DeW_3*DeW_3)
+    Discr = ParA - ParB
+    IF( ABS(Discr) < 0.001 ) ERROR(38) ;//Divisione per zero
+    IF( Discr > 0 ) THEN
+        Tmp1 = ax
+        Tmp2 = ay
+        Tmp3 = az
+        ax = bx
+        ay = by
+        az = bz
+        bx = Tmp1
+        by = Tmp2
+        bz = Tmp3
+    ENDIF
+ENDIF
+
+IF( ISQNAN(dx) ) dx = ax
+IF( ISQNAN(dy) ) dy = ay
+IF( ISQNAN(dz) ) dz = az
+IF( ISQNAN(ex) ) ex = bx
+IF( ISQNAN(ey) ) ey = by
+IF( ISQNAN(ez) ) ez = bz
+IF( ISQNAN(fx) ) fx = dx
+IF( ISQNAN(fy) ) fy = dy
+IF( ISQNAN(fz) ) fz = dz
+
+IF( flags & 0x00000002 ) THEN
+    DeW_1 = fx - dx
+    DeW_2 = fy - dy
+    DeW_3 = fz - dz
+    ParA = SQRT(DeW_1*DeW_1 + DeW_2*DeW_2 + DeW_3*DeW_3)
+    DeW_1 = fx - ex
+    DeW_2 = fy - ey
+    DeW_3 = fz - ez
+    ParB = SQRT(DeW_1*DeW_1 + DeW_2*DeW_2 + DeW_3*DeW_3)
+    Discr = ParA - ParB
+    IF( ABS(Discr) < 0.001 ) ERROR(38) ;//Divisione per zero
+    IF( Discr > 0 ) THEN
+        Tmp1 = dx
+        Tmp2 = dy
+        Tmp3 = dz
+        dx = ex
+        dy = ey
+        dz = ez
+        ex = Tmp1
+        ey = Tmp2
+        ez = Tmp3
+    ENDIF
+ENDIF
+
+DeX_1 = bx - ax
+DeX_2 = by - ay
+DeX_3 = bz - az
+
+DeW_1 = cx - ax
+DeW_2 = cy - ay
+DeW_3 = cz - az
+
+;//Z_Par = DeX ^ DeW
+Z_Par1 = DeX_2 * DeW_3 - DeX_3 * DeW_2
+Z_Par2 = DeX_3 * DeW_1 - DeX_1 * DeW_3
+Z_Par3 = DeX_1 * DeW_2 - DeX_2 * DeW_1
+
+Par = SQRT(Z_Par1*Z_Par1 + Z_Par2*Z_Par2 + Z_Par3*Z_Par3)
+
+IF( Par < 0.001 ) ERROR(38) ;//Divisione per zero
+
+uf_a13 = Z_Par1 / Par
+uf_a23 = Z_Par2 / Par
+uf_a33 = Z_Par3 / Par
+
+DeX_1 = ex - dx
+DeX_2 = ey - dy
+DeX_3 = ez - dz
+
+;//Y_Par = Z_Cos ^ DeX
+Y_Par1 = uf_a23 * DeX_3 - uf_a33 * DeX_2
+Y_Par2 = uf_a33 * DeX_1 - uf_a13 * DeX_3
+Y_Par3 = uf_a13 * DeX_2 - uf_a23 * DeX_1
+
+Par = SQRT(Y_Par1*Y_Par1 + Y_Par2*Y_Par2 + Y_Par3*Y_Par3)
+
+IF( Par < 0.001 ) ERROR(38) ;//Divisione per zero
+
+uf_a12 = Y_Par1 / Par
+uf_a22 = Y_Par2 / Par
+uf_a32 = Y_Par3 / Par
+
+;//X_Cos = Y_Cos ^ Z_Cos
+uf_a11 = uf_a22 * uf_a33 - uf_a32 * uf_a23
+uf_a21 = uf_a32 * uf_a13 - uf_a12 * uf_a33
+uf_a31 = uf_a12 * uf_a23 - uf_a22 * uf_a13
+
+IF( !ISQNAN(gx) && !ISQNAN(gy) && !ISQNAN(gz) ) THEN
+    ;//Discr = (g - a) x Z_Cos
+    Discr = (gx - ax) * uf_a13 + (gy - ay) * uf_a23 + (gz - az) * uf_a33
+
+    IF( ABS(Discr) < 0.001 ) ERROR(38) ;//Divisione per zero
+
+    IF( Discr < 0 ) THEN
+        ;//Z_Cos = -Z_Cos
+        uf_a13 = -uf_a13
+        uf_a23 = -uf_a23
+        uf_a33 = -uf_a33
+    ENDIF
+ENDIF
+
+;//DeO = [(X_Cos x f) - sph_rad . x_side, ...]
+DeO_1 = (fx * uf_a11 + fy * uf_a21 + fz * uf_a31) - sph_rad * x_side
+DeO_2 = (dx * uf_a12 + dy * uf_a22 + dz * uf_a32) - sph_rad * y_side
+DeO_3 = (ax * uf_a13 + ay * uf_a23 + az * uf_a33) - sph_rad * z_side
+
+;//O = XYZ_Cos * DeO
+uf_o1 = DeO_1 * uf_a11 + DeO_2 * uf_a12 + DeO_3 * uf_a13
+uf_o2 = DeO_1 * uf_a21 + DeO_2 * uf_a22 + DeO_3 * uf_a23
+uf_o3 = DeO_1 * uf_a31 + DeO_2 * uf_a32 + DeO_3 * uf_a33
+
+RET

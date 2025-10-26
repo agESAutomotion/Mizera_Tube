@@ -1,0 +1,61 @@
+[KEYS]
+TITLE=Precitec CutBox
+
+[PROMPT]
+KEY_NODE=Nodo
+PRECITEC_CUT=Leaf
+LabelPerr2=Controllo distanza pronto
+LabelPerr1=Posizione distanza raggiunta
+LabelPerr3=Allarme: errore interno controllo distanza
+LabelPerr4=Distanza lontana
+LabelPerr5=Allarme Tip Touch
+LabelPerr6=Allarme contatto corpo
+LabelPerr7=Allarme cavo interrotto
+LabelPerr8=Allarme alimentazione elettrica
+LabelPerr9=Allarme temperatura sensore distanza
+LabelPerr10=Allarme ugello mancante
+LabelPerr11=FieldBus sincronizzato
+LabelPerr12=Allarme errore guadagno calibrazione distanza
+LabelPerr13=Allarme errore delta calibrazione distanza
+LabelPerr14=Allarme calibrazione annullata
+LabelPerr15=Testina di taglio sensorizzata rilevata
+LabelPerr16=Allarme lente di protezione contaminata o urto
+LabelPerr17=Allarme errore globale testina di taglio
+LabelPerr18=Allarme cartuccia processo mancante
+LabelPerr19=Allarme finestra di protezione mancante
+LabelPerr20=Allarme temperatura finestra di protezione
+LabelPerr21=Allarme temperatura lente di collimazione
+LabelPerr22=Allarme temperatura lente di messa a fuoco
+LabelPerr23=Azionamento rilevato
+LabelPerr24=Allarme perdita comunicazione testina di taglio
+LabelPerr25=Allarme errore azionamento
+LabelPerr26=Allarme tecnologia bordo
+LabelPerr27=Azionamento occupato
+LabelPerr28=Finecorsa superiore messa a fuoco
+LabelPerr29=Finecorsa inferiore raggiunto
+LabelPerr30=Allarme sovraccarico azionamento
+LabelPerr31=Setpoint messa a fuoco raggiunto
+LabelPerr32=Testina di taglio pronta
+LabelPerr33=Riferimento attivo
+LabelPerr34=Allarme comunicazione azionamento
+LabelPerr35=Allarme riferimento azionamento
+LabelPerr36=Allarme tensione alimentazione azionamento
+LabelPerr37=Calibrazione curva caratteristiche distanza
+LabelPerr38=Controllore sensore
+LabelPerr39=Calibrazione ugello mancante
+LabelPerr40=Segnale strobe distanza
+LabelPerr41=Errore reset distanza
+LabelPerr42=Modalità manuale
+LabelPerr43=Sincronizzato con FieldBus
+LabelPerr44=Alimentazione testina di taglio
+LabelPerr45=Salva dati di uscita
+LabelPerr46=Viaggio di riferimento distanza
+LabelPerr47=Nuovo setpoint messa a fuoco
+LabelPerr48=Reset bus P
+LabelPerr49=Invio dati di processo
+Button=Sincronizza con FieldBus
+Button1=Resetta errore
+
+[STATUS]
+
+[HELP]

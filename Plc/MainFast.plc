@@ -1,0 +1,557 @@
+*******************************************************************************
+*   MAIN FAST UNIFIED
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "intgraph.plc"
+#funcdec "DynMng.plc"
+
+VAR
+
+#include "MainFast.inc"
+#include "Iof.inc"
+Appoggio:           BOOL;
+TP_PGMSEND:         TP;
+F_TRIG_PGMSEND:     F_TRIG;
+TP_PGMSEND_1:       TP;
+F_TRIG_PGMSEND_1:   F_TRIG;
+R_TRIG_FOLLOW:      R_TRIG;
+
+analize_solder:     BOOL;       * x gestione analizza eventi sensore
+cax_ini_solder:     DWORD;      * quota asse C campionata inizio di una saldatura
+ofs_center_solder:  DWORD;      * offset del centro della saldatura
+ResultFir3:         DWORD;
+cn0_rc129:          DWORD;
+cn0_rc129_filtered: DWORD;
+
+cap_temp:           DWORD;       * Test RTCP con capacitivo
+cap_fir_time:       DWORD;       * Test RTCP con capacitivo
+vectorSelect:       DWORD;       * vectorSelect 1 = tool, 2 = surface, 6 = Z        
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+TovisualizeWiget    AT %HMI_ONE.mcp_in.28;
+EnBvlConerOptim     AT %HMI_ONE.mcp_in.29;
+CornerChangeCmd     AT %HMI_ONE.mcp_in.30;
+END_VAR
+
+#include "Iol.inc"
+#include "LsrGest.inc"
+
+*******************************************************************************
+*   MainFast
+*******************************************************************************
+FUNCTION MAIN
+
+LD   %LSRCostK31                   ** Capacitive sensor range
+DIV  10
+ST   MaxVolt_x100
+LD   4095
+ST   MaxADCPoints
+
+**************************************************
+*   FIR on capacitive for RTCP test
+**************************************************
+LD   %cn0.rc0.12                    * CN0 in auto mode
+OR   PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+OR   %PLCFLAGS.8                    * one scan
+ST   appoggio
+
+CAL  RT_PRGRUN(CLK=appoggio)
+
+LD   RT_PRGRUN.Q
+JMPCN no_init_fir
+
+LD   100                            * 100 msec filtro fisso per gestione test RTCP
+DIV  %plc0.PlcCycle
+ST   cap_fir_time
+
+LD   0
+FIR_INIT (INS=8, LEN=cap_fir_time)
+ST   error1     * 0 = OK
+
+no_init_fir:
+**************************************************
+*   FIR on %cn0.rc129 (CO_TOOL_SURFACE_ANGLE)
+**************************************************
+LD   %uvHeads0.uvhCommand[0].1          * UVH_COMMAND_PLC_VRTC_HANDLING
+JMPC vrtc_handling
+
+LD   %TsCutDataLinear.CDL_rpar0
+DIV  %plc0.PlcCycle
+ST   fir_time
+
+LD   0
+FIR_INIT (INS=3, LEN=fir_time)
+ST   error1     * 0 = OK
+
+vrtc_handling:
+**************************************************
+*   Define angle management about
+*   setpoint and feedback of VRTC
+**************************************************
+LD   0
+ST   bevAngleHead1_calc1
+ST   bevAngleHead1_calc2
+ST   bevAngleHead1_calc3
+
+LD   %uvHeads0.uvhCommand[0].1          * UVH_COMMAND_PLC_VRTC_HANDLING
+JMPCN no_vrtc_handling
+
+LD   %cn0.rc129                         * CO_TOOL_SURFACE_ANGLE
+ST   cn0_rc129
+ST   cn0_rc129_filtered
+
+LD   0                       * N/C
+FIR_RUN (INS=3, X=cn0_rc129)
+ST   ResultFir3
+
+LD   ResultFir3                       ** Result  
+EQ   2147483647
+JMPC fir3_err
+
+LD   ResultFir3
+ST   cn0_rc129_filtered
+
+fir3_err:
+LD   %uvHeads0.uvhSurfaceCommand3
+ST   vectorSelect
+
+LD   vectorSelect                  * Pipe cutting: 1 = tool, 2 = surface, 6 = Z
+EQ   1
+JMPCN reg_0
+
+LD   0
+ST   bevAngleHead1_calc1
+ST   bevAngleHead1_calc2
+JMP  reg_com
+
+reg_0:
+LD   vectorSelect                  * Pipe cutting: 1 = tool, 2 = surface, 6 = Z
+EQ   6
+JMPCN reg_1
+
+LD   %cn0.rc128                         * CO_TOOL_Z_ANGLE
+ST   bevAngleHead1_calc1
+ST   bevAngleHead1_calc2
+JMP  reg_com
+
+reg_1:
+LD   cn0_rc129_filtered
+***LD   0                               * Da usare per G2-G3 !!!
+ST   bevAngleHead1_calc1
+ST   bevAngleHead1_calc2
+
+reg_com:
+
+****************************************
+*   Patch per OMP !
+*   Richiesta di OMP per regolazione
+*   lungo l'utensile !
+****************************************
+LD   vectorSelect                  * Pipe cutting: 1 = tool, 2 = surface, 6 = Z
+EQ   1
+JMPCN reg_end_omp
+
+LD   cn0_rc129_filtered
+***LD   0                               * Da usare per G2-G3 !!!
+ST   bevAngleHead1_calc1
+ST   bevAngleHead1_calc3
+
+LD   0
+ST   bevAngleHead1_calc2
+
+reg_end_omp:
+
+
+no_vrtc_handling:
+
+**************************************************
+* Tcp position
+**************************************************
+LD   PRGRUN_CN0
+OR   PLC_SEL_JOG
+OR   PLC_SEL_AUT
+ST   appoggio
+
+CAL  RTRIG_INIT (CLK:=appoggio)
+
+LD   RTRIG_INIT.Q
+JMPCN no_init
+
+LD      0               * N/C
+WJS_LOAD (INS=6,CH=3,TWI=1,THD=1,CED=1,SVL=0,CHX=0,CHY=1,CHZ=2,CHA=0,CHB=0,FRX=0,FRY=0,FRZ=0,FOX=0,FOY=0,FOZ=0)
+WJS_LOAD (INS=7,CH=0,TWI=1,THD=1,CED=1,SVL=0,CHX=16#40000000,CHY=16#40000001,CHZ=16#40000002,CHA=0,CHB=0,FRX=0,FRY=0,FRZ=0,FOX=0,FOY=0,FOZ=0) * TODO!
+***WJS_LOAD (INS=7,CH=3,TWI=1,THD=1,CED=1,SVL=0,CHX=16#40000000,CHY=16#40000001,CHZ=16#40000002,CHA=16#40000000,CHB=16#40000000,FRX=0,FRY=0,FRZ=0,FOX=0,FOY=0,FOZ=0) * TODO!
+ST   loadconfig             * 0 = OK
+
+no_init:
+LD      loadconfig
+NE      0
+JMPC    errorAngle
+
+LD      0               * N/C
+WJS_BEAM_CALC (INS=6,SVL=0)
+WJS_BEAM_CALC (INS=7,SVL=0)
+ST      calcBeam            * 0 = OK
+
+LD      calcBeam
+NE      0
+JMPC    errorAngle
+
+LD   0
+WJS_GETX_TCP (INS=6)
+ST   tcp_X_head1_fast
+LD   0
+WJS_GETY_TCP (INS=6)
+ST   tcp_Y_head1_fast
+LD   0
+WJS_GETZ_TCP (INS=6)
+ST   tcp_z
+
+LD      tcp_z
+EQ      2147483647
+JMPC    errorAngle
+
+LD      tcp_z
+ST      tcp_Z_head1_fast                      * (C152) z tcp of head 1
+
+JMP  errorTCPz
+errorAngle:
+LD      0
+ST      tcp_Z_head1_fast                      * (C152) z tcp of head 1
+errorTCPz:
+
+* TODO!
+***LD   %ax34.ra4
+***ST   %C159
+
+
+* TODO!
+***LD   0
+***WJS_GETX_TCP (INS=7)
+***ST   %C160
+***LD   0
+***WJS_GETY_TCP (INS=7)
+***ST   %C161
+***LD   0
+WJS_GETZ_TCP (INS=7)
+ST   %C162
+
+* TODO!
+***LD   %ax34.ra24
+***ST   %C163
+
+
+
+**************************************************
+*   @@@ START = SIMULATION
+**************************************************
+LD   %M33                  ** PLC SIMULATION !
+EQ   1
+JMPCN NoSIM
+
+FAST_SIM
+JMP EndFast
+
+NoSIM:
+FAST_REAL
+
+EndFast:
+
+LD   0                       * N/C
+FIR_RUN (INS=8, X=%C120)     * Capacitivo (ADC) NON linearizzato     
+ST   cap_temp
+
+LD   cap_temp
+EQ   2147483647
+JMPC err_fir
+
+LD   cap_temp
+ST   IA_A18_19_DIST_LINEAR_FIR
+
+err_fir:
+
+**************************************************
+LD   Gest5Ax
+AND(  
+     LD   gG800GStatus
+     GT   0
+)
+JMPCN _AssignAng5x
+     LD   Capacit_Anal
+     MUL  1000
+     DIV (
+     LD   bevAngleHead1_calc3
+     COS
+     )
+     ST   %C121               * (C121) Logical resource VRTC1 (surface)
+     
+     LD   Capacit_Anal
+     MUL  1000
+     DIV (
+     LD   bevAngleHead1_calc1
+     COS
+     )
+     ST  %C131                * (C131) Logical resource VRTC0 (tool)
+	 
+	 ***************************************
+     *   Normalizzazione capacitivo 
+     *   come altezza di taglio in mm
+     ***************************************
+     LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
+     MUL  MaxVolt_x100
+     MULDIV (M=10000, D=MaxADCPoints)
+     DIV  (
+     LD   bevAngleHead1_calc1
+     COS  
+     )
+     DIV  10                             * Per visualizzare due cifre decimali
+     ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+
+JMP _AssignAngCom	 
+_AssignAng5x:
+     LD   Capacit_Anal
+     ST   %C121               * (C121) Logical resource VRTC1 (surface)
+     
+     LD   Capacit_Anal
+     ST   %C131               * (C131) Logical resource VRTC0 (tool)
+	 
+	 LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
+     MUL  MaxVolt_x100
+     MULDIV (M=10000, D=MaxADCPoints)
+     DIV  1000
+     DIV  10                             * Per visualizzare due cifre decimali
+     ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+
+_AssignAngCom:
+
+***************************************
+*   Sicurezza 
+***************************************
+LD   CUT_DISTANCE
+DIV  10
+ADD  25                            *  RANGE
+ST   StandOff                      ** Valore distanza taglio in centesimi
+
+LD   BlcAvX1_Sens_Capac            ** M74.3 Blocco avanz. asse X1 Sens. Capacitivo in contatto con la lamiera
+OR   BlcAvY1_Sens_Capac            ** M74.6 Blocco avanz. asse Y Sens. Capacitivo in contatto con la lamiera
+OR   Pul_Stop                      ** (gPlc0.2)Stop pushbutton
+S    b_TipTouch                    ** (LsPlc47.7) TipTouch Attivo da MainFast
+
+LDN  PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+AND(
+LD   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+LE   StandOff                      ** Valore distanza taglio in centesimi
+)
+ORN  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+R    b_TipTouch                    ** (LsPlc47.7) TipTouch Attivo da MainFast
+
+***************************************
+*   TIP TOUCH condition disable
+***************************************
+LD   %LSRPlcOp0.12                 ** Disable TIP TOUCH during piercing
+AND  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+AND  (
+LD   PiercingInRun                 ** (LsPlc70) Piercing in run
+EQ   1
+)
+AND (
+LD   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+LT   500                        ** < 5.00 mm
+)
+ST   appoggio3
+
+CAL  TON_TIPTOUCH(IN=appoggio3,PT=500) ** Tip touch ritardato di 500 msec
+
+LD   TON_TIPTOUCH.Q             ** Tip touch ritardato di 500 msec
+ST   TipTouchDisable               ** (LsPlc71.0) TipTouchDisable (ritardato)
+
+
+**************************************************
+* Code for Hold retrace function
+* - after [stop] button and retrace enabled
+* - or after tip touch
+**************************************************
+LD   %FUNCBTN.1                            * [Stop]
+AND  %LSRPlcOp1.16                 ** Enable retrace back after HOLD
+OR   JogCommandTipTouch            ** (LsPlc47.0) Automatic jog command for tip touch
+AND  %cn0.rc8.0                            * program in run
+AND  iso_LsronCutting
+S    appoggio4
+
+LD   appoggio4
+ANDN HW_PWM_CFG_FC                        ** Laser I/F board PWM_CFG register: FC
+ST   appoggio
+
+CAL  RTRIG_STOP(CLK:=appoggio)            * [Stop]
+
+LD   RTRIG_STOP.Q
+JMPCN  no_sample_dist
+
+S    ch0stopusr                    ** Channel in stop from user request
+
+LD   %ax21.ra25                           * Insterpolator distance
+ST   dist1HoldPush                 ** Distance of the interpolator when Stop button is pushed
+
+no_sample_dist:
+
+LD  %cn0.rc8.1                            * channel in hold
+AND (
+LD  %ax27.ra3.0                           * axis X stop
+AND %ax28.ra3.0                           * axis Y stop
+)
+JMPCN no_sample_dist2
+LD   %ax21.ra25                           * Insterpolator distance
+ST   dist2Hold                     ** Distance of the interpolator when axes are not moving any more
+no_sample_dist2:
+
+LD   dist2Hold                     ** Distance of the interpolator when axes are not moving any more
+SUB  dist1HoldPush                 ** Distance of the interpolator when Stop button is pushed
+ST   DeltaDist                     ** Delta distance for hold
+
+
+CAL  FTRIG_RetrDone(CLK:=RetraceCommBack)          * (LsPlc47.11) Retrace command after hold)
+
+LD   %FUNCBTN.0                           * [START]
+OR   StartAftTipTouch              ** (LsPlc47.2) Start after tip touch
+OR   RetrPlusReq                          ** (LsPlc47.9) Request of positive retrace, DO NOT REMOVE       
+OR   FTRIG_RetrDone.Q
+ORN  %cn0.rc8.0                           * channel in run
+OR   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+R    ch0stopusr                    ** Channel in stop from user request
+R    appoggio4
+ 
+LD   ch0stopusr                    ** Channel in stop from user request
+AND  (
+LD   %ax21.ra25
+GT   (
+LD   dist1HoldPush                 ** Distance of the interpolator when Stop button is pushed
+SUB  userdistance                  ** (LSRCostK54) User distance retrace
+)
+)
+ST   appoggio
+
+CAL  TON_RETRCOM(IN:=appoggio,PT:=200)
+
+LD   TON_RETRCOM.Q
+ST   RetraceCommBack                      * (LsPlc47.11) Retrace command after hold
+
+
+**************************************************
+* Regulation test
+**************************************************
+*******LD   %ax29.ra79
+*******MUL  10
+*******DIV  65536
+*******MUL  1000
+*******ST   %C127
+
+
+**************************************************
+* ECAT SAFETY
+**************************************************
+ECAT_SAFETY
+
+
+**************************************************
+* Pipe Welding
+**************************************************
+LD   %LSRPlcOp0.22                 ** Pipe Welding function enabling
+JMPCN NoWeldingM
+
+LD   WeldingFuncOn
+ANDN WeldingNoRead
+AND  I_I_WELDING_SENSOR
+ST   appoggio
+
+CAL  RTRIG_WELDING_COUNT(CLK:=appoggio)
+
+LD   RTRIG_WELDING_COUNT.Q
+JMPCN NoRead
+
+LD   %ax34.ra4
+ST   WeldingCfound
+
+LD   WeldingSolderJointCoun
+ADD  1
+ST   WeldingSolderJointCoun
+
+NoRead:
+NoWeldingM:
+
+
+**************************************************
+* G0 Support to optimized lift
+**************************************************
+LD   IN_M700_M704
+EQ   700
+AND  %cn0.rc8.0
+JMPCN RUNACTION
+
+    LD   %gIso30                 * Optimized Lift - 19mm = hypotenuse_max
+    SUB  19000 
+    SUB  %ax50.ra4
+    ABS
+    LT   1000                     * 0.5MM 
+    S    ParkUn71Sup_ISO
+    S    ParkUn72Sup_ISO
+    S    ParkUn73Sup_ISO
+    S    ParkUn74Sup_ISO
+    S    ParkUn75Sup_ISO 
+    S    ParkUn51Sup_ISO
+    S    ParkUn52Sup_ISO
+    S    ParkUn53Sup_ISO
+    S    ParkUn54Sup_ISO
+    
+    LD   PreActbld
+    SUB  %ax5.ra4
+    ABS  
+    LT   5000                     * 5 degree
+    ST   Appoggio
+    CAL  R_TRIG_FOLLOW(CLK=Appoggio)
+    
+    LD   R_TRIG_FOLLOW.Q
+    R    ParkUn71Sup_ISO
+    R    ParkUn72Sup_ISO
+    R    ParkUn73Sup_ISO
+    R    ParkUn74Sup_ISO
+    R    ParkUn75Sup_ISO 
+    R    ParkUn51Sup_ISO
+    R    ParkUn52Sup_ISO
+    R    ParkUn53Sup_ISO
+    R    ParkUn54Sup_ISO
+    S    M700_BLEND
+    
+    LD   R_TRIG_FOLLOW.Q
+    JMPCN CLRSECFOLLOW
+         LD 0
+    	 ST SecFollow_51
+    	 ST SecFollow_52
+    	 ST SecFollow_53
+    	 ST SecFollow_54	 
+    	 ST SecFollow_71
+    	 ST SecFollow_72
+    	 ST SecFollow_73
+    	 ST SecFollow_74
+    	 ST SecFollow_75	 
+    CLRSECFOLLOW:
+
+RUNACTION:
+
+********************************************************
+* Pgm Loading Finished (2.5ms TP right after finishing)
+* ---> Add 7.5ms to be 10ms
+********************************************************
+LD    %PlcOp0.29
+ST    EnBvlConerOptim
+
+CAL   F_TRIG_PGMSEND(CLK=%ui16.30)
+CAL   TP_PGMSEND(IN=F_TRIG_PGMSEND.Q,PT=3000)
+LD    TP_PGMSEND.Q
+AND   EnBvlConerOptim
+ST    CornerChangeCmd
+ST    CorOptNoStart
+
+END_FUNCTION

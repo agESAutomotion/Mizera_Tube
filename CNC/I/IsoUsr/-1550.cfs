@@ -1,0 +1,513 @@
+[H]0 [C]0: 550 
+
+
+RET
+;G550 Regolazione JawReg
+;**********************************************************
+;(VA7)  H   Quota regolazione manuale
+;(VA2)  C   0 Ciclo normale
+;           1 Forza regolazione
+;           2 Esegui ciclo singolo (No Pos U e C)
+;
+;**********************************************************
+
+IF( %M33 ) RET      ; Se simulazione su PC non considerare caricatore/scaricatore !
+
+
+;If graphic channel do RET
+IF (%cn[WHO()].pc[14].25) RET
+
+SYN
+
+;Info
+;---------------------------------
+;G601 C0 M100           ;Disabilita Gear
+;G601 C0 M101           ;Abilita Gear
+
+;%Rd10.8;  * Mandrino C presenza tubo
+;%Rd10.9;  * Mandrino C1 presenza tubo
+;%Rd164;   * Pd64 Quota offset regolazione griffe Mobile
+;%Rd169;   * Pd69 Quota offset regolazione griffe Fisso
+
+;%Rd20;    * Posizione JawMst(Mobile) C-0
+;%Rd21;    * Posizione JawMst(Mobile) C-90
+;%Rd22;    * Posizione JawMst(Mobile) C-180
+;%Rd23;    * Posizione JawMst(Mobile) C-270
+;%Rd25;    * Posizione JawSlv(Fisso) C-0
+;%Rd26;    * Posizione JawSlv(Fisso) C-90
+;%Rd27;    * Posizione JawSlv(Fisso) C-180
+;%Rd28;    * Posizione JawSlv(Fisso) C-270
+
+
+
+;Verifica dati tubo se non attivo ciclo di carico
+;--------------------------------------
+IF ((%Md[150].0==0) || (%Md[150].10==1)) G580 A0
+
+;Dati tubo
+;--------------------------------------
+SYN
+DBL TubT=%Rd[100]
+DBL TubH=(%Rd[101]/1000.0)
+DBL TubW=(%Rd[102]/1000.0)
+DBL TubR=(%Rd[103]/1000.0)
+
+DBL TubD=(%Rd[130]/1000.0)
+
+DBL MaxJawMst=(%Rd[174]/1000.0)
+DBL MaxJawSlv=(%Rd[178]/1000.0)
+DBL MaxJawMan
+DBL MinJaw=10.000
+
+;Abilita supporto griffe
+IF (%Rd15.15==1) THEN
+  MaxJaw=MaxJaw - (%Rd[179]/1000.0)
+  MinJaw=2.500
+ENDIF
+
+
+;Variabili
+;--------------------------------------
+DBL RegManual=VA7
+DBL CycleType=VA2
+
+
+
+DBL AxReg=68       ;Id asse regolatore
+DBL AxMis=69       ;Id asse misuratore
+
+DBL TollReg=0.1    ;Tolleranza
+
+DBL QtaRegMA=0     ;Quota di regolazione altezza master (mobile)
+DBL QtaRegMB=0     ;Quota di regolazione larghezza master (mobile)
+DBL QtaRegSA=0     ;Quota di regolazione altezza slave (Fisso)
+DBL QtaRegSB=0     ;Quota di regolazione larghezza slave (Fisso)
+DBL OffsetM=0      ;Offset di regolazione master (mobile)
+DBL OffsetS=0      ;Offset di regolazione slave (Fisso)
+
+DBL QtaReg=0       ;Quota di regolazione
+DBL DifPos=0       ;Calcolo differenza posizione
+DBL MaxDifPos=2.0  ;Errore massimo DifPos
+DBL NumPos=0       ;Numero correzioni
+DBL MaxNumPos=30   ;Max correzioni
+
+DBL QtaC,QtaC1,DiffC
+
+
+
+;Inizio ciclo
+;**********************************************************
+;**********************************************************
+SYN
+%Md[150].2=1                 ;Ciclo di regolazioni JawReg
+
+
+;Verifica impostazioni ciclo
+IF (CycleType==2) JMP .CicloSingolo
+
+
+;Calcolo quota regolazione
+;--------------------------------------
+;Master (Mobile)
+;------------------
+QtaRegMA=(TubH/2.0) ;Quota altezza
+QtaRegMB=(TubW/2.0) ;Quota larghezza
+
+IF ((QtaRegMA>MaxJawMst) && (TubW<=TubH)) THEN
+  QtaRegMA=MaxJawMst
+  QtaRegMB=(TubW/2.0)-((TubH/2.0)-MaxJawMst)
+ENDIF
+IF ((QtaRegMB>MaxJawMst) && (TubH<=TubW)) THEN
+  QtaRegMA=(TubH/2.0)-((TubW/2.0)-MaxJawMst)
+  QtaRegMB=MaxJawMst
+ENDIF
+
+;Quota fuori limite
+IF ((QtaRegMA<MinJaw) || (QtaRegMB<MinJaw)) JSR "ErrorIso.cfs" 0 550.1 QtaRegMA QtaRegMB
+;Offset regolazione
+OffsetM=(%Rd[164]/1000.0)     ;Offset di regolazione master (mobile)
+IF (((TubH/2.0)>(MaxJawMst+5.0)) && ((TubW/2.0)>(MaxJawMst+5.0))) OffsetM=0 ;Disabilita offset se chiusura con molle
+
+
+;Slave (Fisso)
+;------------------
+QtaRegSA=(TubH/2.0) ;Quota altezza
+QtaRegSB=(TubW/2.0) ;Quota larghezza
+
+IF ((QtaRegSA>MaxJawMst) && (TubW<=TubH)) THEN
+  QtaRegSA=MaxJawSlv
+  QtaRegSB=(TubW/2.0)-((TubH/2.0)-MaxJawSlv)
+ENDIF
+IF ((QtaRegSB>MaxJawMst) && (TubH<=TubW)) THEN
+  QtaRegSA=(TubH/2.0)-((TubW/2.0)-MaxJawSlv)
+  QtaRegSB=MaxJawSlv
+ENDIF
+
+;Quota fuori limite
+IF ((QtaRegSA<10.0) || (QtaRegSB<10.0)) JSR "ErrorIso.cfs" 0 550.1 QtaRegSA QtaRegSB
+;Offset regolazione
+OffsetS=(%Rd[169]/1000.0)     ;Offset di regolazione slave (Fisso)
+IF (((TubH/2.0)>(MaxJawSlv+5.0)) && ((TubW/2.0)>(MaxJawSlv+5.0))) OffsetS=0 ;Disabilita offset se chiusura con molle
+
+;Verifica griffe
+;--------------------------------------
+.CheckCm
+SYN
+IF (CycleType==1) JMP .RegCm
+IF (ABS((%Rd[20]/1000.0)-(QtaRegMA+OffsetM))>TollReg) JMP .RegCm
+IF (ABS((%Rd[21]/1000.0)-(QtaRegMB+OffsetM))>TollReg) JMP .RegCm
+IF (ABS((%Rd[22]/1000.0)-(QtaRegMA+OffsetM))>TollReg) JMP .RegCm
+IF (ABS((%Rd[23]/1000.0)-(QtaRegMB+OffsetM))>TollReg) JMP .RegCm
+
+.CheckCs
+SYN
+IF (CycleType==1) JMP .RegCs
+IF (ABS((%Rd[25]/1000.0)-(QtaRegSA+OffsetS))>TollReg) JMP .RegCs
+IF (ABS((%Rd[26]/1000.0)-(QtaRegSB+OffsetS))>TollReg) JMP .RegCs
+IF (ABS((%Rd[27]/1000.0)-(QtaRegSA+OffsetS))>TollReg) JMP .RegCs
+IF (ABS((%Rd[28]/1000.0)-(QtaRegSB+OffsetS))>TollReg) JMP .RegCs
+
+SYN
+JMP .End
+
+
+
+.RegCm
+SYN
+;Regolazione mandrino master (Mobile)
+;**********************************************************
+  ;Verifica mandrini
+  IF ((%Md[150].0==0) || (%Md[150].10==1)) G580 A1
+  %Rd[11].15=0                      ;Disabilita risalita automatica
+  G601 C7 M52                       ;TubeSupp discesa
+  G601 C7 M46                       ;JawReg Misuratore alto
+  G601 C7 M45                       ;JawReg Gruppo alto
+  G601 C7 M91                       ;JawReg Gruppo in Riposo
+  G601 C7 M67                       ;JawReg Gruppo in Master
+  
+  
+  ;Posizione U per regolazione
+  VG100=0
+  VG101=(%Rd[172]/1000.0)
+  RPT .STR_POS_U, .END_POS_U, 1
+  
+  ;Abilita gear mandrini
+  G601 C0 M101
+  ;Velocità rotazione C
+  VG100=0
+
+
+  ;JawReg Gruppo in Master
+  G601 C7 M47
+  
+  ;Regolazione C(0.0)
+  QtaReg=QtaRegMA+OffsetM
+  VG101=0.0
+  RPT .STR_POS_C, .END_POS_C, 1
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+  
+  ;Regolazione C(90.0)
+  QtaReg=QtaRegMB+OffsetM
+  VG101=90.0
+  RPT .STR_POS_C, .END_POS_C, 1
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+  
+  ;Regolazione C(180.0)
+  QtaReg=QtaRegMA+OffsetM
+  VG101=180.0
+  RPT .STR_POS_C, .END_POS_C, 1
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+  
+  ;Regolazione C(270.0)
+  QtaReg=QtaRegMB+OffsetM
+  VG101=270.0
+  RPT .STR_POS_C, .END_POS_C, 1
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+
+  
+  SYN
+  G601 C7 M46                       ;JawReg Misuratore alto
+  G601 C7 M45                       ;JawReg Gruppo alto
+  G601 C7 M91                       ;JawReg Gruppo in Riposo
+  SYN
+JMP .CheckCs
+
+
+
+.RegCs
+SYN
+;Regolazione mandrino slave (Fisso)
+;**********************************************************
+  ;Verifica mandrini
+  IF ((%Md[150].0==0) || (%Md[150].10==1)) G580 A1
+  
+  G601 C7 M46                       ;JawReg Misuratore alto
+  G601 C7 M45                       ;JawReg Gruppo alto
+  G601 C7 M91                       ;JawReg Gruppo in Riposo
+  G601 C7 M68                       ;JawReg Gruppo in Slave
+  
+
+  ;Abilita gear mandrini
+  G601 C0 M101
+  ;Velocità rotazione C
+  VG100=0
+
+
+  ;JawReg Gruppo in Slave
+  G601 C7 M48
+  
+  ;Regolazione C(0)
+  QtaReg=QtaRegSA+OffsetS
+  VG101=0.0
+  RPT .STR_POS_C, .END_POS_C, 1
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+  
+  ;Regolazione C(90)
+  QtaReg=QtaRegSB+OffsetS
+  VG101=90.0
+  RPT .STR_POS_C, .END_POS_C, 1
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+  
+  ;Regolazione C(180)
+  QtaReg=QtaRegSA+OffsetS
+  VG101=180.0
+  RPT .STR_POS_C, .END_POS_C, 1
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+  
+  ;Regolazione C(270)
+  QtaReg=QtaRegSB+OffsetS
+  VG101=270.0
+  RPT .STR_POS_C, .END_POS_C, 1
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+  
+  
+  SYN
+  G601 C7 M46                       ;JawReg Misuratore alto
+  G601 C7 M45                       ;JawReg Gruppo alto
+  G601 C7 M91                       ;JawReg Gruppo in Riposo
+  SYN
+JMP .End
+
+
+.End
+SYN
+;Fine ciclo
+;**********************************************************
+  G601 C7 M46                       ;JawReg Misuratore alto
+  G601 C7 M45                       ;JawReg Gruppo alto
+  G601 C7 M90                       ;JawReg Gruppo in Riposo
+
+  SYN
+  %Md[150].2=0                      ;Ciclo di regolazioni JawReg
+RET
+
+
+
+
+
+.CicloSingolo
+SYN
+;Ciclo singolo
+;**********************************************************
+  ;Verifica mandrini
+  IF ((%Md[150].0==0) || (%Md[150].10==1)) G580 A1
+  
+  ;Verifica posizione gruppo
+  IF (%Rd[15].0==1) THEN
+    QtaReg=RegManual+OffsetM
+    MaxJawMan=MaxJawMst
+  ELSE
+    QtaReg=RegManual+OffsetS
+    MaxJawMan=MaxJawSlv
+  ENDIF
+  
+  ;Quota fuori limite
+  IF ((RegManual<MinJaw) || (RegManual>MaxJawMan)) JSR "ErrorIso.cfs" 0 550.2 RegManual
+
+  ;Posizione gruppo
+  RPT .JAW_REG_S, .JAW_REG_E, 1
+
+  G601 C7 M46                       ;JawReg Misuratore alto
+  G601 C7 M45                       ;JawReg Gruppo alto
+  
+  SYN
+  %Md[150].2=0                      ;Ciclo di regolazioni JawReg
+RET
+
+
+
+
+;Regolazione
+;**********************************************************
+.JAW_REG_S
+  SYN
+  ;Visualizza quota di regolazione
+  ;----------------------------
+  %Rd[173]=(QtaReg*1000.0)
+  IF (%Rd[15].0==1) THEN
+    IF ((%Rd[173]/1000.0)<MaxJawMst) %Rd[173]=%Rd[173]-%Rd[164]
+  ELSE
+    IF ((%Rd[173]/1000.0)<MaxJawSlv) %Rd[173]=%Rd[173]-%Rd[169]
+  ENDIF
+  
+
+  ;Verifica iniziale
+  ;----------------------------
+  G601 C7 M46                       ;JawReg Misuratore alto
+  G601 C7 M45                       ;JawReg Gruppo alto
+  
+  ;Verifica Gruppo
+  IF ((%Rd[15].0==0) && (%Rd[15].1==0))  JSR "ErrorIso.cfs" 0 550.11
+  ;Verifica Gruppo e asse CM in posizione
+  IF ((%Rd[15].0==1) && (%Rd[15].10==0)) JSR "ErrorIso.cfs" 0 550.12
+  ;Verifica Gruppo e asse CS in posizione
+  IF ((%Rd[15].1==1) && (%Rd[15].11==0)) JSR "ErrorIso.cfs" 0 550.13
+  
+  G601 C7 M55                       ;JawReg Gruppo basso
+  G601 C7 M56                       ;JawReg Misuratore basso
+  
+  ;Zero asse Regolatore
+  RPT .JAW_PRS_S, .JAW_PRS_E, 1     
+  
+  
+  ;Posizione grossolana
+  ;----------------------------
+  G600 A(AxReg) Q(QtaReg+1.0) W1
+  G4F0.1
+  
+  ;Regolazione fine
+  ;----------------------------
+  NumPos=0
+  REPEAT
+    SYN
+    ;Zero asse Regolatore
+    RPT .JAW_PRS_S, .JAW_PRS_E, 1
+    
+    ;Calcolo differenza
+    SYN
+    DifPos=(QtaReg-(%Md[110]/1000.0))
+    IF (ABS(DifPos)>0.04) THEN
+      DifPos=DifPos/2.0
+    ELSE
+      DifPos=-0.02
+    ENDIF
+    %Md[5]=(DifPos*1000.0)
+
+    ;Verifica max pos
+    IF (DifPos>0) DifPos=1.0
+
+    ;Verifica numero posizionamenti
+    SYN
+    NumPos=NumPos+1
+    IF (NumPos>MaxNumPos) JSR "ErrorIso.cfs" 0 550.15
+    
+    ;Correggi posizione 
+    G600 A(AxReg) Q((%Md[110]/1000.0)+DifPos) W1
+
+    G4F0.1
+    IF (%ax[AxMis].ra[4]<8200) JSR "ErrorIso.cfs" 0 550.16
+    SYN
+  UNTIL((%Md[110]/1000.0)<(QtaReg+0.035))
+  
+  
+  ;Ripristino finale
+  G601 C7 M46                       ;JawReg Misuratore alto
+  G601 C7 M45                       ;JawReg Gruppo alto
+ SYN
+.JAW_REG_E
+RET
+
+
+;Zero regolatore
+;**********************************************************
+.JAW_PRS_S
+  SYN
+  ?%zAx[AxReg].AxPrsQta=%Md[110]    ;Quota zero preset
+  G4F0.1
+  ?%zAx[AxReg].AxPrsStr.0=1         ;AxPrs Start
+  G4F0.1
+  SYN
+  ;Attesa fine preset
+  AWAIT(!%zAx[AxReg].AxPrsStr.0)
+  SYN
+.JAW_PRS_E
+RET
+
+
+;Gestione posizionamenti
+;**********************************************************
+;Posizione U
+;--------------------------------------
+.STR_POS_U
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(U)) S(AXIDX(3,U)) I1
+  G4099
+  G152
+
+  ;Calcella origini
+  G178 U0 
+
+  SYN
+  G153
+  ;Movimento U
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) U(VG101)
+  ELSE
+    G153 G0 U(VG101)  
+  ENDIF
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  G64
+  SYN
+.END_POS_U
+
+;Posizione C
+;--------------------------------------
+.STR_POS_C
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,C))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1
+  G4099
+  G152
+
+  ;Calcella origini
+  G178 U0 
+
+  SYN
+  G153
+  ;Movimento C
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) C(VG101)
+  ELSE
+    G153 G0 C(VG101)  
+  ENDIF
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,C))
+  G4099
+
+  G64
+  SYN
+.END_POS_C

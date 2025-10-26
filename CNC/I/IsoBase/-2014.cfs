@@ -1,0 +1,84 @@
+ :G1014
+;//
+;// JUMP ACROSS TUBE FACES SUPPORT:
+;// SAMPLE STATUS AT END OF TRACK
+;//
+
+;// B = A^T * C
+DBL a11 = mx_a11 * Jmx_a11 + mx_a21 * Jmx_a21 + mx_a31 * Jmx_a31
+DBL a12 = mx_a11 * Jmx_a12 + mx_a21 * Jmx_a22 + mx_a31 * Jmx_a32
+DBL a13 = mx_a11 * Jmx_a13 + mx_a21 * Jmx_a23 + mx_a31 * Jmx_a33
+DBL a21 = mx_a12 * Jmx_a11 + mx_a22 * Jmx_a21 + mx_a32 * Jmx_a31
+DBL a22 = mx_a12 * Jmx_a12 + mx_a22 * Jmx_a22 + mx_a32 * Jmx_a32
+DBL a23 = mx_a12 * Jmx_a13 + mx_a22 * Jmx_a23 + mx_a32 * Jmx_a33
+DBL a31 = mx_a13 * Jmx_a11 + mx_a23 * Jmx_a21 + mx_a33 * Jmx_a31
+DBL a32 = mx_a13 * Jmx_a12 + mx_a23 * Jmx_a22 + mx_a33 * Jmx_a32
+DBL a33 = mx_a13 * Jmx_a13 + mx_a23 * Jmx_a23 + mx_a33 * Jmx_a33
+
+DBL ni, nj, nk, nijk
+DBL oi, oj, ok
+DBL t1, t2, t3
+DBL ti, tj, tk
+
+ti = XGET("@EI")
+tj = XGET("@EJ")
+tk = XGET("@EK")
+;//calculate ONLY matrices in the fastest way (D0 P2 instead of D1)
+G180 D0 P2
+;//make the tool vector relative to table/matrix frame (o = mx^T * ef^T * tf.Z)
+t1 = ef_a11 * tf_a13 + ef_a21 * tf_a23 + ef_a31 * tf_a33
+t2 = ef_a12 * tf_a13 + ef_a22 * tf_a23 + ef_a32 * tf_a33
+t3 = ef_a13 * tf_a13 + ef_a23 * tf_a23 + ef_a33 * tf_a33
+oi = mx_a11 * t1 + mx_a21 * t2 + mx_a31 * t3
+oj = mx_a12 * t1 + mx_a22 * t2 + mx_a32 * t3
+ok = mx_a13 * t1 + mx_a23 * t2 + mx_a33 * t3
+SWITCH (vectorSelect)
+CASE 1
+    ni = oi
+    nj = oj
+    nk = ok
+CASE 2
+    IF (XGET("@ECLMXM") != 0) THEN
+        ni = ti
+        nj = tj
+        nk = tk
+    ELSE
+        ;//apply inverse user transformation matrix (n = mx^T * tijk)
+        ni = mx_a11 * ti + mx_a21 * tj + mx_a31 * tk
+        nj = mx_a12 * ti + mx_a22 * tj + mx_a32 * tk
+        nk = mx_a13 * ti + mx_a23 * tj + mx_a33 * tk
+    ENDIF
+    ;//convert to unit vector
+    nijk = SQRT(ni*ni + nj*nj + nk*nk)
+    IF (nijk > 0.001) THEN
+        ni = ni / nijk
+        nj = nj / nijk
+        nk = nk / nijk
+    ENDIF
+CASE 6
+    ;//mx^T * ef^T * [0 0 1]^T
+    ni = mx_a11 * ef_a31 + mx_a21 * ef_a32 + mx_a31 * ef_a33
+    nj = mx_a12 * ef_a31 + mx_a22 * ef_a32 + mx_a32 * ef_a33
+    nk = mx_a13 * ef_a31 + mx_a23 * ef_a32 + mx_a33 * ef_a33
+ENDSWITCH
+;// Convert actual surface normal to origin frame
+;// y = B^T * x
+Jni = a11 * ni + a21 * nj + a31 * nk
+Jnj = a12 * ni + a22 * nj + a32 * nk
+Jnk = a13 * ni + a23 * nj + a33 * nk
+
+;// Convert programmed surface normal to table frame (G180 does not handle n)
+IF (XGET("@ECLMXM") != 0) THEN
+    ;// f = M * t
+    Jfi = mx_a11 * ti + mx_a12 * tj + mx_a13 * tk
+    Jfj = mx_a21 * ti + mx_a22 * tj + mx_a23 * tk
+    Jfk = mx_a31 * ti + mx_a32 * tj + mx_a33 * tk
+ELSE
+    ;// f = t
+    Jfi = ti
+    Jfj = tj
+    Jfk = tk
+ENDIF
+
+JstateAvail = 1
+RET

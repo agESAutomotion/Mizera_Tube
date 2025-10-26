@@ -1,0 +1,127 @@
+: DynSet_pipe.cfs
+
+DBL pi = tubePI
+DBL i
+DBL hypotenuse_max
+DBL hypotenuse_temp, a_temp, b_temp
+DBL diameter_temp
+DBL x_x1, x2_x1, div_x, max_line, y2_y1, y1_
+
+IF( %cn[WHO()].rc[0].21 ) RET
+
+;******************************************************************************
+; Calcolo quota di sicurezza Z per orientare mandrini in sicurezza
+; e
+; Modulazione dinamica movimenti in rapido in funzione del "diametro" tubo
+;******************************************************************************
+hypotenuse_max = 0
+
+FOR i = 0 TO %gmaPolygons[pi].gmanVertices - 1
+    a_temp = %gmaPolygons[pi].gmaVertices[i].gma_u
+    b_temp = %gmaPolygons[pi].gmaVertices[i].gma_v
+    hypotenuse_temp = SQRT( a_temp * a_temp + b_temp * b_temp)
+    IF( hypotenuse_temp > hypotenuse_max ) hypotenuse_max = hypotenuse_temp
+ENDFOR
+
+optimized_lift = hypotenuse_max + 20 ; 20mm plus for safety
+IF( optimized_lift == 0 ) optimized_lift = trav_safe_z
+
+diameter_temp = hypotenuse_max     
+
+MSGOUT " optimized_lift " optimized_lift
+?%gIso[30] = optimized_lift * 1000      ; Probe threshold + 15mm
+ 
+;******************************************************************************
+;   Calcolo dinamica in base al peso del tubo
+;******************************************************************************
+IF( pipe_weight == 0 ) RET
+
+IF( pipe_weight <= %TsGenTable[0].gt_par_in ) THEN
+
+    IF( !AEXISTS(3,U) ) THEN
+        ACC[X] = %TsGenTable[0].gt_par_outA
+        DEC[X] = %TsGenTable[0].gt_par_outB
+        JRK[X] = %TsGenTable[0].gt_par_outC
+    ELSE
+        ACC[U] = %TsGenTable[0].gt_par_outA
+        DEC[U] = %TsGenTable[0].gt_par_outB
+        JRK[U] = %TsGenTable[0].gt_par_outC
+    ENDIF
+	
+    ACC[C] = %TsGenTable[0].gt_par_outD
+    DEC[C] = %TsGenTable[0].gt_par_outE
+    JRK[C] = %TsGenTable[0].gt_par_outF
+	
+ELSE
+
+    max_line = 9-1
+    FOR i=0 TO max_line
+    
+        IF( (i != max_line) && (%TsGenTable[i+1].gt_par_in == 0) && (pipe_weight >= %TsGenTable[i].gt_par_in) ) THEN
+		
+		    IF( !AEXISTS(3,U) ) THEN
+			    ACC[X] = %TsGenTable[i].gt_par_outA
+                DEC[X] = %TsGenTable[i].gt_par_outB
+                JRK[X] = %TsGenTable[i].gt_par_outC
+			ELSE
+                ACC[U] = %TsGenTable[i].gt_par_outA
+                DEC[U] = %TsGenTable[i].gt_par_outB
+                JRK[U] = %TsGenTable[i].gt_par_outC
+			ENDIF
+			
+            ACC[C] = %TsGenTable[i].gt_par_outD
+            DEC[C] = %TsGenTable[i].gt_par_outE
+            JRK[C] = %TsGenTable[i].gt_par_outF
+        ENDIF
+        IF( (i != 9) && (%TsGenTable[i+1].gt_par_in == 0) && (pipe_weight >= %TsGenTable[i].gt_par_in) ) BREAK
+        
+        IF( (pipe_weight >= %TsGenTable[i].gt_par_in) && (pipe_weight <= %TsGenTable[i+1].gt_par_in) ) THEN
+
+            ; y = y1 + (((x - x1)/(x2-x1))*(y2-y1))
+            
+            x_x1 = (pipe_weight) - (%TsGenTable[i].gt_par_in)
+            x2_x1 = (%TsGenTable[i+1].gt_par_in) - (%TsGenTable[i].gt_par_in)
+            div_x =  x_x1 / x2_x1
+            
+            y2_y1 = (%TsGenTable[i+1].gt_par_outA) - (%TsGenTable[i].gt_par_outA)
+            y1_ = %TsGenTable[i].gt_par_outA
+			IF( !AEXISTS(3,U) ) THEN
+			    ACC[X] = y1_ + (div_x*y2_y1)
+			ELSE
+                ACC[U] = y1_ + (div_x*y2_y1)
+            ENDIF
+
+            y2_y1 = (%TsGenTable[i+1].gt_par_outB) - (%TsGenTable[i].gt_par_outB)
+            y1_ = %TsGenTable[i].gt_par_outB
+			IF( !AEXISTS(3,U) ) THEN
+		    	DEC[X] = y1_ + (div_x*y2_y1)
+			ELSE
+                DEC[U] = y1_ + (div_x*y2_y1)
+            ENDIF
+
+            y2_y1 = (%TsGenTable[i+1].gt_par_outC) - (%TsGenTable[i].gt_par_outC)
+            y1_ = %TsGenTable[i].gt_par_outC
+			IF( !AEXISTS(3,U) ) THEN
+			    JRK[X] = y1_ + (div_x*y2_y1)
+			ELSE
+                JRK[U] = y1_ + (div_x*y2_y1)
+			ENDIF
+
+            y2_y1 = (%TsGenTable[i+1].gt_par_outD) - (%TsGenTable[i].gt_par_outD)
+            y1_ = %TsGenTable[i].gt_par_outD
+            ACC[C] = y1_ + (div_x*y2_y1)
+
+            y2_y1 = (%TsGenTable[i+1].gt_par_outE) - (%TsGenTable[i].gt_par_outE)
+            y1_ = %TsGenTable[i].gt_par_outE
+            DEC[C] = y1_ + (div_x*y2_y1)
+
+            y2_y1 = (%TsGenTable[i+1].gt_par_outF) - (%TsGenTable[i].gt_par_outF)
+            y1_ = %TsGenTable[i].gt_par_outF
+            JRK[C] = y1_ + (div_x*y2_y1)
+        ENDIF
+		
+        IF( (pipe_weight >= %TsGenTable[i].gt_par_in) && (pipe_weight <= %TsGenTable[i+1].gt_par_in) ) BREAK
+    ENDFOR
+ENDIF
+
+RET

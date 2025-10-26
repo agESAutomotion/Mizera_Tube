@@ -1,0 +1,148 @@
+[X] [Y] [Z] [A] [C] [S] [F] :G200
+;============================================================================
+; [X] - VA23, [Y] - VA24 the position of Saw cutting on tube
+; [Z] - VA25, the position begin to Saw (To Min)
+; [A] - VA0, the rotation angle of the saw axis
+; [C] - VA2, the rotation angle of the tube mobile spindle
+; [S] - VA18, the RPM of saw cutting
+; [F] - VA5, the DH e DR speed
+;============================================================================
+DBL fGraph = %cn[WHO()].pc[14].25
+DBL sav_G70=XGET("@G70")
+DBL fDryRun = !fGraph && (%PlcOp0.2)  
+DBL SawThick = 0.0
+DBL SawKerf = 0.0
+
+; Tube length management
+SYN
+?%LsIso9.2 = 1       ; G200 Executing
+?%LsIso9.1 = 0       ; Sincronismo per la gestione della quota di tubo in macchina
+HeadingExecuted = 0
+
+;//$GRAPH
+IF( %cn[WHO()].pc[14].25 != 0 ) THEN
+    FDCDLE=1
+    IF ( start_track == 0) start_track = 1 
+    start_track=start_track+1
+    G(200+sav_G70)
+ENDIF
+;//$GRAPH
+
+; System Saw Cutting Database
+IF( %PlcOp[0].22 ) THEN 
+   VA18 = %R[28] 
+   VA5 = %R[29]
+   SawThick = %R[27] / 1000.0
+   SawKerf = SawThick * COS( VA0 )
+ENDIF
+
+; [X] [Y] [Z] [A] [C] [S] [F]inputs empty checking  
+IF( ISQNAN(VA23) || ISQNAN(VA24) || ISQNAN(VA25) || ISQNAN(VA0) || ISQNAN(VA2) || ISQNAN(VA18) || ISQNAN(VA5)) ERROR(798)
+
+IF (fGraph) THEN
+    ;saw cutting visulisation 
+    G10124 X(VA23) C(VA0)
+    ;saw cutting counter
+    %R[30] = %R[30] + 1
+ELSE   
+    ; Open all cylinders saw cutting
+    RPT .OPEN_CYLINDERS .OPEN_CYLINDERS_END 1
+
+    ;//Sequenza di Foratura
+    ;G650 T10 W1                                      ;carica la tabella con i dati della foratrice
+    ;G806 T10 N1 H1 D11 E0 
+    G172 T(10) H0 D1 S0 E0 I0                         ;spindle 10 will be used for saw cutting 
+                                                      ;prima unità forare-maschiare,
+                                                      ;portautensili 1 (non modificare),
+                                                      ;utensile 11 (punta a forare)
+                                                      ;senso orario
+    G180 X( VA23 ) Y( VA24 ) Z( VA25 ) A( VA0 )       ;calcola X e Y verticale foro
+    G153 G0 Z(kine_z + workpiece_safe_dist)           ;scende a distanza di sicurezza
+    G153 G0 X(kine_x) Y(kine_y) A(kine_a)             ;muovi l'unita' forare/maschiare sulla verticale
+
+    ; Close all cylinders saw cutting
+    RPT .CLOSE_CYLINDERS .CLOSE_CYLINDERS_END 1
+	
+    IF (!fDryRun) THEN
+         ;//$APP
+         S( VA18 ) M3                             ;(opzionale) imposta velocità di rotazione mandrino 500 RPM,
+         M7                                       ;(opzionale) attiva refrigerante
+                                                  ;DH e DR sono sottintesi
+         G1 Z(-25) F( VA5 )                       ;If the feed F is not defined, it should use database in system(same S)
+         ;G1 Z10 F1000
+         G153 G0 Z(kine_z + workpiece_safe_dist)  ;scende a distanza di sicurezza
+
+         M8                                       ;(opzionale) disattiva refrigerante
+         M5                                       ;(opzionale) spegne il mandrino
+    ENDIF
+	
+	; Open all cylinders saw cutting
+    RPT .OPEN_CYLINDERS .OPEN_CYLINDERS_END 1
+ENDIF
+
+SYN
+?%LsIso9.2 = 0       ; G200 Executing
+?%LsIso9.1 = 1       ; Sincronismo per la gestione della quota di tubo in macchina
+HeadingExecuted = 1
+
+IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+    ; If not APA and not capacitive test
+    IF( (!%C18.7) && (!%C18.17) ) THEN
+        ; Se gestione start_track classica
+        IF( !%PlcOp0.31 ) THEN
+            ;Esecuzione
+            IF (start_track == 0) start_track=1
+            start_track=start_track+1
+            ?%R18=start_track
+        ENDIF
+    ENDIF
+ENDIF
+
+G(200+sav_G70)
+RET
+
+.OPEN_CYLINDERS
+
+    ;All Clamps On Saw Support Open
+    
+    ;I_I_SawClampY_Open                  AT  %USR_M12.23;           * Saw Clamp Y
+    ;I_I_SawClampY_Close		         AT  %USR_M12.24;           * Saw Clamp Y		
+    ;I_I_SawClampZ_Open                  AT  %USR_M12.25;           * Saw Clamp Z
+    ;I_I_SawClampZ_Close		         AT  %USR_M12.26;           * Saw Clamp Z		
+    ;I_I_SawClampZ_Rot_Open              AT  %USR_M13.1;
+    ;I_I_SawClampZ_Rot_Close             AT  %USR_M13.2;
+	SYN
+    IF( (!%USR_M12.25) || (!%USR_M13.1) ) THEN
+        M983       ;clamp Y open
+        M985       ;clamp Z open
+        SYN
+        AWAIT( (%USR_M12.23) && (%USR_M12.25) )
+    ENDIF   	
+     
+    IF( !%USR_M13.1 ) THEN 
+        M993       ;clamp rotate open
+        SYN
+        AWAIT( %USR_M13.1 )
+    ENDIF 
+
+.OPEN_CYLINDERS_END
+
+.CLOSE_CYLINDERS
+
+    ;All Clamps On Saw Support Close 
+
+    SYN
+    IF( (!%USR_M12.24) || (!%USR_M12.26) ) THEN
+        M984       ;clamp Y close
+        M986       ;clamp Z close
+        SYN
+        AWAIT( (%USR_M12.24) && (%USR_M12.26) )
+    ENDIF   	
+     
+    IF( !%USR_M13.2 ) THEN 
+        M994       ;clamp rotate close
+        SYN
+        AWAIT( %USR_M13.2 )
+    ENDIF 
+
+.CLOSE_CYLINDERS_END

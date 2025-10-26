@@ -1,0 +1,16 @@
+ :G169
+;//
+;// G169
+;//
+;//annulla il sistema di riferimento corrente e passa a quello precedente.
+;//Scrive sui coefficienti mx_...
+
+ml_curr = SUB(ml_curr,1)
+
+IF(ml_curr < -1) ERROR(61)  ;//Valore troppo elevato
+
+ml_peak = ml_curr
+
+G1152
+G152
+RET

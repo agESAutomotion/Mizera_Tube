@@ -1,0 +1,75 @@
+A Q [V]0 [W]0: G10555
+
+
+RET
+;G10555 PLC Axes Positioning for U and C 
+
+;(VA0)  A ID asse
+;(VA16) Q Quota
+;(VA21) V Velocità
+;(VA22) W Wait Enable
+DBL IdAx=VA0
+DBL PosQta=VA16*1000.0
+DBL PosVel=ABS(VA21)
+DBL PosWait=VA22
+IF( %cn[WHO()].pc[14].25 != 0 ) JMPF .graph
+
+
+SYN
+;Verifica parametri
+IF (PosVel==0) PosVel=%ax[VA0].pa9            ;Massima velocità
+IF (PosVel>%ax[VA0].pa9) PosVel=%ax[VA0].pa9  ;Massima velocità
+IF ((IdAx!=30)&&(IdAx!=34)) JMP.ERR1          ;Id(0..20)
+IF (PosQta>%ax[VA0].pa22) JMP .ERR2           ;Finecorsa positivo
+IF (PosQta<%ax[VA0].pa21) JMP .ERR2           ;Finecorsa negativo
+
+;Verifica InPos +/- 0.01
+IF (ABS(PosQta-%ax[VA0].ra4)<10) RET
+	
+SYN
+IF(IdAx == 30) THEN
+	;Verifica se attiva un altro posizionamento
+	 AWAIT(!%LsIso35.2)
+	
+     ;Send parameters to PLC
+     ?%LsIso32 = IdAx
+     ?%LsIso33 = PosQta
+     ?%LsIso34 = PosVel
+     M10555
+	 
+	 SYN
+	 IF(VA22 == 1) AWAIT(%LsIso35.0)
+ENDIF
+
+SYN 
+IF(IdAx == 34) THEN
+	 ;Verifica se attiva un altro posizionamento
+	 AWAIT(!%LsIso35.3)
+	 
+     ;Send parameters to PLC
+     ?%LsIso22 = IdAx
+     ?%LsIso23 = PosQta
+     ?%LsIso24 = PosVel
+     M10556
+	 
+	 SYN
+	 IF(VA22 == 1) AWAIT(%LsIso35.1)	 
+ENDIF 
+
+.graph
+SYN
+RET
+
+;Gestione Errori
+;------------------------------------------------
+.ERR1
+SYN
+MSGOUT "G10555 ERROR ID AX"
+M0
+JMP .ERR1
+
+.ERR2
+SYN
+MSGOUT "G10555 ERROR AX:" VA0 " POSITION OUT-RANGE:" VA16
+M0
+JMP .ERR2

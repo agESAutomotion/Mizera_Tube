@@ -1,0 +1,147 @@
+* Function to check by plc no any problem on the ecat fieldbus
+
+VAR 
+
+#include "MainFast.inc"
+
+END_VAR 
+
+#include "Iol.inc"
+
+FUNCTION ECAT_SAFETY
+
+**********************************************************************
+* Wrong Working Counter (increasing) plc time must be slower than ethercat synch 
+* Receive Error counter 
+* DC error offset control
+
+CAL  TON_ECAT_OK (IN:=EcatRun,PT:=5000) ** Actual Working Counter value
+LD   TON_ECAT_OK.Q 
+ST   ECAT_OK
+
+CAL  R_TRIG_WC (CLK:=TON_ECAT_OK.Q)        * at one when ethercat run
+
+* Store the initial value of the counters
+
+LD   R_TRIG_WC.Q
+JMPCN  no_wc_store
+
+LD   ActualWCounter                ** Actual Working Counter value
+ST   firstWCounterVal              ** Wrong counter after statup of the ring
+
+LD   ActualRxError                 ** Actual Receive error value        
+ST   firstRXError                  ** Initial RX error count
+
+LD   ActualDCerror                 ** Actual DC errors
+ST   firstDCerrVal                 ** DC error first value
+
+no_wc_store:
+
+* TP after first error on WCcounter appear wait synchTimeEthercat to check again
+* the wrong wc counter value
+
+LD   %cg27                           * reg time for ethercat synch
+DIV  1000
+ADD  16                              * not costant value need to be defined
+ST   synchTimeEthercat             ** synch time for ethercat
+
+CAL  TP_WCOUNT (IN:=WCerror,PT:=synchTimeEthercat) ** working counter error
+
+LD   TP_WCOUNT.Q
+JMPC wait_to_check
+
+LD   %PLCFLAGS.0                     * PLCFLAGS.0  Flag sempre stato oFF
+ST   WCerror                       ** working counter error
+
+LD   ActualWCounter                ** Actual Working Counter value
+GT   (
+LD   firstWCounterVal              ** Wrong counter after statup of the ring
+ADD  10000
+) 
+AND  TON_ECAT_OK.Q
+JMPCN  increase_count
+
+LD   %PLCFLAGS.1                      * PLCFLAGS.1  Flag sempre stato on
+ST   WCerror                       ** working counter error
+
+LD   ActualWCounter                ** Actual Working Counter value
+ST   firstWCounterVal              ** Wrong counter after statup of the ring
+
+increase_count:
+wait_to_check:
+
+* Rx error 
+
+LD   TON_ECAT_OK.Q                   * at one when ethercat run
+AND  (
+LD   ActualRxError                 ** Actual Receive error value        
+NE   firstRXError                  ** Initial RX error count
+)
+ST   ErrorReceived                 ** Error recieved on ethercat ring
+
+* DC error offset not stable error
+
+LD   synchTime                     ** Measured cycle time(min,max)
+SHL  16
+ST   MeasuredCycleMin              ** min ethercat synch time
+
+LD   MeasuredCycleMin              ** min ethercat synch time
+SHR  16
+ST   MeasuredCycleMin              ** min ethercat synch time
+
+LD   synchTime                     ** Measured cycle time(min,max)
+SHR  16
+ST   MeasuredCycleMax              ** max ethercat synch time
+
+LD   MeasuredCycleMax              ** max ethercat synch time
+SUB  MeasuredCycleMin              ** min ethercat synch time
+ABS
+ST   DeltaSynch                    ** Delta Ethercat Synch
+
+LD   ActualDCerror                 ** Actual DC errors
+LT   (
+LD   firstDCerrVal                 ** DC error first value
+SUB  950                             * us
+)
+OR  (
+LD   ActualDCerror                 ** Actual DC errors
+GT   (
+LD   firstDCerrVal                 ** DC error first value
+ADD  950                             * us
+)
+)
+OR   (
+LD   DeltaSynch                    ** Delta Ethercat Synch
+GT   950
+)
+AND  TON_ECAT_OK.Q
+ST   ErrorDCoscillat               ** Error DC is oscillating too much
+
+* Time to check the wrong counter error
+
+LD   synchTimeEthercat             ** synch time for ethercat
+ST   timeforAlarm                  ** time for alarm
+
+CAL  TON_WCERROR (IN:=WCerror,PT:=timeforAlarm) ** working counter error
+
+LD   TON_WCERROR.Q
+ST   ErrorWCounter                 ** ethercat working counter is increasing
+*
+
+LD   ErrorWCounter                 ** ethercat working counter is increasing
+AND  TON_ECAT_OK.Q
+S    %PLCerr0.20                     * Wrong working counter increasing (ethercat error) 
+
+LD   ErrorReceived                 ** Error recieved on ethercat ring
+AND  TON_ECAT_OK.Q
+S    %PLCerr0.21                     * Rx error received on ethercat               
+
+* DC error commented for this moment, need to check the problem about dc offset
+* during the loading of a picture for raster printing 
+
+*LD   ErrorDCoscillat                 * Error DC is oscillating too much 
+*AND  TON_ECAT_OK.Q   
+*S    %PLCerr0.22                      * DC error occurred (ethercat)                
+
+**********************************************************************
+END_FUNCTION 

@@ -1,0 +1,925 @@
+*******************************************************************************
+*   LSRGEST.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "assi.plc"
+#funcdec "canfb.plc"
+#funcdec "cnc.plc"
+#funcdec "mand.plc"
+#funcdec "manrev.plc"
+#funcdec "DynMng.plc"
+
+VAR
+#include "assi.inc"
+#include "cnc.inc"
+#include "RemContr.inc"
+
+DutyCalc:   POINTS_INT_CALC;
+PowerCalc:  POINTS_INT_CALC;
+FreqCalc:   POINTS_INT_CALC;
+PowerLin:   LINEAR_CALC;
+END_VAR
+
+
+VAR_IN_OUT
+#include "mem.inc"
+L_SOURCE16  AT %L_SourceInt16;
+END_VAR
+
+
+#include "iol.inc"
+#include "LsrGest.inc"
+
+*******************************************************************************
+*   INTERPOLATION SPEED
+*******************************************************************************
+FUNCTION_BLOCK CALC_INTERP_SPEED
+VAR_INPUT
+xNumFir:            DWORD;		* 0,1,2 (numero fir=5+xNumFir)
+xFir:               DWORD;
+END_VAR
+
+VAR_OUTPUT
+yInterpSpeed:       DWORD;
+END_VAR
+
+VAR
+interpSpeed:        DWORD;      * interpolation speed
+firScan:            DWORD;      * 
+delScan:            DWORD;
+RTRIG_FIR_INIT:     R_TRIG;
+error:              DWORD;
+nFir:               DWORD;
+END_VAR
+
+LD   %ax21.ra28                    * interpolator speed (micro/sec) Proc.Principale CN0
+ST   interpSpeed                   ** interpolation speed
+
+LD   5
+ADD  xNumFir
+ST   nFir
+
+LD   %UnitWork.gTravE 
+EQ   1
+JMPCN no_pipe1
+LD   %ax21.ra30                    * tcp speed (micro/sec) 
+ST   interpSpeed                   ** interpolation speed
+
+no_pipe1:
+* Filter on interpolated speed
+LD   xFir
+DIV  %plc0.PlcCycle         * plc scan
+ST   firScan                       ** 
+
+CAL  RTRIG_FIR_INIT (CLK:=%cn0.rc8.0)
+
+LD   RTRIG_FIR_INIT.Q     * first scan
+JMPCN no_init
+
+LD   0               * N/C
+FIR_INIT (INS=nFir, LEN=firScan)      ** 
+ST   error             * 0 = OK
+
+LD   %CostK26               
+DIV  %plc0.PlcCycle         * plc scan
+ST   delScan                      ** 
+
+LD   0              
+DELAY_INIT (INS=nFir, LEN=delScan)       
+ST   error 
+
+
+LD   error
+NE   0
+JMPC error_1
+
+no_init:
+LD   0                       * N/C
+FIR_RUN (INS=nFir, X=interpSpeed)     ** interpolation speed
+ST   yInterpSpeed
+
+LD   yInterpSpeed
+EQ   2147483647
+JMPCN calc_
+
+error_1:
+LD   0
+ST   yInterpSpeed
+
+calc_:
+
+LD   0
+DELAY_RUN (INS=nFir,X=yInterpSpeed)
+****DIV  10
+ST  yInterpSpeed
+
+
+END_FUNCTION_BLOCK
+
+
+*******************************************************************************
+*   LASER MANAGEMENT
+*******************************************************************************
+FUNCTION_BLOCK LSRGST
+
+VAR_INPUT
+xId:        DWORD;          * 0,1
+xPower:     DWORD;          * Power
+xDuty:      DWORD;          * Duty
+xFreq:      DWORD;          * Frequency
+END_VAR
+
+VAR_OUTPUT
+yEmission:  BOOL;           * Emission
+END_VAR
+
+VAR
+corr_funz_speed:    BOOL;
+appoggio:           BOOL;
+tmpDutyLaserOut:    DWORD;      * Duty temp
+tmpDutyLaserCmd:    DWORD;      * Duty temp commanded
+tmpFreqLaserOut:    DWORD;      * Freq temp
+tmpPowerLaserOut:   DWORD;      * Power temp
+tmpPowerLaserCmd:   DWORD;      * Power temp commanded
+appoggio_pow:       DWORD;
+appoggio_duty:      DWORD;
+
+RTRIG_EnVal1:       TRIG;
+TRIG_EnVal1_G834:  TRIG;
+TRIG_EnVal2_G834:  TRIG;
+outputEnableON:     BOOL;       * Actually enable output (/pgm interrupted, etc..)
+flyCutOnInitPulse:  BOOL;
+R_TRIG_FC_ON_INIT:  R_TRIG;
+shoot_fly_on:       BOOL;       * to disable shoot in hold during fly cut old board
+TOF_Pul_Stop:       TOF;
+
+Strobe_Funz_M410:   BOOL;
+Strobe_Funz_M411:   BOOL;
+R_TRIG410:          R_TRIG;     * Emission ON Laser
+R_TRIG411:          R_TRIG;     * Emission OFF Laser
+FTRIG_STOP:         F_TRIG;
+
+END_VAR
+*******************************************************************************
+
+PATH %TabLsr[CurrentLineExecute]
+
+*******************************************************************************
+*   M410 or TstP15.3 -> Emission ON
+*******************************************************************************
+LD   %cn0.rc9           ** Channel 0 M-Functions register
+EQ   410
+AND  %cn0.rc8.4         ** Channel 0 M-Functions Strobe
+OR   LaserOn_REQ                   ** (TstP15.3) (LASER_ON)
+ST   Strobe_Funz_M410
+
+LD   %cn0.rc9           ** Channel 0 M-Functions register
+EQ   411
+AND  %cn0.rc8.4         ** Channel 0 M-Functions Strobe
+OR   LaserOFF_REQ                  ** (TstP15.2) (LASER_OFF) Turn off laser from Iso
+ST   Strobe_Funz_M411
+
+CAL  R_TRIG410(CLK=Strobe_Funz_M410) ** Emission ON Laser
+CAL  R_TRIG411(CLK=Strobe_Funz_M411) ** Emission OFF Laser
+
+LD   R_TRIG410.Q    ** Fronte di salita M410 Attivazione Emission ON Laser
+S    yEmission                     ** Emission
+
+LD   R_TRIG411.Q    ** Fronte di salita M411 Disattivazione Emission ON Laser
+ORN  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+R    yEmission                     ** Emission
+
+LD   yEmission                     ** Emission
+ANDN ( 
+LD   Hold_req
+AND  PRGRUN_CN0
+ANDN %cn0.rc8.1
+)
+ST   HW_PWM_CFG_FC
+ST   INP_laserON                 *** provvisorio
+ST   Memo_Emission_ON_da_Funz_M    ** M107.25 Memoria Emission ON da Funzione M
+
+*******************************************************************************
+*   Enable data writing
+*   M300 or TstP14.14 (from TabLaser)
+*   M301 (from shoot)
+*******************************************************************************
+CAL  RTRIG_EnVal1(CLK=EnValOut1)   ** (TstP14.14) Abilita Attuazione Valori Uscite
+CAL  TRIG_EnVal1_G834(CLK=EnValOut1_G834)   ** (TstP14.14) Abilita Attuazione Valori Uscite
+CAL  TRIG_EnVal2_G834(CLK=EnValOut2_G834)   ** (TstP14.14) Abilita Attuazione Valori Uscite
+CAL  FTRIG_STOP(CLK=PRGSTOP_CN0)
+
+LD   RTRIG_EnVal1.Q
+OR   TRIG_EnVal1_G834.Q
+OR   TRIG_EnVal2_G834.Q
+OR   FTRIG_STOP.Q
+AND  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+ST   appoggio
+
+LD   %cn0.rc9                * Registro funzioni M canale 0
+EQ   300
+AND  %cn0.rc8.4              * Strobe funzioni M canale 0
+OR   appoggio
+JMPCN COPYVAL
+
+****************************************
+*   TabLsr[]
+*   -POWER
+*   -DUTY
+*   -FREQ
+****************************************
+LD   xPower                        ** Power
+ST   tmpPowerLaserCmd              ** Power temp commanded
+
+LD   xDuty                         ** Duty
+ST   tmpDutyLaserCmd
+
+LD   xFreq                         ** Frequency
+ST   tmpFreqLaserOut               ** Freq temp
+
+COPYVAL:
+****************************************
+*   SHOOT
+*   -POWER
+*   -DUTY
+*   -FREQ
+****************************************
+LD   %cn0.rc9                * Registro funzioni M canale 0
+EQ   301
+AND  %cn0.rc8.4              * Strobe funzioni M canale 0
+JMPCN COPYVAL2
+
+LD   %ShootPower
+ST   tmpPowerLaserCmd              ** Power temp commanded
+
+LD   %ShootDuty
+ST   tmpDutyLaserCmd
+
+LD   %ShootFreq
+ST   tmpFreqLaserOut               ** Freq temp
+JMP  COPYVAL3
+
+COPYVAL2:
+
+LD   bevAngleHead1_calc1
+ABS
+LE   8000
+AND (
+LD   bevAngleHead1_calc1
+ABS
+GE   -8000
+)
+AND  Gest5Ax
+ORN  Gest5Ax
+AND  L_SOURCE16.9                   * Abilitazione velocità in funzione angolo
+ORN  L_SOURCE16.9                   * Abilitazione velocità in funzione angolo
+ST   corr_funz_speed
+
+
+********************************************************************************
+********************************************************************************
+********************************************************************************
+*                               POWER
+********************************************************************************
+********************************************************************************
+********************************************************************************
+
+***************************************
+*   Power=func(speed)
+***************************************
+LD   tmpPowerLaserCmd              ** Power temp commanded
+ST   tmpPowerLaserOut              ** Power temp calculated
+
+LD   L_SOURCE16.3                   * Enable POWER management by speed
+ANDN (
+LD   piercing_run                  ** (LsPlc37) Piercing in run
+EQ   1
+)
+ANDN %ServiceMillePGM.0             * Laser Shoot-on 
+AND  corr_funz_speed
+JMPCN cal_power_speed
+
+LD  PercInterpSpeed
+ST  PowerCalc.xPercSpeed           * Speed percentual value (% * 1000)
+
+LD  CurrentLineExecute             ** (LsIso11) Current cutting line parameter to execute 
+ST  PowerCalc.xCutLineInd          * cut line index (initial value 1 to 10)
+
+LD  1
+ST  PowerCalc.xCodTec             * Tecnology 0=duty 1=power 2=frequency
+
+CAL PowerCalc
+
+LD   PowerCalc.yResult             * Result (% * 1000)
+DIV  1000
+MUL  tmpPowerLaserCmd
+DIV  100
+ST   tmpPowerLaserOut              ** Power temp calculated
+
+cal_power_speed:
+
+LD   tmpPowerLaserOut
+ST   %M65       * TODO (per TEST anche in DRYRUN!)                           
+
+***************************************
+*   Power=func(angle)
+*   #CDL
+***************************************
+LD   PRGRUN_CN0
+ANDN PRGSTOP_CN0
+AND (
+LD   %uvHeads0.uvhCommand1
+EQ   4                              * Cutting phase
+)
+JMPCN no_pow_dataint
+
+LD   tmpPowerLaserOut
+ADD (
+LD   tmpPowerLaserOut
+MULDIV(M=%TsCutDataLinear.CDL_Power, D=100000) * 100 %
+)
+ST   tmpPowerLaserOut              ** Power temp calculated
+
+no_pow_dataint:
+
+LD   tmpPowerLaserOut
+ST   %M66       * TODO (per TEST anche in DRYRUN!)                           
+
+
+***************************************
+*   Power
+*   #INC/DEC MANUALE
+***************************************
+LD   tmpPowerLaserOut
+MUL (
+LD   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+SUB  100                    * 100%
+)
+DIV  100                    * 100 %
+ST   ManSelectorPOW_out         *(gPlc30)Selettore manuale POTENZA: ultimo valore impostato (valore di uscita per LsrGest)
+
+
+***************************************
+*   Power linearization
+***************************************
+LD   LASER_POWER_LINEAR_PAR
+JMPCN no_power_an_lin
+
+LD   tmpPowerLaserOut
+MUL  1000
+ST   PowerLin.xInput
+
+LD   129
+ST   PowerLin.xIndex
+
+CAL  PowerLin
+
+LD   PowerLin.yResult            * Result
+EQ   2147483647
+JMPCN DatoOk
+
+LD   0
+ST   tmpPowerLaserOut              ** Power temp calculated
+JMP  no_power_an_lin
+
+DatoOk:
+LD   PowerLin.yResult            * Result
+DIV  1000
+ST   tmpPowerLaserOut              ** Power temp calculated
+
+no_power_an_lin:
+
+
+***************************************
+
+LD   tmpPowerLaserOut
+ADD  ManSelectorPOW_out
+ST   appoggio_pow
+
+LD   appoggio_pow
+GT   LASER_MAX_POWER_PAR
+JMPCN NoOutLimits
+
+LD   LASER_MAX_POWER_PAR
+ST   appoggio_pow
+
+NoOutLimits:
+
+
+********************************************************************************
+********************************************************************************
+********************************************************************************
+*                               DUTY
+********************************************************************************
+********************************************************************************
+********************************************************************************
+
+***************************************
+*   Duty=func(speed)
+***************************************
+LD   tmpDutyLaserCmd
+ST   tmpDutyLaserOut
+
+LD   L_SOURCE16.2               * Enable DUTY management by speed
+ANDN (
+LD   piercing_run                  ** (LsPlc37) Piercing in run
+EQ   1
+)
+ANDN %ServiceMillePGM.0             * Laser Shoot-on 
+AND  corr_funz_speed
+JMPCN cal_duty_speed
+
+LD  PercInterpSpeed2
+ST  DutyCalc.xPercSpeed          * Speed percentual value
+
+LD  CurrentLineExecute             ** (LsIso11) Current cutting line parameter to execute 
+ST  DutyCalc.xCutLineInd         * cut line index (initial value 1 to 10)
+
+LD  0
+ST  DutyCalc.xCodTec             * Tecnology 0=duty 1=power 2=frequency
+
+CAL DutyCalc
+
+LD  DutyCalc.yResult             * Result
+DIV 1000
+ST  tmpDutyLaserOut                ** Duty temp
+
+cal_duty_speed:
+
+LD  tmpDutyLaserOut
+ST   %M65
+
+***************************************
+*   Duty=funz(angle)
+*   #CDL
+***************************************
+LD   PRGRUN_CN0
+ANDN PRGSTOP_CN0
+AND (
+LD   %uvHeads0.uvhCommand1
+EQ   4                              * Cutting phase
+)
+JMPCN no_duty_dataint
+
+LD   tmpDutyLaserOut
+ADD (
+LD   tmpDutyLaserOut
+MULDIV(M=%TsCutDataLinear.CDL_Duty,D=100000) * 100 %               
+)
+ST   tmpDutyLaserOut
+
+no_duty_dataint:
+LD  tmpDutyLaserOut
+ST   %M66
+
+
+***************************************
+*   DUTY
+*   #INC/DEC MANUALE
+***************************************
+LD   tmpDutyLaserOut
+MUL (
+LD   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+SUB  100                    * 100%
+)
+DIV  100                    * 100 %
+ST   ManSelectorDUTY_out        *(gPlc30)Selettore manuale DUTY: ultimo valore impostato (valore di uscita per LsrGest)
+
+***************************************
+LD   tmpDutyLaserOut               ** Duty temp
+ADD  ManSelectorDUTY_out        *(gPlc30)Selettore manuale DUTY: ultimo valore impostato (valore di uscita per LsrGest)
+ST   appoggio_duty
+
+LD   appoggio_duty
+GT   100
+JMPCN no_out_duty
+
+LD   100
+ST   appoggio_duty
+
+no_out_duty:
+
+
+
+********************************************************************************
+********************************************************************************
+********************************************************************************
+*                               FREQUENCY
+********************************************************************************
+********************************************************************************
+********************************************************************************
+LD   L_SOURCE16.4               * Enable FREQUENCY management by speed
+ANDN (
+LD   piercing_run                  ** (LsPlc37) Piercing in run
+EQ   1
+)
+ANDN %ServiceMillePGM.0             * Laser Shoot-on 
+JMPCN cal_freq_speed
+
+LD   PercInterpSpeed3
+ST   FreqCalc.xPercSpeed           * Speed percentual value
+
+LD   CurrentLineExecute            ** (LsIso11) Current cutting line parameter to execute 
+ST   FreqCalc.xCutLineInd          * cut line index (initial value 1 to 10)
+
+LD   2
+ST   FreqCalc.xCodTec             * Tecnology 0=duty 1=power 2=frequency
+
+CAL  FreqCalc
+
+LD   FreqCalc.yResult             * Result
+DIV  100
+ST   tmpFreqLaserOut               ** Freq temp
+
+cal_freq_speed:
+
+COPYVAL3:
+
+
+********************************************************************************
+*   Data write >> HW
+********************************************************************************
+LD   PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+ANDN BCI_RT_DRYRUN                 ** rc64.28 Comando retrace dry run (rapido)
+ANDN %PlcOp0.2                     ** DryRun
+ANDN LASER_SIM_PAR
+ANDN b_TipTouch                    ** (LsPlc47.7) TipTouch Attivo da MainFast
+ANDN RETRACERUN                    ** M0.11 Ciclo di retrace in Run
+ANDN InibTipTouchAllarm             * Gestione RESTART dopo tip touch
+ANDN EnPosiz                       * (LsPlc47.3) Abilitaz. posiz. Asse Z
+***ANDN JogCommandTipTouch             * Gestione RESTART dopo tip touch
+ANDN Duty0WhenHoldSup                * To avoid shooting laser before M851
+JMPC EN_DATA
+
+LD   0
+ST   tmpPowerLaserOut              ** Power temp calculated
+ST   tmpDutyLaserOut               ** Duty temp
+ST   tmpFreqLaserOut               ** Freq temp
+ST   appoggio_pow
+ST   appoggio_duty
+
+EN_DATA:
+
+*** POWER ***
+
+LD   LASER_POWER_ONBUS_PAR
+JMPCN NoOnBus
+
+LD   appoggio_pow
+ST   OA_POTENZA_LASER
+JMP  ComP
+
+NoOnBus:
+LD   appoggio_pow
+MUL  LASER_DAC_RES_PAR
+DIV  LASER_MAX_POWER_PAR
+ST   OA_POTENZA_LASER
+
+ComP:
+
+*** DUTY ***
+
+LD   LASER_USE_PWM_POWER
+JMPCN PowerPortNotOnPwm
+
+LD   OA_POTENZA_LASER
+ST   HW_PWM_POWER
+
+PowerPortNotOnPwm:
+
+LD   appoggio_duty
+MUL  255
+DIV  100
+AND  16#0fff
+ST   HW_PWM_DUTY           ** (QW908)Regolazione Duty Cycle Potenza Laser
+
+
+*** FREQ. ***
+
+LD   tmpFreqLaserOut               ** Freq temp
+ADD  ManSelectorFREQ_out        *(gPlc30)Selettore manuale FREQUENCY: ultimo valore impostato (valore di uscita per LsrGest)
+ST   HW_FREQ            ** (QW909)Regolazione Frequenza Potenza Laser
+
+* PWM_RES
+LD   255
+ST   HW_PWM_RES                    ** (QW910)Impostazione scheda PWM - Reset
+
+
+****************************************
+*   HMI: Data visualization
+****************************************
+LD   appoggio_pow
+ST   %VisPowerOut
+
+LD   appoggio_duty
+ST   %VisDutyOut
+
+LD   tmpFreqLaserOut               ** Freq temp
+ST   %VisFreqOut
+
+********************************************************************************
+
+
+
+********************************************************************************
+* *** VAR_IN_OUT WARNING : Latch INP_flyCutModeON to OUT_ before using !     ***
+* *** HW ASSISTED FLYCUT : Wait for status register instead !                ***
+********************************************************************************
+
+LDN  PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+ANDN Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+ANDN M_HOLD                        ** (gPlc19.0)Mem. Richiesta Hold
+ANDN b_TipTouch                    ** (LsPlc47.7) TipTouch Attivo da MainFast
+OR   (
+LDN   Touch_enab                   ** C99.8 touch enable
+ANDN  Regol_enab                   ** C99.9 regulator enable
+AND   %cn0.rc8.0
+)
+ST   outputEnableON                ** Actually enable output (/pgm interrupted, etc..)
+
+*************************************************
+* Protection for fly cut board old version
+*************************************************
+CAL TOF_Pul_Stop(IN:= Pul_Stop,PT:=500) ** (gPlc0.2)Stop pushbutton
+
+LD   shoot_fly_on                  ** to disable shoot in hold during fly cut old board
+AND  OUT_isFlyCutModeON
+AND  outputEnableON                ** Actually enable output (/pgm interrupted, etc..)
+ANDN TOF_Pul_Stop.Q
+JMPCN enable_fly_shot
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   HW_PWM_CFG_FC
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   shoot_fly_on                  ** to disable shoot in hold during fly cut old board
+enable_fly_shot:
+
+LD   OUT_isFlyCutModeON
+AND  TOF_Pul_Stop.Q
+JMPCN no_output_check
+LD   HW_PWM_CFG_FC
+S    shoot_fly_on                  ** to disable shoot in hold during fly cut old board
+no_output_check:
+
+LD   shoot_fly_on                  ** to disable shoot in hold during fly cut old board
+JMPCN force_zero_fly
+LD    ALWAYS_ZERO                  ** PLCFLAGS.0  Flag sempre stato off
+ST    HW_PWM_CFG_FC
+force_zero_fly:
+
+LDN   %cn0.rc8.0
+OR    Pul_Reset                    ** (gPlc0.3)Reset pushbutton
+JMPCN reset_shoot_fly
+LD    ALWAYS_ZERO                  ** PLCFLAGS.0  Flag sempre stato off
+ST    shoot_fly_on                 ** to disable shoot in hold during fly cut old board
+reset_shoot_fly:
+
+*************************************************
+**************************
+
+LD   INP_flyCutModeON   ** application turn flyCut mode ON
+ST   OUT_isFlyCutModeON ** application flyCut mode is ON
+
+LD   OUT_isFlyCutModeON ** application flyCut mode is ON
+ST   R_TRIG_FC_ON_INIT.CLK
+
+CAL  R_TRIG_FC_ON_INIT
+
+LD   R_TRIG_FC_ON_INIT.Q
+ST   flyCutOnInitPulse
+
+LD   OUT_isFlyCutModeON ** application flyCut mode is ON
+JMPC flyCutON
+
+LD   PAR_combinedMode   ** use combined PWM and emission
+JMPC flyCutOFFcombined
+
+************************************
+*** flyCut mode OFF separate PWM ***
+
+LD   0                  ** null bitmap
+ST   HW_PWM_CFG         ** Laser I/F board PWM_CFG register      (QW911)
+
+LD   True
+ST   HW_PWM_CFG_EN      ** Laser I/F board PWM_CFG register: EN (QW911.0)
+
+LD   INP_laserON        ** application turn laser ON in non-flyCut mode
+AND  outputEnableON                ** Actually enable output (/pgm interrupted, etc..)
+ST   HW_PWM_CFG_FC      ** Laser I/F board PWM_CFG register: FC (QW911.8)
+
+***                              ***
+************************************
+
+JMP  flyCutOFFEND
+flyCutOFFcombined:
+
+************************************
+*** flyCut mode OFF combined PWM ***
+
+LD   0                  ** null bitmap
+ST   HW_PWM_CFG         ** Laser I/F board PWM_CFG register
+
+LD   INP_laserON        ** application turn laser ON in non-flyCut mode
+AND  outputEnableON                ** Actually enable output (/pgm interrupted, etc..)
+ST   HW_PWM_CFG_EN      ** Laser I/F board PWM_CFG register: EN
+
+***                              ***
+************************************
+
+flyCutOFFEND:
+
+JMP  flyCutEND
+flyCutON:
+
+LD   PAR_combinedMode   ** use combined PWM and emission
+JMPC flyCutONcombined
+
+LD   PAR_TaioEn         ** TAIO flyCut enabled
+AND  PAR_TaioAssistEn   ** TAIO Hardware assisted flyCut enabled
+JMPC flyCutONseparateHA
+
+************************************
+*** flyCut mode ON  separate PWM ***
+
+LD    flyCutOnInitPulse
+JMPCN flyCutONseparateEndInit
+
+LD   0                  ** null bitmap
+ST   HW_PWM_CFG         ** Laser I/F board PWM_CFG register
+
+LD   True
+AND  outputEnableON                ** Actually enable output (/pgm interrupted, etc..)
+ST   HW_PWM_CFG_EN      ** Laser I/F board PWM_CFG register: EN
+
+flyCutONseparateEndInit:
+
+***                              ***
+************************************
+
+JMP  flyCutONseparateEND
+flyCutONseparateHA:
+
+******************************************************
+*** flyCut mode ON  separate PWM Hardware Assisted ***
+
+LD   0                  ** null bitmap
+ST   HW_PWM_CFG         ** Laser I/F board PWM_CFG register
+
+LD   True
+ST   HW_PWM_CFG_EN      ** Laser I/F board PWM_CFG register: EN
+
+LD   True
+ST   HW_PWM_CFG_C_EF    ** Laser I/F board PWM_CFG register: C_EF
+
+LD   outputEnableON                ** Actually enable output (/pgm interrupted, etc..)
+ST   HW_PWM_CFG_C_OE    ** Laser I/F board PWM_CFG register: C_OE
+
+***                                                ***
+******************************************************
+
+flyCutONseparateEND:
+
+JMP  flyCutONEND
+flyCutONcombined:
+
+LD   PAR_TaioEn         ** TAIO flyCut enabled
+AND  PAR_TaioAssistEn   ** TAIO Hardware assisted flyCut enabled
+JMPC flyCutONcombinedHA
+
+************************************
+*** flyCut mode ON  combined PWM ***
+
+LD    flyCutOnInitPulse
+JMPCN flyCutONcombinedEndInit
+
+LD   0                  ** null bitmap
+ST   HW_PWM_CFG         ** Laser I/F board PWM_CFG register
+
+flyCutONcombinedEndInit:
+
+***                              ***
+************************************
+
+JMP  flyCutONcombinedEND
+flyCutONcombinedHA:
+
+******************************************************
+*** flyCut mode ON  combined PWM Hardware Assisted ***
+
+LD   0                  ** null bitmap
+ST   HW_PWM_CFG         ** Laser I/F board PWM_CFG register
+
+LD   True
+ST   HW_PWM_CFG_C_EF    ** Laser I/F board PWM_CFG register: C_EF
+ST   HW_PWM_CFG_C_FR    ** Laser I/F board PWM_CFG register: C_FR
+
+LD   outputEnableON                ** Actually enable output (/pgm interrupted, etc..)
+ST   HW_PWM_CFG_C_OE    ** Laser I/F board PWM_CFG register: C_OE
+
+***                                                ***
+******************************************************
+
+flyCutONcombinedEND:
+flyCutONEND:
+flyCutEND:
+
+********************************************************************************
+*   GESTIONE LATENZA ON/OFF DIGITAL BEAM PER FLY_CUT
+********************************************************************************
+LD   %LSRCostK3                    * Valore Costruttore Latenza Attivazione DigitalBeam(Fly_Cut)
+ADD  %Cost_User3                   * Valore Personalizz.Utente Latenza Attivazione DigitalBeam(Fly_Cut)
+ST   LATENCY_L_TO_H                ** (main_proc.ra77)Latenza Attivazione DigitalBeam FlyCut
+
+LD   %LSRCostK4                    * Valore Costruttore Latenza Disattivazione DigitalBeam(Fly_Cut)
+ADD  %Cost_User4                   * Valore Personalizz.Utente Latenza Disattivazione DigitalBeam(Fly_Cut)
+ST   LATENCY_H_TO_L                ** (main_proc.ra78)Latenza Disattivazione DigitalBeam FlyCut
+
+LD   EN_T_ALIGNED_SETIO            ** (cg3.23)Opz.CN "Ab.Allineamento SetIo tramite Timer Hardware"
+JMPC AZZREAVAL
+LD   0
+ST   LATENCY_L_TO_H                ** (main_proc.ra77)Latenza Attivazione DigitalBeam FlyCut
+ST   LATENCY_H_TO_L                ** (main_proc.ra78)Latenza Disattivazione DigitalBeam FlyCut
+
+AZZREAVAL:
+**************************************************************************************************************
+**************************************************************************************************************
+* Latency for raster print
+
+LD   RasterLatency  
+ST   %ax21.ra119
+**************************************************************************************************************
+END_FUNCTION_BLOCK
+
+
+
+
+
+
+
+*******************************************************************************
+*   SHOOT management
+*******************************************************************************
+FUNCTION_BLOCK LASER_SHOOT
+
+VAR_INPUT
+xId:        DWORD;          * 0,1
+END_VAR
+
+VAR_OUTPUT
+yShootOn:   BOOL;
+END_VAR
+
+VAR
+RTRIG_SHOOT_ON:     R_TRIG;
+RTRIG_SHOOT_OFF:    R_TRIG;
+FT_PRGRUN:          F_TRIG;
+RTRIG_REM_SHOT:     R_TRIG;
+CTU_PULS:           CTU;
+RTRIG_SHUTTER:      R_TRIG;
+FTRIG_SHUTTER:      F_TRIG;
+SHUTTER:            BOOL;
+appoggio:           BOOL;
+END_VAR
+*******************************************************************************
+
+***PATH %LsrGest[xId]
+
+CAL  FT_PRGRUN(CLK=PRGRUN_CN0)     ** M0.0 cn0.rc8.0  Programma in corso
+CAL  RTRIG_SHOOT_ON(CLK=%lButton0.0)
+CAL  RTRIG_SHOOT_OFF(CLK=%lButton0.1)
+
+LD   RemContrShoot
+ANDN Rem_Combination
+OR   ButtGuiShootLsr
+ST   appoggio
+CAL  RTRIG_REM_SHOT(CLK:=appoggio)        * Xhc_Puls.17 Laser shut 
+
+CAL  CTU_PULS(CU:=RTRIG_REM_SHOT.Q,R=CTU_PULS.Q,PV=2)
+
+LD   CTU_PULS.CV
+EQ   1
+ST   SHUTTER
+
+CAL  RTRIG_SHUTTER(CLK:=SHUTTER)
+CAL  FTRIG_SHUTTER(CLK:=SHUTTER)
+
+LD   RTRIG_SHOOT_ON.Q
+*OR   RTRIG_SHUTTER.Q
+OR   RTRIG_REM_SHOT.Q
+S    %ServiceMillePGM.0
+
+LD   M30_CN0                       ** M0.13 M30:EndProgram CN0
+OR   MACC_ALARM                    ** (gPlc0.10)Macchina in allarme
+OR   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+OR   FT_PRGRUN.Q
+OR   RTRIG_SHOOT_OFF.Q
+*OR   FTRIG_SHUTTER.Q
+OR   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+R    %ServiceMillePGM.0
+
+LD   %ServiceMillePGM.0
+ST   yShootOn
+
+END_FUNCTION_BLOCK

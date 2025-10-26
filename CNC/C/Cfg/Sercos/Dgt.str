@@ -1,0 +1,263 @@
+[STRUCT]
+
+KEY_DGT {
+        KEY_RING0;
+        //KEY_RING1;
+        //KEY_RING2;
+        //KEY_RING3;
+        //KEY_RING4;
+        //KEY_RING5;
+        //KEY_RING6;
+        //KEY_RING7;
+        //KEY_RING8;
+}
+
+KEY_RING0 {
+        KEY_NAXES,ring0;
+        KEY_DRV,ring0.drv,ring0.axes;
+}
+KEY_RING1 {
+        KEY_NAXES,ring1;
+        KEY_DRV,ring1.drv,ring1.axes;
+}
+KEY_RING2 {
+        KEY_NAXES,ring2;
+        KEY_DRV,ring2.drv,ring2.axes;
+}
+KEY_RING3 {
+        KEY_NAXES,ring3;
+        KEY_DRV,ring3.drv,ring3.axes;
+}
+KEY_RING4 {
+        KEY_NAXES,ring4;
+        KEY_DRV,ring4.drv,ring4.axes;
+}
+KEY_RING5 {
+        KEY_NAXES,ring5;
+        KEY_DRV,ring5.drv,ring5.axes;
+}
+KEY_RING6 {
+        KEY_NAXES,ring6;
+        KEY_DRV,ring6.drv,ring6.axes;
+}
+KEY_RING7 {
+        KEY_NAXES,ring7;
+        KEY_DRV,ring7.drv,ring7.axes;
+}
+KEY_RING8 {
+        KEY_NAXES,ring8;
+        KEY_DRV,ring8.drv,ring8.axes;
+}
+
+KEY_NAXES {
+        #,RING_AXES;
+        RING_BAUD;
+        RING_FLEN;
+        ?R-1,RING_TCYC;
+}
+
+KEY_DRV {
+        KEY_ID_DRIVEDATA,    (200, +5);
+        DRV_IAX,             (280,+20);
+        DRV_ADX,             (+0,+20);
+        S_0032,              (+0,+20);
+        S_0139,              (+0,+20);
+        S_0123,              (+0,+20);
+        DRV_END_SETUP,       (+0,+20);
+        DRV_DIS_PROF_VEL,    (+0,+20);
+        DRV_ENB_DEBUG_TXRX,  (+0,+20); 
+        DRV_FCONV_TORQUE,    (+0,+20);
+        DRV_FCONV_TORQUE_ABS,(+0,+20);
+        DRV_FLT_TORQUE,      (+0,+20);
+        DRV_ENB_OFF_REF,     (+0,+20);
+        DRV_OFFSET_REF,      (+0,+20);
+        DRV_RT_BIT1_IDN,     (+0,+20);
+        KEY_ID_DIAGNOSTICS,  (200,+25);
+        ?R-1,DRV_C1D,        (280,+20);
+        ?R-1,DRV_C2D,        (+0,+20);
+        ?R-1,DRV_C3D,        (+0,+20);
+        KEY_ID_DESCRIPTION,  (200,+25);
+        ?R-1,DRV_SERVOPACK,  (+0,+20);
+        //?R-1,DRV_ENCODER,  (+0,+20);
+        ?R-1,DRV_MOTOR,      (+0,+20);
+        ?R-1,DRV_OPTUNIT,    (+0,+20);
+        
+}
+
+
+[RING_AXES]
+ADR = axes
+RNG = {0:24}
+RST = 1
+HLP = RING_AXES
+
+[RING_BAUD]
+ADR = brate
+FRM = CBX, 5
+RNG = {0,2,4,8,16}
+RST = 1
+LST = RING_BAUDLIST
+HLP = RING_BAUD
+
+[RING_FLEN]
+ADR = flen
+FRM = CBX,5
+RNG = {0,5,20,40,60}
+RST = 1
+LST = RING_FLENLIST
+HLP = RING_FLEN
+
+[RING_TCYC]
+ADR = tcyc
+RNG = {2,3,4,5}
+RST = 1
+HLP = RING_TCYC
+
+[DRV_IAX]
+ADR = iax
+RNG = {0:255}
+RST = 1
+HLP = DRV_IAX
+
+[DRV_ADX]
+ADR = adx
+RST = 1
+HLP = DRV_ADX
+
+[S_0032]
+ADR=pcmode
+MSK = 0, 2
+FRM = BIN, 0
+RST = 1
+HLP=S_0032
+
+[S_0139]
+ADR=pcmode
+MSK = 2, 1
+FRM = BIN, 0
+RST = 0
+HLP=S_0139
+
+[S_0123]
+ADR=feedc
+FRM = QTA, 3
+RNG={0:1000000}
+RST = 1
+HLP=S_0123
+
+[DRV_END_SETUP]
+ADR = pcmode
+MSK = 4, 1
+FRM = BIN, 0
+RST = 0
+HLP = DRV_END_SETUP
+
+[DRV_SERVOPACK]
+FRM = STR
+LEN = 20
+ADR = nmsrv
+
+[DRV_ENCODER]
+FRM = STR
+LEN = 20
+ADR = nmenc
+
+[DRV_MOTOR]
+FRM = STR
+LEN = 20
+ADR = nmmot
+
+[DRV_OPTUNIT]
+FRM = STR
+LEN = 20
+ADR = nmopt
+
+[DRV_C1D]
+FRM = HEX
+MSK = 0, 16
+ADR = wERRA
+HLP = DRV_C1D
+
+[DRV_C2D]
+FRM = HEX
+MSK = 0, 16
+ADR = wERRB
+HLP = DRV_C2D
+
+[DRV_C3D]
+FRM = HEX
+MSK = 0, 16
+ADR = wERRC
+HLP = DRV_C3D
+
+[KEY_ID_DESCRIPTION]
+CLR = 7
+FNS = 14
+[KEY_ID_DIAGNOSTICS]
+CLR = 7
+FNS = 14
+[KEY_ID_DRIVEDATA]
+CLR = 7
+FNS = 14
+
+[DRV_FCONV_TORQUE]
+ADR=dwDrvPar1
+FRM=DEC,3
+MSK=0,32
+HLP=DRV_FCONV_TORQUE
+RST=1
+
+[DRV_FCONV_TORQUE_ABS]
+ADR=dwDrvPar0
+FRM=BIN,0
+MSK=0,1
+HLP=DRV_FCONV_TORQUE_ABS
+RST=1
+
+[DRV_FLT_TORQUE]
+ADR=dwDrvPar4
+FRM=DEC,0
+MSK=0,32
+LEN = 7
+HLP=DRV_FLT_TORQUE
+RST=1
+RNG={0:20}
+
+[DRV_DIS_PROF_VEL]
+ADR=dwDrvPar0
+FRM=BIN,0
+MSK=2,1
+HLP=DRV_DIS_PROF_VEL
+RST=1
+
+[DRV_ENB_DEBUG_TXRX]
+ADR=dwDrvPar0
+FRM=BIN,0
+MSK=28,1
+HLP=DRV_ENB_DEBUG_TXRX
+RST=1
+
+
+[DRV_ENB_OFF_REF]
+ADR=dwDrvPar0
+FRM=BIN,0
+MSK=1,1
+HLP=DRV_ENB_OFF_REF
+RST=1
+
+[DRV_OFFSET_REF]
+ADR=dwDrvPar2
+FRM=QTA,3
+MSK=0,32
+HLP=DRV_OFFSET_REF
+RST=1
+
+[DRV_RT_BIT1_IDN]
+ADR=dwDrvPar3
+FRM=DEC,0
+MSK=0,32
+LEN = 7
+HLP=DRV_RT_BIT1_IDN
+RST=1
+
+

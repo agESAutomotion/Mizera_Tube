@@ -1,0 +1,398 @@
+ T [X] [Y] [Z] [U] [V] [W] [I] [J] [K] [F] [G]0 : G1190
+
+;//ACQUISIZIONE DI PUNTI TRAMITE TASTATORE
+;//Effettua tastatura
+
+;//coordinate target
+DBL x=VA23, y=VA24, z=VA25
+;//coordinate teoriche (opzionali)
+DBL thx=VA20, thy=VA21, thz=VA22
+;//surface normal vector (opzionale)
+DBL ni = VA8, nj = VA9, nk = VA10
+;//coordinate di partenza
+DBL ox, oy, oz
+;//raggio tastatore
+DBL sph_rad = VA6
+
+;//XXX $APP
+DBL touch_toll  = %RtcpCalib0.RCrWtGui[45]/1000  ;//Touch tolerance (0=disab)
+DBL touch_simul = %RtcpCalib0.RCrWtGui[46]       ;//Simulation mode (1=sample, 2=full)
+DBL touch_hyst  = %RtcpCalib0.RCrWtGui[47]/1000  ;//Micro hysteresis [mm] on touch or release
+DBL fPartGraphics = %cn[WHO()].pc[14].25
+IF(fPartGraphics) touch_toll = 0.01
+;//XXX $APP
+
+;//frame con Z parallelo a avanzamento (inverso) tastatura
+DBL nf_a11=1, nf_a12=0, nf_a13=0
+DBL nf_a21=0, nf_a22=1, nf_a23=0
+DBL nf_a31=0, nf_a32=0, nf_a33=1
+;//versore avanzamento (inverso)
+DBL ei = 0.0, ej = 0.0, ek = 1.0
+;//coordinate probe systema assoluto di macchina
+DBL a_pbx, a_pby, a_pbz
+;//vari
+DBL eijk, eij, theijk, nijk
+DBL tcx, tcy, tcz
+DBL epsilon
+
+;//XXX $APP
+IF( %cn[WHO()].pc[14].25 != 0 ) touch_simul = 2
+
+PRB(VA19)
+
+;//*** EXTENDED G210 BEGIN ***
+DBL Vout0   = 0x04
+DBL Vout    = 0x08
+DBL Vmax    = 0x10
+DBL Rg_Data = 0
+DBL Rg_Cmd  = 11
+DBL Rg_Sts  = 12
+DBL Rg_Qta  = 13
+DBL iCh     = WHO()
+DBL iPrb    = PRBIDX()
+DBL DirAva = 1
+DBL DirInd = 2
+DBL TrigReg = %probe[iPrb].Prb[9]   ; IW: Reg contatto
+DBL TrigBit = %probe[iPrb].Prb[10]  ;     Bit
+DBL ProxReg = %probe[iPrb].Prb[13]  ; IW: Reg avvicinamento
+DBL ProxBit = %probe[iPrb].Prb[14]  ;     Bit
+DBL velTouch = %probe[iPrb].Prb[4]
+;//*** EXTENDED G210 END ***
+
+;//ottieni posizione corrente nello spazio del pezzo
+G180 D1 P1
+ox = kine_x
+oy = kine_y
+oz = kine_z
+
+IF( !VALID(x) ) x = ox
+IF( !VALID(y) ) y = oy
+IF( !VALID(z) ) z = oz
+
+;//in mancanza di coordinate teoriche usa quelle finali
+IF( !VALID(thx) ) thx = x
+IF( !VALID(thy) ) thy = y
+IF( !VALID(thz) ) thz = z
+
+;//in mancanza di surface normal vector usa l'avanzamento (inverso)
+IF( !VALID(ni) ) ni = (ox - x)
+IF( !VALID(nj) ) nj = (oy - y)
+IF( !VALID(nk) ) nk = (oz - z)
+;//surface normal unit vector
+nijk = SQRT(ni*ni + nj*nj + nk*nk)
+;//segmento nullo
+IF( nijk < 0.001 ) ERROR(53)
+ni = ni / nijk
+nj = nj / nijk
+nk = nk / nijk
+
+tcx = thx + sph_rad * ni
+tcy = thy + sph_rad * nj
+tcz = thz + sph_rad * nk
+
+;//lunghezza vettore avanzamento (inverso) teorico per simulazione 2
+ei = (ox - tcx)
+ej = (oy - tcy)
+ek = (oz - tcz)
+theijk = SQRT(ei*ei + ej*ej + ek*ek)
+;//XXX ei,ej,ek ridefinite in seguito
+
+;//versore avanzamento (inverso)
+ei = (ox - x)
+ej = (oy - y)
+ek = (oz - z)
+eijk = SQRT(ei*ei + ej*ej + ek*ek)
+;//segmento nullo
+IF( eijk < 0.001 ) ERROR(53)
+ei = ei / eijk
+ej = ej / eijk
+ek = ek / eijk
+
+IF (fPartGraphics) G2804 C13 X(tcx) Y(tcy) Z(tcz) R(sph_rad)
+IF (fPartGraphics) G2805 C8  X(thx) Y(thy) Z(thz)
+
+IF( touch_simul == 1 ) THEN
+    G1 X(tcx) Y(tcy) Z(tcz) F(VA5)
+    acq_x = thx
+    acq_y = thy
+    acq_z = thz
+ENDIF
+IF( touch_simul == 1 ) RET
+
+;//calcola un sistema di riferimento arbitrario con un asse Z coincidente
+;//con l'avanzamento (inverso)
+IF( ek > 0.99999 ) THEN
+    nf_a11 = 1
+    nf_a12 = 0
+    nf_a13 = 0
+
+    nf_a21 = 0
+    nf_a22 = 1
+    nf_a23 = 0
+
+    nf_a31 = 0
+    nf_a32 = 0
+    nf_a33 = 1
+ELSE
+IF( ek < -0.99999 ) THEN
+    nf_a11 = 0
+    nf_a12 = -1
+    nf_a13 = 0
+
+    nf_a21 = -1
+    nf_a22 = 0
+    nf_a23 = 0
+
+    nf_a31 = 0
+    nf_a32 = 0
+    nf_a33 = -1
+ELSE
+    eij = SQRT(1-ek*ek)
+
+    nf_a11 = ei * ek / eij
+    nf_a12 = -(eij + ek * ek / eij) * ej
+    nf_a13 = ei
+
+    nf_a21 = ej * ek / eij
+    nf_a22 = (eij + ek * ek / eij) * ei
+    nf_a23 = ej
+
+    nf_a31 = -eij
+    nf_a32 = 0
+    nf_a33 = ek
+ENDIF
+ENDIF
+
+;//mappa un sistema di riferimento con l'origine nella posizione che
+;//hanno gli assi nel punto di inizio tastatura.
+G168
+G161 X(ox) Y(oy) Z(oz)
+G160 I(nf_a11) J(nf_a21) K(nf_a31) P(nf_a12) Q(nf_a22) R(nf_a32) U(nf_a13) V(nf_a23) W(nf_a33)
+
+IF( touch_simul == 2 ) THEN
+    G1 Z(-theijk) F(VA5)
+    ;//QPREF a differenza di QCALC consente un test in grafica pezzo
+    ;//(NOTA: i cicli fissi non devono contenere ottimizzazioni $GRAPH)
+    LSYN
+    a_pbx = QPREF(X)
+    a_pby = QPREF(Y)
+    a_pbz = QPREF(Z)
+
+    ;//### LE QUOTE INTERPRETE RICHIEDONO SINCRONIZZAZIONE
+    ;//converti coordinate correnti da sistema assoluto di macchina a frame utente
+    ;//P1 consente un test in grafica pezzo
+    ;//(NOTA: i cicli fissi non devono contenere ottimizzazioni $GRAPH)
+    G180 D1 P1
+    G10 G0 X(kine_x) Y(kine_y) Z(kine_z)
+
+    ;//ripristina sistema di riferimento iniziale
+    G169
+
+    POP(1)
+    JMPF .skipProbe
+ENDIF
+
+;//logica PLC di controllo massima compressione:  matrice 3x2
+;//1 colonna contiene il versore normale alla superficie ed un'altra il punto
+;//di contatto teorico.
+;//### LA SORVEGLIANZA QUOTE DA PLC E' BASATA SUL SISTEMA ASSOLUTO
+;//Converti quote e vettori nel sistema assoluto
+G180 P1 X0 Y0 Z(-eijk)
+
+;//XXX $APP
+;//XXX NOTE: use non-RETAIN regs
+?%RtcpCalib0.RCTCP[1] = 1000 * mx_a13
+?%RtcpCalib0.RCTCP[3] = 1000 * mx_a23
+?%RtcpCalib0.RCTCP[5] = 1000 * mx_a33
+?%RtcpCalib0.RCTCP[0] = 1000 * kine_x
+?%RtcpCalib0.RCTCP[2] = 1000 * kine_y
+?%RtcpCalib0.RCTCP[4] = 1000 * kine_z
+;//XXX $APP
+
+;//*** EXTENDED G210 BEGIN ***
+;//CN -> PLC: inizio tastatura
+SYN
+%cn[iCh].cyc[Rg_Data] = 0                 ; In
+%cn[iCh].cyc[ 1] = 0                      ; In
+%cn[iCh].cyc[ 2] = 0                      ; In
+%cn[iCh].cyc[ 3] = 0                      ; In
+%cn[iCh].cyc[ 4] = 0                      ; In
+%cn[iCh].cyc[ 5] = 0                      ; In
+%cn[iCh].cyc[ 6] = 0                      ; In
+%cn[iCh].cyc[ 7] = 0                      ; In
+%cn[iCh].cyc[ 8] = 0                      ; In
+%cn[iCh].cyc[ 9] = 0                      ; In
+%cn[iCh].cyc[10] = 0                      ; In
+%cn[iCh].cyc[Rg_Cmd] = 0                  ; Registro Comando
+%cn[iCh].cyc[Rg_Sts] = 0                  ; Registro Stato
+;//%cn[iCh].cyc[Rg_Qta] = 0                  ; Out                 //(epsilon)
+%cn[iCh].cyc[14] = 0                      ; Out
+%cn[iCh].cyc[15] = 0                      ; Out
+
+;//parametri CN --> PLC
+%cn[iCh].cyc[ 1] = 0                      ; SysWide Asse        //(unused)
+%cn[iCh].cyc[ 2] = iPrb                   ; Probe
+%cn[iCh].cyc[ 3] = 0                      ; Quota  Avvicinamento//(unused)
+%cn[iCh].cyc[ 4] = 0                      ; Quota  Sicurezza    //(unused)
+%cn[iCh].cyc[ 5] = %probe[iPrb].Prb[2]    ; Mode
+%cn[iCh].cyc[ 6] = %probe[iPrb].Prb[6]    ; Soglia Fwerr
+%cn[iCh].cyc[ 7] = %probe[iPrb].Prb[7]    ; Soglia Torque
+%cn[iCh].cyc[ 8] = DirInd                 ; Direzione Tastatura //(always Rev)
+
+;//XXX $APP $NOPLC _setreg( 0x00, "%cn[iCh].cyc[Rg_Data]", 1190, "%cn[iCh].cyc[Rg_Sts].0", "%cn[iCh].cyc[Rg_Cmd].0")
+?%cn[iCh].cyc[Rg_Sts].1 = 1               ; tastatura in corso
+?%cn[iCh].cyc[Rg_Qta] = 0                 ; Out                 //(epsilon)
+
+;//Forzamento velocita' avanzamento
+IF( !ISQNAN(VA5) ) velTouch = VA5
+
+JMPF (%probe[iPrb].Prb[2])
+
+;//-------------
+N0
+IF ( %probe[iPrb].Prb[3] ) THEN
+_singfc( ( Vmax | Vout  ), Z, DirInd, %probe[iPrb].Prb[3], velTouch, "%cn[iCh].cyc[Rg_Cmd].1", 1 )
+ENDIF
+
+;//%IWx.y
+;//_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, "%IW[TrigReg].TrigBit",        %probe[iPrb].Prb[11] )
+
+;//FASTINPUTS
+_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, %probe[iPrb].PrbIn,        %probe[iPrb].Prb[11] )
+
+;//DIGITAL DRIVE LATCH
+;//Il segnale dipende dal bus di campo e dal drive
+;//leggere da PLC e tornare l'OR di tutti i segnali di touch non attivo ottenuti a
+;//polling dai drive
+;//_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, %probe[iPrb].PrbIn, 0 )
+
+IF ( %probe[iPrb].Prb[5] ) THEN
+    ;//negative hysteresis compensation when latching on release
+    touch_hyst = -touch_hyst
+
+    IF ( %probe[iPrb].Prb[11] == 0 ) THEN
+        ;//%IWx.y
+        ;//_singfc( ( Vmax | Vout0 ), Z, DirAva, %probe[iPrb].Prb[5],   0, "%IW[TrigReg].TrigBit", 1 )
+
+        ;//FASTINPUTS
+        _singfc( ( Vmax | Vout0 ), Z, DirAva, %probe[iPrb].Prb[5],   0, %probe[iPrb].PrbIn, 1 )
+
+        ;//DIGITAL DRIVE LATCH (0x80 + #input)
+        ;//Configurare livello acquisizione sul drive
+        ;//_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, %probe[iPrb].PrbIn, 0x80 )
+    ELSE
+        ;//%IWx.y
+        ;//_singfc( ( Vmax | Vout0 ), Z, DirAva, %probe[iPrb].Prb[5],   0, "%IW[TrigReg].TrigBit", 0 )
+
+        ;//FASTINPUTS
+        _singfc( ( Vmax | Vout0 ), Z, DirAva, %probe[iPrb].Prb[5],   0, %probe[iPrb].PrbIn, 0 )
+
+        ;//DIGITAL DRIVE LATCH (0x80 + #input)
+        ;//Configurare livello acquisizione sul drive
+        ;//_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, %probe[iPrb].PrbIn, 0x80 )
+    ENDIF
+ENDIF
+JMP .endProbe
+
+;//-------------
+N1
+IF ( %probe[iPrb].Prb[3] ) THEN
+_singfc( ( Vmax | Vout  ), Z, DirInd, %probe[iPrb].Prb[3],   velTouch, "%IW[ProxReg].ProxBit", %probe[iPrb].Prb[14] )
+ENDIF
+_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, "%IW[TrigReg].TrigBit", %probe[iPrb].Prb[11] )
+IF ( %probe[iPrb].Prb[5] ) THEN
+    IF ( %probe[iPrb].Prb[11] == 0 ) THEN
+         _singfc( ( Vmax | Vout0 ), Z, DirInd, %probe[iPrb].Prb[5],   0, "%IW[TrigReg].TrigBit", 1 )
+    ELSE
+         _singfc( ( Vmax | Vout0 ), Z, DirInd, %probe[iPrb].Prb[5],   0, "%IW[TrigReg].TrigBit", 0 )
+    ENDIF
+ENDIF
+JMP .endProbe
+
+;//-------------
+N2
+IF ( %probe[iPrb].Prb[3] ) THEN
+_singfc( ( Vmax | Vout  ), Z, DirInd, %probe[iPrb].Prb[3], velTouch, "%cn[iCh].cyc[Rg_Cmd].1", 1 )
+ENDIF
+_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, "%cn[iCh].cyc[Rg_Cmd].2", 1 )
+JMP .endProbe
+
+;//-------------
+N3
+IF ( %probe[iPrb].Prb[3] ) THEN
+_singfc( ( Vmax | Vout  ), Z, DirInd, %probe[iPrb].Prb[3],   velTouch, "%IW[ProxReg].ProxBit", %probe[iPrb].Prb[14] )
+ENDIF
+_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, "%cn[iCh].cyc[Rg_Cmd].2", 1 )
+JMP .endProbe
+
+;//-------------
+N4
+IF ( %probe[iPrb].Prb[3] ) THEN
+_singfc( ( Vmax | Vout  ), Z, DirInd, %probe[iPrb].Prb[3], velTouch, "%cn[iCh].cyc[Rg_Cmd].1", 1 )
+ENDIF
+_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, "%cn[iCh].cyc[Rg_Cmd].2", 1 )
+JMP .endProbe
+
+;//-------------
+N5
+IF ( %probe[iPrb].Prb[3] ) THEN
+_singfc( ( Vmax | Vout  ), Z, DirInd, %probe[iPrb].Prb[3],   velTouch, "%IW[ProxReg].ProxBit", %probe[iPrb].Prb[14] )
+ENDIF
+_singfc( ( Vmax | Vout0 ), Z, DirInd, velTouch,   0, "%cn[iCh].cyc[Rg_Cmd].2", 1 )
+JMP .endProbe
+
+.endProbe
+
+;//*** EXTENDED G210 END ***
+
+;//### ATTENDI RINFRESCO QUOTE ACQUISITE
+G4 F0.2
+SYN
+a_pbx = GET(X)
+a_pby = GET(Y)
+a_pbz = GET(Z)
+
+;//### LE QUOTE INTERPRETE RICHIEDONO SINCRONIZZAZIONE
+;//converti coordinate correnti da sistema assoluto di macchina a frame utente
+;//Non usare LSYN/QPREF/P1/G152 in quanto proveniamo da una _singfc
+G180 D1
+G10 G0 X(kine_x) Y(kine_y) Z(kine_z)
+
+;//ripristina sistema di riferimento iniziale
+G169
+
+.skipProbe
+
+;//### LA QUOTE DI GET() SONO NEL SISTEMA ASSOLUTO
+;//converti coordinate tastatura da sistema assoluto di macchina a frame utente
+
+IF( touch_simul == 2 )G172 T(tbTemporary) H(calibHolder) D(calibTool) S(toolSphDist)
+G180 D1 P1 X(a_pbx) Y(a_pby) Z(a_pbz)
+IF( touch_simul == 2 )G172 T(3) H(calibHolder) D(calibTool) S(toolSphDist)
+
+
+;//considera eventuale isteresi rilascio tastatura e raggio sfera tastatore
+acq_x = kine_x + (touch_hyst - sph_rad) * ni
+acq_y = kine_y + (touch_hyst - sph_rad) * nj
+acq_z = kine_z + (touch_hyst - sph_rad) * nk
+
+;//$APP
+?%EBK[463] = acq_x		;//XXX mantenere questi ???
+?%EBK[464] = acq_y
+?%EBK[465] = acq_z
+
+;//prodotto scalare tra il surface normal unit vector ed il vettore epsilon
+epsilon = (acq_x-thx) * ni + (acq_y-thy) * nj + (acq_z-thz) * nk
+
+;//*** EXTENDED G210 BEGIN ***
+%cn[iCh].cyc[Rg_Qta] = (epsilon) * 1000.0
+%cn[iCh].cyc[Rg_Sts].1 = 0              ; tastatura terminata
+;//*** EXTENDED G210 END ***
+
+;//XXX $APP
+;;//valore troppo elevato
+;IF( (touch_toll != 0) && (ABS(epsilon) > touch_toll) ) ERROR(61)
+;//Tolerance error
+IF( (touch_toll != 0) && (ABS(epsilon) > touch_toll) ) ERROR(788)
+
+RET

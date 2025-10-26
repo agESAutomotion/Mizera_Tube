@@ -1,0 +1,25 @@
+
+[KEYS]
+TITLE=Work time
+
+[PROMPT]
+KEY_NODE=Node
+TIME_REP=Leaf
+GroupBox1=Report
+Label1=Days
+Label2=Days
+Label3=years
+Label4=Total time CNC on :
+Label5=Last time CNC on :
+Label6=Last time executed :
+Label7=Total time laser ON :
+Label8=Days
+Button=LOG INFO
+GroupBox2=Saw Disk Using Time
+Label9=Saw Disk Using Time :
+Label10=Days
+Button1=Reset
+
+[STATUS]
+
+[HELP]

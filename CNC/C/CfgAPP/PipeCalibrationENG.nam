@@ -1,0 +1,49 @@
+
+[KEYS]
+TITLE=PIPE calibration
+TXT0=Expert Page
+
+[PROMPT]
+KEY_NODE=Node
+PIPECALIBRATION=Pipe Calibration
+GroupBox5=Last Spindle Calibration Result
+GroupBox4=Calibration
+GroupBox2=Pipe: General Calibration Options
+GroupBox=Tube Calibration (Tube info from PGM)
+Label=Back-Up Table
+Label1=Max Error Vertical [mm]
+Label2=Max Error Horiz [mm]
+Label3=Coordinate X [mm]
+Label4=Coordinate Y [mm]
+Label5=Border [mm]
+Label6=Minimum Side [mm]
+Label26=Calibration Type
+LIST0=2D Tube Face Leveling ,3D Tube Spindle Calibration
+Button=Run MANUAL Calibration
+Label11=No Delete
+Label12=, need for par.dat
+Button1=Reset Calibration
+LabelPipe_qtaU=Coordinate U [mm]
+LabelPipe_qtaV=Coordinate V [mm]
+LabelCalibDisab=Disable calibration
+Label22=Y coordinate of first pivot [mm]
+Label27=Z coordinate of first pivot [mm]
+Label28=X coordinate of second pivot [mm]
+Label29=Y coordinate of  second pivot [mm]
+GroupBox6=Last Spindle Calibration Result
+Label7=2D Face Leveling Rotation Error [deg]
+Label8=2D Face Centering Y Error [mm]
+Label9=2D Face Centering Z Error [mm]
+LabelRoundPipe1=ROUND PIPE
+LabelRoundPipe2=SQUARE PIPE
+LabelTriangPipe1=TRIANGLE PIPE
+LabelPolyPipe1=POLY PIPE
+LabelPolyPipe2=I SHAPE
+LabelPolyPipe3=C SHAPE
+LabelPolyPipe4=L SHAPE
+Label10=Note: Infomation graphic level from the current cutting program
+LabelAPA1=Automatic Spindle Calibration (Origin)
+
+[STATUS]
+
+[HELP]

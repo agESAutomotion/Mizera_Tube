@@ -1,0 +1,224 @@
+:
+
+
+RET
+;******************************************************************************
+;   UserInit.cfs
+;   ESAutomotion
+;------------------------------------------------------------------------------
+;   Funzione chiamata dentro alla G2292/2297/2298 dopo la aidEngageUnload.cfs !
+;
+;******************************************************************************
+IF( %M33 ) RET      ; Se simulazione su PC non considerare caricatore/scaricatore !
+
+IF( %cn[WHO()].rc[0].21 ) M2    ;Canale in test
+SYN
+
+
+
+
+;Verifica presenza supporti di carico manuale
+;--------------------------------------
+IF (%Rd[13].19==1) JSR "ErrorIso.cfs" 0 100.14
+
+
+;Verifica Ugello
+;--------------------------------------
+IF (%TabLsr0.L_Ugello!=%Rd[30]) JSR "ErrorIso.cfs" 1 100.11 %TabLsr0.L_Ugello
+SYN
+%Rd[30]=%TabLsr0.L_Ugello
+
+;Verifica allinemanto mandrini
+;--------------------------------------
+IF ((%Rd[10].8==1) || (%Rd[10].9==1)) G601 C0 M45  ;Start aspiratore
+G590 A0
+
+;Verifica presenza tubo
+;--------------------------------------
+IF ((start_track==0) && ((%Rd[10].8==1) || (%Rd[10].9==1))) JSR "ErrorIso.cfs" 1 100.1
+SYN
+;Conferma OK
+IF ((%Rd[10].8==1) || (%Rd[10].9==1)) JMP.End
+
+SYN
+IF (start_track>0)  JSR "ErrorIso.cfs" 0 100.8
+IF (HeadingRequest) JSR "ErrorIso.cfs" 0 100.9
+
+;Verifica memoria tubo
+;--------------------------------------
+SYN
+IF ((%Rd[10].10==1)) JSR "ErrorIso.cfs" 0 100.2
+
+;Verifica mandrini chiusi
+;--------------------------------------
+SYN
+IF ((%Rd[10].1==0) || (%Rd[10].5==0)) JSR "ErrorIso.cfs" 0 100.3
+IF ((%Rd[10].3==0) || (%Rd[10].7==0)) JSR "ErrorIso.cfs" 0 100.4
+
+;Verifica Comunicazione CP
+;--------------------------------------
+SYN
+IF (%Md[116].0==0) JSR "ErrorIso.cfs" 0 100.5
+
+;Verifica Allarme attivo
+;--------------------------------------
+SYN
+IF (%Md[12].20==1) JSR "ErrorIso.cfs" 1 100.6
+
+;Verifica DRY-RUN
+;--------------------------------------
+SYN
+IF (%Md[12].13==1) JSR "ErrorIso.cfs" 0 100.7
+
+
+;START CARICO TUBO
+;--------------------------------------
+;Dati da G2292/2297/2298
+;subpart = VA18
+;xs = CTOMM(MIN(VA23, VA20)) X
+;xe = CTOMM(MAX(VA23, VA20)) U
+;ys = CTOMM(MIN(VA24, VA21)) Y
+;ye = CTOMM(MAX(VA24, VA21)) V
+;zs = CTOMM(MIN(VA25, VA22)) Z
+;ze = CTOMM(MAX(VA25, VA22)) W
+;xr = CTOMM(VA8)             I
+;yr = CTOMM(VA9)             L
+;zr = CTOMM(VA10)            M
+
+SYN
+G500 H(ze - zs) W(ye - ys) R(xr) T(roundFlag!=1) L(xe - xs)
+%Md[150].30=1        ;Laser ciclo di carico terminato
+%Rd[31]=0            ;Appoggio verifica lunghezza G510
+SYN
+
+
+
+;Richiesta calibrazione capacitivo
+IF (!%Rd[199].21) JMP .NoCalib
+SYN
+
+;Calibrazione capacitivo
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 100.13
+%Rd[199].21=0
+
+SYN
+;Posiziona U
+VG100=20000
+VG101=-100.0
+RPT .STR_INC_POS_U, .END_INC_POS_U, 1
+
+; Calibration
+G11000
+
+SYN
+;Svincola Z
+VG100=0
+VG101=(%ax[29].pa[22]/1000.0)-1.5
+RPT .STR_POS_Z, .END_POS_Z, 1
+;Posiziona U
+VG100=20000
+VG101=100.0
+RPT .STR_INC_POS_U, .END_INC_POS_U, 1
+
+
+SYN
+.NoCalib
+?%Rd[199].4=0
+
+
+SYN
+;Stop a fine carico
+;--------------------------------------
+IF (%Rd[199].3) JSR "ErrorIso.cfs" 1 100.12
+
+
+.End
+;--------------------------------------
+SYN
+%Rd[10].10=1                ;Abilita presenza tubo
+%Rd[11].15=1                ;Abilita sostenitori con quota U
+%Rd[13].15=1                ;Abilita scarico con misura tubo
+
+G601 C0 M45                 ;Start aspiratore e verifica On
+G601 C8 M45                 ;Start nastri
+
+
+SYN
+MSGOUT " "
+
+SYN
+RET
+
+
+
+;Gestione posizionamenti
+;**********************************************************
+;Posizione Z
+;--------------------------------------
+.STR_POS_Z
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,Z))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+  G4099
+  G152
+
+  SYN
+  G153
+  ;Movimento Z
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) Z(VG101)
+  ELSE
+    G153 G0 Z(VG101)  
+  ENDIF
+  G152
+  
+  SYN  
+  ; Sgancio assi
+  G4005 S(AXIDX(3,Z))
+  G4099
+
+  G64
+  SYN
+.END_POS_Z
+
+
+;Incrmentale U
+;--------------------------------------
+.STR_INC_POS_U
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(U)) S(AXIDX(3,U)) I1
+  G4099
+  G152
+
+  SYN
+  ;Movimento U
+  G153
+  G91
+  G1 F(VG100) U(VG101)
+  G90
+  G152
+
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  G64
+  SYN
+.END_INC_POS_U

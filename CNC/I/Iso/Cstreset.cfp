@@ -1,0 +1,5 @@
+ : Ciclo fisso RESET
+
+%APPerr = 0
+
+RET

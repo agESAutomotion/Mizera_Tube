@@ -1,0 +1,51 @@
+[PROMPT]
+KEY_FDC =Daten Geschwindigkeitssteuerung
+
+FDC_DLE =Freig. Abbremssteuerung
+FDC_DLM =Modalität Abbremssteuerung (do NOT use)
+FDC_DLS =Schrittzahl look-ahead
+FDC_CON =Extended limitation for constraints
+FDC_FCE =Freigabe Geschwindigkeitssteuerung
+FDC_FC0 =VRef[mm/min] arc R=1m, a=90°
+FDC_FC1 =VRef[mm/min] arc R=0.01m, a=90°
+FDC_FC2 =VRef[mm/min] arc R=1m, a->0°
+FDC_FC3 =VRef[mm/min] arc R=0.01m, a->0°
+FDC_TCE =Freig.Steuerung der Diskontinuierl.
+FDC_TC0 =VRef[mm/min] disc. a=90°
+FDC_TC1 =VRef[°/min] disc. arc-lin
+FDC_TC2 =VRef[mm/min] disc. a->0°
+FDC_TC3 =VRef[°/min] disc. lin-arc
+FDC_TC0_VIMO =VIMO: max NEG jump [mm/min]
+FDC_TC1_VIMO =VIMO: max NEG jump [°/min]
+FDC_TC2_VIMO =VIMO: max POS jump [mm/min]
+FDC_TC3_VIMO =VIMO: max POS jump [°/min]
+FDC_ARC =Toler. Radius Bögen [mm]
+FDC_SAJ =Side Acceleration Jump limit [mm/s²]
+FDC_JRK =Arc jerk [mm/s³]
+FDC_CURV=Curvature-based acceleration limit [mm/s²]
+FDC_ANG =Angular threshold [°]
+FDC_TC_APN =VIMO: max pos/neg jump (A axis) [°/min]
+FDC_TC_BPN =VIMO: max pos/neg jump (B axis) [°/min]
+FDC_TC_CPN =VIMO: max pos/neg jump (C axis) [°/min]
+
+[HELP]
+FDC_DLE =Gestattet das Ansteuern der Geschwindigkeiten auf Strecken, wobei die Achsdynamik, die verwendeten Getriebe, die Eigenschaften der Bearbeitung innerhalb einer bestimmten Anzahl von Schritten berücksichtigt werden. 1=Freigegeben, 0=Gesperrt
+FDC_DLM =Modalität Abbremssteuerung (do NOT use)
+FDC_DLS =Schrittzahl look-ahead
+FDC_FCE =(Nicht benutzt)  Freigabe Geschwindigkeitssteuerung
+FDC_FC0 =Bezugsgeschwindigkeit Bögen mit Radius 1 Meter und Winkel 90 Grad [mm/min]
+FDC_FC1 =Bezugsgeschwindigkeit Bögen mit Radius 0.01 Meter und Winkel 90 Grad [mm/min]
+FDC_FC2 =Bezugsgeschwindigkeit Bögen mit Radius 1 Meter und Winkel nahe an 0 Grad [mm/min]
+FDC_FC3 =Bezugsgeschwindigkeit Bögen mit Radius 0.01 Meter und Winkel nahe an 0 Grad [mm/min]
+FDC_TCE =(Nicht benutzt)  Freig.Steuerung der Diskontinuierl.
+FDC_TC0 =Bezugsgeschwindigkeit Übergang zu Diskontinuierlichkeit mit Winkel von 90 Grad [mm/min]
+FDC_TC1 =Winkelbezugsgeschwindigkeit Übergang Gerade-Bogen [°/min]
+FDC_TC2 =Bezugsgeschwindigkeit Übergang zu Diskontinuierlichkeit mit Winkel nahe an 0 Grad [mm/min]
+FDC_TC3 =Winkelbezugsgeschwindigkeit Übergang Gerade-Bogen [°/min]
+FDC_ARC =Toleranz zum Radius der Bögen [mm] für die automatische Einschränkung der Geschwindigkeit;  die Geschwindigkeit wird aufgrund von Radius und Verstärkungen beschränkt, um den Fehler auf dem Radius innerhalb des eingegebenen Grenzwertes zu halten.  Auf 0 einstellen, um die Einschränkung der Geschwindigkeit zu sperren.
+FDC_SAJ =Side Acceleration Jump limit [mm/s²]
+FDC_ANG =Angular threshold [°]
+FDC_TC_APN =VIMO: max pos/neg jump (A axis) [°/min]
+FDC_TC_BPN =VIMO: max pos/neg jump (B axis) [°/min]
+FDC_TC_CPN =VIMO: max pos/neg jump (C axis) [°/min]
+

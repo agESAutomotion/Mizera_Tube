@@ -1,0 +1,19 @@
+[PROMPT]
+
+KEY_USR = User Parameters
+
+ SPINDLE = Mandrini
+ SP_TIMEOUT = Time-Out comandi ap/chiusura mandrini [s]
+ SP_ANAL_MOBILE_OPEN = Analog mobile spindle open [ADC]
+ SP_ANAL_FIX_OPEN = Analog fixed spindle open [ADC]
+ SP_PULSE_MM_Y = Distance sensor factor Y [Pulse/mm]
+ SP_PULSE_MM_Z = Distance sensor factor Z [Pulse/mm]
+ SP_OFF_U_CLAMP = Offset clamp tube U [mm]
+ SP_MAX_SIDE = Max spindle piece side [mm]
+ SP_ANAL_PRESS_RES = Analog resolution for pressure [ADC]
+ SUPPORT = Supporti
+ SUP_TIMEOUT = Time-Out comando supporto basso [s]
+ 
+[HELP]
+
+

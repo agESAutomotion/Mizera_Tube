@@ -1,0 +1,157 @@
+
+VAR_IN_OUT
+
+MbNode     AT  %PlcMbmNode;
+MbFun      AT  %PlcMbmFun;
+MbAddr     AT  %PlcMbmAddr;
+MbLength   AT  %PlcMbmLength;
+MbEnab     AT  %PlcMbmEnab;
+MbError    AT  %PlcMbmError;
+MbAck      AT  %PlcMbmAck;
+MbData0    AT  %PlcMbmTab0;
+MbData1    AT  %PlcMbmTab1;
+MbData2    AT  %PlcMbmTab2;
+MbData3    AT  %PlcMbmTab3;
+MbData4    AT  %PlcMbmTab4;
+
+END_VAR
+
+
+FUNCTION_BLOCK MODBUS_READ_WRITE
+
+VAR
+SendReq:              BOOL;
+Error:                BOOL;
+TON_Error:             TON;
+TON_SENDREQ:           TON;
+END_VAR
+
+VAR_INPUT
+xPolling:             BOOL;
+xReset:               BOOL;
+xSendReq:             BOOL;
+
+xCommandsReg:        DWORD;
+xNodeAddr:           DWORD;      
+xFunc:               DWORD;   * 0x3 read, 0x10 write, 0x23 read multiple float 32 bit      
+xModbAddr:           DWORD;
+xLength:             DWORD;   * number of register, max 16
+xTimePolling:        DWORD;
+END_VAR
+
+VAR_OUTPUT
+yOk:                  BOOL;
+yError:               BOOL;
+ 
+yValue0:             DWORD;
+yValue1:             DWORD;
+yValue2:             DWORD;
+yValue3:             DWORD;
+yValue4:             DWORD;
+
+END_VAR
+
+PATH %PlcMbmCmds[xCommandsReg]
+
+LD   xNodeAddr
+ST 	 MbNode
+
+LD   xFunc
+ST 	 MbFun	
+
+LD   xModbAddr
+ST 	 MbAddr
+
+LD   xLength
+ST 	 MbLength
+
+LD   xFunc
+EQ   3
+JMPCN no_read
+
+* Gestione dei comandi di enabled e acknowledge
+
+ LD   xPolling
+ JMPCN no_polling
+
+ LD   MbAck.0
+ AND  MbEnab.0
+ OR  (
+ LD   MbError
+ NE   0
+ )
+ OR   xReset
+ R    MbEnab.0
+ 
+ LDN  MbAck.0
+ ANDN MbEnab.0
+ ST   SendReq
+ 
+ CAL  TON_SENDREQ (IN:=SendReq,PT=xTimePolling)
+ 
+ LD   TON_SENDREQ.Q
+ AND(
+ LD   MbError
+ EQ   0
+ )
+ S    MbEnab.0
+ 
+ JMP no_sing_req
+ no_polling:
+ 
+ LDN   xPolling
+ JMPCN no_sing_req
+ 
+ LD    xSendReq
+ S     MbEnab.0
+ 
+ LD    MbAck.0
+ AND   MbEnab.0
+ AND  (
+ LD    MbError
+ EQ    0
+ )
+ OR   xReset
+ R    MbEnab.0
+ 
+ no_sing_req:
+ 
+ LDN  MbAck.0
+ AND  MbEnab.0
+ OR   (                       ***YANG
+ LD   MbError                 ***YANG
+ NE   0                       ***YANG
+ )
+ ST   Error
+ 
+ CAL  TON_Error (IN:=Error,PT:=3000)
+ 
+ LD   TON_Error.Q
+ S    yError
+ 
+ LD   xReset
+ R    yError
+ 
+ LDN  yError
+ ST   yOk 
+ 
+ * Out
+ 
+ LD   MbData0
+ ST   yValue0
+ 
+ LD   MbData1
+ ST   yValue1
+ 
+ LD   MbData2
+ ST   yValue2
+ 
+ LD   MbData3
+ ST   yValue3
+ 
+ LD   MbData4
+ ST   yValue4
+
+no_read:
+
+END_FUNCTION_BLOCK

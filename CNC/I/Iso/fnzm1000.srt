@@ -1,0 +1,33 @@
+:Laser
+
+IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+    
+    SYN
+    ; Check if M1000 is enabled 
+    IF( (%LSRPlcOp1.11 == 0) && (iso_enab_m1000) ) THEN
+        ;;;iso_enab_m1000 = 0           
+        
+        IF( %TabLsr1.L_Code != %LsIso0 ) THEN
+            $ Load parameters from Data Base...
+            
+            M1000
+            $
+            ; %LsIso0 = index come from part program
+            ; %LsIso10 = index DB to save
+            ; %TabLsr1.L_Code = actual index loaded
+            ; Check if exist the line of database loaded
+            SYN
+            IF( %LsIso0 != %LsGui10 ) ERROR(779)   
+        ENDIF
+    ENDIF
+    
+    IF( (%PlcOp[0].5) && (start_track == 0) ) THEN
+        $Check Work tables parameters 
+        M0
+        G4 F1
+        SYN
+        $	
+    ENDIF       
+ENDIF
+
+RET

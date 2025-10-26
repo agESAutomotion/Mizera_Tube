@@ -1,0 +1,10 @@
+[PROMPT]
+KEYWORD =Parameters
+#include "dgt?.nam"
+#include "can?.nam"
+#include "Ecat?.nam"
+#include "Calc_Kp_Drive?.nam"
+
+[HELP]
+
+[KEYS]

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="LGR_V100.xml">
+
+
+    <Device>LGR</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+    
+	<RxPdo Index="#x1600">
+		<SMObject>
+		  <Comment><![CDATA[PR_RE Pressure achieved %]]></Comment>
+		  <Address>#x31010110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[P_SOLL Target value]]></Comment>
+		  <Address>#x31010210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[GAS_SEL Gas selection]]></Comment>
+		  <Address>#x31010310</Address>
+		</SMObject>
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+		<SMObject>
+		  <Comment><![CDATA[PR_RE Pressure reached %]]></Comment>
+		  <Address>#x30010110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[P_IST Actual value]]></Comment>
+		  <Address>#x30010210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[PV_IST Admission pressure]]></Comment>
+		  <Address>#x30010310</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[GAS_STA Gas status]]></Comment>
+		  <Address>#x30010410</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[REG_ST Control output pressure control circuit]]></Comment>
+		  <Address>#x30010510</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[SER_NR Serial number]]></Comment>
+		  <Address>#x30010610</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[SW_VER Software version]]></Comment>
+		  <Address>#x30010710</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[DATA1 Reserved]]></Comment>
+		  <Address>#x30010810</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[DATA2 Reserved]]></Comment>
+		  <Address>#x30010910</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[DATA3 Reserved]]></Comment>
+		  <Address>#x30011010</Address>
+		</SMObject>
+	</TxPdo>
+
+	<DistribuitedClock>0</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>0</Enabled>
+
+		<Sync0>0</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+</Config>
+
+
+

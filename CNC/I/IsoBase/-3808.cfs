@@ -1,0 +1,156 @@
+ [C]12 [I]0 [Z]0 [W]0 : G2808
+;//Extruded polygon graphics (requires GMApolygon array)
+DBL color = VA2
+DBL pi = VA8, zs = CTOMM(VA25)
+DBL ze = CTOMM(VA22)
+DBL ax, ay
+DBL bx, by, br
+DBL cx, cy, cr
+DBL dx, dy
+DBL lx, ly
+DBL lengthBC, flatLength
+DBL angleAB, angleBC, angleCD
+DBL angleABC, angleBCD
+DBL sign
+DBL length
+DBL angle
+DBL delta
+DBL lb, lc
+DBL ABbx, ABby, BCbx, BCby, Cbx, Cby, BCcx, BCcy
+DBL shx = 0, shy = 0, shz = 0
+DBL a
+DBL i, n, ti
+DBL chord, asteps
+DBL sav_G70 = XGET("@G70")
+G71
+
+IF(f_ortho) THEN
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+ENDIF
+
+n = %gmaPolygons[pi].gmanVertices
+IF (n < 3) ERROR(55) ;// at least 3p for a polygon
+
+FOR i = 0 TO n - 1
+    ;// load data for ABCD, where current segment is BC and polygon is closed
+    ti = i - 1
+    IF (ti < 0) ti = ti + n
+    ax = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    ay = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+    ti = i
+    bx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    by = %gmaPolygons[pi].gmaVertices[ti].gma_v
+    br = %gmaPolygons[pi].gmaVertices[ti].gma_r
+
+    ti = i + 1
+    IF (ti >= n) ti = ti - n
+    cx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    cy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+    cr = %gmaPolygons[pi].gmaVertices[ti].gma_r
+
+    ti = i+2
+    IF (ti >= n) ti = ti - n
+    dx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    dy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+    ;// obtain AB, BC, CD orientations and BC length
+    lx = bx - ax
+    ly = by - ay
+    length = SQRT(lx * lx + ly * ly)
+    IF (length < 0.1) ERROR(55) ;// null segment
+    angleAB = ATANXY(ly, lx)
+
+    lx = cx - bx
+    ly = cy - by
+    length = SQRT(lx * lx + ly * ly)
+    IF (length < 0.1) ERROR(55) ;// null segment
+    angleBC = ATANXY(ly, lx)
+    lengthBC = length
+
+    lx = dx - cx
+    ly = dy - cy
+    length = SQRT(lx * lx + ly * ly)
+    IF (length < 0.1) ERROR(55) ;// null segment
+    angleCD = ATANXY(ly, lx)
+
+    ;// obtain ABC and BCD angles.
+        ;// modulo difference algorithm => [+180..-180)
+    delta = angleBC - angleAB
+    delta = MOD(delta, 360.0)
+    IF (delta < 0.0)   delta = delta + 360.0
+    IF (delta > 180.0) delta = delta - 360.0
+    IF ((delta > +175.0) || (delta < -175.0)) THEN
+        ERROR(55) ;// vertex too sharp
+    ENDIF
+    sign = SGN(delta)
+    angleABC = 180 - ABS(delta)
+
+        ;// modulo difference algorithm => [+180..-180)
+    delta = angleCD - angleBC
+    delta = MOD(delta, 360.0)
+    IF (delta < 0.0)   delta = delta + 360.0
+    IF (delta > 180.0) delta = delta - 360.0
+    IF ((delta > +175.0) || (delta < -175.0)) THEN
+        ERROR(55) ;// vertex too sharp
+    ENDIF
+    angleBCD = 180 - ABS(delta)
+
+    lb = br / TAN(angleABC/2)
+    lc = cr / TAN(angleBCD/2)
+
+    flatLength = lengthBC - lb - lc;
+    IF (flatLength < -0.001) ERROR(55) ;//degenerate side
+
+    ;// obtain projection on AB of center near B
+    ABbx = COS(angleAB) * (-lb) + bx
+    ABby = SIN(angleAB) * (-lb) + by
+
+    ;// obtain projection on BC of center near B
+    BCbx = COS(angleBC) * lb + bx
+    BCby = SIN(angleBC) * lb + by
+
+    ;// obtain center near B
+    Cbx = BCbx - SIN(angleBC) * br * sign
+    Cby = BCby + COS(angleBC) * br * sign
+
+    ;// obtain projection on BC of center near C
+    BCcx = COS(angleBC) * (-lc) + cx
+    BCcy = SIN(angleBC) * (-lc) + cy
+
+    IF (br < 0.001) THEN
+        br = 0.0
+        asteps = 1
+    ELSE
+        chord = 0.05 / br   ;//chord error
+        asteps = CEIL((180.0 - angleABC) / (2*ACOS(1.0-MIN(1.0,chord)))) ;//span
+        asteps = MIN(MAX(asteps, 1), 48)    ;//max tiles
+    ENDIF
+
+    MOVE(15,color,ABbx+shx,ABby+shy,zs+shz)
+    IF (br != 0) THEN
+        IF (sign > 0) ARCTOCW( 15,color,17,BCbx+shx,BCby+shy,zs+shz,Cbx+shx,Cby+shy,zs+shz)
+        IF (sign < 0) ARCTOCCW(15,color,17,BCbx+shx,BCby+shy,zs+shz,Cbx+shx,Cby+shy,zs+shz)
+    ENDIF
+    IF (flatLength >= +0.001) LINETO(15,color,BCcx+shx,BCcy+shy,zs+shz)
+
+    IF (ze != zs) THEN
+        MOVE(15,color,ABbx+shx,ABby+shy,ze+shz)
+        IF (br != 0) THEN
+            IF (sign > 0) ARCTOCW( 15,color,17,BCbx+shx,BCby+shy,ze+shz,Cbx+shx,Cby+shy,ze+shz)
+            IF (sign < 0) ARCTOCCW(15,color,17,BCbx+shx,BCby+shy,ze+shz,Cbx+shx,Cby+shy,ze+shz)
+        ENDIF
+        IF (flatLength >= +0.001) LINETO(15,color,BCcx+shx,BCcy+shy,ze+shz)
+
+        FOR a = 0 TO (180.0 - angleABC)+0.001 BY (180.0 - angleABC)/asteps
+            angle = a * sign + angleAB - 90 * sign
+            MOVE(  15,color,Cbx+br*COS(angle)+shx,Cby+br*SIN(angle)+shy,zs+shz)
+            LINETO(15,color,Cbx+br*COS(angle)+shx,Cby+br*SIN(angle)+shy,ze+shz)
+        ENDFOR
+    ENDIF
+ENDFOR
+
+G(sav_G70)
+RET

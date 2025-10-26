@@ -1,0 +1,154 @@
+[PROMPT]
+
+EBS_NUMOBJS =Boot Options
+
+EBS_NUMOBJSLIST =DISABLED, UPLOAD, DOWNLOAD
+
+EBS_ENABLE2 =ENAB
+
+
+EBS_IXOBJ0 = Digital Output ID (QW##)
+EBS_VXOBJ0 = Digital Input ID (IW##)
+EBS_IXOBJ1 = Monitor Variable Field
+EBS_VXOBJ1 = Monitor Variable Enabled
+EBS_VXOBJ2 = Par3 Vx
+EBS_VXOBJ3 = Par4 Vx
+EBS_VXOBJ4 = Par5 Vx
+EBS_VXOBJ5 = Par6 Vx
+EBS_VXOBJ6 = Par7 Vx
+EBS_VXOBJ7 = Par8 Vx
+
+EBS_MOTORNAME = Motor File Name
+EBS_IXOBJ1LIST = Status0, QCurrent, DC Current, Speed (rpm), HeatSink Temp., Internal Temp., Motor PTC
+EBS_VXOBJ1LIST = Disabled, Enabled 16bit
+
+EBS_MONVAROUTPUT = Monitor Variable Output ax[SysWide].ra26
+
+PAR_OPTIONAL=Optional Boards
+PAR_SUPPLY=Supply
+PAR_BRAKINGCIRCUIT=Braking Circuit
+PAR_CURRENT=Current
+PAR_SPEED=Speed
+PAR_POSITION=Position
+
+PAR_SECONDSET=Second Gain Set
+
+PAR_MOTOR=Motor
+PAR_CONFALARM=Safety configuration
+PAR_INPUTFUN=Input Functions
+
+EBS_VXOBJ8 = Main Voltage P012 (V)
+EBS_VOLTLIST=230V, 400V, 480V
+EBS_VXOBJ9 = Internal/External P013 
+EBS_BRAKRES = Internal,External
+EBS_VXOBJ10 = Ext. Value P014 (Ohm)
+EBS_VXOBJ11 = Ext. Max. Power P015 (W)
+EBS_VXOBJ12 = Kp q P050
+EBS_VXOBJ13 = Ti q P051 (ms)
+EBS_VXOBJ14 = I Rated P062 (A)
+EBS_VXOBJ15 = I Max P063 (A)
+EBS_VXOBJ16 = I2t Time P064 (s)
+EBS_VXOBJ17 = Kp speed P070 
+EBS_VXOBJ18 = Ki speed P071 
+EBS_VXOBJ19 = Kd speed P072 
+EBS_VXOBJ20 = Encoder filter P073 (ms)
+EBS_VXOBJ21 = Ref. filter P074 (ms)
+EBS_VXOBJ22 = Derivative filter P075 (ms)
+EBS_VXOBJ23 = Max speed P078 (rpm)
+EBS_VXOBJ24 = Brake enabled P110
+EBS_VXOBJ25_1 = Input Polarity 1 P119
+EBS_VXOBJ25_2 = Input Polarity 2 P119
+EBS_VXOBJ25_3 = Input Polarity 3 P119
+EBS_VXOBJ25_4 = Input Polarity 4 P119
+EBS_VXOBJ25_5 = Input Polarity 5 P119
+EBS_VXOBJ26 = Conf. Input 1 P121
+EBS_VXOBJ27 = Conf. Input 2 P122
+EBS_VXOBJ28 = Conf. Input 3 P123 
+EBS_VXOBJ29 = Conf. Input 4 P124 
+EBS_VXOBJ30 = Conf. Input 5 P125 
+EBS_VXOBJ31 = Motor poles number P200
+EBS_VXOBJ32 = Enc. Phase Angle P201 (°)
+EBS_VXOBJ33 = Feedback Type P204
+EBS_VXOBJ34 = Encoder Resolution P205
+EBS_VXOBJ35 = Tbrake ON P208 (ms)
+EBS_VXOBJ36 = Tbrake OFF P209 (ms)
+EBS_VXOBJ37 = Defluxing max current P066 (A)
+EBS_VXOBJ38 = PLL enable P038
+EBS_VXOBJ39 = Kp Position P100
+EBS_VXOBJ40 = Slot1
+EBS_VXOBJ41 = Slot2
+EBS_VXOBJ42 = Slot3
+EBS_VXOBJ43 = Feed-forward disable P104
+EBS_VXOBJ44 = Single Phase P378
+EBS_VXOBJ44LIST=Three Phase, Single Phase
+EBS_VXOBJ45 = Speed Following Error (%) P80
+EBS_VXOBJ46 = Speed Following Error Timeout (ms) P81
+EBS_VXOBJ47 = Integral Discarge P077 (ms)
+EBS_VXOBJ48 = Defluxing base speed P067 (RPM)
+
+EBS_VXOBJ49 = Enable Second Gain Set P091
+EBS_VXOBJ50 = Kp Position S2 P092
+EBS_VXOBJ51 = Kp speed S2 P093
+EBS_VXOBJ52 = Ki speed S2 P094
+
+EBS_VXOBJ53 = Feed-forward gain (1024=gain 1) P102
+EBS_VXOBJ54 = Feed-forward filter time (msec/10) P105 
+
+EBS_VXOBJ55 = Motor Type P202
+EBS_VXOBJ56 = Absolute multiturn with battery P203
+EBS_VXOBJ57 = Invert encoder count P206
+
+EBS_VXOBJ58 = Safety Option (0-1) P43
+
+
+EBS_VXOBJ24LIST = Disabled/Digital I/O, Enabled
+EBS_VXOBJ25LIST = Normal Open, Normal Close
+EBS_VXOBJ26LIST = 0:None, 1:Drive Enable, 2:Speed Enable, 3:Home Switch, 4:Negative Limit Switch, 5:Positive Limit Switch, 6:None, 7:Reset Alarms, 8:Invert Speed Reference
+EBS_VXOBJ33LIST = 0:Incremental ABZ+Hall, 1:Incremental ABZ, 2:Resolver, 3:SinCos, 4:SinCos 5V, 5:Hall Sensor 5V, 6:Hiperface, 7:Sensorless, 8:N.A, 9:N.A, 10:BiSS B 5V Digital, 11:Smart-ABS, 12:N.A
+
+EBS_VXOBJ40LIST = 0:None, 1:Ethercat
+EBS_VXOBJ41LIST = 0:None, 1:Encoder (A,B,Index) 5V Input
+EBS_VXOBJ42LIST = 0:None, 1:Backup
+EBS_VXOBJ55LIST = 0:Rotative permanent magnet, 1:Linear permanent magnet, 2:Induction, 3:N.A
+
+[HELP]
+EBS_NUMOBJS =Parameter read/write command executed both at boot and every time the ENAB key of a selected parameter group is pressed. DOWNLOAD=transfer data from CNC to SERVODRIVE, UPLOAD=transfer data from SERVODRIVE to CNC, DISABLED=no operation.
+EBS_VXOBJ0  =Digital Output ID (QW##), BIT0=BrakeON/OFF (View "Brake Enabled").
+EBS_IXOBJ1  =ID of variable to be refreshed in ax[].ra26. A 0 value causes the servodrive instantaneous current to be refreshed. 16=Q current, 23=Bus voltage, 24=Speed
+EBS_VXOBJ1  =Set to 53 if the variable to be refreshed is 16 bits wide, 54 if 32 bits wide. As for instantaneous current, set to 53. Set to 0 to disable the refresh feature.
+
+EBS_VXOBJ8  =Mains Voltage (V) 0=230V, 1=400V, 2=480V
+EBS_VXOBJ9  =Braking Resistor 0=Internal 1=External
+EBS_VXOBJ10 =Ext. Braking Resistor Value (Ohms)
+EBS_VXOBJ11 =Ext. Braking Resistor Max. Power (W)
+EBS_VXOBJ12 =Current loop proportional gain
+EBS_VXOBJ13 =Current loop integral time constant (ms)
+
+EBS_VXOBJ17 =Speed loop proportional gain. Range: 50 - 3000
+EBS_VXOBJ18 =Speed loop integrative gain. Range: 1 - 200
+EBS_VXOBJ19 =Speed loop derivative gain.  Currently unimplemented.  Always set to 0.
+EBS_VXOBJ20 =(msec) Encoder filter - do NOT modify.
+EBS_VXOBJ21 =(msec) Velocity demand filter.  May be adjusted to reduce noise.  Typically set to 1 msec or slightly less. Range: 0 – 2ms.  Increasing the time noise will be reduced.
+EBS_VXOBJ22 =(msec) Derivative filter. Always set to 0.
+EBS_VXOBJ23 =(rpm) Maximum motor speed
+EBS_VXOBJ24 = Brake Enabled, 0=brake management is OFF or brake management is done by digital I/O; 1=brake management is ON. View "Digital Output".
+
+EBS_VXOBJ25 =PRM_INPUT_POLARITY_0. Allows to configure the polarity for all 4 programmable digital inputs (see parameters P121, P122, P123 and P124). It's a 16 bit value to be expressed in hex format, according to the following bit map: Bit0 = - always 0, Bit1 = DGT_IN2 Input (Homing Switch) – In case of a normally open switch set to 0, Bit2 = DGT_IN3 Input (Positive Limit Switch) – In case of a normally closed switch set to 1, Bit3 + DGT_IN4 Input (Negative Limit Switch) – In case of a normally closed switch set to 1. All remaining bits must be set to 0. In the above scenario, the value will be 0x000C.
+EBS_VXOBJ26 =PRM_INPUT_2_FUNCTION.
+EBS_VXOBJ27 =PRM_INPUT_3_FUNCTION.
+EBS_VXOBJ28 =PRM_INPUT_4_FUNCTION.
+EBS_VXOBJ29 =PRM_INPUT_5_FUNCTION.
+
+EBS_VXOBJ38 = PLL enable P038, enable = 1
+EBS_VXOBJ39 = Kp Position P100
+EBS_VXOBJ40 = Slot3
+EBS_VXOBJ41 = Slot2
+EBS_VXOBJ42 = Slot1
+EBS_VXOBJ43 = Feedforward disable P104, disable = 1
+EBS_VXOBJ44 = 0=Three Phase 1=Single Phase
+
+EBS_VXOBJ45 = Speed Following Error (%) P80, percentuale sulla velocità massima 0-150%
+EBS_VXOBJ46 = Speed Following Error Timeout (ms) P81, tempo massimo di permanenza dell'errore
+
+EBS_VXOBJ47 = Integral Discarge P077 (ms), if the speed error is less of [64] for one second the integral discharge starts
+

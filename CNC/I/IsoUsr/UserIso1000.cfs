@@ -1,0 +1,104 @@
+:USER ISO
+
+
+RET
+
+IF(%Md[120]>0)  %Md[150].10=1         ;Ciclo User1000.
+
+;**********************************************************
+SYN
+SWITCH (%Md[120])
+  CASE 10
+  ;----------------------------------------------
+   MSGOUT "Manual Single JawReg (WAIT START)"
+   M0
+   SYN
+
+   MSGOUT "Manual Single JawReg ->START"
+    VA0=%Rd[173]
+    G550 H(VA0/1000.0) C2
+    %Rd[173]=VA0
+   MSGOUT "Manual Single JawReg ->END"
+
+  CASE 11
+  ;----------------------------------------------
+   MSGOUT "Manual All JawReg (WAIT START)"
+   M0
+   SYN
+
+   MSGOUT "Manual All JawReg ->START"
+    G550 C1
+   MSGOUT "Manual All JawReg ->END"
+
+  CASE 12
+  ;----------------------------------------------
+   MSGOUT "Manual TubeSupp (WAIT START)"
+   M0
+   SYN
+
+   MSGOUT "Manual TubeSupp ->START"
+    G560
+   MSGOUT "Manual TubeSupp ->END"
+
+  CASE 15
+  ;----------------------------------------------
+   MSGOUT "Manual All Unload (WAIT START)"
+   M0
+   SYN
+
+   MSGOUT "Manual All Unload ->START"
+    IF (%Rd[10].8==0) THEN
+     G520 B9
+    ELSE
+     G520 B0
+    ENDIF
+   MSGOUT "Manual All Unload ->END"
+
+  CASE 16
+  ;----------------------------------------------
+   MSGOUT "Manual Single Unload (WAIT START)"
+   M0
+   SYN
+
+   MSGOUT "Manual Single Unload ->START"
+    G520 B8
+   MSGOUT "Manual Single Unload ->END"
+
+  CASE 20
+  ;----------------------------------------------
+   MSGOUT "Zero piece (WAIT START)"
+   M0
+   SYN
+   
+   MSGOUT "Zero piece ->START"
+   G570 
+   MSGOUT "Zero piece ->END"
+   
+  CASE 21
+  ;----------------------------------------------
+   MSGOUT "Zero SP a 45° (WAIT START)"
+   M0
+   SYN
+   
+   MSGOUT "Zero SP a 45° ->START"
+   G590 A1
+   MSGOUT "Zero SP a 45° ->END"
+
+  CASE 22
+  ;----------------------------------------------
+   MSGOUT "Manual piece load(WAIT START)"
+   M0
+   SYN
+   
+   MSGOUT "Manual piece load ->START"
+   G540 
+   MSGOUT "Manual piece load ->END"
+
+ENDSWITCH
+
+
+SYN
+%Md[150].10=0         ;Ciclo User1000.
+%Md[120]=0
+
+RET

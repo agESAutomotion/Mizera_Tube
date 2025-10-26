@@ -1,0 +1,148 @@
+ [A] [B] [C] [D] [E] [F] [G] [H] [I] [J] [K] [L] [M] [N] [O] [P] [Q] [R] [S] [U] [V] [Y] [Z] [X]0 : 835
+;-----------------------------------------------------------------------------
+; Set run-time technology parameters
+; Equivalent to G651 T_ W0 X_ A_ B_ C_ outside G800-G840
+; (see Macro Instructions G650 G651 and G659.pdf for details)
+;
+;   X (VA23) = Table page index
+;
+;   PLASMA
+;       ### X = 0 ###
+;
+;   OXY
+;       ### X = 0 ###
+;
+;   LASER
+;       ### X = 0 ###
+;       F (VA5)  = Cutting distance [mm]
+;       G (VA6)  = Feed1 [mm/min]
+;       H (VA7)  = Feed2 [mm/min]
+;       I (VA8)  = Feed3 [mm/min]
+;       J (VA9)  = Feed4 (marking) [mm/min]
+;       K (VA10) = Feed5 (decoating) [mm/min]
+;
+;       ### X = 1 ###
+;       G (VA6)  = Cutting power [W]
+;       H (VA7)  = Cutting frequency [Hz]
+;       I (VA8)  = Cutting duty cycle [%] (tON/(tON+tOFF))
+;       J (VA9)  = Cutting gas: 0=Air, 1=Oxygen, 2=Nitrogen, 3=Mix
+;       K (VA10) = Cutting pressure [hPa] (1000 [hPa] = 1 [bar] = 14.50377 [psi])
+;       L (VA11) = Cutting lens focal distance [mm]
+;
+;   WATERJET
+;       ### X = 0 ###
+;
+;       ### X = 1 ###
+;
+;   GENERIC MACHINING CENTER (drilling-tapping-milling)
+;       ### X = 0 ###
+;
+;-----------------------------------------------------------------------------
+
+DBL EnabVal = 0
+DBL PageIdx = VA23
+
+;//Canale in test
+IF (%cn[WHO()].rc[0].21) RET
+
+;//XXX serve?
+IF (%PlcOp[0].4) RET                    ;//Disable G65x
+
+SPC 30099,1
+
+SWITCH(gTechType)
+CASE 1
+    ;//Plasma
+    ERROR(55)   ;//illegal operation
+CASE 2
+    ;//Oxyfuel
+    ERROR(55)   ;//illegal operation
+CASE 3
+    ;//Laser
+    SWITCH(PageIdx)
+    CASE 0
+        ;//Page #0
+        IF (VALID(VA0 )) ERROR(55)   ;//?%TabLsr[0].L_WorkType         = VA0
+
+        IF (VALID(VA1 )) ERROR(55)   ;//?%TabLsr[0].L_Tickness         = CTOMM(VA1) *1000
+        IF (VALID(VA1 )) ERROR(55)   ;//gL_Tickness = CTOMM(VA1)
+
+        ; // per ora non modificabili
+        IF (VALID(VA2 )) ERROR(55)   ;//?%TabLsr[0].L_BevelAngle       = VA2 *1000
+
+        IF (VALID(VA3 )) ERROR(55)   ;//?%TabLsr[0].L_PierceHeight     = CTOMM(VA3)
+        IF (VALID(VA4 )) ERROR(55)   ;//?%TabLsr[0].L_PierceTime       = VA4 *1000
+
+        IF (VALID(VA5 )) ?%TabLsr[0].L_CutDistance      = CTOMM(VA5)
+        IF (VALID(VA5 )) gL_CutDistance      = CTOMM(VA5)
+        IF (VALID(VA5 )) rtCutDist = CTOMM(VA5)
+        IF (VALID(VA5 )) cutDistRtChg = 1
+
+        ; //non usati da PLC
+        IF (VALID(VA6 )) ?%TabLsr[0].L_FeedA            = CTOMM(VA6)    ; Usata sempre solo Feed1
+        ; IF (VALID(VA7 )) ?%TabLsr[0].L_FeedB            = CTOMM(VA7)
+        ; IF (VALID(VA8 )) ?%TabLsr[0].L_FeedC            = CTOMM(VA8)
+        ; IF (VALID(VA9 )) ?%TabLsr[0].L_FeedMarking      = CTOMM(VA9)
+        ; IF (VALID(VA10)) ?%TabLsr[0].L_FeedDecoating    = CTOMM(VA10)
+
+        IF (VALID(VA11)) ERROR(55)   ;//?%TabLsr[0].L_KerfA            = CTOMM(VA11)
+        IF (VALID(VA12)) ERROR(55)   ;//?%TabLsr[0].L_KerfB            = CTOMM(VA12)
+        IF (VALID(VA13)) ERROR(55)   ;//?%TabLsr[0].L_KerfC            = CTOMM(VA13)
+        IF (VALID(VA14)) ERROR(55)   ;//?%TabLsr[0].L_SafeDistance     = CTOMM(VA14)
+
+        IF (VALID(VA6 )) feed1 = CTOMM(VA6)
+        IF (VALID(VA7 )) feed2 = CTOMM(VA7)
+        IF (VALID(VA8 )) feed3 = CTOMM(VA8)
+        IF (VALID(VA9 )) feed4 = CTOMM(VA9)
+        IF (VALID(VA10)) feed5 = CTOMM(VA10)
+
+        laserChg0 = !laserChg0
+    CASE 1
+        ;//Page #1
+        IF (VALID(VA0 )) ERROR(55)   ;//?%TabLsr[0].L_PiercePower      = VA0 *100
+        IF (VALID(VA1 )) ERROR(55)   ;//?%TabLsr[0].L_PierceFreq       = VA1
+        IF (VALID(VA2 )) ERROR(55)   ;//?%TabLsr[0].L_PierceDuty       = VA2
+        IF (VALID(VA3 )) ERROR(55)   ;//?%TabLsr[0].L_PierceGas        = VA3
+        IF (VALID(VA4 )) ERROR(55)   ;//?%TabLsr[0].L_PiercePressure   = VA4
+        IF (VALID(VA5 )) ERROR(55)   ;//?%TabLsr[0].L_PierceFocal      = CTOMM(VA5)
+
+        IF (VALID(VA6 )) ?%TabLsr[0].L_CutPower         = VA6 ;*100
+        IF (VALID(VA7 )) ?%TabLsr[0].L_CutFreq          = VA7
+        IF (VALID(VA8 )) ?%TabLsr[0].L_CutDuty          = VA8
+        IF (VALID(VA9 )) ?%TabLsr[0].L_CutGas           = VA9
+        IF (VALID(VA10)) ?%TabLsr[0].L_CutPressure      = VA10
+        IF (VALID(VA11)) ?%TabLsr[0].L_CutFocal         = CTOMM(VA11)
+
+        IF (VALID(VA12)) ERROR(55)   ;//?%TabLsr[0].L_PiercingMode     = VA12
+
+       ; ?%TstP[15].5 = 1          ; (Start Focal)
+        ?%LsIso[86] = 1          ; (Start Focal)
+        
+        laserChg1 = !laserChg1
+    OTHERWISE
+        ERROR(3)    ;//invalid function
+    ENDSWITCH
+CASE 4
+    ERROR(55)   ;//illegal operation
+    ;//Waterjet
+    SWITCH(PageIdx)
+    CASE 0
+        ;//Page #0
+    CASE 1
+        ;//Page #1
+    ENDSWITCH
+CASE 10
+    ;//Generic
+    ERROR(55)   ;//illegal operation
+OTHERWISE
+    ERROR(3)    ;//invalid function
+ENDSWITCH
+
+
+IF (laserChg0) EnabVal=EnabVal|0x4000
+IF (laserChg1) EnabVal=EnabVal|0x8000
+?%TstP[14] = EnabVal
+
+SPC 30099,1
+
+RET

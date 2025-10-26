@@ -1,0 +1,33 @@
+ T [H]0 D [S]0 [E]0 [I]0 :G172
+;//
+;// G172    T<twist_head_no> [H<tool_holder_no>] D<cut_edge_no> [S<cut_edge_svl>]
+;//         [E<table_no>] [I<orientation_transformation>]
+;//         Attiva RTCP
+;//
+DBL svl=CTOMM(VA18)
+DBL sav_G70=XGET("@G70")
+G71
+IF (rtcp_iclnut) THEN
+    rtcp_iclnut=0
+    G152
+ENDIF
+twist_head_no=VA19
+tool_holder_no=VA7
+rtcp_cut_edge_no=VA3
+rtcp_cut_edge_svl=svl
+twist_table_no=VA4
+rtcp_oritrans=VA8
+rtcp_iclnut=0
+rtcp_padsid=0
+IF( (rtcp_oritrans < 0) || (rtcp_oritrans > 5) ) ERROR(55)
+IF( rtcp_oritrans == 1 ) rtcp_iclnut=1
+IF( rtcp_oritrans == 2 ) rtcp_iclnut=2
+IF( rtcp_oritrans == 3 ) ERROR(55)          ;//XXX no tilt rot around t^
+IF( rtcp_oritrans == 4 ) rtcp_padsid=2
+IF( rtcp_oritrans == 5 ) ERROR(55)          ;//XXX no tool vector
+rtcp_on=1
+IF( twist_head_no == 0 ) ERROR(221)
+IF( rtcp_cut_edge_no == 0 ) ERROR(221)
+G152
+G(sav_G70)
+RET

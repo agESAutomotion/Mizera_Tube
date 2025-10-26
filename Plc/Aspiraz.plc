@@ -1,0 +1,229 @@
+*******************************************************************************
+*   ASPIRAZ.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "SetVasca.plc"
+
+VAR
+#include "Cnc.inc"
+
+EXHAUST_MNGT:           EXHAUST;    * Vasche di aspirazione
+TimeOff:                DWORD;
+TON_ASP:                TON;
+TON_ASPI:               TON;
+TOF_ASPI:               TOF;
+TON_PROGRUN:            TON;
+TOF_EXEAUTO:            TOF;
+appoggio:               BOOL;
+END_VAR
+
+#include "Iol.inc"
+#include "Aspiraz.inc"
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+*******************************************************************************
+* Gestione Aspirazione
+*******************************************************************************
+FUNCTION Aspiraz
+
+*******************************************************************************
+*   Richiesta da Pulsante Aspirazione ON\OFF
+*******************************************************************************
+
+CAL  TON_PROGRUN (IN:=PRGRUN_CN0,PT:=200)
+CAL  TOF_EXEAUTO (IN:=ExeAuxMode,PT:=1000)
+
+LD   Pls_ON_OFF_Aspiratore         ** (LsGui0.31)Pulsante ON\OFF accensione Aspiratore
+OR   (
+LD   Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+AND  TON_PROGRUN.Q
+ANDN TOF_EXEAUTO.Q
+OR (
+LD   ExeAuxMode                    ** (gPlc0.29)Esecuzione ausiliaria 1000.PGM
+AND  exeaux_for_mancut               ** (LsPlc47.8) manual cut request   
+)
+)
+ANDN %PlcOp0.2                     ** DryRun
+ST   appoggio
+
+LD   %Cost_User9
+MUL  1000
+ST   TimeOff
+
+CAL  TON_ASPI (IN:=appoggio,PT:=100)
+CAL  TOF_ASPI (IN:=TON_ASPI.Q,PT:=TimeOff)
+
+LD   TOF_ASPI.Q
+ST   O_START_ASPIRATORE            ** Command START for Aspiration system
+ST   AspOnOffLED                   ** (LsPlc11.17) LED Comando ON\OFF Aspiratore
+
+LDN  O_START_ASPIRATORE            ** Command START for Aspiration system
+ST   O_STOP_ASPIRATORE             ** Command STOP for Aspiration system
+
+
+***************************************
+*   EXHAUST FAN
+***************************************
+
+LD   %ax27.ra3.14        * Axis referenced
+AND  %ax28.ra3.14        * Axis referenced
+ST   EXHAUST_MNGT.xEnab
+
+LD   0
+ST   EXHAUST_MNGT.x5axes
+
+LD   27
+ST   EXHAUST_MNGT.xNumXaxis
+
+LD   28
+ST   EXHAUST_MNGT.xNumYaxis
+
+LD   %CostK56           * Sovrapposizione
+ST   EXHAUST_MNGT.xQtaSovrap
+
+LD   %CostK57           * Tempo apertura
+ST   EXHAUST_MNGT.xTimerOff
+
+CAL  EXHAUST_MNGT                  ** Vasche di aspirazione
+
+***************************************
+
+LD   EXHAUST_MNGT.yOut1.0
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_1      ** Aspiraz 1
+ST   %GenVasche.GV_ParDW1.0         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.1
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_2      ** Aspiraz 2
+ST   %GenVasche.GV_ParDW1.1         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.2
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_3      ** Aspiraz 3
+ST   %GenVasche.GV_ParDW1.2         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.3
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_4      ** Aspiraz 4
+ST   %GenVasche.GV_ParDW1.3         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.4
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_5      ** Aspiraz 5
+ST   %GenVasche.GV_ParDW1.4         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.5
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_6      ** Aspiraz 6
+ST   %GenVasche.GV_ParDW1.5         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.6
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_7      ** Aspiraz 7
+ST   %GenVasche.GV_ParDW1.6         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.7
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_8      ** Aspiraz 8
+ST   %GenVasche.GV_ParDW1.7         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.8
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_9      ** Aspiraz 9
+ST   %GenVasche.GV_ParDW1.8         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.9
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_10     ** Aspiraz 10
+ST   %GenVasche.GV_ParDW1.9         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.10
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_11     ** Aspiraz 11
+ST   %GenVasche.GV_ParDW1.10         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.11
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_12     ** Aspiraz 12
+ST   %GenVasche.GV_ParDW1.11         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.12
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_13     ** Aspiraz 13
+ST   %GenVasche.GV_ParDW1.12         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.13
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_14     ** Aspiraz 14
+ST   %GenVasche.GV_ParDW1.13         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.14
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_15     ** Aspiraz 15
+ST   %GenVasche.GV_ParDW1.14         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.15
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_16     ** Aspiraz 16
+ST   %GenVasche.GV_ParDW1.15         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.16
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_17     ** Aspiraz 17
+ST   %GenVasche.GV_ParDW1.16         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.17
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_18     ** Aspiraz 18
+ST   %GenVasche.GV_ParDW1.17         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.18
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_19     ** Aspiraz 19
+ST   %GenVasche.GV_ParDW1.18         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.19
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_20     ** Aspiraz 20
+ST   %GenVasche.GV_ParDW1.19         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.20
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_21     ** Aspiraz 21
+ST   %GenVasche.GV_ParDW1.20         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.21
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_22     ** Aspiraz 22
+ST   %GenVasche.GV_ParDW1.21         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.22
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_23     ** Aspiraz 23
+ST   %GenVasche.GV_ParDW1.22         * led for GUI
+
+LD   EXHAUST_MNGT.yOut1.23
+AND  Pls_AspAuto                   ** (rLsGui0.11) Pulsante Abilitazione Auto Aspiratore
+ST   O_APERTURA_ASPIRAZIONE_24     ** Aspiraz 24
+ST   %GenVasche.GV_ParDW1.23         * led for GUI
+
+**********************************************************************
+* ASPIRATORE ERROR MANAGEMENT
+**********************************************************************
+LD     O_START_ASPIRATORE     * (dryrun condition is included)
+ANDN   I_I_ASPIRATORE_OK
+ST     appoggio
+
+CAL    TON_ASP(IN:=appoggio,PT:=1000)
+LD     TON_ASP.Q
+S      %PLCerr5.15
+
+LD     Pul_Reset
+R      %PLCerr5.15
+
+*******************************************************************************
+END_FUNCTION

@@ -1,0 +1,16 @@
+[KEYS]
+TITLE=Grafica
+TXT2=3D
+TXT3=2D
+TXT4=Pann graph
+TXT7=Ricerca blocco
+TXT8=Vista YZ
+TXT9=Vista ZX
+TXT10=Vista XY
+[PROMPT]
+GRAPH=Leaf
+Graphic=GRAFICA
+bttFstMax2=NON CANCELLARE
+Axes=
+[STATUS]
+bttFstMax2=NON RIMUOVERE SERVE PER FOCUS

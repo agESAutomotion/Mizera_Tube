@@ -1,0 +1,46 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=
+SETUP=Setup macchina
+GroupBoxActiveTech=Selezione tecnologia
+LabelPlasma=Plasma
+LabelOxi=Oxi
+LabelLsrCut=Laser
+Label1_corut1=X
+Label2_corut1=Y
+LIST0=None,Plasma,Oxy,Laser,Waterjet,Drill,Marker
+LabelTech=TECNOLOGIA
+LabelUnit=UNITA'
+LIST1=None,Plasma,Oxy,Laser,Waterjet,Drill,Marker
+LIST2=None,Plasma,Oxy,Laser,Waterjet,Drill,Marker
+LIST3=None,Plasma,Oxy,Laser,Waterjet,Drill,Marker
+LIST4=None,Plasma,Oxy,Laser,Waterjet,Drill,Marker
+LIST5=None,Plasma,Oxy,Laser,Waterjet,Drill,Marker
+LIST6=None,Plasma,Oxy,Laser,Waterjet,Drill,Marker
+LabelWTJcut=WTJ
+LabelPlasma1=Plasma
+LabelWTJcut1=Cut
+LabelLsrCut1=Cut
+LabelOxi1=Cut
+LabelPlasma2=THC
+LabelPlasma3=Con "Z"
+LabelGantry=ABILITAZIONE GANTRY
+LIST7=PALLET DISABLE,PALLET TYPE1 ENABLE,PALLET TYPE2 ENBALE
+LabelLoader=ABILITAZIONE CARICATORE
+GroupBoxFeed=Parametri Override velocita'
+LabelOVRMax=Valore max [%]
+LabelOVRMax1=Valore min [%]
+LabelOVRMax2=Vel. lenta [%]
+LIST8=Analogico,HMI
+LabelOVRType=Tipo
+LabelOVRinc=step [%]
+LabelLunette=ABILITAZIONE LUNETTE
+LIST9=REGULATION ALONG SURFACE,REGULATION ALONG Z,REGULATION ALONG TOOL
+
+[STATUS]
+X_Y_GANTRY=X_Y_GANTRY
+
+[HELP]

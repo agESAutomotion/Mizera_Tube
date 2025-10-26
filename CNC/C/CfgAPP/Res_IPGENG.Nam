@@ -1,0 +1,71 @@
+
+[KEYS]
+TITLE=IPG LASER
+TXT6=Linearization
+TXT7=Parameters
+TXT8=Shoot On
+TXT9=Shoot Off
+TXT15=Laser Net
+TXT16=Service 1
+TXT17=Service 2 (MDI)
+TXT18=Service 3
+
+[PROMPT]
+KEY_NODE=
+LASERPAGE=Leaf
+GroupBoxDiag1=Diagnostic
+GroupBoxLout1=RESONATOR Feedback
+GroupBoxLin1=CNC Outputs
+GroupBoxlTest1=Laser TEST
+ButtonA2=A1
+Label1=Laser Request
+Label2=A1
+Label3=C1
+Label4=Laser Switch On
+ButtonC2=C1
+Label5=A4
+Label6=Laser Reset
+ButtonA1=A4
+Label7=A6
+Label8=Analog Control
+ButtonA3=A6
+Label9=A5
+Label10=Guide Laser
+ButtonA4=A5
+Label11=A2
+Label12=PROGRAM RUN
+Label13=B7. Laser Assigned
+Label14=B8. Laser Switch On
+Label15=B6. Analog Control
+Label16=B5. Guide Laser
+Label17=B1. Laser Ready
+Label18=B2. Emission On
+Label19=B13. Laser Warning
+Label20=B4. Laser Error
+LBL_POTENZA2=Power (W)
+LIST0=O2,N2,AIR,NO GAS
+LBL_DUTY2=Duty (%)
+LBL_FREQUENZA2=Frequency(HZ)
+LBL_PIERCING2=Time (s)
+LabelGasSel1=Gas
+LabelPressure1=Press (BAR)
+lbDiagPar2=Actual POWER [w]
+lbDiagPar1=Actual DUTY [%]
+lbDiagPar4=Actual FREQUENCY [Hz]
+LabelAutoRun1=AUTO SWITCH ON
+lbDiagPresSetted1=GAS PRESSURE setted [BAR]
+lbDiagPresReaded1=GAS PRESSURE readed [BAR]
+P_REF2=Feed -
+P_REF4=Feed +
+Label21=%
+GroupBox2=Alarms / Messages
+ErrorHandler2=Alarms / Messages
+GroupBox1=ISO Info
+LabelFoc1=FOCAL [mm]
+Reference travel2=Move Focus
+P_REF3=Shoot ON
+P_REF5=Shoot OFF
+
+[STATUS]
+
+[HELP]

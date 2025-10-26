@@ -1,0 +1,39 @@
+
+[KEYS]
+TITLE=Taglio Manuale
+TXT10=DRY RUN
+TXT12=Database Tabelle
+TXT13=Avanzamento lento
+TXT14=Cancella Allarme
+MSG42=Sei sicuro?
+
+[PROMPT]
+KEY_NODE=Nodo
+MANUAL_CUT=LEAF
+grpManCut=Parametri Taglio Manuale
+AxesLaser1=Assi1
+lbCutDistance_X=Quota assoluta X [mm]
+lbCutDistance_Y=Quota assoluta Y [mm]
+lbCutTable=Riga parametri dati di taglio
+btt_Cut_X=Selezione taglio X
+btt_Cut_Y=Selezione taglio Y
+bttManualCut=Avvia Taglio Manuale
+lbBorder=Distanza bordo [mm]
+Label1=Richiesta Accensione Laser
+Label2=B2. Emissione Attiva
+Label3=Regolatore Distanza Altezza
+bttFstMin1=<<<<
+bttFstMax1=>>>>
+LabelStartMc=INIZIO
+LabelEndtMc=FINE
+ButtonXs=Acq
+ButtonXe=Acq
+ButtonYs=Acq
+ButtonYe=Acq
+LabelDryRun2=DRY RUN Attivo
+LabelINCQta1=INC (mm)
+lbBorder1=Avanzamento taglio manuale
+
+[STATUS]
+
+[HELP]

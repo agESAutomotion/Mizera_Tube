@@ -1,0 +1,63 @@
+
+[KEYS]
+TITLE=VALVE
+TXT5=Linearization(N2, AIR)
+TXT6=Linearization
+TXT7=Parameters
+TXT8=Test Gas
+TXT9=Test Cut Assist.
+TXT10=Test Nozzle Air
+TXT11=Test AIR
+TXT12=Test OXIGEN
+TXT13=Test NITROGEN
+
+[PROMPT]
+KEY_NODE=
+LASERPAGE=Leaf
+GroupBox2=Feedback
+GroupBoxGasOption=Options and parameters
+GroupBox5=Gases pressure settings
+Label1=Proportional valve max pressure [bar]
+Label2=Oxygen max pressure [bar]
+Label3=Nitrogen max pressure [bar]
+Label4=Air max pressure [bar]
+Label5=TEST gas pressure [bar]
+LabelPresReaded=Pressure readed [bar]
+LabelTollPresAlarm=Alarm tollerance (=0 disabled) [%]
+Label9=Alarm  delay time [s]
+Label12=EV Cut Assist
+Label13=EV Nozzle Air
+Label29=Maximum diff. input pressure [bar]
+Label30=Delay feedback input gas control [s]
+LabelAitOff2=Air
+LabelN2Off2=N2
+LabelO2Off2=O2
+LabelAit2=Air
+LabelN2=N2
+LabelO2=O2
+LabelTesting=Test is running...
+LabelPresCommanded=Pressure setted [bar]
+LabelExtraEv=Aux EV.
+LabelExtraEv_ON=Aux EV.
+LabelTrack2=Track Num
+LabelExeTime2=Execution time
+LabelExeTime1=Feed [m/min]
+lbDiagPar1=Total / Curr. Pieces
+P_REF2=Feed +
+Label7=%
+P_REF1=Feed -
+Label8=%
+Label6=%
+GroupBox1=ISO Info
+GroupBox3=Alarms / Messages
+ErrorHandler1=Alarms / Messages
+P_REF5=Test Gas
+P_REF4=Test Cut Assist.
+P_REF7=Test Nozzle Air
+P_REF6=Test Air
+P_REF9=Test O2
+P_REF8=Test N2
+
+[STATUS]
+
+[HELP]

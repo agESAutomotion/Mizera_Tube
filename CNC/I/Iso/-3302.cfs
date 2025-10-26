@@ -1,0 +1,486 @@
+ [X]0 [Y]0 [U]0 [V]0 : G2302
+;// TRIANGLE: tubeCalibration
+
+ERROR(55); PLEASE SWITCH TO NEW CYCLES
+
+;//vertici
+DBL a[2], b[2], cc[2]
+;//versori normali
+DBL abn[2], bcn[2], can[2]
+;//(SIMULAZIONE) errore centraggio
+DBL epsilon[2]
+;//(SIMULAZIONE) errore z mandrino
+DBL zeta
+;//touch point reali
+DBL abe[2], bce[2], cae[2]
+;//errori di centraggio e mandrino
+DBL eta[2], nu
+
+DBL one_d
+DBL a11, a21, a31, a12, a22, a32, a13, a23, a33
+DBL rhs[3]
+
+
+DBL side_a_y, side_a_z, side_a_c, side_b_y, side_b_z, side_b_c, side_c_y, side_c_z, side_c_c
+DBL side_a, side_b, side_c
+DBL cos_angle_a, cos_angle_b, cos_angle_c
+DBL angle_a, angle_b, angle_c
+DBL Xnew_a, Ynew_a
+DBL Xnew_b, Ynew_b
+DBL Xnew_c, Ynew_c
+DBL sequence[3], temp, k
+
+DBL fSimul = %cn[WHO()].rc[0].21
+DBL fGraph = %cn[WHO()].pc[14].25
+;;DBL x, y, z, c
+DBL touch_epsilon
+DBL saveF = XGET("@F")
+DBL dst
+DBL Vacq_x, Vacq_y, Vacq_z
+DBL acquireX = VA23
+DBL acquireY = VA24
+DBL acquireU = VA20
+DBL acquireV = VA21
+DBL sav_gTravT
+DBL z_abs
+DBL DistFromPiece = 3   ; 3 mm distance from piece
+DBL touch_enable = 1
+DBL gTouchMode = 1
+DBL gRegolMode = 1
+DBL piercing_mode = 0
+DBL hix = 0
+DBL pi = tubePI
+DBL tx, ty, tz
+DBL ti, tj, tk
+DBL vectorSelect =  1   ;//1 = tool, 2 = surface, 6 = Z
+
+SYN
+IF( (!%gPlc0.29) && (!%PlcOp0.2) ) THEN ; If not 1000.pgm and not DRYRUN
+    IF( %M107.1 ) M496  ;Disable GASES
+ENDIF
+
+sav_gTravT = gTravT
+
+
+;*******************************************************************************
+;
+;    Z
+;    ^                c
+;    |                °
+;    |               / \
+;    |              /   \
+;    |            C/     \B
+;    |            /       \
+;    |           /         \
+;    |          °-----------°
+;    |          a     A     b
+;    |
+;    +--------> Y
+;
+;
+;*******************************************************************************
+
+
+a[0] = %gmaPolygons[pi].gmaVertices[0].gma_u
+a[1] = %gmaPolygons[pi].gmaVertices[0].gma_v
+b[0] = %gmaPolygons[pi].gmaVertices[1].gma_u
+b[1] = %gmaPolygons[pi].gmaVertices[1].gma_v
+cc[0] = %gmaPolygons[pi].gmaVertices[2].gma_u
+cc[1] = %gmaPolygons[pi].gmaVertices[2].gma_v
+
+side_a = SQRT( ((b[0]-a[0])*(b[0]-a[0])) + ((b[1]-a[1])*(b[1]-a[1])) )
+side_b = SQRT( ((cc[0]-b[0])*(cc[0]-b[0])) + ((cc[1]-b[1])*(cc[1]-b[1])) )
+side_c = SQRT( ((a[0]-cc[0])*(a[0]-cc[0])) + ((a[1]-cc[1])*(a[1]-cc[1])) )
+
+cos_angle_a = ((side_a * side_a) + (side_c * side_c) - (side_b * side_b)) / (2*side_a*side_c)
+cos_angle_b = ((side_a * side_a) + (side_b * side_b) - (side_c * side_c)) / (2*side_a*side_b)
+cos_angle_c = ((side_b * side_b) + (side_c * side_c) - (side_a * side_a)) / (2*side_b*side_c)
+
+angle_a = ACOS( cos_angle_a )
+angle_b = ACOS( cos_angle_b )
+angle_c = ACOS( cos_angle_c )
+
+side_a_y = (b[0]+a[0])/2
+side_a_z = (b[1]+a[1])/2
+side_a_c = 180
+
+side_b_y = (cc[0]+b[0])/2
+side_b_z = (cc[1]+b[1])/2
+side_b_c = 0 + (180-angle_a) + (180-angle_c) + 180
+
+side_c_y = (a[0]+cc[0])/2
+side_c_z = (a[1]+cc[1])/2
+side_c_c = 0 + (180-angle_a) + 180
+
+
+IF( %M33 == 1 ) THEN
+    ; Calcolo rotazione punti per simulazione thikness
+    Xnew_a = a[0] * COS(side_a_c) - a[1] * SIN(side_a_c)
+    Ynew_a = a[0] * SIN(side_a_c) + a[1] * COS(side_a_c)
+    MSGOUT "TH_A="Ynew_a
+    M0
+    Xnew_b = b[0] * COS(side_b_c) - b[1] * SIN(side_b_c)
+    Ynew_b = b[0] * SIN(side_b_c) + b[1] * COS(side_b_c)
+    MSGOUT "TH_B="Ynew_b
+    M0
+    Xnew_c = cc[0] * COS(side_c_c) - cc[1] * SIN(side_c_c)
+    Ynew_c = cc[0] * SIN(side_c_c) + cc[1] * COS(side_c_c)
+    MSGOUT "TH_C="Ynew_c
+    M0
+
+    SYN
+    MSGOUT "SIDE: a="side_a " b="side_b " c="side_c
+    M0
+
+    MSGOUT "COS: a="cos_angle_a " b="cos_angle_b " c="cos_angle_c
+    M0
+
+    MSGOUT "ANGLE: a="angle_a " b="angle_b " c="angle_c
+    M0
+
+    MSGOUT "A SIDE: y="side_a_y " z="side_a_z " c="side_a_c "  M2109=0"
+    M0
+
+    MSGOUT "B SIDE: y="side_b_y " z="side_b_z " c="side_b_c "  M2109="(180-angle_a) + (180-angle_c)
+    M0
+
+    MSGOUT "C SIDE: y="side_c_y " z="side_c_z " c="side_c_c "  M2109="180-angle_a
+    M0
+
+ENDIF
+
+
+MSGOUT "Triangle tube calibration in progress..."
+
+G172 T(spindle_id) H1 D(tool_id) E(table_id)
+G153 G0 Z(lift)
+
+; cut_type is the the reference to understand if there is a calibration for 2D or 3D
+IF (cut_type == 2) dst = 2
+IF (cut_type == 3) dst = 3
+
+SYN
+; Ripristino tabella 2 o 3 con i dati della tabella principale
+%tab[dst].t_ttab.t_oart.t_dX  = %tab[table_id].t_ttab.t_oart.t_dX
+%tab[dst].t_ttab.t_oart.t_dY  = %tab[table_id].t_ttab.t_oart.t_dY
+%tab[dst].t_ttab.t_oart.t_dZ  = %tab[table_id].t_ttab.t_oart.t_dZ
+%tab[dst].t_ttab.t_oart.t_dEC = %tab[table_id].t_ttab.t_oart.t_dEC
+%tab[dst].t_ttab.t_oart.t_dXx = %tab[table_id].t_ttab.t_oart.t_dXx
+%tab[dst].t_ttab.t_oart.t_dYy = %tab[table_id].t_ttab.t_oart.t_dYy
+
+
+; Ottimizza sequenza dei lati in base alle rotazioni mandrino
+sequence[0] = side_a_c
+sequence[1] = side_b_c
+sequence[2] = side_c_c
+IF( sequence[0] > sequence[1] ) THEN
+    temp = sequence[i]
+    sequence[0] = sequence[1]
+    sequence[1] = temp
+ENDIF
+IF( sequence[0] > sequence[2] ) THEN
+    temp = sequence[0]
+    sequence[0] = sequence[2]
+    sequence[2] = temp
+ENDIF
+IF( sequence[1] > sequence[2] ) THEN
+    temp = sequence[1]
+    sequence[1] = sequence[2]
+    sequence[2] = temp
+ENDIF
+
+;;;MSGOUT sequence[0] " " sequence[1] " " sequence[2]
+;;;M0
+
+
+;// tube axis is X
+IF (isTubeY == 0) THEN
+
+    FOR k=0 TO 2
+
+        x = acquireX
+
+        ; Lato A
+        ;-------------------------------------
+        IF( sequence[k] == side_a_c ) THEN
+            c = side_a_c
+            z = side_a_z
+            y = side_a_y
+
+            SYN
+            IF( %M33 == 1 ) THEN
+                %TabLsr1.L_Tickness = ABS(Ynew_a) * 1000
+                MSGOUT "Run SIDE A: TH="%TabLsr1.L_Tickness
+            ENDIF
+            ;M0
+
+            RPT .acquire_a, .acquire_z, 1
+            abe[0] = Vacq_y
+            abe[1] = Vacq_z
+        ENDIF
+
+        ; Lato B
+        ;-------------------------------------
+        IF( sequence[k] == side_b_c ) THEN
+            c = side_b_c
+            z = side_b_z
+            y = side_b_y
+
+            SYN
+            IF( %M33 == 1 ) THEN
+                %TabLsr1.L_Tickness = ABS(Ynew_b) * 1000
+                MSGOUT "Run SIDE B: TH="%TabLsr1.L_Tickness
+            ENDIF
+            ;M0
+
+
+            RPT .acquire_a, .acquire_z, 1
+            bce[0] = Vacq_y
+            bce[1] = Vacq_z
+        ENDIF
+
+        ; Lato C
+        ;-------------------------------------
+        IF( sequence[k] == side_c_c ) THEN
+            c = side_c_c
+            z = side_c_z
+            y = side_c_y
+
+            SYN
+            IF( %M33 == 1 ) THEN
+                %TabLsr1.L_Tickness = ABS(Ynew_c) * 1000
+                MSGOUT "Run SIDE C: TH="%TabLsr1.L_Tickness
+            ENDIF
+            ;M0
+
+
+            RPT .acquire_a, .acquire_z, 1
+            cae[0] = Vacq_y
+            cae[1] = Vacq_z
+
+        ENDIF
+    ENDFOR
+
+    ;-------------------------------------
+    ; Calcolo correzioni
+    RPT .calc_a, .calc_z, 1
+
+    ; Applica le correzioni
+    IF (!fSimul) THEN
+        SYN
+        G153
+        %tab[dst].t_ttab.t_oart.t_dXx = %tab[dst].t_ttab.t_oart.t_dXx - eta[0]
+        %tab[dst].t_ttab.t_oart.t_dYy = %tab[dst].t_ttab.t_oart.t_dYy + eta[1]
+
+		%tab[dst].t_ttab.t_oart.t_dZ = %tab[dst].t_ttab.t_oart.t_dZ + nu
+
+        G152
+    ENDIF
+
+ELSE
+    ERROR(55)   ; Per ora NON implementata !
+ENDIF
+
+G173
+
+gTravT=-1
+G806 A11 T3 N1 H1 D1 E1 S(workpiece_safe_dist)
+gOptimEnableG806 = 0
+
+SYN
+IF( (!%gPlc0.29) && (!%PlcOp0.2) ) THEN ; If not 1000.pgm and not DRYRUN
+    IF( %M107.1 ) M497  ;Enable GASES
+ENDIF
+
+MSGOUT
+F(saveF)
+RET
+
+
+;******************************************************************************
+.acquire_a
+    ;// approach
+    G180 X(x) Y(y) Z(z) B0 C(c)
+    IF (isTubeY == 0) THEN
+        G1000 X(kine_x) Y(kine_y) B(kine_b) C(kine_c) U(acquireU)
+    ELSE
+        G1000 X(kine_x) Y(kine_y) B(kine_b) C(kine_c) V(acquireV)
+    ENDIF
+
+    ;// V-ACQUIRE
+    ;// TODO: PROBE CYCLE (uses: overTravelV)
+
+    ?%CalPipe[0].General[3] = 1                  ; index to communicate in laser touch the setpoint for the calibration
+
+    G180 P1 X(x) Y(y) Z(z) C(c)
+
+    ?%UnitWork.uxh[0].a_x = kine_x
+    ?%UnitWork.uxh[0].a_y = kine_y
+    ?%UnitWork.uxh[0].a_z = kine_z + %UnitWork.uxh[0].uxh_Thickness + DistFromPiece;
+    ?%UnitWork.uxh[0].touch_mode = 1
+    ?%UnitWork.uxh[0].regol_mode = 1
+
+    SYN
+    ; Relative Coordinates
+    tx = x
+    ty = y
+    tz = z
+
+    ;;;MSGOUT "ACQUIRE: x="x " y=" y " z="z
+    ;;;M0
+
+    ti = 0
+    tj = SIN(c)
+    tk = COS(c)
+    EI(ti) EJ(tj) EK(tk)
+    G152
+
+    JSR "laser_start.cfs"
+
+    SYN
+    touch_epsilon = (%vrtc1.VrMon_Q_Flt_Q / 1000)
+
+    ?%CalPipe[0].General[3] = 0                ; index to communicate in laser touch the setpoint for the calibration
+
+    JSR "laser_stop.cfs"
+
+    ;// Ricerca blocco NON in corso e NON verify|grafica ($ricgrp)
+    ;;;IF ( ((!(%cn[0].rc[8].8)) || (%cn[0].rc[8].15)) && !%cn[WHO()].rc[0].21 ) JSR "Sel_Y3Z3.cfs"
+
+    ;Pipe calibration with touching
+    IF( %LSRPlcOp0.10 == 1 ) THEN
+
+        G153
+
+        ;Disab filter
+        ?%LsIso15.2 = 1 ;
+        ?%LsIso16.2 = 1 ;
+        G4 F0.1         ;
+
+        ;Disable tip touch
+        ?%LsIso17.0 = 1
+
+        DECTRJ=4000     ;
+        JRKTRJ=0        ;
+
+        ;//Parametri per _singolo e _singfc
+        ; 0x10              ;vmax presente
+        ; 0x04              ;forza vout  = 0
+        ; 0x08              ;forza vout != 0
+        ; 0x01              ;quota assoluta
+        ; 2                 ;indietro
+        ; 1                 ;avanti
+        _singfc( ( 0x10 | 0x08 ), Z, 2, 200, 0, "%LsPlc11.8", 1 )
+
+        ;Enab filter
+        ?%LsIso15.2 = 0 ;
+        ?%LsIso16.2 = 0 ;
+        G4 F0.1         ;
+
+        DECTRJ=%cn[WHO()].pc7
+        JRKTRJ=%cn[WHO()].pc16
+
+        _singfc( ( 0x10 | 0x04 ), Z, 1, 200, 0, "%LsPlc11.8", 0 )
+        G4 F0.2
+
+        ;Enable tip touch
+        ?%LsIso17.0 = 0
+
+        SYN
+        z_abs = GET(Z)
+        touch_epsilon = z_abs - %UnitWork.uxh[0].a_z + DistFromPiece
+        G10 G0 Z(QCALC(Z))
+        G152
+
+    ENDIF
+
+    MSGOUT "touch_epsilon= " NPREC(touch_epsilon, 0.001)
+
+    IF (fGraph) G2805 C12 X(x) Y(y) Z(z)
+
+    G180 P1 X(x) Y(y) Z(z)
+
+    G180 D1 P1 Z(kine_z + touch_epsilon)
+    Vacq_x = kine_x
+    Vacq_y = kine_y
+    Vacq_z = kine_z
+
+    ;// leave
+    G153 G0 Z(optimized_lift)
+.acquire_z
+;******************************************************************************
+
+
+
+;******************************************************************************
+.calc_a
+
+;//quote teoriche (CCW winding)
+;//a[0] = -100.0
+;//a[1] =  -20.0
+;//b[0] =   80.0
+;//b[1] =   -5.0
+;//cc[0] =  -10.0
+;//cc[1] =   80.0
+
+;//versori normali
+abn[0] = b[1] - a[1]
+abn[1] = a[0] - b[0]
+one_d = 1 / SQRT(abn[0] * abn[0] + abn[1] * abn[1])
+abn[0] = abn[0] * one_d
+abn[1] = abn[1] * one_d
+bcn[0] = cc[1] - b[1]
+bcn[1] = b[0] - cc[0]
+one_d = 1 / SQRT(bcn[0] * bcn[0] + bcn[1] * bcn[1])
+bcn[0] = bcn[0] * one_d
+bcn[1] = bcn[1] * one_d
+can[0] = a[1] - cc[1]
+can[1] = cc[0] - a[0]
+one_d = 1 / SQRT(can[0] * can[0] + can[1] * can[1])
+can[0] = can[0] * one_d
+can[1] = can[1] * one_d
+
+;//(SIMULAZIONE) errore di centraggio ed errore z mandrino simulati
+;//epsilon[0] = -2.0
+;//epsilon[1] = 3.0
+;//zeta = 1.0
+
+;//(SIMULAZIONE) touch point simulati (nota: la posizione Y assoluta di
+;//              acquisizione non è significativa)
+;//abe[0] = a[0] + epsilon[0] + abn[0] * zeta
+;//abe[1] = a[1] + epsilon[1] + abn[1] * zeta
+;//bce[0] = b[0] + epsilon[0] + bcn[0] * zeta
+;//bce[1] = b[1] + epsilon[1] + bcn[1] * zeta
+;//cae[0] = cc[0] + epsilon[0] + can[0] * zeta
+;//cae[1] = cc[1] + epsilon[1] + can[1] * zeta
+
+;//DETERMINAZIONE CENTRAGGIO
+one_d = abn[0]*bcn[1] + abn[1]*can[0] + bcn[0]*can[1]
+one_d = one_d - bcn[1]*can[0] - abn[0]*can[1] - abn[1]*bcn[0]*1
+one_d = 1 / one_d
+a11 = (bcn[1] - can[1]) * one_d
+a21 = (can[0] - bcn[0]) * one_d
+a31 = (bcn[0]*can[1] - bcn[1]*can[0]) * one_d
+a12 = (can[1] - abn[1]) * one_d
+a22 = (abn[0] - can[0]) * one_d
+a32 = (abn[1]*can[0] - abn[0]*can[1]) * one_d
+a13 = (abn[1] - bcn[1]) * one_d
+a23 = (bcn[0] - abn[0]) * one_d
+a33 = (abn[0]*bcn[1] - abn[1]*bcn[0]) * one_d
+rhs[0] = abn[0]*abe[0] - abn[0]*a[0] + abn[1]*abe[1] - abn[1]*a[1]
+rhs[1] = bcn[0]*bce[0] - bcn[0]*b[0] + bcn[1]*bce[1] - bcn[1]*b[1]
+rhs[2] = can[0]*cae[0] - can[0]*cc[0] + can[1]*cae[1] - can[1]*cc[1]
+eta[0] = a11 * rhs[0] + a12 * rhs[1] + a13 * rhs[2]
+eta[1] = a21 * rhs[0] + a22 * rhs[1] + a23 * rhs[2]
+nu     = a31 * rhs[0] + a32 * rhs[1] + a33 * rhs[2]
+
+;//errore di centraggio (e della Z del mandrino) rilevato
+
+;//deve coincidere con l'errore di centraggio simulato e
+;//non dipendere da quello del mandrino
+MSGOUT "eta(" NPREC(eta[0],0.01) ", " NPREC(eta[1],0.01) "), nu=" NPREC(nu,0.01)
+IF( %M33 == 1 ) M0
+
+.calc_z
+;******************************************************************************
+

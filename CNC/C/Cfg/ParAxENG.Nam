@@ -1,0 +1,723 @@
+[PROMPT]
+KEY_PARAX     =Axes Parameters
+
+DC_DACREF     =Output voltage with max velocity [V]
+
+FIR_AUXE        =Gain Exponent [0..1]
+FIR_AUXF        =Filter Time Constant 1 [s]
+FIR_AUXG        =Filter Time Constant 2 [s]
+FIR_AUXH        =Following Error Compensation [0..1]
+AP_EF_EQDELAY_TCONST=Servo equalization delay time constant [ms]
+AP_FRICT_COMP_AMP   =Friction compensation peak amplitude [mm/min]
+AP_FRICT_COMP_DECAY =Friction compensation decay time constant [s]
+FIR_AUXA        =HDC system periodicity [°]
+FIR_AUXB        =HDC system signal amplitude [°]
+FIR_AUXC        =HDC system signal phase [°]
+AP_EF_TCONST1   =Switching FIR time constant 1 [s]
+AP_EF_TCONST2   =Switching FIR time constant 2 [s]
+AP_EF_COMP_TCONST1  =Compensations FIR time constant 1 [s]
+AP_EF_COMP_TCONST2  =Compensations FIR time constant 2 [s]
+AP_EF_COMP_FIR2_TYPE=Compensations FIR 2nd stage type
+AP_EF_COMP_FIR2_TYPE_L=0-FIR, 1-SINf
+AP_BACK_AMP     =Backlash Compensation after FIR [mm]
+POL_BACK_AMP    =Backlash Compensation after FIR [°]
+AP_P2PBLEND_BUFFER_TIME =P2P blending buffering time [s]
+AP_P2PBLEND_TIME        =P2P blending time threshold [s]
+AP_P2PBLEND_SPACE       =P2P blending space threshold [mm]
+POL_P2PBLEND_SPACE      =P2P blending space threshold [°]
+
+AP_AXTYPELIST =0-Null, 1-Prop. STD, 2-Polar, 3-Round, 4-Poor, 10-SpEnc, 11-SpNoEnc, 20-N Speed, 22-OneVelAna, 30-Ram, 40-Measure
+AP_AXTYPE     =Axis Type
+AP_DRVTYPELIST =0-Analog, 1-Mechatrolink, 2-SERCOS, 3-CANOpen Trajectory, 4-CANOpen Positioning, 5-ESALINK
+AP_DRVTYPE    =Interface  Type
+AP_ROTARYMODELIST =0-Standard, 1-Rotary, 2-Geometry
+AP_ROTARYMODE  =Rotary Axis Mode
+AP_OPZIONI_EXT31_LIST=0-Real, 1-Virtual
+AP_OPZIONI_EXT31     =Virtualization
+AP_OPZ31_ALIAS_LIST  =0-Off, 1-On
+AP_OPZ31_ALIAS       =Axis simulation
+AP_NAME       =Axis Name
+AP_ACCTIME    =Acceleration time [s]
+AP_DECTIME    =Deceleration time [s]
+AP_OPZIONI0   =Invert  Homing Direction
+AP_OPZIONI1   =Invert  Encoder Counting
+AP_OPZIONI2   =Invert  Analog  Velocity Command
+AP_OPZIONI3   =Disable Alarm Axis not in Position
+AP_OPZIONI4   =Mark level monitoring disab. opt.
+AP_OPZIONI5   =SLV commands VOUT disabling option
+AP_OPZIONI6   =Enable Hardware Limits Management
+AP_OPZIONI7   =Independent feed-rate handling
+AP_OPZIONI8   =Diameter  Programming
+AP_OPZIONI9   =Invert Backlash Direction
+AP_OPZIONI10  =ABSOLUTE Homing
+AP_OPZIONI_EXT0=Declare homing complete even if incremental (AbsHoming)
+AP_OPZIONI11  =Enables DAC to work in  0/10V range
+AP_OPZIONI12  =Inverts  DAC_POS  sign
+AP_OPZIONI13  =Motor Brake Management
+AP_OPZIONI14  =Type of HW Limits Management
+AP_OPZIONI15  =Drive Enable  Management
+AP_OPZIONI16  =Disable PLC  Handshake to close Pos. Loop
+AP_OPZIONI17  =Enable Forward/Backward  Outputs mngt.
+AP_OPZIONI18  =HW limits level selection
+AP_OPZIONI19  =Control of "Drive Enable" during Motion
+AP_OPZIONI20  =Axis with mechanical Brake
+AP_OPZIONI21  =First  Cross-Axes Compensation
+AP_OPZIONI22  =Homing+Parking
+AP_OPZIONI23  =Enable Offset Auto-compensation
+AP_OPZIONI24  =Plasma Torch Heigh Control
+AP_OPZIONI25  =Gantry Axes
+AP_OPZIONI26  ="Distance To Go" with  sign
+AP_OPZIONI27  =Extended resolution 0.0001 [#mm] or [°]
+AP_OPZIONI28  =Second Cross-Axes Compensation
+AP_OPZIONI31  =Simulated Axis
+AP_FWERRVLIM  =Following Error Limit Feed [mm/min]
+AP_FWERR      =Max. Following Error [pulses]
+AP_TOLLERG    =Rough Positioning Tolerance [mm]
+AP_TOLLERF    =Fine  Positioning Tolerance [mm]
+AP_TOLLER     =Positioning Tolerance Monitoring  Time [s]
+AP_VELMAX     =Maximum Feed [mm/min]
+AP_VELRAP     =Maximum Rapid feed [mm/min]
+AP_GAINP      =Proportional  Gain
+AP_GAIND      =Derivative  Gain
+AP_INFWD      =Feed Forward
+AP_GAINP_I    =Backward Proportional Gain
+AP_INSPOS     =Positive insensitivity voltage [V]
+AP_FATTCONV     =Number of encoder pulses/[#mm] (mul)
+AP_FATTCONVDIV  =Number of encoder pulses/[#mm] (div)
+AP_QFATTCONV    =Number of encoder pulses/[#mm] (mul)
+AP_QFATTCONVDIV =Number of encoder pulses/[#mm] (div)
+AP_QFATTCONVREDUCTION =Fatt.Conv adapter [#mm]/imp (num)
+AP_QFATTCONVDIVREDUCTION =Fatt.Conv adapter [#mm]/imp (den)
+AP_TARTYPE    =Homing type
+AP_SERCOSREF  =SERCOS Homing Type
+AP_CANOPENREF =CANOpen Homing Type
+AP_SUBTARTYPE =Homing Sub-modalities
+AP_INSNEG     =Negative insensitivity voltage [V]
+AP_TARQUOTA   =Homing Quota [mm]
+AP_OFSQUOTA   =Homing offset [mm]
+AP_VELMICRO   =Homing Switch Search Feed [mm/min]
+AP_VELTACCA   =Homing Marker Search Feed [mm/min]
+AP_MINQUOTA   =Negative Axis Travel Limit [mm]
+AP_MAXQUOTA   =Positive Axis Travel Limit [mm]
+AP_VELMAN     =Manual Feed [mm/min]
+AP_ACCMAN     =Manual Acceleration (Jog Rtcp) [mm/s²]
+AP_DECMAN     =Manual Deceleration (Jog Rtcp) [mm/s²]
+AP_JRKMAN     =Manual Jerk (Jog Rtcp) [mm/s³]
+AP_VELPARK    =Homing Parking Feed  [mm/min]
+AP_VELDRY     =REPOS speed [mm/min]
+AP_TOLLG_VEL  =Coarse tolerance velocity threshold [mm/min]
+AP_TOLLF_VEL  =Fine tolerance velocity threshold [mm/min]
+AP_BABBLE_VEL =Tolerance after HOLD/RESET [mm/min]
+AP_ESTOP_TIMER=drive enable time after an emergency stop [s]
+AP_JOGABS_QMIN=Optional lower absolute limit [mm]
+AP_JOGABS_QMAX=Optional upper absolute limit [mm]
+AP_JOGTCP_QMIN=Optional lower TCP limit [mm]
+AP_JOGTCP_QMAX=Optional upper TCP limit [mm]
+AP_MINICS     =Min. Feed in warranted time at constant feed [mm/min]
+AP_ICSTIME    =Warranted time at constant feed [s]
+AP_DELAYS     =S-curve time [s]
+AP_QCHKTARA   =Max distance Homing Switch - Marker [mm]
+AP_TIPOTSTENC =Encoder test type
+AP_OFFSET     =Maximum offset recovery voltage [V]
+AP_TIMEOFF    =Offset recovery time [s]
+AP_RECQTA     =Backlash compensation [mm]
+AP_PARKQTA    =Parking Quota [mm]
+AP_EMERTIME   =Emergency ramp time [s]
+AP_AXMOD      =Polar Axis Module [°]
+AP_QTARECG    =Backlash compensation (axis with inertia) [mm]
+AP_TYPERECG   =Backlash compensation type
+AP_TIMCOMDIR  =Change Direction Timer [s]
+AP_INERZAV    =Forward inertia target [mm]
+AP_INERZIND   =Backward inertia target [mm]
+AP_TIMERFRENO =Motor Brake Timing  [s]
+AP_AXNZONE    =Index of first Compensation Table
+AP_AXNZONE_REV=Index of first Compensation Table for reverse movements
+AP_AXNZONE2   =Index of second Compensation Table
+AP_AXNZONE2_REV=Index of second Compensation Table for reverse movements
+AP_TIMEREG    =Axis control multiplier
+AP_CZSPECIAL  =Special compensation mode
+AP_CZSPECIAL_L=0-No, 1-Rcss1.ZH, 2-Rcss1.ZL, 3-Rcss2.Z, 4-Rcss2.X,
+AP_CZMASTER   =Master axis  index  associated to first Compensation Table
+AP_CZMASTER2  =Master axis index  associated to second Compensation Table
+AP_ACCEL      =Maximum Acceleration [mm/s²]
+AP_DECEL      =Maximum Deceleration [mm/s²]
+AP_JERK       =Maximum Jerk [mm/s³]
+AP_EMERDEC    =Emergency Stop Deceleration [mm/s²]
+AP_KPGAIN     =Kp Proportional Gain [1/s]
+AP_KDGAIN     =Kd Derivative Gain
+AP_KVFFGAIN   =Kvff Velocity Feed Forward Gain
+AP_KPGAIN_I   =Backward Proportional Gain [1/s]
+AP_SSERRK     =K Mutiplier for Maximum Following Error
+AP_SSERR      =Maximum Following Error  [mm]
+AP_MAXSPEEDLIM=Max speed demand [%]
+AP_OFFSETDAC  =DAC offset value [V]
+AP_AXNTORCIA  =Plasma Torch Table Index
+AP_AXNGANTRY  =Slave Gantry Axes Index Table
+AP_SCALING    =Internal Resolution [#um]
+AP_CAL_ADC1   =Potentiom. calibr.- ADC point A
+AP_CAL_QTA1   =Potentiom. calibr.- target point A [mm]
+AP_CAL_ADC2   =Potentiom. calibr.- ADC point B
+AP_CAL_QTA2   =Potentiom. calibr.- target point B [mm]
+AP_TORQUE     =Torque reduction value [%]
+AP_MATCHING_CHAN=Initially matched channel
+AP_AXNZONE3   =Zone compensation table index 3
+AP_AXNZONE3_REV=Zone compensation table index 3 for reverse run (opz)
+AP_CZMASTER3  =Cross-axes compens. master axis index 3
+AP_OPZIONI29  =Opz: zone cross-axes compensation 3
+AP_AXNZONE4   =Zone compensation table index 4
+AP_AXNZONE4_REV=Zone compensation table index 4 for reverse run (opz)
+AP_CZMASTER4  =Cross-axes compens. master axis index 4
+AP_OPZIONI30  =Opz: zone cross-axes compensation 4
+AP_1_CZMASTER =Cross-axes compens. master axis index (2nd dimension)
+AP_2_CZMASTER =Cross-axes compens. master axis index (3rd dimension)
+AP_1_CZMASTER2=Cross-axes compens. master axis index 2 (2nd dimension)
+AP_2_CZMASTER2=Cross-axes compens. master axis index 2 (3rd dimension)
+AP_1_CZMASTER3=Cross-axes compens. master axis index 3 (2nd dimension)
+AP_2_CZMASTER3=Cross-axes compens. master axis index 3 (3rd dimension)
+AP_1_CZMASTER4=Cross-axes compens. master axis index 4 (2nd dimension)
+AP_2_CZMASTER4=Cross-axes compens. master axis index 4 (3rd dimension)
+AP_OPZIONI_EXT1=Do not initialize zone correction at boot
+
+POL_FWERRVLIM  =Follow error limit speed [°/min]
+POL_TOLLERG    =Rough Positioning Tolerance [°]
+POL_TOLLERF    =Fine Positioning Tolerance [°]
+POL_VELMAX     =Maximum Feed [°/min]
+POL_VELRAP     =Maximum rapid feed [°/min]
+POL_FATTCONV     =Number of encoder pulses/° (num)
+POL_FATTCONVDIV  =Number of encoder pulses/° (den)
+POL_QFATTCONV    =Number of encoder pulses/° (num)
+POL_QFATTCONVDIV =Number of encoder pulses/° (den)
+POL_TARQUOTA   =Homing Quota [°]
+POL_VELMICRO   =Homing Switch Search Feed [°/min]
+POL_VELTACCA   =Homing Marker Search Feed [°/min]
+POL_MINQUOTA   =Negative Axis Travel Limit  [°]
+POL_MAXQUOTA   =Positive Axis Travel Limit [°]
+POL_VELMAN     =Manual Feed [°/min]
+POL_ACCMAN     =Manual Acceleration (Jog Rtcp) [°/s²]
+POL_DECMAN     =Manual Deceleration (Jog Rtcp) [°/s²]
+POL_JRKMAN     =Manual Jerk (Jog Rtcp) [°/s³]
+POL_VELPARK    =Homing Parking Feed [°/min]
+POL_VELDRY     =REPOS speed [V/min]
+POL_TOLLG_VEL  =Coarse tolerance velocity threshold [°/min]
+POL_TOLLF_VEL  =Fine tolerance velocity threshold [°/min]
+POL_BABBLE_VEL =Tolerance after HOLD/RESET [°/min]
+POL_JOGABS_QMIN=Optional lower absolute limit [°]
+POL_JOGABS_QMAX=Optional upper absolute limit [°]
+POL_QCHKTARA   =Max distance Homing Switch - Marker [°]
+POL_RECQTA     =Backlash compensation [°]
+POL_PARKQTA    =Parking Quota [°]
+POL_QTARECG    =Backlash compensation (axis with inertia) [°]
+POL_ACCEL      =Maximum Acceleration [°/s²]
+POL_DECEL      =Maximum Deceleration [°/s²]
+POL_JERK       =Maximum Jerk [°/s³]
+POL_EMERDEC    =Emergency Stop Deceleration [°/s²]
+POL_KPGAIN     =Kp Proportional Gain [1/s]
+POL_KDGAIN     =Kd Derivative Gain
+POL_KVFFGAIN   =Kvff Velocity Feed Forward Gain
+POL_SSERRK     =K Multiplier for Maximum Following Error
+POL_SSERR      =Maximum Following Error [°]
+
+SP_ACCTIME    =Acceleration time [s]
+SP_DECTIME    =Deceleration time [s]
+SP_DELAYS     =S-curve time [s]
+SP_OPZIONI0   =Sizing direction reversal option
+SP_OPZIONI1   =Counting direction reversal option
+SP_OPZIONI2   =Analog sign reversal option
+SP_OPZIONI3   =Tolerance alarm disabling option
+SP_OPZIONI4   =Mark level monitoring disab. opt.
+SP_OPZIONI9   =Opt: backlash compensation direction exchange
+SP_OPZIONI10  =ABSOLUTE sizing enabling option
+SP_OPZIONI11  =DAC_POS +/- 0/10V Man. enab. opt.
+SP_OPZIONI12  =DAC_POS bit sign reversal option
+SP_OPZIONI15  =OnMotor Man. via PLC enab. opt.
+SP_OPZIONI31  =Simulated axes enabling option
+SP_FWERRVLIM  =Follow error limit speed [rpm]
+SP_FWERR      =Maximum follow error [pulses]
+SP_TOLLERG    =Rough tolerance target [°]
+SP_TOLLERF    =Fine tolerance target [°]
+SP_TOLLER     =Tolerance monitoring hold time [s]
+SP_VELMAX     =Maximum rotation speed [rpm]
+SP_VELRAP     =Maximum rapid rotation speed [rpm]
+SP_GAINP      =P Gain
+SP_GAIND      =D Gain
+SP_INFWD      =Feed Forward
+SP_INSPOS     =Positive insensitivity voltage [V]
+SP_FATTCONV   =Number of encoder pulses/rev
+SP_TARTYPE    =Type of Sizing
+SP_INSNEG     =Negative insensitivity voltage [V]
+SP_RECQTA     =Backlash compensation amount [°]
+SP_TARQUOTA   =Sizing target [°]
+SP_VELMICRO   =Micro search speed in sizing [rpm]
+SP_VELTACCA   =Mark search speed in sizing [rpm]
+SP_VEL10V     =10 Volts motor speed [rpm]
+SP_ENCTYPE    =Encoder mechanical link type
+SP_N1         =Range1 transmission ratio
+SP_N2         =Range2 transmission ratio
+SP_N3         =Range3 transmission ratio
+SP_N4         =Range4 transmission ratio
+SP_VELND      =Hunting speed [rpm]
+SP_VELLIM1    =Range1 limit speed [rpm]
+SP_VELLIM2    =Range2 limit speed [rpm]
+SP_VELLIM3    =Range3 limit speed [rpm]
+SP_VELLIM4    =Range4 limit speed [rpm]
+SP_VELLTOL    =Full rate speed tolerance [%]
+SP_FLT        =Fluctuation max [%]
+SP_VELMIN     =Min. speed for fluct. monit. [rpm]
+SP_VELSTOP    =Speed tol. spind. stationary [%]
+SP_VELJOG     =Spindle speed in manual [rpm]
+SP_VELM19     =Spindle speed in positioning [rpm]
+SP_EMERTIME   =Emergency ramp time [s]
+SP_TIMEREG    =Axis control multiplier
+SP_TIPOTSTENC =Encoder test type
+SP_QCHKTARA   =Sizing alert measure [°]
+SP_ACCEL      =Maximum acceleration [rev/s²]
+SP_DECEL      =Maximum deceleration [rev/s²]
+SP_JERK       =Maximum jerk [rev/s³]
+SP_EMERDEC    =Emergency stop decel. [rev/s²]
+SP_KPGAIN     =Kp gain [1/s]
+SP_KDGAIN     =Kd gain
+SP_KVFFGAIN   =Kvff gain
+SP_SSERRK     =K for Maximum Following Error
+SP_SSERR      =Maximum Following Error [rev]
+SP_VELMIN1    =Range1 minimum speed [rpm]
+SP_VELMIN2    =Range2 minimum speed [rpm]
+SP_VELMIN3    =Range3 minimum speed [rpm]
+SP_VELMIN4    =Range4 minimum speed [rpm]
+SP_TPACC      =Hunting acceleration time [s]
+SP_TPAVA      =Hunting forward time [s]
+SP_TPIND      =Hunting backward time [s]
+SP_REVO_HR    =Resolution 0.001 for [Rev] and [RPM]
+
+SP_VELMAX_HR    =Maximum rotation speed [rpm]
+SP_VELRAP_HR    =Maximum rapid rotation speed [rpm]
+SP_VELMICRO_HR  =Micro search speed in sizing [rpm]
+SP_VELTACCA_HR  =Mark search speed in sizing [rpm]
+SP_VELND_HR     =Hunting speed [rpm]
+SP_VELLIM1_HR   =Range1 limit speed [rpm]
+SP_VELLIM2_HR   =Range2 limit speed [rpm]
+SP_VELLIM3_HR   =Range3 limit speed [rpm]
+SP_VELLIM4_HR   =Range4 limit speed [rpm]
+SP_VELMIN_HR    =Min. speed for fluct. monit.[rpm]
+SP_VELJOG_HR    =Spindle speed in manual [rpm]
+SP_VELM19_HR    =Spindle speed in positioning [rpm]
+SP_VELMIN1_HR   =Range1 minimum speed [rpm]
+SP_VELMIN2_HR   =Range2 minimum speed [rpm]
+SP_VELMIN3_HR   =Range3 minimum speed [rpm]
+SP_VELMIN4_HR   =Range4 minimum speed [rpm]
+SP_ACCEL_HR     =Maximum acceleration [rev/s²]
+SP_DECEL_HR     =Maximum deceleration [rev/s²]
+SP_JERK_HR      =Maximum jerk [rev/s³]
+SP_EMERDEC_HR   =Emergency stop decel. [rev/s²]
+
+NV_OPZIONI0   =Homing direction reversal option
+NV_OPZIONI1   =Counting direction reversal option
+NV_OPZIONI3   =Tolerance alarm disabling option
+NV_OPZIONI4   =Mark level monitoring disab. opt.
+NV_OPZIONI5   =Vout monitoring disabling option
+NV_OPZIONI6   =Hardware limits enabling option
+NV_OPZIONI10  =ABSOLUTE sizing enabling option
+NV_OPZIONI13  =Motor Brake Management
+NV_OPZIONI14  =Pos. stop man. via input enab. opt.
+NV_OPZIONI18  =Hardware limits level select
+NV_OPZIONI26  =Opt. Distance to go signed
+NV_OPZIONI31  =Simulated axes enabling option
+NV_TOLLERG    =Rough tolerance target [mm]
+NV_TOLLER     =Tolerance timer [s]
+NV_VELMAX     =Maximum Speed: Speed Number
+NV_FATTCONV     =Number of encoder pulses/[#mm] (mul)
+NV_FATTCONVDIV  =Number of encoder pulses/[#mm] (div)
+NV_QFATTCONV    =Number of encoder pulses/[#mm] (mul)
+NV_QFATTCONVDIV =Number of encoder pulses/[#mm] (div)
+NV_TARTYPE    =Type of sizing
+NV_TARQUOTA   =Sizing target [mm]
+NV_VELMICRO   =Micro search speed in sizing
+NV_VELTACCA   =Mark search speed in sizing
+NV_MINQUOTA   =Minimum target [mm]
+NV_MAXQUOTA   =Maximum target [mm]
+NV_VELMAN     =Manual speed
+NV_VELPARK    =Parking speed
+NV_QCHKTARA   =Sizing alarm target [mm]
+NV_TIPOTSTENC =Encoder test type
+NV_PARKQTA    =Parking target [mm]
+NV_DECV1AVA   =V2->V1 forward change target [mm]
+NV_DECV2AVA   =V3->V2 forward change target [mm]
+NV_DECV1IND   =V2->V1 backward change target [mm]
+NV_DECV2INV   =V3->V2 backward change target [mm]
+NV_DECSOGV1   =V2->V1 change lim. enlar. tar. [mm]
+NV_DECSOGV2   =V3->V2 change lim. enlar. tar. [mm]
+NV_TIMCOMVEL  =Speed commutation timer [s]
+NV_TIMCOMDIR  =Direction commutation timer [s]
+NV_QTARECG    =Backlash compensation [mm]
+NV_TYPERECG   =Type of backlash compensation
+NV_INERZAV    =Forward inertia target [mm]
+NV_INERZIND   =Backward inertia target [mm]
+NV_TIMERFRENO =Timer for brake management [s]
+NV_TIMEREG    =Axis control multiplier
+
+PT_ACCTIME    =Acceleration time [s]
+PT_DECTIME    =Deceleration time [s]
+PT_OPZIONI0   =Sizing direction reversal option
+PT_OPZIONI1   =Counting direction reversal option
+PT_OPZIONI2   =Analog sign reversal option
+PT_OPZIONI3   =Tolerance alarm disabling option
+PT_OPZIONI4   =Mark level monitoring disab. opt.
+PT_OPZIONI5   =SLV commands VOUT disabling opt.
+PT_OPZIONI6   =Hardware limits enabling option
+PT_OPZIONI9   =Play adj. direct. rev. option
+PT_OPZIONI10  =ABSOLUTE sizing enabling option
+PT_OPZIONI11  =DAC_POS +/- 0/10V Man. en. opt.
+PT_OPZIONI12  =DAC_POS bit sign reversal option
+PT_OPZIONI13  =Slave Brake Timing Man. enab. opt.
+PT_OPZIONI14  =Pos. stop Man. via Input en. opt.
+PT_OPZIONI15  =OnMotor Man. via PLC enab. option
+PT_OPZIONI16  =Loop Closing Man. enabling option
+PT_OPZIONI18  =Hardware limits level select
+PT_OPZIONI31  =Simulated axes enabling option
+PT_FWERRVLIM  =Follow error limit speed [mm/min]
+PT_FWERR      =Maximum follow error [pulses]
+PT_TOLLERG    =Rough tolerance target [mm]
+PT_TOLLERF    =Fine tolerance target [mm]
+PT_TOLLER     =Tolerance monitoring hold time [s]
+PT_VELMAX     =Maximum feed [mm/min]
+PT_VELRAP     =Maximum rapid feed [mm/min]
+PT_GAINP      =P Gain
+PT_GAIND      =D Gain
+PT_GAINFWD    =Feed Forward
+PT_INSPOS     =Positive insensitivity voltage [V]
+PT_FATTCONV     =Number of encoder pulses/[#mm] (mul)
+PT_FATTCONVDIV  =Number of encoder pulses/[#mm] (div)
+PT_QFATTCONV    =Number of encoder pulses/[#mm] (mul)
+PT_QFATTCONVDIV =Number of encoder pulses/[#mm] (div)
+PT_TARTYPE    =Type of sizing
+PT_INSNEG     =Negative insensitivity voltage [V]
+PT_TARQUOTA   =Sizing target [mm]
+PT_VELMICRO   =Micro search sp. in sizing [mm/min]
+PT_VELTACCA   =Mark search sp. in sizing [mm/min]
+PT_MINQUOTA   =Minimum target [mm]
+PT_MAXQUOTA   =Maximum target [mm]
+PT_VELMAN     =Manual speed [mm/min]
+PT_VELPARK    =Parking speed [mm/min]
+PT_PARKQTA    =Parking target [mm]
+PT_EMERTIME   =Emergency ramp time [s]
+PT_TIMEREG    =Axis control multiplier
+PT_TIPOTSTENC =Encoder test type
+PT_ACCEL      =Maximum acceleration [mm/s²]
+PT_DECEL      =Maximum deceleration [mm/s²]
+PT_EMERDEC    =Emergency stop decel. [mm/s²]
+PT_KPGAIN     =Kp gain [1/s]
+PT_KDGAIN     =Kd gain
+PT_KVFFGAIN   =Kvff gain
+PT_SSERRK     =K for Maximum following error
+PT_SSERR      =Maximum following error/tolerance [mm]
+
+AP_DECHOLD    =Max. hold deceleration [mm/s²]
+POL_DECHOLD   =Max. hold deceleration [°/s²]
+SP_DECHOLD    =Max. hold deceleration [rev/s²]
+SP_DECHOLD_HR =Max. hold deceleration [rev/s²]
+PT_DECHOLD    =Max. hold deceleration [mm/s²]
+
+[HELP]
+FIR_AUXF        =This filter time constant, expressed in s, is working on the related axis reducing vibration due to acceleration spikes.  The filtering introduces however a trajectory error. Higher is the filter value,  bigger is the path error introduced.  The filter  is disabled setting it to 0.   Typical values : \n 0.06 s in case of high stiffness machines (that can work with  Kp > 30) ,  \n 0,18 s in case of normal  machines. \n  It must be used together with the "Filter Time Constant 2" that is normally set to  a value three times lower.
+FIR_AUXG        =This filter time constant, expressed in s, is working on the related axis reducing vibration due to acceleration spikes.  The filtering introduces however a trajectory error. Higher is the filter value,  bigger is the path error introduced.  The filter  is disabled setting it to 0.   Typical values : \n 0.02 s in case of stiff machines (that can work with  Kp > 30) ,  \n 0,06 s in case of normal  machines. \n  It must be used together with the "Filter Time Constant 1" that is normally set to a value three times bigger.
+FIR_AUXH        =This parameter has a meaning only if the Filters Time Constant 1 and 2 have been setted. It has the same effect of Velocity Feed Forward reducing the Axis Following  Error. As KVff can assume values in the range (0..1) with 0 disabled and 1 max effect.
+
+DC_DACREF     =Velocity Command output voltage, expressed in V, that must be supplied to the servodrive to move the axis to its maximum feed set into the "Maximum Feed " parameter.
+
+AP_NAME       =Axis symbolic name. Is a generic string used to identify the axis itself.
+AP_AXTYPE     = 0 - Null, \n 1 - Proportional Standard, \n 2 - Polar ( Proportional axis programmed in degrees with quotas converted in the range 0 - Module. SW Overtravel managed), \n 3 - Round (Similar to Polar Axis but without SW overtravel mngt. - The axis reaches the programmed quota executing the shortest path), \n 4 - Poor (Useful to manage inverter with analog interface. However an axis that cannot be interpolated), \n 10 - Spindle with Feedback, \n 11 - Spindle without Feedback, \n 20 - N Speed (Throught digital outputs can be programmed till three different speeds - Useful to directly manage multi-poles asynchronous motors), \n 22 - OneVel Ana (Useful to control an inverter or a proportional valve through an analog output - Cannot be used to interpolate and control the following error during trajectory), \n 30 - Ram (Used to control this type of axis on Press Brake applications), \n 40 - Measure (Read only axis).
+AP_DRVTYPE    =Drive interface type: \n 0- Analog +/-10 Velocity Command \n 1-Digital Interface respecting the Yaskawa Mechatrolink standard, \n 2-Digital Interface respecting the SERCOS standard, \n 3-Digital Interface respecting the CANOpen standard - Trajectory mode, \n 4-Digital Interface respecting the CANOpen standard - Positioning mode
+AP_ACCTIME    =Time required to reach VLim =VMax
+AP_DECTIME    =Time required to pass from VLim to V =0
+AP_OPZIONI0   =If = 1 BACKWARD HOMING - The NC executes the same operations described for FORWARD HOMING but reversing all axis movements. \nIf = 0 FORWARD HOMING (default) - The NC moves the axis backward till homing switch is closed , then moves forward the axis till the homing switch is released and consequently the encoder marker is detected.
+AP_OPZIONI1   =If = 1 inverts the encoder counting direction. \nIf = 0 Direct counting (default).
+AP_OPZIONI2   =If = 1 inverts sign of Analog Velocity Command. \nIf = 0 No inversion (default).\nOption applicable in case of +/-10V Analog velocity Command.
+AP_OPZIONI3   =If = 1 the alarm "Axis not in position" , due to the fact that the NC is not able to position the axis inside the programmed tolerance in the specified time , is disabled .
+AP_OPZIONI4   =Marker level control disabling option: Not Used
+AP_OPZIONI5   =VOUT disabling option for SLV commands: to set if verification that the processing speed set by the program does not exceed the dynamic limits of the axes has been accomplished externally
+AP_OPZIONI6   =If =1 defines that we want to enable the Hardware Limit Management . In other words that we want to block the axis through these signals. To define which are the phisical input involved see "Configure Axis".
+AP_OPZIONI7   =If = 1 the programmed rapid traverse movements (G00) will be executed at the maximum Axis Feed . So the movement isn't interpolated with other axes but a per-axis basis will be executed.
+AP_OPZIONI8   =If = 1 enables a Diametral quote's programming. This function is normally used on X lathe's axis. In this case the target quotas entered in the Part Program will be considered as diametral.
+AP_OPZIONI9   =If = 1 inverts the direction of application of Backslash . As default it has the same direction defined for Homing.
+AP_OPZIONI10  =If = 1 as Homing Quota will be forced the last sampled quota.
+AP_OPZIONI11  =If = 1 enables the Digital to Analog Converter to works in the range 0/10V. \nIn this case is possible to specify the axis direction throught 1 (default) or 2 specific outputs.\n To select two outputs management is necessary to set to 1 the specific option. \nIn case only one output is used it must be defined in "Configure Axis".
+AP_OPZIONI12  =If = 1 the sign of the DAC is inverted. This option has a meaning only if the DAC output has been enabled to works in the range 0 / 10V.
+AP_OPZIONI13  =If = 1 the Motor brake is managed by the NC. \nIf = 0 The Motor brake engagement / dis-engagement is managed by the PLC.
+AP_OPZIONI14  =If = 1 the Hardware Limit inputs are managed by the NC. \nIf = 0 (default) The inputs are managed by the PLC. To define which are the phisical input involved see "Configure Axis".
+AP_OPZIONI15  =If = 1 the drive enable management is completely under PLC control. \nIf = 0 the drive enable is controlled by the NC ( default).
+AP_OPZIONI16  =If = 1 the NC doesn't wait the handshake with PLC to close the position loop. \nIf = 0 the NC wait for the handshake with the PLC (default).
+AP_OPZIONI17  =If = 1 , in case the Digital to Analog Converter is set to work in the range 0-10V, the direction management will requires two different Outputs. \nOne associated to Forward the other to Reverse movements. \nIn this case isn't necessary the Drive Enable signal. So the related Reg.+ Bit in "Configure Axis" have to be forced to 0.
+AP_OPZIONI18  =HW limits level selection:\n 0 = Normal Open (default), \n 1 = Normal Closed.
+AP_OPZIONI19  =If = 1 The Drive Enable signal is monitored during axis movement. In case of disabling during motion a specific Alarm will be issued.
+AP_OPZIONI20  =If = 1 means that the motor associated to the axis is equipped with a mechanical brake. So when the axis isn't programmed into an ISO block , isn't requested any PLC synchronization, even if the axis is a contouring axis.
+AP_OPZIONI21  =If = 1 enables the use of the first cross-axes compensation table. In this case have to be configured the related master axis, the index of the compensation table and eventually of the table containing the corrections to be applied on the reverse axis movements.
+AP_OPZIONI22  =If = 1 at the end of the Homing procedure the axis will be moved to the specified "Parking Quota". The movement will be done at the configured Homing Parking Feed.
+AP_OPZIONI23  =If = 1 enables the Offset auto-compensation on the NC Velocity Analog Output. The procedure works as follow:\nEvery time that the drive is enabled the NC will force a null velocity command neutralizing the eventual motor drift applying an adequate voltage offset on the related analog output.
+AP_OPZIONI24  =If = 1 enables on the axis the Plasma Torch automatic Height Control .
+AP_OPZIONI25  = If = 1 indicates that the axis is the Master of a Gantry pair. Throught the "Slave Gantry Axes Index Table"  will be possible to define the Slave axis and the characteristics of the Gantry association.
+AP_OPZIONI26  =If = 1 enables the NC to display the distance to the target position (Distance To Go) with sign.\nIf =0 ( default) it is displayed unsigned.
+AP_OPZIONI27  =If = 1 extends the resolution to 0.0001 mm or °. \n If = 0 (default ) the resolution is 0.001 mm or °.
+AP_OPZIONI28  =If = 1 enables the use of the second cross-axes compensation table. In this case have to be configured the related master axis, the index of the compensation table and eventually of the table containing the corrections to be applied on the reverse axis movements.
+AP_OPZIONI31  =If = 1 enables the Axis simulation. \nIf = 0 (default) the axis quota will be phisically read form the transducer.
+AP_FWERR      =Maximum following error [pulses]: maximum follow error tolerated beyond which an alarm signal is generated. The maximum admitted value can be determined by dividing the number of DAC units of the axis by the P-gain setting.
+AP_FWERRVLIM  =Following Error Limit Feed expressed in mm/min. Maximum reference speed required to monitor a follow error of the proportional type. If 0, follow error monitoring will be the absolute type
+AP_TOLLER     =Time, expressed in s, in which the NC must position the axis entering inside the appropriate tolerance threshold.
+AP_TOLLERG    =Rough Positioning Tolerance - Is the positioning threshold , expressed in mm, under which the NC evaluates a Rapid movement (G00) correctly end.
+AP_TOLLERF    =Fine Positioning Tolerance - Is the positioning threshold , expressed in mm, under which the NC evaluates a working movement ( G01, G02 and G03) correctly end.
+AP_VELMAX     =Maximum Axis feed expressed in mm/min. It is used during axis Rapid Traverse movements ( if done at Indipendent axes - G00 not interpolated).
+AP_VELRAP     =Same as Maximum feed but does not influence the output voltage scaling in case of an analog interface axis. It also applies to the task space rather than joint space when a kinematics transformation is active. If 0, the same value as Maximum Feed is used.
+AP_GAINP      =P Gain: Proportional gain - increase this parameter to increase the promptness with which the axis responds but decrease the stability
+AP_GAIND      =D Gain: Derivative gain - increases the promptness of the axes
+AP_INFWD      =Feed Forward Gain: Speed gain - reduces the position error during a positioning
+AP_INSPOS     =It defines , expressed in V, the minimum positive voltage value that must be supplied to the drive in order to move the axis.
+AP_FATTCONV   =Conversion Factor - Numerator of the fraction that specifies the number of encoder pulses associated to an axis movement of 1 mm . It can accept till 3 decimal digits.
+AP_FATTCONVDIV=Conversion Factor - Denominator of the fraction that specifies the number of encoder pulses associated to an axis movement of 1 mm. It can accept till 3 decimal digits.
+AP_QFATTCONVREDUCTION   =Conversion Factor: Numerator of the fraction q=n/d, where q is the space in [mm] corresponding to a d number of pulses
+AP_QFATTCONVDIVREDUCTION=Conversion Factor: Denominator of the fraction q=n/d, where q is the space in [mm] corresponding to a d number of pulses
+AP_TARTYPE    = Homing Type :\n 0 - Homing on Encoder Marker. \n 1 - Homing on Encoder Marker and positioning to Parking Quota. \n 2 - Immediate Homing. \n 3 - Homing on Limit switch. \n 4 - Homing on Limit switch and positioning to Parking Quota. \n 10 - Absolute Encoder (StegMann) + Homing on Marker. \n 11 - Absolute Encoder (StegMann) + Homing on Marker + positioning on Parking Quota.
+AP_SUBTARTYPE =CANOpen Homing Sub-Modalities:\n 0 - Standard.\n 1 - Using Servodrive latch feature.
+AP_SERCOSREF  =1-homing to negative limit switch \n with zeroing \n negative direction of motion \n2-homing to positive limit switch \n with zeroing \n positive direction of motion \n8-homing to reference switch \n with zeroing \n positive direction of motion \n12-homing to reference switch \n with zeroing \n negative direction of motion \n17-homing to negative limit switch \n without zeroing \n negative direction of motion \n18-homing to negative limit switch \n without zeroing \n positive direction of motion \n24-homing to reference switch \n without zeroing \n negative direction of motion \n28-homing to reference switch \n without zeroing \n negative direction of motion \n33-homing within a single turn \n negative direction of rotation \n34-homing within a single turn \n negative direction of rotation \n35-set reference point at present position
+AP_CANOPENREF =CANOpen Homing Types (CiA standard):\n 1 = LimitSwitchNegative + Marker.\n 2 = LimitSwitchPositive + Marker.\n 3,4 = HomingSwitchPositive + Marker.\n 5,6 = Homing SwitchNegative + Marker.\n 7,8 = HomingSwitchPositive + Marker_Forward.\n 9,10 = HomingSwitchNegative + Marker_Forward.\n 11,12 = HomingSwitchPositive + Marker_Backward.\n 13,14 = HomingSwitchNegative + Marker_Backward.\n 17 = LimitSwitchNegative.\n 18 = LimitSwitchPositive.\n 19,20 = HomingSwitchPositive.\n 21,22 = HomingSwitchNegative.\n 23,24 = HomingSwitchPositive_Forward.\n 25,26 = HomingSwitchNegative_Forward.\n 27,2 = HomingSwitchPositive_Backward.\n 29,30 = HomingSwitchNegative_Backward.\n 33 = First_Marker_Backward.\n 34 = First_Marker_Forward.\n 35 = Preset.\n 40 = HomingSwitch+Marker.\n 41 = HomingSwitch.\n Normally are configured the 40 and 41 modes.
+AP_INSNEG     =It defines, expressed in V, the minimum negative voltage value that must be supplied to the drive in order to move the axis.
+AP_TARQUOTA   =Absolute quote, expressed in mm, that we want to assign to the encoder Marker position, detected at the end of the Homing procedure.
+AP_VELMICRO   =Feed, expressed in mm/min, used by the NC to search for switch commutation diring axis homing procedure.
+AP_VELTACCA   =Feed, expressed in mm/min, used by the NC  to search the encoder Marker , after switch release, during homing procedure.
+AP_MINQUOTA   =Minimum quota , expressed in mm, that the axis can reach during programmed movements. Also defined Negative SW limit.
+AP_MAXQUOTA   =Maximum quota, expressed in mm, that the axis can reach during programmed movements. Also defined Positive SW limit.
+AP_VELMAN     =Manual Feed expressed in mm/min. Feed used for axis movements in Manual mode.
+AP_MINICS     =It defines the minimum amount of feed , expressed in mm/min, that the NC will however apply when the function "Warranteed time at constant feed " is enabled. In fact, in case of programming of very short movements, the Feed calculated by the NC to warrante the constant feed movement can be too low. In this case the will be used the value defined with this parameter.
+AP_ICSTIME    =It defines a time, expressed in seconds, that will be warranted at constant feed for all programmed movements. If a #0 value is defined , the programmed feed will be derated in order to guarrantee that the movement will be executed following a trapezoidal profile where the component at constant feed will last the defined time. This function is typically used for translo applications where a certain amount of constant feed is necessary to reduce oscillations. As default this parameter is set = 0.
+AP_DELAYS     =S-curve time [s]: Duration of the non-linear acceleration/deceleration section (0 - linear acceleration/deceleration)
+AP_QCHKTARA   =Maximum distance, expressed in mm, that the axis can cover, after releasing the homing switch, before found the encoder marker - If set = 0 the control is disabled.
+AP_TIPOTSTENC =If=1 enables the "broken wires" and Encoder fault test ( if supported by the HW). \nif=0 (default) Encoder Tests are disabled.
+AP_OFFSET     =Maximum acceptable offset, expressed in V, introduced by the NC to compensate the motor drift with zero velocity command. \nIt is used by the Automatic Offset Compensation procedure.
+AP_OFFSETDAC  =Offset , expressed in V, that must be applied to the velocity analog command to neutralize the motor drift. \nCan be used in alternative to the Automatic Offset Compensation procedure.
+AP_TIMEOFF    =Holding time, expressed in sec, to standstill the motor applying an adequate offset to a zero velocity command. \nIt is used by the Automatic Offset Compensation procedure.
+AP_RECQTA     =Backslash correction , expressed in mm, that will be applied to  the axis quote every time that the axis reverses its motion. The correction must be positive if we want to correct a backslash between motor and load (typical situation), negative if instead we want correct the backslash related to the transducer placed on the load ( quite particular situation).
+AP_PARKQTA    =Quota, expressed in mm, that the motor will reach at the end of the Homing procedure if the Homing + Parking option has been enabled.
+AP_EMERTIME   =Is the time , expressed in s, that the NC will respect to set the velocity command to 0, when an Emergency condition occurs.
+AP_AXMOD      =It defines, in °, the polar axis module. So the rotation that , if executed, reset the axis quota. Normally it is defined = 360°.
+AP_QTARECG    =Entity of the movement, expressed in mm,  to be done to compensate the backslash through a unidirectional positioning . The movement is done when the motion direction becames opposite to the selected compensation direction ( See "Unidirectional Motion Management").
+AP_TYPERECG   =Type of unidirectional motion management: \n 0 - Disabled. \n 1 - Forward Movement Compensation. \n 2 - Backward Movement Compensation. This function was a first method , used in the past , to compensate backslash. Now is strongly suggested to use the "Backslash Correction at movement inversion".
+AP_TIMCOMDIR  =It defines the time that the NC will wait when (in relation to a positioning command) the direction must be changed. It was used to compensate backslash through uni-directional movements.
+AP_INERZAV    =Forward inertia target [mm]: Expresses (in absolute value ) the distance from the target at which the axis can be considered to have arrived. Considered only with a forward axis motion.
+AP_INERZIND   =Backward inertia target [mm]: Expresses (in absolute value ) the distance from the target at which the axis can be considered to have arrived. Considered only with a backward axis motion.
+AP_TIMERFRENO =Time, expressed in s, to engage and disengage the motor mechanical brake.
+AP_AXNZONE    =First Compensation Table Index. If = 0 it is not used.
+AP_AXNZONE_REV=First Compensation Table Index for reverse movements. If = 0 it is not used.
+AP_AXNZONE2   =Second Compensation Table Index. If = 0 it is not used.
+AP_AXNZONE2_REV=Second Compensation Table Index for reverse movements. If = 0 it is not used.
+AP_TIMEREG    =It is used to increase the frequency of the servo loop associated to the axis. \n0: 1: It is used the std frequency set on the channel. \n2: It is used a frequency twice higher that the standard. \n4: it is used a frequency 4 times higher that the stadard one.
+AP_CZSPECIAL  =Special compensation mode. 'No': no special compensation. 'Rcss1.<entity>': determines that the axis is part of a type 1 recessing unit and which part of the unit it is bounded to (either lower Z/programmed Z or upper Z/programmed X). The other unit axis must be specified as the cross-axes compensation master 1 (the cross-axes compensation feature must also be enabled). The cross-axes compensation table index must be the same for both axes and the table pointed to must have the special mode option set to 'rcss1'. 'Rcss2.<entity>': same as Rcss1 but for type 2 recessing unit (either Z/programmed Z or X/programmed X).
+AP_CZMASTER   =Master axis used for first cross-axes compensation (associated to first Compensation Table).
+AP_CZMASTER2  =Master axis used for second cross-axes compensation (associated to second Compensation Table).
+AP_ACCEL     =Maximum Axis Acceleration, expressed in mm/s². It is obtained dividing the Maximum Axis Feed (mm/s) by the time [s] required to reach it.
+AP_DECEL     =Maximum Axis Deceleration, expressed in mm/s². It is obtained by dividing the Maximum Axis Feed (mm/s) by the time [s] required to stop it while it is running at the maximum axis feed.
+AP_JERK      =Maximum Axis Jerk , expressed in mm/s³. It is obtained by dividing the maximum axis acceleration/deceleration (the lowest between the two values) by the time required to reach it. So a lower value of Jerk means a longer acceleration/ deceleration time. A null Jerk value causes instead a trapezoidal velocity profile is generated. Jerk is very useful to reduce mechanical stress during acceleration/ deceleration also if increases the cycle time.
+AP_EMERDEC   =It defines the deceleration , expressed in mm/s², applied to the axis in Emergency condition.
+AP_KPGAIN    =Position Loop Proportional Gain - Kp.  Expressed in 1/s establishes the ratio between the feed [mm/s] and the related following error [mm]. Increasing this parameter causes an axis faster reaction and a decreasing of the following error. However increasing it too much can generate overshoot and mechanical vibrations. Working with Velocity Feed Forward disabled (KVFF=0) , all interpolated axes must have the same Kp. Typical values are 16,666 or 33,333.
+AP_KDGAIN    =Position Loop Derivative Gain - Kd. It establishes the ratio between the velocity contribution [mm/s] and the time derivative of the following error. Increasing this parameter causes a reduction of overshoots so can allow to set bigger Kp. As default is disabled (Kd=0).
+AP_KVFFGAIN  =Velocity Feed Forward Gain - KVff.  It can be used to reduce the following error but taking care that can generate mechanical vibrations. So it is suggested to use only in applications where following error must be small or when isn't possible to set the same Kp on all interpolated axes. If used, must be set on all interpolated axes. It can assume values in the range 0 ( Disabled) - 1. Theoretically to set KVff=1 forces the Following Error to 0. If Filter Time Constants 1 and 2 are used KVff must be set to 0.
+AP_SSERRK    =It is a multiplier factor that it is applied to the defined Maximum Following Error Tolerance when the axis is running to the max Feed. Normally, in case of analog +/-10V interface, is set equal to 10 divided by the parameter 'Output Voltage at Maximum Feed'. So = 1.1 in case of 9V as Max Output Voltage. If instead is set =0 the maximum admitted following error will be equal to the "Maximum Following Error Tolerance" independently by the axis Feed.
+AP_SSERR     =It defines the maximum admitted difference, expressed in mm, between the measured and the theoretical following error that , if overcome , generates an axis emergency stop. The theoretical following error is calculated taking care of the instantaneous theorical velocity and the axis Kp and of the eventually set KVff.  If the parameter is set to 0  NO checks will be performed on the following error. In case it is instead set to a value >0 the threshold value that will be used to send in emergency the axis is influenced by the parameter "K for Maximum Following Error". See, for details, related Help.
+AP_MAXSPEEDLIM=Max speed demand in percentage of the maximum axis velocity. Typically 110%. 0=default (110%).
+AP_AXNTORCIA =It defines the index to the Plasma Torch Table where are defined all parameters necessary to configure the Plasma Torch Height Control. It has meaning only if the option "Plasma Torch Height Control" has been enabled.
+AP_TORQUE    =It defines the Torque reduction that will be applied to the drive , expressed in percentage of its maximum motor rated torque.
+AP_AXNGANTRY =It defines the index of the Gantry Table that describes the Gantry control associated to the axis. It has a meaning only if Gantry Axis option has been enabled.
+AP_KPGAIN_I  =It allows to define a different Position Loop Proportional Gain , expressed in 1/s, that will be applied by the NC only during Backward movements. If set =0 will be always used the standard Kp.
+AP_VELPARK   =It defines the feed , expressed in mm/min, that will be imposed to the axis , after homing, during the parking movement (if configured).
+AP_SCALING   =This parameter defines the internal resolution , expressed in um, applied by the NC . Setting it =0 the maximum possible resolution is applied . To increase the axis travel range can be useful to set a wider value  also if this consequently reduces the system resolution.
+AP_AXNZONE3   =Zone compensation table index 3: if 0 the zone compensation is not used
+AP_AXNZONE3_REV=Zone compensation table index 3 for reverse run: if 0 the zone compensation for reverse run is not used
+AP_CZMASTER3  =Master axis to be used for cross-axes compensation 3 (axes configuration table index)
+AP_OPZIONI29  =Opz: zone-based cross-axes compensation 3 (see Index of master axis to be used for Zone-based cross-axes compensation)
+AP_AXNZONE4   =Zone compensation table index 4: if 0 the zone compensation is not used
+AP_AXNZONE4_REV=Zone compensation table index 4 for reverse run: if 0 the zone compensation for reverse run is not used
+AP_CZMASTER4  =Master axis to be used for cross-axes compensation 4 (axes configuration table index)
+AP_OPZIONI30  =Opz: zone-based cross-axes compensation 4 (see Index of master axis to be used for Zone-based cross-axes compensation)
+
+POL_FWERRVLIM =Follow error limit speed [°/min]: Maximum reference speed required to monitor a follow error of the proportional type. If 0, follow error monitoring will be the absolute type
+POL_TOLLERG   =Rough Positioning Tolerance - Is the positioning threshold , expressed in °, under which the NC evaluates a Rapid movement (G00) correctly end.
+POL_TOLLERF   =Fine Positioning Tolerance - Is the positioning threshold , expressed in °, under which the NC evaluates a working movement ( G01, G02 and G03) correctly end.
+POL_VELMAX    =Maximum Axis feed expressed in °/min. It is used during axis Rapid Traverse movements ( if done at Indipendent axes - G00 not interpolated).
+POL_VELRAP    =Same as Maximum feed but does not influence the output voltage scaling in case of an analog interface axis. It also applies to the task space rather than joint space when a kinematics transformation is active. If 0, the same value as Maximum Feed is used.
+POL_FATTCONV  =Conversion Factor - Numerator of the fraction that specifies the number of encoder pulses associated to an axis movement of 1° . It can accept till 3 decimal digits.
+POL_FATTCONVDIV=Conversion Factor - Denominator of the fraction that specifies the number of encoder pulses associated to an axis movement of 1°. It can accept till 3 decimal digits.
+POL_TARQUOTA  =Absolute quote, expressed in °, that we want to assign to the encoder Marker position, detected at the end of the Homing procedure.
+POL_VELMICRO  =Feed, expressed in °/min, used by the NC to search for switch commutation diring axis homing procedure.
+POL_VELTACCA  =Feed, expressed in °/min, used by the NC  to search the encoder Marker , after switch release, during homing procedure.
+POL_MINQUOTA  =Minimum quota , expressed in °, that the axis can reach during programmed movements. Also defined Negative SW limit.
+POL_MAXQUOTA  =Maximum quota , expressed in °, that the axis can reach during programmed movements. Also defined Positive SW limit.
+POL_VELMAN    =Manual Feed expressed in °/min. Feed used for axis movements in Manual mode.
+POL_QCHKTARA  =Maximum distance, expressed in °, that the axis can cover, after releasing the homing switch, before found the encoder marker - If set = 0 the control is disabled.
+POL_RECQTA    =Backslash correction , expressed in °, that will be applied to  the axis quote every time that the axis reverses its motion. The correction must be positive if we want to correct a backslash between motor and load (typical situation), negative if instead we want correct the backslash related to the transducer placed on the load ( quite particular situation).
+POL_PARKQTA   =Quota, expressed in °, that the motor will reach at the end of the Homing procedure if the Homing + Parking option has been enabled.
+POL_QTARECG   =Entity of the movement, expressed in °,  to be done to compensate the backslash through a unidirectional positioning . The movement is done when the motion direction becames opposite to the selected compensation direction ( See "Unidirectional Motion Management").
+POL_ACCEL     =Maximum Axis Acceleration, expressed in °/s². It is obtained dividing the Maximum Axis Feed (°/s) by the time [s] required to reach it.
+POL_DECEL     =Maximum Axis Deceleration, expressed in °/s². It is obtained by dividing the Maximum Axis Feed (°/s) by the time [s] required to stop it while it is running at the maximum axis feed.
+POL_JERK      =Maximum Axis Jerk , expressed in °/s³. It is obtained by dividing the maximum axis acceleration/deceleration (the lowest between the two values) by the time required to reach it. So a lower value of Jerk means a longer acceleration/ deceleration time. A null Jerk value causes instead a trapezoidal velocity profile is generated. Jerk is very useful to reduce mechanical stress during acceleration/ deceleration also if increases the cycle time.
+POL_EMERDEC   =It defines the deceleration , expressed in °/s², applied to the axis in Emergency condition.
+POL_KPGAIN    =Position Loop Proportional Gain - Kp.  Expressed in 1/s establishes the ratio between the feed [ °/s] and the related following error [°]. Increasing this parameter causes an axis faster reaction and a decreasing of the following error. However increasing it too much can generate overshoot and mechanical vibrations.
+POL_KDGAIN    =Position Loop Derivative Gain - Kd. It establishes the ratio between the velocity contribution [°/s] and the time derivative of the following error. Increasing this parameter causes a reduction of overshoots so can allow to set bigger Kp. As default is disabled (Kd=0).
+POL_KVFFGAIN  =Velocity Feed Forward Gain - KVff.  It can be used to reduce the following error but taking care that can generate mechanical vibrations. So it is suggested to use only in applications where following error must be small. If used, must be set on all interpolated axes. It can assume values in the range 0 ( Disabled) - 1. Theoretically to set KVff=1 forces the Following Error to 0. If Filter Time Constants 1 and 2 are used KVff must be set to 0.
+POL_SSERRK    =It is a multiplier factor that it is applied to the defined Maximum Following Error Tolerance when the axis is running to the max Feed. Normally, in case of analog +/-10V interface, is set equal to 10 divided by the parameter 'Output Voltage at Maximum Feed'. So = 1.1 in case of 9V as Max Output Voltage. If instead is set =0 the maximum admitted following error will be equal to the "Maximum Following Error Tolerance" independently by the axis Feed.
+POL_SSERR     =It defines the maximum admitted difference, expressed in °, between the measured and the theoretical following error that , if overcome , generates an axis emergency stop. The theoretical following error is calculated taking care of the instantaneous theorical velocity and the axis Kp and of the eventually set KVff.  If the parameter is set to 0  NO checks will be performed on the following error. In case it is instead set to a value >0 the threshold value that will be used to send in emergency the axis is influenced by the parameter "K for Maximum Following Error". See, for details, related Help.
+POL_VELPARK   =It defines the feed , expressed in °/min, that will be imposed to the axis , after homing, during the parking movement (if configured).
+
+SP_ACCTIME    =Time required to reach VLim =VMax
+SP_DECTIME    =Time required to switch from VLim to V =0
+SP_OPZIONI0   =Sizing direction reversal option: 0-(default) FORWARD SET-POINT - CNC will wait for slow down switch to be reached moving the axis backward, then wait for BOTH the same switch to be released AND the encoder 0-notch to be reached moving the axis forward. 1- BACKWARD SET-POINT: The same as in FORWARD SET-POINT but considering all axis movements exchanged.
+SP_OPZIONI1   =Counting direction reversal option: 0-default 1-inverts the counting direction of the encoder
+SP_OPZIONI2   =Analog sign reversal option: 0- default 1- inverts the motor-tachymetry connection
+SP_OPZIONI3   =Tolerance alarm disabling option: if activated, inhibits alarm generation if the axis terminates the positioning without complying with the tolerance value
+SP_OPZIONI4   =Mark level monitoring disabling option: Not Used
+SP_OPZIONI10  =ABSOLUTE sizing enabling option: if set the sizing target will coincide with the last target sampled
+SP_OPZIONI11  =DAC_POS +/- 0/10V management enabling option: if set, the DAC converter will always supply positive voltage values within the 0..+10 range and the sign in a programmed digital output (1 has the meaning of +, 0 has the meaning of -)
+SP_OPZIONI12  =DAC POS bit sign reversal option: when set to 1, the meaning of the sign bit is inverted, thus, 0 means + and 1 means -
+SP_OPZIONI15  =OnMotor Management via PLC enabling option: 0 - (default) - the drive is enabled by the Slave 1- The handling of the Torque Enable signal is completely up to PLC.
+SP_OPZIONI31  =Axes in simulated mode enabling option: 0- (default) - Reading from Encoder 1- Simulation enabled
+SP_FWERR      =Maximum follow error (impulses):maximum follow error tolerated beyond which an alarm signal is generated
+SP_FWERRVLIM  =Follow error limit speed [rpm]: Maximum reference speed required to monitor a follow error of a proportional type. If 0, follow error monitoring will be the absolute type
+SP_TOLLER     =Tolerance monitoring hold time [s]: time available to take up the follow error at the end of positioning
+SP_TOLLERG    =Rough tolerance target [°]: this is the tolerance accepted at end of positioning in fast mode
+SP_TOLLERF    =Fine tolerance target [°]: this is the tolerance accepted at end of positioning in feed mode
+SP_VELMAX     =Maximum rotation speed [rpm]
+SP_VELRAP     =Same as Maximum feed but does not influence the output voltage scaling in case of an analog interface axis. It also applies to the task space rather than joint space when a kinematics transformation is active. If 0, the same value as Maximum Feed is used.
+SP_GAINP      =Position Loop Proportional Gain - increase this parameter to increase the promptness with which the axis responds but decrease the stability
+SP_GAIND      =Position Loop Derivative Gain: - increases the promptness of the axes
+SP_INFWD      =Feed Forward Gain: Speed gain - reduces the position error during a positioning
+SP_INSPOS     =Positive insensitivity voltage [V]: expresses the minimum positive voltage the actuator must be supplied with in order to move the axis. This parameter can be determined by the servo-driver characteristics.
+SP_FATTCONV   =Number of encoder pulses/rev: this is the number of encoder impulses within one revolution
+SP_TARTYPE    =Type of sizing: 0-Sizing on the zero mark 1-Sizing on the zero mark and positioning to parking target 2-Immediate sizing 3-Sizing on limit switch 4-Sizing on limit switch and positioning to parking target
+SP_INSNEG     =Negative insensitive voltage [V]: expresses the minimum negative voltage value the actuator must be supplied with to move the axis. This parameter can be determined by the servo-driver characteristics.
+SP_TARQUOTA   =Sizing target [°]: absolute position at which the zero reference of the axis is found
+SP_VELMICRO   =Micro search speed in sizing mode [rpm]: speed with which the axis searches for the sizing limit switch
+SP_VELTACCA   =Marker search speed in sizing mode [rpm]: speed with which the axes releases the sizing limit switch and searches for zero mark
+SP_VEL10V     =Motor speed 10 Volts [rpm]: Maximum rotation speed the spindle motor can reach
+SP_ENCTYPE    =Encoder mechanical link type: (1) to motor or (0) to spindle
+SP_N1         =Range1 transmission ratio: indicates the transmission ratio between motor and spindle in range 1 (1.000=ratio 1:1  2.000=ratio 1:2)
+SP_N2         =Range2 transmission ratio: indicates the transmission ratio between motor and spindle in range 2 (1.000=ratio 1:1  2.000=ratio 1:2)
+SP_N3         =Range3 transmission ratio: indicates the transmission ratio between motor and spindle in range 3 (1.000=ratio 1:1  2.000=ratio 1:2)
+SP_N4         =Range4 transmission ratio: indicates the transmission ratio between motor and spindle in range 4 (1.000=ratio 1:1  2.000=ratio 1:2)
+SP_VELND      =Hunting speed [rpm]: rotation speed used for the hunting movements required to facilitate range engagement
+SP_VELLIM1    =Range1 limit speed [rpm]: Rotation limit speed for range 1
+SP_VELLIM2    =Range2 limit speed [rpm]: Rotation limit speed for range 2
+SP_VELLIM3    =Range3 limit speed [rpm]: Rotation limit speed for range 3
+SP_VELLIM4    =Range4 limit speed [rpm]: Rotation limit speed for range 4
+SP_VELLTOL    =Speed tolerance at running rate (%): Maximum tolerated percentage deviation for the spindle in relation to set speed
+SP_FLT        =Maximum fluctuation (%): Percentage deviation the spindle is allowed in relation to instantaneous speed
+SP_VELMIN     =Minimum fluctuation control speed [rpm]: Spindle speed above which fluctuation control is activated with alarm
+SP_VELSTOP    =Spindle at standstill speed tolerance : Speed below which the PLC is informed that the spindle is at a standstill (as % of the rotation speed obtained with a 10V analog output)
+SP_VELJOG     =Spindle speed in manual mode [rpm]: Speed selected for the spindle in manual mode
+SP_VELM19     =Spindle speed in positioning mode [rpm]: Speed selected for the spindle in positioning mode
+SP_EMERTIME   =Emergency ramp time [s]: Time required to set V to 0 if an alarm situation occurs
+SP_TIMEREG    =Axis control multiplier (0: disable 1: low 2: medium 4: high)
+SP_TIPOTSTENC =Encoder test type: 0) Disabled 1) Enabled
+SP_QCHKTARA   =Sizing alert measure [°]: maximum travel the axis is allowed to run, once having released the sizing switch, to reach the zero notch - 0 disables this feature. Should the value be not an exact multiple of 360, the value would be internally approximated to the next 360 multiple (e.g.: a value of 361 will have the same effect as 720)
+SP_ACCEL      =Maximum acceleration [rev/s²]; obtained by dividing the maximum revolution speed [rev/s] by the time [s] needed to reach it.
+SP_DECEL      =Maximum deceleration [rev/s²]; obtained by dividing the maximum revolution speed [rev/s] by the time [s] needed to to stop once running at the maximum revolution speed.
+SP_EMERDEC    =Emergency stop deceleration [rev/s²]
+SP_KPGAIN     =Kp Proportional Gain [1/s]; establishes the ratio between the feed [rev/s] and the following error [rev]. An increase of this parameter causes an higher system responsiveness and a lower following error, while overshoot increases as a side effect.
+SP_KDGAIN     =Kd Derivative Gain; establishes the ratio between the velocity contibution [rev/s] and the derive of the following error, expressed on the same measure unit. An increase of this parameter causes a lower overshoot.
+SP_KVFFGAIN   =Kvff Velocity Feed Forward Gain; establishes the ratio between the velocity contribution supplied to the axis and the theorical velocity; Feed Forward compensation is performed without taking the following error into account. Values greater than 1 are internally limited to 1. An increase of this parameter causes a lower following error. Theorically, a value of 1 causes the Following Error to be completely eliminated.
+SP_SSERRK     =K for Maximum following error: value the theorical following error at the maximum velocity is multiplied by to obtain the real maximum following error value. The axis overshoot must be considered while setting this parameter. The maximum recommended value, indicating the maximum admitted overshoot, is 10 divided by the parameter 'Output voltage at maximum speed'; should this limit be overridden, in the case of an overshoot so big it would require an output voltage ranging out of ±10V, the output voltage will be automatically limited to the ±10V range without coming to an immediate emergency stop. Should the difference between the theorical and the real position override the maximum admitted value which has been determined, an emergency stop will be performed automatically. If set up to 0 or to a value so that the maximum admitted following error is lower than the 'Maximum following error/tolerance' parameter value, the maximum admitted following error will be determined only by the latter.
+SP_SSERR      =Maximum following error/tolerance [rev]: maximum admitted difference between the real and the theorical following error. Possible transitory events that may occur at the begin of acceleration phases and the end of deceleration phases must be considered while setting this parameter. A theorical following error is calculated given the instantaneous theorical velocity and the axis gains. Should the difference between the theorical and the real following error override the maximum value set up in this parameter, an emergency stop will be performed automatically. If the parameter 'K for Maximum following error' is set up to 0 or to a value so that the maximum admitted following error is lower than this parameter's value, the maximum admitted following error will NOT depend on the theorical velocity and will be determined only by this parameter, whose meaning will then become that of a Maximum Following Error rather than that of a Following Error Tolerance. If set up to 0, the maximum admitted following error will NOT depend on the theorical velocity and will be determined by the 'K for Maximum following error' parameter only; should the latter be set to 0 as well, then NO checks will be performed on the following error at all.
+SP_TPACC      =Hunting acceleration and deceleration time [s]: referred to the hunting speed
+SP_TPAVA      =Hunting forward movement time [s]
+SP_TPIND      =Hunting backward movement time [s]
+SP_REVO_HR    =Resolution 0.001 for [Rev] and [RPM]
+
+NV_OPZIONI0   =Sizing direction reversal option: 0-(default) FORWARD SET-POINT - CNC will wait for slow down switch to be reached moving the axis backward, then wait for BOTH the same switch to be released AND the encoder 0-notch to be reached moving the axis forward. 1- BACKWARD SET-POINT: The same as in FORWARD SET-POINT but considering all axis movements exchanged.
+NV_OPZIONI1   =Counting direction reversal option: 0-default 1-inverts the counting direction of the encoder
+NV_OPZIONI3   =Tolerance alarm disabling option: if activated, inhibits alarm generation if the axis terminates position without complying with the tolerance value
+NV_OPZIONI4   =Marker level monitoring disabling option: not used
+NV_OPZIONI5   =Vout control for SLV commands disabling option: to set if verification that the processing speed set by the program does not exceed the dynamic limits of the axes has been accomplished externally
+NV_OPZIONI6   =Hardware limits enabling option: to set if the signals of the limit switches supplied by the PLC are used to block the axis
+NV_OPZIONI10  =ABSOLUTE sizing enabling option: if set, the sizing target will coincide with the last target sampled
+NV_OPZIONI13  =Slave brake timing management enabling option: 0-(default) brake timing is managed by the PLC 1-brake timing is managed by the slave
+NV_OPZIONI14  =Bumper management via input enabling option: 0-(default) the input is managed by the PLC 1-the input is directly managed by the slave
+NV_OPZIONI18  =Hardware limits level select: 0=normal open, 1=normal closed
+NV_OPZIONI26  =Option: enable display distance from target position with sign (0= distance unsigned)
+NV_OPZIONI31  =Axes in simulated mode enabling option: 0-(default) Reading from encoder 1-Simulation enabled
+NV_TOLLERG    =Rough tolerance target [mm]: this is the tolerance accepted at the end of positioning in fast mode
+NV_TOLLER     =Tolerance timer [s]: time beyond which an alarm is generated if axis positioning is not within tolerance
+NV_VELMAX     =Maximum speed: Speed Number
+NV_FATTCONV   =Conversion factor: numerator of the fraction q=n/d, where q is the number of encoder impulses produced within the space of one mm
+NV_FATTCONVDIV=Conversion factor: denominator of the fraction q=n/d, where q is the number of encoder impulses produced within the space of one mm; zero value is converted to 1.
+NV_TARTYPE    =Type of sizing: 0-Sizing on the zero mark 1-Sizing on the zero mark and positioning to parking target 2-Immediate sizing 3-Sizing on limit switch 4-Sizing on limit switch and positioning to parking target
+NV_TARQUOTA   =Sizing target [mm]: absolute position at which the zero reference of the axis is to be found
+NV_VELMICRO   =Micro search speed in sizing mode: speed with which the axis searches for the sizing limit switch
+NV_VELTACCA   =Marker search speed in sizing mode: speed with which the axis releases the sizing limit switch and searches for the zero mark
+NV_MINQUOTA   =Minimum target [mm]: Minimum limit the axis can reach
+NV_MAXQUOTA   =Maximum target [mm]: Maximum limit the axis can reach
+NV_VELMAN     =Manual speed: speed at which the axis moves in manual mode
+NV_QCHKTARA   =Sizing alarm target [mm]: Maximum distance the axis can cover after having left the sizing limit switch and before meeting the zero mark 0-Disables the option
+NV_TIPOTSTENC =Encoder test type: 0) Disabled 1) Enabled
+NV_PARKQTA    =Parking target [mm]: target reached by the axis at the end of the sizing procedure
+NV_DECV1AVA   =V2->V1 forward change target [mm]: expresses the distance from the target at which V2->V1 forward speed changes
+NV_DECV2AVA   =V3->V2 forward change target [mm]: expresses the distance from the target at which V3->V2 forward speed changes
+NV_DECV1IND   =V2->V1 backward change target [mm]: expresses the distance from the target at which V2->V1 backward speed changes
+NV_DECV2INV   =V3->V2 backward change target [mm]: expresses the distance from the target at which V3->V2 backward speed changes
+NV_DECSOGV1   =Whole V2->V1 change limit target [mm]: expresses the minimum target at which speed V2 must remain before switching to V1
+NV_DECSOGV2   =Whole V3->V2 change limit target [mm]: expresses the minimum target at which speed V3 must remain before switching to V2
+NV_TIMCOMVEL  =Speed commutation timer [s]: hold time when the speed must be commutated without changing direction
+NV_TIMCOMDIR  =Direction commutation timer [s]: time that must be waited when the direction must be changed in a positioning (also used in play adjustment)
+NV_QTARECG    =Play adjustment target [mm]: Absolute backlash compensation measure. The backlash compensation is performed EITHER on the zone in which the inertia phenomena occurs OR when the motion direction is opposite to the programmed backlash compensation direction.
+NV_TYPERECG   =Type of play adjustment: 0-Play adjustment disabled 1-play adjustment forwards 2- play adjustment backwards
+NV_INERZAV    =Forward inertia target [mm]: Expresses (in absolute value) the distance from the target at which the axis can be considered to have arrived
+NV_INERZIND   =Backward inertia target [mm]: Expresses (in absolute value) the distance from the target at which the axis can be considered to have arrived
+NV_TIMERFRENO =Timer for brake management [s]: indicates the time required to engage and disengage the brake (must be set up if the Slave Brake Timing Management option is on)
+NV_TIMEREG    =Axis control multiplier (0: disable 1: low 2: medium 4: high)
+
+PT_ACCTIME    =Time required to reach VLim =VMax
+PT_DECTIME    =Time required to switch from VLim to V =0
+PT_OPZIONI0   =If = 0 (default) FORWARD HOMING - NC moves axis backward till Homing switch is pressed . Than move the axis forward till the switch is released and the encoder marker found. 1- BACKWARD SET-POINT: The same as in FORWARD SET-POINT but considering all axis movements exchanged.
+PT_OPZIONI1   =Counting direction reversal option: 0-default 1-inverts the counting direction of the encoder
+PT_OPZIONI2   =Analog sign reversal option: 0-default 1-Inverts the motor-tachymetry connection
+PT_OPZIONI3   =Tolerance alarm disabling option: 1-Disables alarm generation if the axis terminates positioning without complying with the tolerance target
+PT_OPZIONI4   =Marker level monitoring disabling option: Not Used
+PT_OPZIONI5   =VOUT disabling option for SLV commands:0-(default) monitoring enabled 1-if verification that the processing speed set by the program does not exceed the dynamic limits of the axes has been accomplished externally
+PT_OPZIONI6   =Hardware limit enabling option: 1-if the signals of the limit switches supplied by the PLC are used to block the axis
+PT_OPZIONI9   =Play adjustment direction reversal option: 0-default 1-Inverts the play adjustment direction which is in keeping with the sizing direction by default
+PT_OPZIONI10  =ABSOLUTE sizing enabling option: 1-Allows sizing to coincide with the last target sampled
+PT_OPZIONI11  =DAC_POS +/- 0/10V management enabling option: if set, the DAC converter will always supply positive voltage values within the 0..+10 range and the sign in a programmed digital output (1 has the meaning of +, 0 has the meaning of -)
+PT_OPZIONI12  =DAC POS bit sign reversal option: when set to 1, the meaning of the sign bit is inverted, thus, 0 means + and 1 means -
+PT_OPZIONI13  =Slave Brake Timing Management enabling option: 0-(default) brake timing is managed by the PLC 1- brake timing is managed by the slave
+PT_OPZIONI14  =Bumper Management via Input enabling option: 0-(default) the input is managed by the PLC 1-The input is directly managed by the slave
+PT_OPZIONI15  =OnMotor Management via PLC enabling option: 0-(default) the drive is enabled by the slave 1-The PLC must activate the physical output where the ON_MOTORE has been declared
+PT_OPZIONI16  =Close Loop via PLC disabling option: 0- default - ORDM M_CHAN handshake 1-The Slave does not wait for the handshake from the PLC to torque the axis when this must be moved (PressBend)
+PT_OPZIONI18  =Hardware limits level select: 0=normal open, 1=normal closed
+PT_OPZIONI31  =Axes in simulated mode enabling option: 0-(default) Reading from encoder 1- Simulation enabled
+PT_FWERR      =Maximum follow error (impulses): Maximum tolerated follow error beyond which an alarm signal is generated
+PT_FWERRVLIM  =Follow error limit speed [mm/min]: Maximum reference speed required to monitor a follow error of the PROPORTIONAL type
+PT_TOLLER     =Tolerance monitoring hold time [s]: time available for follow error adjustment at the end of positioning
+PT_TOLLERG    =Rough tolerance target [mm]: this is the tolerance accepted at the end of positioning in fast mode
+PT_TOLLERF    =Fine tolerance target [mm]: this is the tolerance accepted at the end of positioning in feed mode
+PT_VELMAX     =Max Axis Feed, expressed in mm/min
+PT_VELRAP     =Same as Maximum feed but does not influence the output voltage scaling in case of an analog interface axis. It also applies to the task space rather than joint space when a kinematics transformation is active. If 0, the same value as Maximum Feed is used.
+PT_GAINP      =Position Loop Proportional Gain - Increasing this parameter will improve the promptness of the axis but increasing it too much can generate instability.
+PT_GAIND      =Position Loop Derivative Gain - Increasing this parameter will improve the promptness of the axes.
+PT_GAINFWD    =Feed Forward Gain - reduces the position error during a positioning
+PT_INSPOS     =Positive insensitivity voltage [V]: expresses the minimum positive voltage value the actuator must be supplied with in order to move the axis. This parameter can be determined by the servo-driver characteristics.
+PT_FATTCONV   =Conversion factor: numerator of the fraction q=n/d, where q is the number of encoder impulses produced within the space of one mm
+PT_FATTCONVDIV=Conversion factor: denominator of the fraction q=n/d, where q is the number of encoder impulses produced within the space of one mm; zero value is converted to 1.
+PT_TARTYPE    =Homing Modality: \n 0-Sizing on the zero mark 1-Sizing on the zero mark and positioning to parking target 2-Immediate sizing 3-Sizing on limit switch 4-Sizing on limit switch and positioning to parking target
+PT_INSNEG     =Negative insensitivity voltage [V]: expresses the minimum negative voltage value the actuator must be supplied with in order to move the axis. This parameter can be determined by the servo-driver characteristics.
+PT_TARQUOTA   =Sizing target [mm]: absolute position in which the axis finds the zero reference of the axis
+PT_VELMICRO   =Micro search speed in sizing mode [mm/min]:speed with which the axis searches for the sizing limit switch
+PT_VELTACCA   =Marker search speed in sizing mode [mm/min]:speed with which the axis releases the sizing limit switch and searches for the zero mark
+PT_MINQUOTA   =Minimum quota , expressed in mm, that the axis can reach during programmed movements. Also defined Negative SW limit.
+PT_MAXQUOTA   =Maximum quota, expressed in mm, that the axis can reach during programmed movements. Also defined Positive SW limit.
+PT_VELMAN     =Max Feed , expressed in mm/min, applicable to the axis in Manual mode.
+PT_PARKQTA    =Parking quota, expressed in mm, that the axis will reach atthe end of the Homing procedure if the Homing+ Parking option is enabled.
+PT_EMERTIME   =Emergency ramp time [s]:Time required to set V to 0 if an alarm situation occurs
+PT_TIMEREG    =Axis control multiplier (0: disable 1: low 2: medium 4: high)
+PT_TIPOTSTENC =Encoder test type: 0) Disabled 1) Enabled
+PT_ACCEL      =Maximum acceleration [mm/s²]; obtained by dividing the maximum axis feed [mm/s] by the time [s] needed to reach it.
+PT_DECEL      =Maximum deceleration [mm/s²]; obtained by dividing the maximum axis feed [mm/s] by the time [s] needed to to stop once running at the maximum axis feed.
+PT_EMERDEC    =Emergency stop deceleration [mm/s²]
+PT_KPGAIN     =Kp Proportional Gain [1/s]; establishes the ratio between the feed [mm/s] and the following error [mm]. An increase of this parameter causes an higher system responsiveness and a lower following error, while overshoot increases as a side effect.
+PT_KDGAIN     =Kd Derivative Gain; establishes the ratio between the velocity contibution [mm/s] and the derive of the following error, expressed on the same measure unit. An increase of this parameter causes a lower overshoot.
+PT_KVFFGAIN   =Kvff Velocity Feed Forward Gain; establishes the ratio between the velocity contribution supplied to the axis and the theorical velocity; Feed Forward compensation is performed without taking the following error into account. Values greater than 1 are internally limited to 1. An increase of this parameter causes a lower following error. Theorically, a value of 1 causes the Following Error to be completely eliminated.
+PT_SSERRK     =K for Maximum following error: value the theorical following error at the maximum velocity is multiplied by to obtain the real maximum following error value. The axis overshoot must be considered while setting this parameter. The maximum recommended value, indicating the maximum admitted overshoot, is 10 divided by the parameter 'Output voltage at maximum speed'; should this limit be overridden, in the case of an overshoot so big it would require an output voltage ranging out of ±10V, the output voltage will be automatically limited to the ±10V range without coming to an immediate emergency stop. Should the difference between the theorical and the real position override the maximum admitted value which has been determined, an emergency stop will be performed automatically. If set up to 0 or to a value so that the maximum admitted following error is lower than the 'Maximum following error/tolerance' parameter value, the maximum admitted following error will be determined only by the latter.
+PT_SSERR      =Maximum following error/tolerance [mm]: maximum admitted difference between the real and the theorical following error. Possible transitory events that may occur at the begin of acceleration phases and the end of deceleration phases must be considered while setting this parameter. A theorical following error is calculated given the instantaneous theorical velocity and the axis gains. Should the difference between the theorical and the real following error override the maximum value set up in this parameter, an emergency stop will be performed automatically. If the parameter 'K for Maximum following error' is set up to 0 or to a value so that the maximum admitted following error is lower than this parameter's value, the maximum admitted following error will NOT depend on the theorical velocity and will be determined only by this parameter, whose meaning will then become that of a Maximum Following Error rather than that of a Following Error Tolerance. If set up to 0, the maximum admitted following error will NOT depend on the theorical velocity and will be determined by the 'K for Maximum following error' parameter only; should the latter be set to 0 as well, then NO checks will be performed on the following error at all.
+

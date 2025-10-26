@@ -1,0 +1,24 @@
+[STRUCT]
+KEY_APPLPAR {
+    ?R2,SETUP;
+    ?R2,KEYBOARD;
+    ?R2,KEY_USERPAR;
+    ?R2,KEY_REFAXES,ax_lsref,cg1;
+    ?R2,KEY_SETVASCHE;
+    if (@config_machine0.3 == 1) {
+        ?R2,KEY_SETLASER;
+    }
+    if (@config_machine0.5 == 1) {
+        ?R2,KEY_LOADER;
+    }
+    ?0,PIPECALIBRATION;
+}
+
+#include "Setup.str"
+#include "keyboard.str"
+#include "Bocche.str"
+#include "UserPar.str"
+#include "SetLaser.str"
+#include "SetLoader.str"
+#include "AxRef.str"
+#include "PipeCalibration.str"

@@ -1,0 +1,34 @@
+
+[KEYS]
+TITLE=Service
+TXT0=CH6 START/STOP
+TXT1=PlcFast SIMUL/REAL
+TXT6=Settings
+
+[PROMPT]
+KEY_NODE=
+MAINTENANCE=Leaf
+lbDistMark_X=axis X (27)
+lbDistMark_Y=axis Y (28)
+lbDistMark_Z=axis Z (29)
+lbDistMark_Xpll=axis B (33)
+lbDistMark_Zpll=axis Cs (34)
+lbDistMark_Z2=axis U (30)
+LabelCh6=CH6 RUNNING...
+LabelPlcFastSim=PlcFast SIM
+LabelZeroMarker=Zero marker [mm]
+LabelCurrent=Current [A]
+lbDistMark_Zpll1=axis Cm (54)
+AxesLaserCH1=Axes1
+AxesLaserCH2=Axes1
+lbDistMark_X1=axis Z Load (60)
+lbDistMark_Y1=axis (61)
+lbDistMark_Z1=axis X unload (62)
+lbDistMark_Xpll1=axis Z2 unload (64)
+lbDistMark_Zpll2=axis (65)
+lbDistMark_Z3=axis Z unload (63)
+lbDistMark_Zpll3=axis W jaw (68)
+
+[STATUS]
+
+[HELP]

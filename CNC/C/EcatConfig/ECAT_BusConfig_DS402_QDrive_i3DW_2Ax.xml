@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="QDRIVE_AC_SERVO_DRIVE_i3DW_V112.xml">
+
+    <Device>i3DW-**A30</Device>
+    
+    <Slot>Axis 2</Slot>
+    
+    <Module>P Mode | Touch Probe</Module>
+    
+	<RxPdo Index="#x1600">
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+	</TxPdo>
+
+	<DistribuitedClock>1</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+	<PublicDictionary>
+     	<Objects>
+
+		<Object Pos="8">#x38000010</Object>
+		<Object Pos="9">#x38010010</Object>
+		<Object Pos="10">#x38030010</Object>
+		<Object Pos="11">#x38040010</Object>
+		<Object Pos="12">#x39000010</Object>
+		<Object Pos="13">#x39010010</Object>
+		<Object Pos="14">#x39020010</Object>
+		<Object Pos="15">#x39030010</Object>
+		<Object Pos="16">#x39270010</Object>
+		<Object Pos="17">#x3C010010</Object>
+		<Object Pos="18">#x3D020010</Object>
+		<Object Pos="19">#x3D030010</Object>
+		<Object Pos="20">#x3D040010</Object>
+		<Object Pos="21">#x3D050010</Object>
+		<Object Pos="22">#x3D060010</Object>
+		<Object Pos="23">#x3D070010</Object>
+		<Object Pos="24">#x3D080010</Object>
+		<Object Pos="25">#x3D090010</Object>
+		<Object Pos="26">#x3D130010</Object>
+		<Object Pos="27">#x3D140010</Object>
+		<Object Pos="28">#x3D190010</Object>
+		<Object Pos="29">#x3D200010</Object>
+		<Object Pos="30">#x3D210010</Object>
+		<Object Pos="31">#x3D220010</Object>
+		<Object Pos="32">#x3D230020</Object>
+        </Objects>
+	</PublicDictionary>
+</Config>
+
+

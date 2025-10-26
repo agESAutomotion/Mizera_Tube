@@ -1,0 +1,44 @@
+
+[KEYS]
+TITLE=Lin. capacitivo da CNC
+
+[PROMPT]
+KEY_NODE=
+CALIB_CHECKB=Linearizzazione capacitivo da CNC
+GroupBoxTesting=TESTING
+Plot1.2=Bevel 0
+Plot1.1=Bevel 15
+Plot1.4=Bevel 30
+Plot1.3=Bevel 45
+ButtonTab0=Bevel 0
+ButtonTab15=Bevel 15
+ButtonTab30=Bevel 30
+ButtonTab45=Bevel 45
+LabelEnab1=Abilita
+LabelEnab2=Abilita
+LabelEnab3=Abilita
+L_Voltage1=Volt [ADC]
+L_Height=Altezza [mm]
+LabelBPos=Quota asse B [°]
+LabelBPos1=Quota asse B [°]
+LabelBPos2=Quota asse B [°]
+LabelQta=Qta impo.[mm]
+LabelQta1=Cap.letto [adc]
+Label_npoints=Points n.
+LabelPrec1=CAPACITIVE
+ButtonStartCalib2=START CALIBRATION
+AxesLaserCH2=Axes1
+PP Iso=PP Iso
+LabelZ_TCP=Z TCP [mm]
+LabelACTUAL_ANGLE=ACTUAL ANGLE [°]
+LbTEST=TEST
+LabelTstIn=In
+LabelTstOut=Out
+
+[STATUS]
+Plot1.2=Altezza(mm),Volt(ADC)
+Plot1.1=Altezza(mm),Volt(ADC)
+Plot1.4=Altezza(mm),Volt(ADC)
+Plot1.3=Altezza(mm),Volt(ADC)
+
+[HELP]

@@ -1,0 +1,89 @@
+:G1152
+;//(Interna)
+;//Esegue la produttoria di tutti livelli di trasformazione da 0 ad ml_curr
+;//compreso e produce un output nei coefficienti mx_ di basso livello.
+DBL ml = ml_curr
+DBL o1, o2, o3
+DBL tmp1, tmp2, tmp3
+DBL eps = 0.000001
+
+mx_a11 = 1
+mx_a12 = 0
+mx_a13 = 0
+mx_a21 = 0
+mx_a22 = 1
+mx_a23 = 0
+mx_a31 = 0
+mx_a32 = 0
+mx_a33 = 1
+mx_o1 = 0
+mx_o2 = 0
+mx_o3 = 0
+f_ortho = !mx_force_dyn
+
+IF( ml < 0 ) RET
+
+REPEAT
+    ;//Specularita'
+    IF( ml_mf1[ml] ) THEN
+        mx_a11 = -mx_a11
+        mx_a12 = -mx_a12
+        mx_a13 = -mx_a13
+        mx_o1 = 2 * ml_mo1[ml] - mx_o1
+    ENDIF
+
+    IF( ml_mf2[ml] ) THEN
+        mx_a21 = -mx_a21
+        mx_a22 = -mx_a22
+        mx_a23 = -mx_a23
+        mx_o2 = 2 * ml_mo2[ml] - mx_o2
+    ENDIF
+
+    IF( ml_mf3[ml] ) THEN
+        mx_a31 = -mx_a31
+        mx_a32 = -mx_a32
+        mx_a33 = -mx_a33
+        mx_o3 = 2 * ml_mo3[ml] - mx_o3
+    ENDIF
+
+    ;//Rotazione
+    ;//Traslazione
+    tmp1 = mx_a11
+    tmp2 = mx_a21
+    tmp3 = mx_a31
+    mx_a11 = ml_a11[ml] * tmp1 + ml_a12[ml] * tmp2 + ml_a13[ml] * tmp3
+    mx_a21 = ml_a21[ml] * tmp1 + ml_a22[ml] * tmp2 + ml_a23[ml] * tmp3
+    mx_a31 = ml_a31[ml] * tmp1 + ml_a32[ml] * tmp2 + ml_a33[ml] * tmp3
+
+    tmp1 = mx_a12
+    tmp2 = mx_a22
+    tmp3 = mx_a32
+    mx_a12 = ml_a11[ml] * tmp1 + ml_a12[ml] * tmp2 + ml_a13[ml] * tmp3
+    mx_a22 = ml_a21[ml] * tmp1 + ml_a22[ml] * tmp2 + ml_a23[ml] * tmp3
+    mx_a32 = ml_a31[ml] * tmp1 + ml_a32[ml] * tmp2 + ml_a33[ml] * tmp3
+
+    tmp1 = mx_a13
+    tmp2 = mx_a23
+    tmp3 = mx_a33
+    mx_a13 = ml_a11[ml] * tmp1 + ml_a12[ml] * tmp2 + ml_a13[ml] * tmp3
+    mx_a23 = ml_a21[ml] * tmp1 + ml_a22[ml] * tmp2 + ml_a23[ml] * tmp3
+    mx_a33 = ml_a31[ml] * tmp1 + ml_a32[ml] * tmp2 + ml_a33[ml] * tmp3
+
+    tmp1 = mx_o1
+    tmp2 = mx_o2
+    tmp3 = mx_o3
+    o1 = ml_ro1[ml] - ml_a11[ml] * ml_ro1[ml] - ml_a12[ml] * ml_ro2[ml] - ml_a13[ml] * ml_ro3[ml]
+    o2 = ml_ro2[ml] - ml_a21[ml] * ml_ro1[ml] - ml_a22[ml] * ml_ro2[ml] - ml_a23[ml] * ml_ro3[ml]
+    o3 = ml_ro3[ml] - ml_a31[ml] * ml_ro1[ml] - ml_a32[ml] * ml_ro2[ml] - ml_a33[ml] * ml_ro3[ml]
+    mx_o1 = ml_a11[ml] * tmp1 + ml_a12[ml] * tmp2 + ml_a13[ml] * tmp3 + o1 + ml_to1[ml]
+    mx_o2 = ml_a21[ml] * tmp1 + ml_a22[ml] * tmp2 + ml_a23[ml] * tmp3 + o2 + ml_to2[ml]
+    mx_o3 = ml_a31[ml] * tmp1 + ml_a32[ml] * tmp2 + ml_a33[ml] * tmp3 + o3 + ml_to3[ml]
+
+    ml = SUB(ml,1)
+UNTIL( ml < 0 )
+
+IF( (f_ortho == 1) && ((ABS(mx_a11-1)>eps) || (ABS(mx_a12-0)>eps) || (ABS(mx_a13-0)>eps)) ) f_ortho = 0
+IF( (f_ortho == 1) && ((ABS(mx_a21-0)>eps) || (ABS(mx_a22-1)>eps) || (ABS(mx_a23-0)>eps)) ) f_ortho = 0
+IF( (f_ortho == 1) && ((ABS(mx_a31-0)>eps) || (ABS(mx_a32-0)>eps) || (ABS(mx_a33-1)>eps)) ) f_ortho = 0
+
+RET

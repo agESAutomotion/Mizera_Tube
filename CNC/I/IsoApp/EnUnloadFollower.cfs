@@ -1,0 +1,65 @@
+: EnUnloadFollower.cfs
+;============================================================================
+; Unload Follower Routine Enable
+;============================================================================
+IF( %cn[WHO()].rc[0].21 ) RET 
+
+;============================================================================
+; AID_ENGAGE
+; ---> CouplingFollowEn in "aidEngageUnload.cfs"
+;============================================================================
+IF( AEXISTS(7,Z) ) WAITBIT( "%ax[AXIDX(7,Z)].ra3.0", 1 )
+IF( AEXISTS(7,U) ) WAITBIT( "%ax[AXIDX(7,U)].ra3.0", 1 )
+IF( AEXISTS(7,V) ) WAITBIT( "%ax[AXIDX(7,V)].ra3.0", 1 ) 	 
+IF( AEXISTS(7,W) ) WAITBIT( "%ax[AXIDX(7,W)].ra3.0", 1 ) 
+
+IF( AEXISTS(8,Y) ) WAITBIT( "%ax[AXIDX(8,Y)].ra3.0", 1 )
+IF( AEXISTS(8,Z) ) WAITBIT( "%ax[AXIDX(8,Z)].ra3.0", 1 )
+IF( AEXISTS(8,U) ) WAITBIT( "%ax[AXIDX(8,U)].ra3.0", 1 )
+IF( AEXISTS(8,V) ) WAITBIT( "%ax[AXIDX(8,V)].ra3.0", 1 ) 	 
+IF( AEXISTS(8,W) ) WAITBIT( "%ax[AXIDX(8,W)].ra3.0", 1 ) 
+
+G153
+IF (AEXISTS(7,Z)) G4005 S(AXIDX(7,Z))
+IF (AEXISTS(7,U)) G4005 S(AXIDX(7,U))
+IF (AEXISTS(7,V)) G4005 S(AXIDX(7,V))
+IF (AEXISTS(7,W)) G4005 S(AXIDX(7,W))
+
+IF (AEXISTS(8,Y)) G4005 S(AXIDX(8,Y))
+IF (AEXISTS(8,Z)) G4005 S(AXIDX(8,Z))
+IF (AEXISTS(8,U)) G4005 S(AXIDX(8,U))
+IF (AEXISTS(8,V)) G4005 S(AXIDX(8,V))
+IF (AEXISTS(8,W)) G4005 S(AXIDX(8,W))
+G152
+G4099
+
+;============================================================================
+; All Flaps to be Flat
+;============================================================================
+M829   
+
+;============================================================================
+; EnableUnloadFollower    
+; ---> Gui option OpEnUnloadFollower to enable follower
+;============================================================================ 
+IF( OpEnUnloadFollower ) THEN 
+   ;Enable to follow     
+   M701                              
+ELSE 
+
+   ; Different Loader side Support Travel 
+   L_COM_PrkPos = %UNLOADER.values5 / 1000;
+
+   ;ParkAllCmd AT %UNLOADER.boolean.6;
+   ?%UNLOADER.boolean.6 = 1
+   SYN
+   IF (AEXISTS(8,Y)) AWAIT(ABS(L_COM_PrkPos - (%ax[AXIDX(8,Y)].ra4 / 1000)) < 0.1)
+   IF (AEXISTS(8,Z)) AWAIT(ABS(L_COM_PrkPos - (%ax[AXIDX(8,Z)].ra4 / 1000)) < 0.1)
+   IF (AEXISTS(8,U)) AWAIT(ABS(L_COM_PrkPos - (%ax[AXIDX(8,U)].ra4 / 1000)) < 0.1)
+   IF (AEXISTS(8,V)) AWAIT(ABS(L_COM_PrkPos - (%ax[AXIDX(8,V)].ra4 / 1000)) < 0.1)
+   IF (AEXISTS(8,W)) AWAIT(ABS(L_COM_PrkPos - (%ax[AXIDX(8,W)].ra4 / 1000)) < 0.1)
+   SYN
+   ?%UNLOADER.boolean.6 = 0
+ENDIF
+
+RET 

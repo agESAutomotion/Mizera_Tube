@@ -1,0 +1,385 @@
+
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+
+*//============================================================================
+*// Force Following Support to be Down from ISO management
+*//============================================================================
+
+FUNCTION_BLOCK     ISO_SUP_FORCE_DOWN 
+
+VAR_INPUT
+xIsoForce:         BOOL;      * iso_LsronCutting
+xHoldMovSuperv:    BOOL;      * yHoldMovSuperv
+END_VAR
+
+VAR
+Sup_Up_NotAllow:   BOOL;
+R_TRIG_DWNCMD:     R_TRIG;
+END_VAR
+
+VAR_OUTPUT
+yForceDwn:         BOOL;
+END_VAR
+
+CAL    R_TRIG_DWNCMD(CLK=xHoldMovSuperv)
+LD     xIsoForce
+AND    R_TRIG_DWNCMD.Q
+S      Sup_Up_NotAllow
+
+LDN    xIsoForce
+ORN    %cn0.rc8.0
+JMPCN  CLRSTATE
+LD     %PLCFLAGS.0
+ST     Sup_Up_NotAllow
+CLRSTATE:
+
+LD     Sup_Up_NotAllow
+AND    xIsoForce
+AND    %cn0.rc8.0
+ST     yForceDwn
+
+END_FUNCTION_BLOCK 
+
+*//============================================================================
+*// In case of slave axis gearing state of G4010,
+*// %ra92 == %ra24
+*// PLC pre-stop quota need to be added (Estimated without JERK calculation)
+*// CAL CALQ_PRESSLV(xEn:=,xQta:=,xSpdNum:=)
+*// 0.5G 50000 Jerk as bench mark
+*//============================================================================
+
+FUNCTION_BLOCK     CALQ_PRESSLV 
+
+VAR_INPUT
+xEn:               BOOL;     
+xQta:              DWORD;      * %ra4 / ra92
+xSpdNum:           DWORD;      * The spline table number
+END_VAR
+
+VAR
+tem_dis:           DWORD;
+QtaCalc:           POINTS_INT_CALC;
+END_VAR
+
+VAR_OUTPUT
+Q:                 DWORD;
+END_VAR
+
+LD     xQta
+ST     Q
+
+* Pre simpling data 0.5g 50000 Jerk，when RA92 fails
+
+* speed > 2.2m/min and xQta < 1mm
+
+LD     %ra115              
+MULDIV(M=60,D=1000)  
+GT     2200
+AND(
+       LD   xQta
+       SUB  %ra24
+	   LT   1000
+)
+JMPCN _ACT_LINERA
+       LD   %ra115    
+       MULDIV(M=60,D=1000)       
+       ABS       
+       ST   QtaCalc.xPercSpeed            * Speed percentual value
+       
+       LD   1           
+       ST   QtaCalc.xCutLineInd           * cut line index (initial value 1 to 10)
+       
+       LD   xSpdNum
+       ST   QtaCalc.xCodTec               * Tecnology 0=duty 1=power 2=frequency
+       
+       CAL  QtaCalc
+       
+       LD   QtaCalc.yResult               * Result
+	   ST   tem_dis
+	   
+	   LD   tem_dis
+	   LT   0
+	   JMPCN _SAFTY
+	        LD  0
+			ST  tem_dis
+	   _SAFTY:
+	   
+	   LD   tem_dis
+	   ADD  xQta
+       ST   Q
+	   
+	   LDN  %ra3.2                        * Forward Movement of Slave Spindle
+       ANDN %ra3.0
+       JMPCN BCKWARDX1CASE
+	        LD   xQta
+            SUB  tem_dis        
+            ST   Q
+       BCKWARDX1CASE:
+_ACT_LINERA:
+
+* Vel   Dis
+* 2500	3020
+* 5000	6320
+* 7500	9965
+* 10000	13955
+* 12500	18297
+* 15000	22985
+* 17500	28020
+* 20000	33400
+* 22500	39128
+* 25000	45200
+* 27500	51626
+* 30000	58396
+* 32500	65516
+* 35000	72980
+* 37500	80792
+* 40000	88950
+* 42500	97459
+* 45000	106313
+* 47500	115513
+* 50000	125000
+
+PATH   %pd_splines[xSpdNum]
+
+LD     %PLCFLAGS.8
+JMPCN  _INIGLB
+       LD  2
+       ST  %pdh_interpType
+       LD  21
+       ST  %pdh_nPoints 
+
+       LD  0
+       ST  %pdh_X0
+       ST  %pdh_Y0
+
+       LD  2500
+       ST  %pdh_X1
+	   LD  3020
+       ST  %pdh_Y1
+	   
+	   LD  5000
+       ST  %pdh_X2
+	   LD  6320
+       ST  %pdh_Y2
+	   
+	   LD  7500
+       ST  %pdh_X3
+	   LD  9965
+       ST  %pdh_Y3
+	   
+	   LD  10000
+       ST  %pdh_X4
+	   LD  13955
+       ST  %pdh_Y4
+	   
+	   LD  12500
+       ST  %pdh_X5
+	   LD  18297
+       ST  %pdh_Y5
+	   
+	   LD  15000
+       ST  %pdh_X6
+	   LD  22985
+       ST  %pdh_Y6
+	   
+	   LD  17500
+       ST  %pdh_X7
+	   LD  28020
+       ST  %pdh_Y7
+	   
+	   LD  20000
+       ST  %pdh_X8
+	   LD  33400
+       ST  %pdh_Y8
+	   
+	   LD  22500
+       ST  %pdh_X9
+	   LD  39128
+       ST  %pdh_Y9
+	   
+	   LD  25000
+       ST  %pdh_X10
+	   LD  45200
+       ST  %pdh_Y10
+
+	   LD  27500
+       ST  %pdh_X11
+	   LD  51626
+       ST  %pdh_Y11	   
+	   
+	   LD  30000
+       ST  %pdh_X12
+	   LD  58396
+       ST  %pdh_Y12
+
+	   LD  32500
+       ST  %pdh_X13
+	   LD  65516
+       ST  %pdh_Y13
+	   
+	   LD  35000
+       ST  %pdh_X14
+	   LD  72980
+       ST  %pdh_Y14
+	   
+	   LD  37500
+       ST  %pdh_X15
+	   LD  80792
+       ST  %pdh_Y15
+	   
+	   LD  40000
+       ST  %pdh_X16
+	   LD  88950
+       ST  %pdh_Y16
+	   
+	   LD  42500
+       ST  %pdh_X17
+	   LD  97459
+       ST  %pdh_Y17
+	   
+	   LD  45000
+       ST  %pdh_X18
+	   LD  106313
+       ST  %pdh_Y18
+	   
+	   LD  47500
+       ST  %pdh_X19
+	   LD  115513
+       ST  %pdh_Y19
+	   
+	   LD  50000
+       ST  %pdh_X20
+	   LD  125000
+       ST  %pdh_Y20
+	   
+_INIGLB:
+
+END_FUNCTION_BLOCK 
+
+*//============================================================================
+*// Cylinder Composite Support Calculation Based On Current Profile Shape
+*// CAL CALC_CYCOMSUP(xLenCy:=, xEnCyTubeSiz:=)
+*//============================================================================
+
+FUNCTION_BLOCK     CALC_CYCOMSUP 
+
+VAR_INPUT
+xLenCy:            DWORD;     * The stroke of cylinder [mm]
+xEnCyTubeSiz:      DWORD;     * > Qta to disable cylinder [mm] (not the trave of servo because which could be different)
+xAxNum:            DWORD;     * The servo support axis number
+END_VAR
+
+VAR
+OutofRng:          BOOL;
+X:                 DWORD;
+Y:                 DWORD;
+Radius:            DWORD;
+inner:             DWORD;
+outter:            DWORD;
+temLenCy:          DWORD;
+temAxtra:          DWORD;
+CyTubeSiz:         DWORD;
+MaxMin:          COMPARE;
+END_VAR
+
+VAR_OUTPUT
+* Bit 0: Only Motor, offset == 0
+* Bit 1: Both Cylinder and Motor, offset == Cylinder Stroke
+* Bit 2: Impossible to always follow, msgout (Out of range, should not happen. Otherwise, tube is too large)
+yModeCode:         DWORD;
+END_VAR
+
+LD     xLenCy
+MUL    1000
+ST     temLenCy 
+
+LD     xEnCyTubeSiz
+MUL    1000
+ST     CyTubeSiz
+
+LD     %gIso23
+MUL    1000
+ST     X
+
+LD     %gIso24
+MUL    1000
+ST     Y
+
+CAL    MaxMin(A:=X,B:=Y)
+LD     MaxMin.yMin
+DIV    2
+ST     inner
+
+LD     0
+HYPOT (X=X,Y=Y)
+DIV    2
+ST     outter
+
+LD     %gIso25       *RAIDIUS UNIT DIFFERENT 
+ST     Radius
+
+LD     %gIso26
+EQ     0
+JMPCN  _RECT
+       LD  X
+	   SUB Radius
+	   ST  X
+	   
+	   LD  Y
+	   SUB Radius
+	   ST  Y
+
+       LD  0
+       HYPOT(X=X,Y=Y)
+	   DIV 2
+       ADD Radius
+	   ST  outter	 
+_RECT:
+
+LD     %gIso26
+EQ     1
+JMPCN  _ROUND
+       LD  inner
+	   ST  outter
+_ROUND:
+
+* Output
+
+LD     0
+ST     yModeCode
+
+PATH   %ax[xAxNum]
+
+LD     %pa22
+SUB    %pa21
+ST     temAxtra
+
+LD     outter
+SUB    inner
+GT(
+LD     temAxtra
+SUB    temLenCy
+)    
+AND(
+LD     temLenCy
+GT     inner
+)
+AND(
+LD     temLenCy
+LT     outter
+)
+ST     OutofRng    
+
+LD     outter
+GT     CyTubeSiz
+ST     yModeCode.0
+STN    yModeCode.1
+
+LD     OutofRng    
+ST     yModeCode.2
+
+END_FUNCTION_BLOCK 
+
+
+

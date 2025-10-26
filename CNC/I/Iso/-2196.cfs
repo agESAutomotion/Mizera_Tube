@@ -1,0 +1,220 @@
+ X Y Z [A] [B] [C] [H]0.0 : G1196
+
+;//
+;// G1196   X Y Z [A] [B] [C] [H]
+;//
+;// Acquire tool orientation by spherical sensor.
+;// A safe distance may be specified, e.g., for colliding coaxial sensors.
+;// Tool frame Z is used to choose acquire points.
+;// Returns acq_x, acq_y, acq_z as orientation unit vector.
+;//
+
+DBL cx = VA23, cy = VA24, cz = VA25
+DBL a = VA0, b = VA1, c = VA2
+DBL safeDist = MAX(sphSegmentHeight/2+sphSensorProxy, VA7)
+DBL lf_a11, lf_a12, lf_a13      ;//local frame with X as tool Z projection
+DBL lf_a21, lf_a22, lf_a23
+DBL lf_a31, lf_a32, lf_a33
+DBL d1_p1_x, d1_p1_y
+DBL d1_p2_x, d1_p2_y
+DBL d1_p3_x, d1_p3_y
+DBL d1_p4_x, d1_p4_y
+DBL d2_p1_x, d2_p1_y
+DBL d2_p2_x, d2_p2_y
+DBL d2_p3_x, d2_p3_y
+DBL d2_p4_x, d2_p4_y
+DBL d1_uf_o1, d1_uf_o2, d1_uf_o3
+DBL d2_uf_o1, d2_uf_o2, d2_uf_o3
+DBL x, y, z
+DBL d
+;//XXX $APP
+DBL fPartGraphics = %cn[WHO()].pc[14].25
+;//XXX $APP
+
+G64
+
+G180 P1 D1 A(a) B(b) C(c)
+
+;//lf_a_3 = mx_a__^T * tf_a_3
+lf_a13 = mx_a11 * tf_a13 + mx_a21 * tf_a23 + mx_a31 * tf_a33
+lf_a23 = mx_a12 * tf_a13 + mx_a22 * tf_a23 + mx_a32 * tf_a33
+lf_a33 = mx_a13 * tf_a13 + mx_a23 * tf_a23 + mx_a33 * tf_a33
+
+;//lf_a_2 = norm([0 0 1]^T ^ lf_a_3)
+lf_a12 = -1.0 * lf_a23
+lf_a22 = 1.0 * lf_a13
+lf_a32 = 0.0
+
+d = SQRT(lf_a12 * lf_a12 + lf_a22 * lf_a22 + lf_a32 * lf_a32)
+
+IF (d < SIN(5)) THEN
+    lf_a12 = 0.0
+    lf_a22 = 1.0
+    lf_a32 = 0.0
+    d = 1.0
+ENDIF
+
+lf_a12 = lf_a12 / d
+lf_a22 = lf_a22 / d
+lf_a32 = lf_a32 / d
+
+;//lf_a_1 = lf_a_2 ^ lf_a_3
+lf_a11 = lf_a22 * lf_a33 - lf_a32 * lf_a23
+lf_a21 = lf_a32 * lf_a13 - lf_a12 * lf_a33
+lf_a31 = lf_a12 * lf_a23 - lf_a22 * lf_a13
+
+G168
+G160 I(lf_a11) J(lf_a21) K(lf_a31) P(lf_a12) Q(lf_a22) R(lf_a32) U(lf_a13) V(lf_a23) W(lf_a33)
+G161 X(cx) Y(cy) Z(cz)
+
+;//Y+ sph surface
+x = 0.0
+y = sphSensorRadius
+z = -toolCylDist1
+G180 X(x) Y(y+toolCylRadius+sphSensorProxy) Z(z) A(a) B(b) C(c)
+G153 G0 X(kine_x) Y(kine_y) A(kine_a) B(kine_b) C(kine_c)
+
+G1 Z(z) F(sensorProxyF)
+G1 Y(y+toolCylRadius+sphSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) Y(y+toolCylRadius-touchOt) U(x) V(y) W(z) G(toolCylRadius)
+d1_p2_x = acq_x
+d1_p2_y = acq_y
+G1 Y(y+toolCylRadius+sphSensorProxy) F(sensorRapidF)
+z = -toolCylDist2
+G1 Z(z) F(sensorProxyF)
+G1 Y(y+toolCylRadius+sphSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) Y(y+toolCylRadius-touchOt) U(x) V(y) W(z) G(toolCylRadius)
+d2_p2_x = acq_x
+d2_p2_y = acq_y
+G1 Y(y+toolCylRadius+sphSensorProxy) F(sensorRapidF)
+z = safeDist
+G1 Z(z+toolSphRadius) F(sensorRapidF)
+
+;//Y- sph surface
+y = -sphSensorRadius
+z = -toolCylDist1
+G1 Y(y-toolCylRadius-sphSensorProxy) F(sensorRapidF)
+G1 Z(z) F(sensorProxyF)
+G1 Y(y-toolCylRadius-sphSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) Y(y-toolCylRadius+touchOt) U(x) V(y) W(z) G(toolCylRadius)
+d1_p1_x = acq_x
+d1_p1_y = acq_y
+G1 Y(y-toolCylRadius-sphSensorProxy) F(sensorRapidF)
+z = -toolCylDist2
+G1 Z(z) F(sensorProxyF)
+G1 Y(y-toolCylRadius-sphSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) Y(y-toolCylRadius+touchOt) U(x) V(y) W(z) G(toolCylRadius)
+d2_p1_x = acq_x
+d2_p1_y = acq_y
+G1 Y(y-toolCylRadius-sphSensorProxy) F(sensorRapidF)
+z = safeDist
+G1 Z(z+toolSphRadius) F(sensorRapidF)
+
+G1894 N1 X(d1_p1_x) Y(d1_p1_y) Z0 U(d1_p2_x) V(d1_p2_y) W0 P(d1_p1_x+(d1_p2_y-d1_p1_y)) Q(0.0) R0
+d1_uf_o1 = uf_o1
+d1_uf_o2 = uf_o2
+d1_uf_o3 = uf_o3
+
+G1894 N1 X(d2_p1_x) Y(d2_p1_y) Z0 U(d2_p2_x) V(d2_p2_y) W0 P(d2_p1_x+(d2_p2_y-d2_p1_y)) Q(0.0) R0
+d2_uf_o1 = uf_o1
+d2_uf_o2 = uf_o2
+d2_uf_o3 = uf_o3
+
+;//X+ sph surface
+x = +sphSensorRadius
+y = d1_uf_o2
+z = -toolCylDist1
+G1 X(x+toolCylRadius+sphSensorProxy) Y(y) F(sensorRapidF)
+G1 Z(z) F(sensorProxyF)
+G1 X(x+toolCylRadius+sphSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) X(x+toolCylRadius-touchOt) U(x) V(y) W(z) G(toolCylRadius)
+d1_p4_x = acq_x
+d1_p4_y = acq_y
+G1 X(x+toolCylRadius+sphSensorProxy) F(sensorRapidF)
+y = d2_uf_o2
+z = -toolCylDist2
+G1 Y(y) Z(z) F(sensorProxyF)
+G1 X(x+toolCylRadius+sphSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) X(x+toolCylRadius-touchOt) U(x) V(y) W(z) G(toolCylRadius)
+d2_p4_x = acq_x
+d2_p4_y = acq_y
+G1 X(x+toolCylRadius+sphSensorProxy) F(sensorRapidF)
+z = safeDist
+G1 Z(z+toolSphRadius) F(sensorRapidF)
+
+;//X- sph surface
+x = -sphSensorRadius
+y = d1_uf_o2
+z = -toolCylDist1
+G1 X(x-toolCylRadius-sphSensorProxy) Y(y) F(sensorRapidF)
+G1 Z(z) F(sensorProxyF)
+G1 X(x-toolCylRadius-sphSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) X(x-toolCylRadius+touchOt) U(x) V(y) W(z) G(toolCylRadius)
+d1_p3_x = acq_x
+d1_p3_y = acq_y
+G1 X(x-toolCylRadius-sphSensorProxy) F(sensorRapidF)
+y = d2_uf_o2
+z = -toolCylDist2
+G1 Y(y) Z(z) F(sensorProxyF)
+G1 X(x-toolCylRadius-sphSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) X(x-toolCylRadius+touchOt) U(x) V(y) W(z) G(toolCylRadius)
+d2_p3_x = acq_x
+d2_p3_y = acq_y
+G1 X(x-toolCylRadius-sphSensorProxy) F(sensorRapidF)
+z = safeDist
+G1 Z(z+toolSphRadius) F(sensorRapidF)
+
+G1894 N1 X(d1_p1_x) Y(d1_p1_y) Z0 U(d1_p2_x) V(d1_p2_y) W0 P(d1_p1_x+(d1_p2_y-d1_p1_y)) Q(0.0) R0
+G1894 N2 X(d1_p3_x) Y(d1_p3_y) Z0 U(d1_p4_x) V(d1_p4_y) W0
+G1894 N3 H(-sphSensorRadius) X0 Y0 Z(-toolCylDist1+sphSensorRadius)
+d1_uf_o1 = uf_o1
+d1_uf_o2 = uf_o2
+d1_uf_o3 = uf_o3
+
+G1894 N1 X(d2_p1_x) Y(d2_p1_y) Z0 U(d2_p2_x) V(d2_p2_y) W0 P(d2_p1_x+(d2_p2_y-d2_p1_y)) Q(0.0) R0
+G1894 N2 X(d2_p3_x) Y(d2_p3_y) Z0 U(d2_p4_x) V(d2_p4_y) W0
+G1894 N3 H(-sphSensorRadius) X0 Y0 Z(-toolCylDist2+sphSensorRadius)
+d2_uf_o1 = uf_o1
+d2_uf_o2 = uf_o2
+d2_uf_o3 = uf_o3
+
+G169
+
+;//d1_uf_o_' = lf_a__ * d1_uf_o + c
+uf_o1 = lf_a11 * d1_uf_o1 + lf_a12 * d1_uf_o2 + lf_a13 * d1_uf_o3 + cx
+uf_o2 = lf_a21 * d1_uf_o1 + lf_a22 * d1_uf_o2 + lf_a23 * d1_uf_o3 + cy
+uf_o3 = lf_a31 * d1_uf_o1 + lf_a32 * d1_uf_o2 + lf_a33 * d1_uf_o3 + cz
+d1_uf_o1 = uf_o1
+d1_uf_o2 = uf_o2
+d1_uf_o3 = uf_o3
+
+;//d2_uf_o_' = lf_a__ * d2_uf_o + c
+uf_o1 = lf_a11 * d2_uf_o1 + lf_a12 * d2_uf_o2 + lf_a13 * d2_uf_o3 + cx
+uf_o2 = lf_a21 * d2_uf_o1 + lf_a22 * d2_uf_o2 + lf_a23 * d2_uf_o3 + cy
+uf_o3 = lf_a31 * d2_uf_o1 + lf_a32 * d2_uf_o2 + lf_a33 * d2_uf_o3 + cz
+d2_uf_o1 = uf_o1
+d2_uf_o2 = uf_o2
+d2_uf_o3 = uf_o3
+
+IF (fPartGraphics) G2805 C15 X(d2_uf_o1) Y(d2_uf_o2) Z(d2_uf_o3)
+IF (fPartGraphics) G2806 C15 X(d2_uf_o1) Y(d2_uf_o2) Z(d2_uf_o3) U(d1_uf_o1) V(d1_uf_o2) W(d1_uf_o3)
+
+;//acq = norm(d1_uf_o_ - d2_uf_o_)
+acq_x = d1_uf_o1 - d2_uf_o1
+acq_y = d1_uf_o2 - d2_uf_o2
+acq_z = d1_uf_o3 - d2_uf_o3
+
+d = SQRT(acq_x * acq_x + acq_y * acq_y + acq_z * acq_z)
+
+IF (d < 0.001) ERROR(38) ;//divide by zero
+
+;//$APP
+?%EBK[460] = acq_x
+?%EBK[461] = acq_y
+?%EBK[462] = acq_z
+
+acq_x = acq_x / d
+acq_y = acq_y / d
+acq_z = acq_z / d
+
+RET

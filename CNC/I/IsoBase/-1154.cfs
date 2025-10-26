@@ -1,0 +1,20 @@
+ [O] :G154
+;//Selezione origine macchina 1
+;//Scrive sulle variabili ori_x, ...
+DBL gorg_no=VA14
+
+IF( ISQNAN(gorg_no) ) THEN
+    ori_x = %cn[WHO()].sr[0].do[0] / 1000
+    ori_y = %cn[WHO()].sr[0].do[1] / 1000
+    ori_z = %cn[WHO()].sr[0].do[2] / 1000
+    ori_gorg = 0
+ELSE
+    ori_x = %gorg[GORGIDX(gorg_no)].orAxisOrigin[0]
+    ori_y = %gorg[GORGIDX(gorg_no)].orAxisOrigin[1]
+    ori_z = %gorg[GORGIDX(gorg_no)].orAxisOrigin[2]
+    ori_gorg = gorg_no
+ENDIF
+
+ori_no = 154
+G152
+RET

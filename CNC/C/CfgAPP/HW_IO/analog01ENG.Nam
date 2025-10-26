@@ -1,0 +1,19 @@
+
+[KEYS]
+TITLE=Analog IO
+
+[PROMPT]
+KEY_NODE=
+ANALOG01=Leaf
+LabelCapacitive=Capacitive analog input (IW20)
+LabelOut1=Power analog output (QW913)
+LabelOut2=Focal analog output (QW900)
+LabelOut3=PWM (duty) analog output (QW908)
+LabelDescInAn2=Expansion board on CNC
+LabelBrd018402_0=BRD.019.473 board
+LabelBrd018402_1=BRD.018.402 board
+LabelBrd019473_0=BRD.019.473 board
+
+[STATUS]
+
+[HELP]

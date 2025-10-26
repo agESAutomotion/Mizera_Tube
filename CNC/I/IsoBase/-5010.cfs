@@ -1,0 +1,74 @@
+[I]0 M S : G4010
+;Collega un asse slave ad un asse master
+;Va chiamato dal canale che gestisce l'asse master
+;I=VA8: 1=carica quota asse slave, 2=come 1 ma non eredita i finecorsa
+;M=VA12: system wide asse master
+;S=VA18: system wide asse slave
+
+DBL ms = VA12
+DBL ix = VA18
+DBL axc = WHO()
+DBL sav_G70=XGET("@G70")
+G71
+
+IF( !vax_c_pend ) THEN
+    ;//ACQUIRE(conn_super_lock)
+    WTAS( "%rg[20]", WHO(), -1 )
+    vax_c_pend = 1
+ENDIF
+
+;;;?%rg17.1 = 1 ;test tempo ciclo completo
+
+IF (VA8 == 0) JMPF .noInherit
+
+SYN
+DBL QtaSlave = QCALC(ix)
+DBL MinSlave = %ax[ix].pa[21] / 1000
+DBL MaxSlave = %ax[ix].pa[22] / 1000
+
+; test per problema aggancio non va a buon fine e rimane con
+; plc senza Go
+
+AWAIT(!%ax[ix].ra0.29)
+AWAIT(!%ax[ix].ra3.29)
+
+IF     ((%cn[axc].cc1.0) && (ms == %cn[axc].cc2 )) THEN ;//asse X del canale
+    IF (VA8 == 1) _paras( 0x00, X, 3, MinSlave, MaxSlave )
+    PRS[X] = QtaSlave
+ELSEIF ((%cn[axc].cc1.1) && (ms == %cn[axc].cc3 )) THEN ;//asse Y del canale
+    IF (VA8 == 1) _paras( 0x00, Y, 3, MinSlave, MaxSlave )
+    PRS[Y] = QtaSlave
+ELSEIF ((%cn[axc].cc1.2) && (ms == %cn[axc].cc4 )) THEN ;//asse Z del canale
+    IF (VA8 == 1) _paras( 0x00, Z, 3, MinSlave, MaxSlave )
+    PRS[Z] = QtaSlave
+ELSEIF ((%cn[axc].cc1.3) && (ms == %cn[axc].cc5 )) THEN ;//asse U del canale
+    IF (VA8 == 1) _paras( 0x00, U, 3, MinSlave, MaxSlave )
+    PRS[U] = QtaSlave
+ELSEIF ((%cn[axc].cc1.4) && (ms == %cn[axc].cc6 )) THEN ;//asse V del canale
+    IF (VA8 == 1) _paras( 0x00, V, 3, MinSlave, MaxSlave )
+    PRS[V] = QtaSlave
+ELSEIF ((%cn[axc].cc1.5) && (ms == %cn[axc].cc7 )) THEN ;//asse W del canale
+    IF (VA8 == 1) _paras( 0x00, W, 3, MinSlave, MaxSlave )
+    PRS[W] = QtaSlave
+ELSEIF ((%cn[axc].cc1.6) && (ms == %cn[axc].cc8 )) THEN ;//asse A del canale
+    IF( (%ax[ms].pa[0] != 3) && (%ax[ix].pa[0] != 3) ) _paras( 0x00, A, 3, MinSlave, MaxSlave )
+    PRS[A] = QtaSlave
+ELSEIF ((%cn[axc].cc1.7) && (ms == %cn[axc].cc9 )) THEN ;//asse B del canale
+    IF( (%ax[ms].pa[0] != 3) && (%ax[ix].pa[0] != 3) ) _paras( 0x00, B, 3, MinSlave, MaxSlave )
+    PRS[B] = QtaSlave
+ELSEIF ((%cn[axc].cc1.8) && (ms == %cn[axc].cc10)) THEN ;//asse C del canale
+    IF( (%ax[ms].pa[0] != 3) && (%ax[ix].pa[0] != 3) ) _paras( 0x00, C, 3, MinSlave, MaxSlave )
+    PRS[C] = QtaSlave
+ELSE
+    ;//asse master non presente nel canale
+    ERROR(3)            ;//Funzione non disponibile
+ENDIF
+
+.noInherit
+?%ax[ix].rga1 = ms      ;//numero asse master
+;?%ax[ix].rga11 = ms     ;//numero asse master
+?%ax[ix].rga0.0 = 1     ;//(req_conn_ax)
+?%rg17.0 = 1            ;//(busy)
+
+G(sav_G70)
+RET

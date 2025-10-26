@@ -1,0 +1,25 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Nodo
+JOGOPEN=leaf
+GroupBox=Test Jog Open
+Axes=Assi
+jog open=Disabilita Anello Chiuso
+jog open1=Jog [mV]
+Axes1=Assi1
+Axes2=Assi1
+Label=MUOVERE SOLO ASSI ANALOGICI
+CH3=CH3
+CH1=CH5
+CH2=CH0
+Label1=Asse Tubo
+Label2=C
+Label3=C1
+Label4=W Focale
+
+[STATUS]
+
+[HELP]

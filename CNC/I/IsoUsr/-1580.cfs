@@ -1,0 +1,139 @@
+[A]0: G580 
+
+DBL TubeLenChk
+
+IF( %cn[WHO()].rc[0].21 ) RET
+
+G153 G0 Z(MaxQta_Z)
+
+SYN
+IF( FetchingTail == 1 ) THEN
+    FetchingTail = 0
+	IF( LstIsHead == 1 ) THEN
+	    M_4TubeLen = IFEXP( TailLen[0] > TailLen[1],TailLen[0],TailLen[1] )  
+	ELSE
+	    M_4TubeLen = IFEXP( TailLen[0] < TailLen[1],TailLen[0],TailLen[1] )  
+	ENDIF
+	M_4TubeLen = %gIso22 + M_4TubeLen
+	TubeLenChk = (%gPlc7) / 1000 - (%gIso22 - (VA0))
+	IF( TubeLenChk < 50 ) THEN
+	    SYN
+	    MSGOUT " Tube length in real more than 50mm shorter "
+		M0
+		ERROR(55)
+	ENDIF
+    RETSKIP(start_track)
+ENDIF
+
+;iso_G580_Running    AT %gIso29.9;
+?%gIso29.9 = 1
+
+;//============================================================================
+;// EnFineScrapUnload AT %UNLOADER.values1.16;
+;//============================================================================
+IF( !%UNLOADER.values1.16 ) JMPF .noUnloadScrap	
+
+; Unload tailing in case of 3 spindles 
+IF( AEXISTS(3,V) ) THEN
+    ; Not M2 Mode
+    IF( !((%USR_M20.3) && (!%USR_M20.1) && (%USR_M21.22)) ) THEN
+	    POP(2)
+        JMPF .noUnloadScrap
+    ENDIF	
+    TubeLengthInMach = %UNLOADER.values0 / 1000
+    ; Dummy M4 Unloading
+    M_4TubeLen = QCALC(AXIDX(3,X)) + TubeLengthInMach
+    
+    IF( M_4TubeLen >= (ABS(Auto_X_M2_Qta) + ABS(MaxQta_V)) ) THEN
+        MSGOUT "Unloading the remainings"
+        ; Park YZ
+        G153 G0 Z(MaxQta_Z)
+    	G153 G0 Y(MinQta_Y) 
+    	IF( TubeLengthInMach < ABS(MaxQta_V) ) THEN
+    	    ; To move tube MaxQta_V first
+    	    JSR "MoveX1_Spindle.cfs" (MaxQta_V) 10000
+    	    G153 G1 X(M_4TubeLen - ABS(MaxQta_V)) F10000	
+    	ELSE	
+    		JSR "MoveX1_Spindle.cfs" (TubeLengthInMach) 10000
+    	ENDIF
+    	SYN
+        AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving
+    	
+    	; Close V
+    	RPT .Close_V_Start, .Close_V_End, 1
+    	; Open X
+    	RPT .Open_X_Start, .Open_X_End, 1
+    	; Dummy M4 Unloading
+		LstIsHead = 1
+    	G520 A(M_4TubeLen) M1
+    ELSE	
+    	MSGOUT "Tube Remaining Too Short, Please Unload Tailings Manually"
+    ENDIF
+ELSE
+; Unload tailing in case of 2 spindles 
+    IF( (VA0 > MinPieceUnload) || (QCALC(AXIDX(3,X)) > (Auto_X_M2_Qta + MinPieceUnload)) ) THEN
+	    POP(2)
+		JMPF .noUnloadScrap	
+    ENDIF
+
+    ; I_I_FC_W_POS AT %M53.26;
+    ; I_I_FC_W_NEG AT %M53.27; 	
+    ; O_O_SpindleFix_Open AT %USR_M21.21;
+    ; O_O_Mobile_Spindle_Open AT %USR_M20.2;
+    
+    IF( (%M53.26) && (!%M53.27) && (!%USR_M21.21) && (!%USR_M20.2) ) THEN
+        ; To unload last scrap
+    	; Only in case of last scrap less than min piece to unload
+    	SYN
+    	JSR "Sel_Y3Z3.cfs"       
+        G153 G0 Z(%ax29.pa22/1000)
+        G153 G1 Y(MaxQta_Y) C0 F30000   
+    	G153 G1 X(Auto_X_M2_Qta) F30000
+    
+        ; MidSpdClosing  AT  %USR_M41.27;
+        WAITBIT("%USR_M41.27",0)	
+        SYN
+        ; Open W
+        M981 
+        G4 F(ChuckOpenCloseTime)
+    	
+    	; Sensor Open detected C0
+        ; I_I_FixedSpindle_Open AT %USR_M0.31;  
+    	SYN
+        ;WAITBIT("%USR_M0.31",1)	
+		MSGOUT "Please Ensure 2nd Spindle Chucks Fully Open, Press START to Continue"
+    	
+    	G153 G1 X(MinQta_X) C45 F30000
+    	
+    	; Open X
+    	M720
+    	G4 F(ChuckOpenCloseTimeMain)
+    
+        G153 G1 X(Auto_X_M2_Qta) C0 F30000
+    ENDIF
+ENDIF
+
+.noUnloadScrap
+;//============================================================================
+
+RET
+
+.Open_X_Start
+    ; Open Main Spindle
+	SYN
+    M720     
+    G4 F(ChuckOpenCloseTimeMain)
+.Open_X_End
+
+.Close_V_Start
+	;Close V
+	SYN
+	; SlaveSpdOpening  AT  %USR_M41.30;
+	WAITBIT("%USR_M41.30",0)
+	
+	IF( !%USR_M20.1 ) THEN
+	    M723   		    
+        G4 F(ChuckOpenCloseTime)
+	ENDIF
+.Close_V_End
+

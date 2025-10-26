@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="CL3C-EC_V1.06.xml">
+   
+   <Device>CL3C-EC503</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+    
+	<RxPdo Index="#x1600">
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+	</TxPdo>
+
+	<DistribuitedClock>1</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+</Config>
+
+
+

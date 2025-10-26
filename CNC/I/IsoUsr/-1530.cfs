@@ -1,0 +1,76 @@
+[A]0: 530 
+
+
+RET
+;G530 A Verifica lunghezza pezzo
+;**********************************************************
+;(VA0) A Lunghezza
+;
+;**********************************************************
+
+IF( %M33 ) RET      ; Se simulazione su PC non considerare caricatore/scaricatore !
+
+
+;If graphic channel do RET
+IF (%cn[WHO()].pc[14].25) RET
+
+SYN
+;Variabili
+;--------------------------------------
+DBL TubLPz=VA0                           ;Lunghezza pezzo
+DBL TubInMac=0
+
+
+;Controllo lunghezza pezzo
+;--------------------------------------
+IF (%Rd[31]==2) THEN                    ;Richiesta pezzo fine barra
+  TubInMac=(%Rd[109]/1000.0)            ;Tubo totale
+ELSE
+  TubInMac=(%Rd[108]/1000.0)            ;Tubo utile
+ENDIF
+IF (TubLPz>TubInMac) JSR "ErrorIso.cfs" 1 530.1 TubLPz TubInMac
+
+
+
+;Verifica richiesta calibrazione USER
+;--------------------------------------
+;Verifica abilita calibrazione 2D e no calib.3D
+IF ((%Rd[199].20==1) && (%LSRPlcOp[0].23==0)) THEN
+
+  ;Calibrazione inizio tubo
+  IF (%Md[150].30==1) THEN
+    ;Start calibrazione
+    RPT .STR_CALIB, .END_CALIB, 1
+
+    ;Salva lunghezza ultima calibrazione
+    %Rd[139]=%Rd[108]
+  ENDIF
+
+  ;Calibrazione a metri (TuboUtile< L UltimaCalib. - CalibMetri)
+  IF (%Rd[108]<(%Rd[139]-%Rd[138])) THEN 
+    ;Start calibrazione
+    RPT .STR_CALIB, .END_CALIB, 1
+    
+    ;Salva lunghezza ultima calibrazione
+    %Rd[139]=%Rd[108]
+  ENDIF
+ENDIF
+%Md[150].30=0
+
+RET
+
+
+
+;Gestione posizionamenti
+;**********************************************************
+;Calibrazione tubo
+;--------------------------------------
+.STR_CALIB
+  SYN
+  JSR "ErrorIso.cfs" 1 530.2
+
+  G2301 X-410.00 U(+350.0)
+  G2300 X-410.00 U(+350.0)
+
+  SYN
+.END_CALIB

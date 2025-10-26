@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--DS401 I/O WAGO-->
+<Config DeviceConfig="WAGO_750_354.xml">
+
+    <Comment><![CDATA[FMMU and Sync Managment tables]]></Comment>
+	<FMMUTable LStart="#x12000" Length="0" LStartBit="0" LEndBit="7" PStart="#x1800">0</FMMUTable>
+	<FMMUTable LStart="#x11000" Length="0" LStartBit="0" LEndBit="7" PStart="#x2400">1</FMMUTable>
+	<FMMUTable LStart="#x400000" Length="1" LStartBit="0" LEndBit="0" PStart="#x080D">2</FMMUTable>
+	<FMMUTable LStart="#x0" Length="0" LStartBit="0" LEndBit="0" PStart="#x0">3</FMMUTable>
+
+	<SYNCTable Start="#x1000" Length="512" Type="MBoxOutput" Data="#x26000100">0</SYNCTable>
+	<SYNCTable Start="#x1400" Length="512" Type="MBoxInput" Data="#x22000100">1</SYNCTable>
+	<SYNCTable Start="#x1800" Length="0" Type="Output" Data="#x64000100">2</SYNCTable>
+	<SYNCTable Start="#x2400" Length="0" Type="Input" Data="#x00000100">3</SYNCTable>
+    <Comment><![CDATA[FMMU and Sync Managment tables]]></Comment>
+
+    <MboxPolling>
+      <Comment><![CDATA[0=Cyclic 1=State Change]]></Comment>
+      <Type>1</Type>
+    </MboxPolling>
+    
+	<DownloadPDOAssignment>0</DownloadPDOAssignment>
+    <DownloadPDOConfiguration>0</DownloadPDOConfiguration>
+
+	<PDOAssignmentSM2 Output="#x1600">
+		<SMObject>
+		  <Comment><![CDATA[Out0 - Diagnostic Control Word]]></Comment>
+		  <Address>#xF2000020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out1 - Slot 4 Channel 1 Word 1]]></Comment>
+		  <Address>#x70300110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out2 - Slot 4 Cannel 2 Word 1]]></Comment>
+		  <Address>#x70300210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out3 - Slot 6 Channel 1 Control]]></Comment>
+		  <Address>#x70500110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out4 - Slot 6 Channel 1 Word 1]]></Comment>
+		  <Address>#x70500210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out5 - Slot 6 Channel 2 Control]]></Comment>
+		  <Address>#x70500310</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out6 - Slot 6 Channel 2 Word 1]]></Comment>
+		  <Address>#x70500410</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out7 - Slot 7 Channel 1 Control]]></Comment>
+		  <Address>#x70600110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out8 - Slot 7 Channel 1 Word 1]]></Comment>
+		  <Address>#x70600210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out9 - Slot 7 Channel 2 Control]]></Comment>
+		  <Address>#x70600310</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out10 - Slot 7 Channel 2 Word 1]]></Comment>
+		  <Address>#x70600410</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Out11 - Slot 2 Channel Data 1,2,3,4]]></Comment>
+		  <Address>#x70100110</Address> 
+		</SMObject>
+	</PDOAssignmentSM2>
+	
+	<PDOAssignmentSM3 Input="#x1A00">
+		<SMObject>
+		  <Comment><![CDATA[In0 - Diagnostic Status Word]]></Comment>
+		  <Address>#xF1000020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In1 - Slot 3 Channel 1 Word 1]]></Comment>
+		  <Address>#x60200110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In2 - Slot 3 Channel 2 Word 1]]></Comment>
+		  <Address>#x60200210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In3 - Slot 5 Channel 1 Word 1]]></Comment>
+		  <Address>#x60400110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In4 - Slot 5 Channel 2 Word 1]]></Comment>
+		  <Address>#x60400210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In5 - Slot 6 Channel 1 Status]]></Comment>
+		  <Address>#x60500110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In6 - Slot 6 Channel 1 Word 1]]></Comment>
+		  <Address>#x60500210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In7 - Slot 6 Channel 2 Status]]></Comment>
+		  <Address>#x60500310</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In8 - Slot 6 Channel 2 Word 1]]></Comment>
+		  <Address>#x60500410</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In9 - Slot 7 Channel 1 Status]]></Comment>
+		  <Address>#x60600110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In10 - Slot 7 Channel 1 Word 1]]></Comment>
+		  <Address>#x60600210</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In11 - Slot 7 Channel 2 Status]]></Comment>
+		  <Address>#x60600310</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In12 - Slot 7 Channel 2 Word 1]]></Comment>
+		  <Address>#x60600410</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[In13 - Slot 1 Channel Data 1,2,3,4]]></Comment>
+		  <Address>#x60000110</Address> 
+		</SMObject>
+	</PDOAssignmentSM3>
+
+	<DistribuitedClock>1</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>1</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+</Config>
+

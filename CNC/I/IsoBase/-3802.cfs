@@ -1,0 +1,88 @@
+ [C]12 [X]0 [Y]0 [Z]0 [U]0 [V]0 [W]0 [R]0 : G2802
+;//(Rounded) Box graphics
+DBL color = VA2
+DBL xs = CTOMM(MIN(VA23, VA20))
+DBL xe = CTOMM(MAX(VA23, VA20))
+DBL ys = CTOMM(MIN(VA24, VA21))
+DBL ye = CTOMM(MAX(VA24, VA21))
+DBL zs = CTOMM(MIN(VA25, VA22))
+DBL ze = CTOMM(MAX(VA25, VA22))
+DBL r = CTOMM(VA17)
+DBL shx = 0, shy = 0, shz = 0
+DBL a
+DBL chord, asteps
+DBL sav_G70=XGET("@G70")
+G71
+
+IF(f_ortho) THEN
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+ENDIF
+
+IF (r < 0.001) THEN
+    asteps = 1
+ELSE
+    chord = 0.05 / r    ;//chord error
+    asteps = CEIL(90.0 / (2*ACOS(1.0-MIN(1.0,chord))))  ;//span (1/4 circle)
+    asteps = MIN(MAX(asteps, 1), 12)    ;//max tiles (1/4 circle)
+ENDIF
+
+MOVE(  15,color,xs+shx+r,ys+shy,zs+shz)
+LINETO(15,color,xe+shx-r,ys+shy,zs+shz)
+IF (r != 0) ARCTOCW(15,color,17,xe+shx,ys+shy+r,zs+shz,xe+shx-r,ys+shy+r,zs+shz)
+LINETO(15,color,xe+shx,ye+shy-r,zs+shz)
+IF (r != 0) ARCTOCW(15,color,17,xe+shx-r,ye+shy,zs+shz,xe+shx-r,ye+shy-r,zs+shz)
+LINETO(15,color,xs+shx+r,ye+shy,zs+shz)
+IF (r != 0) ARCTOCW(15,color,17,xs+shx,ye+shy-r,zs+shz,xs+shx+r,ye+shy-r,zs+shz)
+LINETO(15,color,xs+shx,ys+shy+r,zs+shz)
+IF (r != 0) ARCTOCW(15,color,17,xs+shx+r,ys+shy,zs+shz,xs+shx+r,ys+shy+r,zs+shz)
+
+MOVE(  15,color,xs+shx+r,ys+shy,ze+shz)
+LINETO(15,color,xe+shx-r,ys+shy,ze+shz)
+IF (r != 0) ARCTOCW(15,color,17,xe+shx,ys+shy+r,ze+shz,xe+shx-r,ys+shy+r,ze+shz)
+LINETO(15,color,xe+shx,ye+shy-r,ze+shz)
+IF (r != 0) ARCTOCW(15,color,17,xe+shx-r,ye+shy,ze+shz,xe+shx-r,ye+shy-r,ze+shz)
+LINETO(15,color,xs+shx+r,ye+shy,ze+shz)
+IF (r != 0) ARCTOCW(15,color,17,xs+shx,ye+shy-r,ze+shz,xs+shx+r,ye+shy-r,ze+shz)
+LINETO(15,color,xs+shx,ys+shy+r,ze+shz)
+IF (r != 0) ARCTOCW(15,color,17,xs+shx+r,ys+shy,ze+shz,xs+shx+r,ys+shy+r,ze+shz)
+
+IF (r != 0) THEN
+    FOR a = 270 TO 359.999 BY 90/asteps
+        MOVE(  15,color,xe+shx-r+r*COS(a),ys+shy+r+r*SIN(a),zs+shz)
+        LINETO(15,color,xe+shx-r+r*COS(a),ys+shy+r+r*SIN(a),ze+shz)
+    ENDFOR
+ENDIF
+MOVE(  15,color,xe+shx,ys+shy+r,zs+shz)
+LINETO(15,color,xe+shx,ys+shy+r,ze+shz)
+
+IF (r != 0) THEN
+    FOR a = 0 TO 89.999 BY 90/asteps
+        MOVE(  15,color,xe+shx-r+r*COS(a),ye+shy-r+r*SIN(a),zs+shz)
+        LINETO(15,color,xe+shx-r+r*COS(a),ye+shy-r+r*SIN(a),ze+shz)
+    ENDFOR
+ENDIF
+MOVE(  15,color,xe+shx-r,ye+shy,zs+shz)
+LINETO(15,color,xe+shx-r,ye+shy,ze+shz)
+
+IF (r != 0) THEN
+    FOR a = 90 TO 179.999 BY 90/asteps
+        MOVE(  15,color,xs+shx+r+r*COS(a),ye+shy-r+r*SIN(a),zs+shz)
+        LINETO(15,color,xs+shx+r+r*COS(a),ye+shy-r+r*SIN(a),ze+shz)
+    ENDFOR
+ENDIF
+MOVE(  15,color,xs+shx,ye+shy-r,zs+shz)
+LINETO(15,color,xs+shx,ye+shy-r,ze+shz)
+
+IF (r != 0) THEN
+    FOR a = 180 TO 269.999 BY 90/asteps
+        MOVE(  15,color,xs+shx+r+r*COS(a),ys+shy+r+r*SIN(a),zs+shz)
+        LINETO(15,color,xs+shx+r+r*COS(a),ys+shy+r+r*SIN(a),ze+shz)
+    ENDFOR
+ENDIF
+MOVE(  15,color,xs+shx+r,ys+shy,zs+shz)
+LINETO(15,color,xs+shx+r,ys+shy,ze+shz)
+
+G(sav_G70)
+RET

@@ -1,0 +1,124 @@
+[PROMPT]
+KEY_MAG       =Daten Werkzeugmagazin
+
+KEY_REV0      =Revolver(0)
+KEY_REV1      =Revolver(1)
+KEY_REV2      =Revolver(2)
+KEY_REV3      =Revolver(3)
+KEY_REV4      =Revolver(4)
+KEY_REV5      =Revolver(5)
+
+KEY_RV        =Konfigur. Revolver
+KEY_TPMAP     =Zuordnung Tool-Pocket
+KEY_KINPOCKET =Kinemat. Daten Revolver
+KEY_DYNTOOL   =Dynam. Daten Spindel
+
+RV_AXTYPE     =Typ
+RV_TURRETS    =Zahl Drehköpfe Revolver (1-12)
+RV_GIRISP     =Spindeldrehzahl
+RV_GIRIRV     =Revolverdrehzahl
+RV_VELLIM     =Übersetzungsverhältnis (U/min)
+RV_ACCTIME    =Beschleunigungszeit (s)
+RV_DECTIME    =Abbremszeit (s)
+RV_DELAYS     =S-curve time
+RV_GAINP      =Verstärkung P
+RV_FWERR      =Grenzgeschw, Schleppabstand(U/min)
+RV_TOLLERF    =Wert feine Toleranz(Grad)
+RV_TARQUOTA   =Eichwert (Grad)
+RV_PARKQTA    =Parkwert (Grad)
+RV_VELPOS     =Drehzahl bei Ausrichtung (Upm)
+RV_VELJOG     =Drehzahl bei JOG
+RV_VELCYCLE   =Drehzahl bei SINGLE CYCLE
+
+TP_PROMPT0     =Zahl
+TP_PROMPT1     =Typ
+TP_PROMPT2     =Pocket
+TP_PROMPT3     =Dynamik
+TP_TOOL1       =T 1
+TP_TOOL2       =T 2
+TP_TOOL3       =T 3
+TP_TOOL4       =T 4
+TP_TOOL5       =T 5
+TP_TOOL6       =T 6
+
+PKIN_COMPX     =Ausgleich Mechanik X
+PKIN_COMPY     =Ausgleich Mechanik Y
+PKIN_COMPZ     =Ausgleich Mechanik Z
+
+TDYN_VELLIM    =Übersetzungsverhältnis (U/min)
+TDYN_ACCTIME   =Beschleunigungszeit (s)
+TDYN_DECTIME   =Abbremszeit (s)
+TDYN_DELAYS    =S-curve time
+TDYN_GAINP     =Verstärkung P
+TDYN_FWERR     =Grenzgeschw, Schleppabstand(U/min)
+TDYN_TOLLERF   =Wert feine Toleranz(Grad)
+TDYN_VELPOS    =Spindeldrehzahl bei Ausrichtung (U/min)
+
+
+[HELP]
+
+KEY_MAG       =Daten Werkzeugmagazin
+
+KEY_REV0      =Revolver(0)
+KEY_REV1      =Revolver(1)
+KEY_REV2      =Revolver(2)
+KEY_REV3      =Revolver(3)
+KEY_REV4      =Revolver(4)
+KEY_REV5      =Revolver(5)
+
+KEY_RV        =Konfigur. Revolver
+KEY_TPMAP     =Zuordnung Tool-Pocket
+KEY_KINPOCKET =Kinemat. Daten Revolver
+KEY_DYNTOOL   =Dynam. Daten Spindel
+
+RV_AXTYPE     =Typ
+RV_TURRETS    =Daten zum Beschreiben des Revolvermodells: Zahl der Revolverdrehköpfe (1-12)
+RV_GIRISP     =Untersetzungsverhältnis Spannfutter: Zähler des Bruchs q=n/d, wobei q die Spannfutterdrehzahl ist, die erforderlich ist, um eine Revolverumdrehung zu erhalten 
+RV_GIRIRV     =Untersetzungsverhältnis Revolver: Nenner der Fraktion q=n/d, wobei q die Spannfutterdrehzahl ist, die erforderlich ist, um eine Revolverumdrehung zu erhalten 
+RV_VELLIM     =Übersetzungsverhältnis (U/min)
+RV_ACCTIME    =Beschleunigungszeit (s)
+RV_DECTIME    =Abbremszeit (s)
+RV_DELAYS     =S-curve time
+RV_GAINP      =Verstärkung P
+RV_FWERR      =Grenzgeschw, Schleppabstand(U/min)
+RV_TOLLERF    =Wert feine Toleranz(Grad)
+RV_TARQUOTA   =Eichwert (Grad)
+RV_PARKQTA    =Parkwert (Grad)
+RV_VELPOS     =Drehzahl bei Ausrichtung (Upm)
+RV_VELJOG     =Drehzahl bei JOG
+RV_VELCYCLE   =Drehzahl bei SINGLE CYCLE
+
+TP_PROMPT0     =Zahl
+TP_PROMPT1     =Typ
+TP_PROMPT2     =Pocket
+TP_PROMPT3     =Dynamik
+
+TP_MAP1        =Diese Spalte gestattet es, die Zuordnung zwischen Werkzeug und seiner Position in der Nummerierung der Revolverstationen zu ändern (Defaultwert Werkzeug 1 auf Pocket 1)
+TP_MAP2        =
+TP_MAP3        =
+TP_MAP4        =
+TP_MAP5        =
+TP_MAP6        =
+
+TP_DYN1        =Diese Spalte gestattet es, die Dynamik jedes Werkzeugs aufgrund der Masse des Werkzeugträgers und der Eigenschaften der Fertigung zu differenzieren. Der eingefügte Wert ist der Index zur Tabelle Dynamische Spannfutterdaten (Defaultwert Werkzeug 1 auf Dynamik 1)
+TP_DYN2        =
+TP_DYN3        =
+TP_DYN4        =
+TP_DYN5        =
+TP_DYN6        =
+
+
+PKIN_COMPX     =Kinematische Revolverdaten: Jeder Revolverdrehkopf muss, um auf den ersten ausgerichtet zu sein, in den 3 Komponenten dX,dY,dZ kompensiert sein(vom Hersteller des Revolvers gelieferte Werte)
+PKIN_COMPX     =Ausgleich Mechanik X
+PKIN_COMPY     =Ausgleich Mechanik Y
+PKIN_COMPZ     =Ausgleich Mechanik Z
+
+TDYN_VELLIM    =Dynamische Spannfutterdaten: Diese Daten gestatten es, die Dynamik des Spannfutters zu personalisieren, nachdem man das Werkzeug aus dem Magazin gewählt hat. Grenzgeschwindigkeit des Spannfutters 
+TDYN_ACCTIME   =Beschleunigungszeit (s)
+TDYN_DECTIME   =Abbremszeit (s)
+TDYN_DELAYS    =S-curve time
+TDYN_GAINP     =Verstärkung P
+TDYN_FWERR     =Grenzgeschw, Schleppabstand(U/min)
+TDYN_TOLLERF   =Wert feine Toleranz(Grad)
+TDYN_VELPOS    =Spindeldrehzahl bei Ausrichtung (U/min)
+

@@ -1,0 +1,65 @@
+[PROMPT]
+KEY_PROBE =Probe
+
+KEY_PROBE_DATA  =Data
+KEY_PROBE_DIAGS =Diagnostics
+
+DIGITAL_SENSOR_HDR_DATA=Digital sensor
+
+PRBDAT0 =Massima deflessione (Prb0) - (G1190: impostare a 0)
+PRBDAT1 =Massima compressione (Prb1) - (G1190: impostare a 0)
+PRBDAT2 =Modalità funzionamento Probe (Prb2)
+PRBDAT3 =Velocità avvicinamento [mm/min] (Prb3)
+PRBDAT4 =Velocità tastatura [mm/min] (Prb4)
+PRBDAT5 =Velocità allontanamento [mm/min] (Prb5)
+PRBDAT6 =Soglia errore inseguimento contatto Probe [mm] (Prb6)
+PRBDAT7 =Soglia coppia contatto Probe [V] (Prb7)
+PRBDAT8 =Ingresso analogico coppia azionamento [Reg IW] (Prb8)
+//PRBDAT9 =Riservato
+//PRBDAT10 =Riservato
+PRBIN =Ingresso digitale contatto Probe [Reg IW] (PrbIn0)
+PRBDAT11 =Livello di intervento del contatto probe [0: Low 1: High] (Prb11)
+PRBDAT12 =Soglia avvicinamento [mm] (Prb12)
+//PRBDAT13 =Riservato
+//PRBDAT14 =Riservato
+PRBAV = Ingresso digitale sensore rallentamento (PrbAv0)
+PRBDAT15 =Livello di intervento del sensore di rallentamento [0: Low 1: High] (Prb15)
+
+PRBDAT_EX_TOUCH_TOLL  =Touch tolerance (0=disab)
+PRBDAT_EX_TOUCH_HYST  =Switch hysteresis at release
+PRBDAT_EX_TOUCH_SIMUL =Simulation mode (1=simple, 2=full)
+
+PRBDAT_EX_G1190_ACQ_X =Last acquire X coordinate
+PRBDAT_EX_G1190_ACQ_Y =Last acquire Y coordinate
+PRBDAT_EX_G1190_ACQ_Z =Last acquire Z coordinate
+
+PRBDAT_EX_G1190_ACQUIRE_STATUS=Acquire status
+PRBDAT_EX_G1190_STATUS_LIST   =IDLE,RUNNING,COMPLETE,STOPPED
+PRBDAT_EX_G1190_IN_RANGE=In-range sensor
+PRBDAT_EX_G1190_SIGNAL  =Probe sense
+PRBDAT_EX_G1190_EPSILON =Epsilon
+
+ANALOG_SENSOR_HDR_DATA=Analog sensor
+
+APRBDAT5=Analog input IW index
+APRBDAT6=Min input voltage [ADC steps] (a)
+APRBDAT7=Max input voltage [ADC steps] (b)
+APRBDAT8=Equivalent distance [mm] (a)
+APRBDAT9=Equivalent distance [mm] (b)
+
+[HELP]
+
+PRBDAT0 =Massima Deflessione - Non usata nelle applicazioni Plasma - Impostare =0
+PRBDAT1 =Massima Compressione - Non usata nelle applicazioni Plasma - Impostare =0
+PRBDAT2 =Modalità gestione Probe: \n 0= Dopo che si è raggiunta la quota di avvicinamento si attende la commutazione dell'ingresso Probe \n 1= Dopo la commutazione dell'ingresso del sensore rallentamento si attende la commutazione dell'ingresso Probe \n 2 = Dopo il raggiungimento della soglia di avvicinamento si attende il superamento dell' errore di inseguimento impostato per la condizione di contatto \n 3= Dopo la commutazione dell'ingresso del sensore di rallentamento si attende il superamento dell' errore di inseguimento impostato per la condizione di contatto \n 4= Dopo il raggiungimento della quota di avvicinamento si attende il superamento della coppia di contatto impostata nel Drive \n 5 = Dopo la commutazione dell'ingresso del sensore di rallentamento si attende il superamento della coppia di contatto impostata nel Drive.
+PRBDAT3 =Velocità , espressa in [mm/min], applicata per raggiungere la quota di avvicinamento.
+PRBDAT4 =Velocità , espressa in [mm/min], applicata per attuare la "tastatura" della lamiera.
+PRBDAT5 =Velocità , espressa in [mm/min] , utilizzata per allontanarsi dal punto di contatto ( nel caso del plasma è usata per portare la torcia a quota di innesco).
+PRBDAT6 =Errore di Inseguimento , espresso in [mm], utilizzato come soglia per rilevare in contatto del Probe. Parametro significativo esclusivamente in Modalità di gestione probe tipo 2 o 3.
+PRBDAT7 =Valore di coppia , espressa direttamente in V sul riferimento analogico , utilizzato per rilevare il contatto del Probe. Parametro significativo esclusivamente con Modalità di gestione probe tipo 4 o 5.
+PRBDAT8 =Ingresso Analogico ( IW..) utilizzato per la misura della Coppia erogata dal motore. Da utilizzare per rilevare la condizione di contatto del probe in Modalità di gestione probe tipo 4 o 5.
+PRBIN   =Ingresso a cui è collegato il contatto Probe. Da utilizzare per rilevare la condizione di contatto del probe in Modalità gestione probe 0 o 1. Esprimere nella forma <registro>.<bit>.
+PRBDAT11 =Livello di intervento del contatto probe . 0=Low , 1=High.
+PRBDAT12 =Soglia avvicinamento, espressa in [mm], in cui si commuterà alla velocità di tastatura. Significativa esclusivamente con Modalità di gestione probe tipo 0 , 2 o 4.
+PRBAV    =Ingresso a cui è collegato l'eventuale sensore di rallentamento, in cui si commuterà alla velocità di tastatura. Significativo esclusivamente con Modalità gestione probe tipo 1 , 3 o 5. Esprimere nella forma <registro>.<bit>.
+PRBDAT15 =Livello di intervento del sensore di rallentamento. 0=Low 1= High.

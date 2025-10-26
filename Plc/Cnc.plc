@@ -1,0 +1,4925 @@
+* File CNC.PLC: FB gestione macchina, canali, assi
+
+*#funcdec "canfb.plc"
+#funcdec "assi.plc"
+
+#include "iol.inc"
+
+VAR
+#include "assi.inc"
+#include "cnc.inc"
+END_VAR
+
+VAR_IN_OUT
+REQ_CONN_AX     AT %rga0.0; * rga0.0 Richiesta aggancio asse in albero elettrico
+REQ_SCON_AX     AT %rga0.1; * rga0.1 Richiesta sgancio asse
+REQ_CONN_CP     AT %rga0.2; * rga0.2 Richiesta aggancio asse in coupling
+CONN_MAST       AT %rga1; * rga1 Numero asse master per aggancio albero elettrico
+CP_MAST1        AT %rga3; * rga3 Numero asse master 1 per coupling
+CP_MAST2        AT %rga4; * rga4 Numero asse master 2 per coupling
+CP_MAST3        AT %rga5; * rga5 Numero asse master 3 per coupling
+CP_MAST4        AT %rga6; * rga6 Numero asse master 4 per coupling
+CP_TYPEC        AT %rga7; * rga7 Tipo connessione per coupling
+BSY_CONN_AX     AT %rg17.0; * rg17.0 Busy aggancio/sgancio asse
+FIR_FTC1        AT %TRA_AuxF; * Filter Time Constant 1 (ms)
+FIR_FTC2        AT %TRA_AuxG; * Filter Time Constant 2 (ms)
+FIR_FEC         AT %TRA_AuxH; * Following Error Compensation [0..1000]
+OAP_INFWD       AT %pa12; * Old axis Feed Forward [0..1000]
+DFB_ERRCODE     AT %fb14; * fb14 Codice errore procedura
+END_VAR
+
+* FB EMULAZIONE SELETTORE A 6 POSIZIONI
+
+FUNCTION_BLOCK EMUL_SEL
+
+VAR_INPUT
+CU: BOOL; * incremento selezione
+CD: BOOL; * decremento selezione
+END_VAR
+
+VAR_OUTPUT
+Q: DWORD; * selezione attuale
+END_VAR
+
+VAR
+OldPlus: BOOL; * Stato precedente bit incremento
+OldMinus: BOOL; * Stato precedente bit decremento
+RETAIN SelStatus: DWORD; * Memoria selezione attuale
+END_VAR
+
+* Inizializza lo stato precedente alla prima scansione
+
+LD   %PLCFLAGS.8
+JMPCN END_INIT_STPREC
+
+LD   CU                            ** incremento selezione
+ST   OldPlus                       ** Stato precedente bit incremento
+
+LD   CD                            ** decremento selezione
+ST   OldMinus                      ** Stato precedente bit decremento
+
+END_INIT_STPREC:
+
+LD   CU                            ** incremento selezione
+ANDN OldPlus                       ** Stato precedente bit incremento
+OR   (
+LDN  CU                            ** incremento selezione
+AND  OldPlus                       ** Stato precedente bit incremento
+)
+JMPCN END_INC
+
+LD   SelStatus                     ** Memoria selezione attuale
+ADD  1
+ST   SelStatus                     ** Memoria selezione attuale
+
+LD   SelStatus                     ** Memoria selezione attuale
+GE   6
+JMPCN END_INC
+
+LD   0
+ST   SelStatus                     ** Memoria selezione attuale
+
+END_INC:
+
+LD   CU                            ** incremento selezione
+ST   OldPlus                       ** Stato precedente bit incremento
+
+LD   CD                            ** decremento selezione
+ANDN OldMinus                      ** Stato precedente bit decremento
+OR   (
+LDN  CD                            ** decremento selezione
+AND  OldMinus                      ** Stato precedente bit decremento
+)
+JMPCN END_DEC
+
+LD   SelStatus                     ** Memoria selezione attuale
+SUB  1
+ST   SelStatus                     ** Memoria selezione attuale
+
+LD   SelStatus                     ** Memoria selezione attuale
+LT   0
+JMPCN END_DEC
+
+LD   5
+ST   SelStatus                     ** Memoria selezione attuale
+
+END_DEC:
+
+LD   CD                            ** decremento selezione
+ST   OldMinus                      ** Stato precedente bit decremento
+
+LD   SelStatus                     ** Memoria selezione attuale
+ST   Q                             ** selezione attuale
+
+END_FUNCTION_BLOCK
+
+
+* FB EMULAZIONE INGRESSO OVERRIDE
+
+FUNCTION_BLOCK EMUL_OVER
+
+VAR_INPUT
+CU: BOOL; * incremento valore
+CD: BOOL; * decremento valore
+END_VAR
+
+VAR_OUTPUT
+Q: DWORD; * valore attuale
+END_VAR
+
+VAR
+OldPlus: BOOL; * Stato precedente bit incremento
+OldMinus: BOOL; * Stato precedente bit decremento
+RETAIN OverStatus: DWORD; * Memoria valore attuale override
+END_VAR
+
+LD   CU                            ** incremento valore
+ANDN OldPlus                       ** Stato precedente bit incremento
+JMPCN END_INC
+
+LD   OverStatus                    ** Memoria valore attuale override
+ADD  5
+ST   OverStatus                    ** Memoria valore attuale override
+
+LD   OverStatus                    ** Memoria valore attuale override
+GT   120
+JMPCN END_INC
+
+LD   120
+ST   OverStatus                    ** Memoria valore attuale override
+
+END_INC:
+
+LD   CU                            ** incremento valore
+ST   OldPlus                       ** Stato precedente bit incremento
+
+LD   CD                            ** decremento valore
+ANDN OldMinus                      ** Stato precedente bit decremento
+JMPCN END_DEC
+
+LD   OverStatus                    ** Memoria valore attuale override
+SUB  5
+ST   OverStatus                    ** Memoria valore attuale override
+
+LD   OverStatus                    ** Memoria valore attuale override
+LT   0
+JMPCN END_DEC
+
+LD   0
+ST   OverStatus                    ** Memoria valore attuale override
+
+END_DEC:
+
+LD   CD                            ** decremento valore
+ST   OldMinus                      ** Stato precedente bit decremento
+
+LD   OverStatus                    ** Memoria valore attuale override
+ST   Q                             ** valore attuale
+
+END_FUNCTION_BLOCK
+
+
+
+* FB GESTIONE MACCHINA
+
+FUNCTION_BLOCK GESTTM
+
+VAR_INPUT
+xStart: BOOL; * comando START canali
+xReset: BOOL; * comando RESET canali e assi
+xHold: BOOL; * comando Hold
+xEmer: BOOL; * comando Emergenza
+xRepos: BOOL; * comando REPOS dopo hold
+xPlus: BOOL; * comando + agli assi
+xMinus: BOOL; * comando - agli assi
+xStepIn: BOOL; * comando Step entrando nel sottoprogramma
+xStepOut: BOOL; * comando Step con uscita dal sottoprogramma
+xRTPlus: BOOL; * comando + in retrace
+xRTMinus: BOOL; * comando - in retrace
+xRTDryRun: BOOL; * comando dry run (rapido) in retrace
+xModRepos: BOOL; * comando attiva modalit� REPOS
+xSelFromInput: BOOL; * Disabilita selezioni interne (monitor canale)
+xSelFromPuls: BOOL; * Abilita alcune selezioni da pulsantiera macchina
+xEmulPuls: BOOL; * Abilita emulazione della pulsantiera macchina
+xSelModPaux: BOOL; * Abilita selezione modo da puls. ausiliaria
+xSelACPaux: BOOL; * Abilita selezione asse/canale da puls. ausiliaria
+xEnMovPaux: BOOL; * Abilita movimentazione asse da puls. ausiliaria
+xVolExt: BOOL; * Volantino esterno alla puls. aux.
+xVolGear: BOOL; * Abilita volantino in albero elettrico
+xModRetrace: BOOL; * abilitazione modalit� retrace
+xSelREF: BOOL; * selezione modo REF (con sel. esterna)
+xSelJOG: BOOL; * selezione modo JOG (con sel. esterna)
+xSelINC: BOOL; * selezione modo INC (con sel. esterna)
+xSelMDI: BOOL; * selezione modo MDI (con sel. esterna)
+xSelAUT: BOOL; * selezione modo AUT (con sel. esterna)
+xSelJogOpen: BOOL; * selezione JOG OPEN (esterna)
+xSingleRef: BOOL; * selezione modo REF singolo (esterna)
+xPresetRef: BOOL; * selezione modo REF preset (esterna)
+xSelStep: BOOL; * selezione esec. passo-passo (esterna)
+xSelBBlock: BOOL; * selezione esec. blocco barrato (esterna)
+xSelDryRun: BOOL; * selezione esec. DRY RUN (esterna)
+xSelExeM01: BOOL; * selezione esec. arresto su M01 (esterna)
+xSelSimul: BOOL; * selezione esec. simulata (esterna)
+xBlkSearch: BOOL; * selezione esec. ricerca blocco (esterna)
+xQuotaInc: DWORD; * quota per incrementi fissi (esterna)
+xVJogOpen: DWORD; * Tensione per JOG OPEN (mVolt) (esterna)
+xQuotaPrs: DWORD; * quota per taratura immediata (esterna)
+xOverride: DWORD; * override assi
+xSpinOverride: DWORD; * override mandrini
+xVolAxis: DWORD; * Numero asse master per volantino
+xPulsMacc1: WORD; * Ingressi 1 da pulsantiera macchina
+xPulsMacc2: WORD; * Ingressi 2 da pulsantiera macchina
+xResPuls: DWORD; * Bits forzamento reset stato pulsantiera
+END_VAR
+
+VAR_OUTPUT
+yChSelMask: DWORD; * maschera canale selezionato
+yAxSelMask: DWORD; * maschera asse selezionato all'interno del canale
+yPulsMacc1: WORD; * Uscite 1 per pulsantiera macchina
+yPulsMacc2: WORD; * Uscite 2 per pulsantiera macchina
+yOverAxis: DWORD; * Override assi da emulazione pulsantiera
+yOverSpindle: DWORD; * Override mandrini da emulazione pulsantiera
+END_VAR
+
+VAR
+StatoAttPuls: DWORD; * Stato attuale ingressi da pulsantiera
+StatoPrecPuls: DWORD; * Stato precedente ingressi da pulsantiera
+StatoRTPuls: DWORD; * Stato fronte salita ingressi da pulsantiera
+RETAIN StatoMemPuls: DWORD; * Stato memorizzato per pulsantiera
+InAxisSelect: DWORD; * Input numero asse selezionato
+
+ChanSelect: DWORD; * Canale selezionato
+MaskSel: DWORD; * Maschera compressa asse selezionato
+AppoggioVol: BOOL; * Mem. Appoggio utilizzo volantino
+SelMovEnab: BOOL; * Abil. e selez. asse OK per PAUX
+SelMovJog: BOOL; * Movimentazione in JOG selezionata
+AppSelOk: BOOL; * Selez.OK da PAUX ritardata per aggiornamento Qta asse
+AppSelOk1: BOOL; * Selez.OK1 da PAUX ritardata per aggiornamento Qta asse
+AppSelOk2: BOOL; * Selez.OK2 da PAUX ritardata per aggiornamento Qta asse
+ScanVolant: BOOL; * Start timer per campionamento volantino
+AppTim: BOOL; * Appoggio comando timer
+DiffQtaVolant: DWORD; * Differenza quota volantino rispetto alla precedente
+DiffQtaVolAbs: DWORD; * Differenza quota volantino (assoluta)
+QtaVolantAct: DWORD; * Quota volantino attuale
+QtaVolantPrec: DWORD; * Quota volantino precedente
+OverrVolPaux: DWORD; * Override da volantino
+TCampVol: DWORD; * Tempo campionamento volantino
+AppoggioReg: DWORD; * Registro di appoggio
+
+#defcom TON_ENDJOG.Q Fine tempo uscita da movimentazione in JOG
+TON_ENDJOG: TON;
+#defcom TON_REFRVOL.Q Fine tempo per lettura valori volantino
+TON_REFRVOL: TON;
+#defcom T_DECV.Q Fine ritardo decremento velocit�
+T_DECV: TON;
+#defcom TRIGINVJOG.Q Impulso inversione direzione comando da volantino
+TRIGINVJOG: TRIG;
+
+DECAX: DECODM;
+DECCH: DECODM;
+SEL_MODE: EMUL_SEL;
+SEL_AXIS: EMUL_SEL;
+OVER_AXIS: EMUL_OVER;
+OVER_SPINDLE: EMUL_OVER;
+END_VAR
+
+* Gestione bistabili per pulsantiera macchina
+
+LD   xEmulPuls                     ** Abilita emulazione della pulsantiera macchina
+JMPC IN_EMUL
+
+LD   xPulsMacc2                    ** Ingressi 2 da pulsantiera macchina
+SHL  16
+OR   xPulsMacc1                    ** Ingressi 1 da pulsantiera macchina
+ST   StatoAttPuls                  ** Stato attuale ingressi da pulsantiera
+
+JMP  END_IN_EMUL
+
+IN_EMUL:
+
+LD   UP_EMPULS1                    ** ui31 Registro 1 IN emulazione pulsantiera
+ST   StatoAttPuls                  ** Stato attuale ingressi da pulsantiera
+
+END_IN_EMUL:
+
+* Inizializza lo stato precedente alla prima scansione
+
+LD   %PLCFLAGS.8
+JMPCN END_INIT_STPREC
+
+LD   StatoAttPuls                  ** Stato attuale ingressi da pulsantiera
+ST   StatoPrecPuls                 ** Stato precedente ingressi da pulsantiera
+
+END_INIT_STPREC:
+
+* Genera il fronte di salita degli ingressi
+* (per il selettore a chiave in emulazione rileva entrambi i fronti)
+
+LD   StatoAttPuls                  ** Stato attuale ingressi da pulsantiera
+XOR  StatoPrecPuls                 ** Stato precedente ingressi da pulsantiera
+AND  (
+LD   StatoAttPuls                  ** Stato attuale ingressi da pulsantiera
+OR   16#02000000   * Maschera selettore a chiave per emulazione
+)
+ST   StatoRTPuls                   ** Stato fronte salita ingressi da pulsantiera
+
+LD   StatoAttPuls                  ** Stato attuale ingressi da pulsantiera
+ST   StatoPrecPuls                 ** Stato precedente ingressi da pulsantiera
+
+* Effettua il toggle dello stato ogni volta che c'� un fronte sull'ingresso
+
+LD   StatoRTPuls                   ** Stato fronte salita ingressi da pulsantiera
+XOR  StatoMemPuls                  ** Stato memorizzato per pulsantiera
+ANDN xResPuls                      ** Bits forzamento reset stato pulsantiera
+ST   StatoMemPuls                  ** Stato memorizzato per pulsantiera
+
+* Nel caso dei pulsanti di selezione della quota per l'incrementale,
+* effettua una gestione tipo radio-button.
+* Sul fronte di uno dei pulsanti del gruppo radio-button,
+* copia il valore della maschera dei pulsanti nello stato
+
+LD   StatoRTPuls                   ** Stato fronte salita ingressi da pulsantiera
+AND  16#0000007E
+NE   0
+JMPCN END_PULS_INC
+
+LD   StatoRTPuls                   ** Stato fronte salita ingressi da pulsantiera
+AND  16#0000007E
+OR   (
+LD   StatoMemPuls                  ** Stato memorizzato per pulsantiera
+AND  16#FFFFFF81
+)
+ST   StatoMemPuls                  ** Stato memorizzato per pulsantiera
+
+END_PULS_INC:
+
+* Output primo gruppo di bit di stato
+
+LD   StatoMemPuls                  ** Stato memorizzato per pulsantiera
+ST   yPulsMacc1                    ** Uscite 1 per pulsantiera macchina
+
+* Output secondo gruppo di bit di stato senza emulazione pulsantiera
+
+LD   StatoMemPuls                  ** Stato memorizzato per pulsantiera
+AND  16#0187FFFE   * Maschera i sel. MODE-AXES-chiave e i puls. start, stop, +, -, reset
+OR   (
+LD   StatoAttPuls                  ** Stato attuale ingressi da pulsantiera
+AND  16#FE000000   * Maschera tutto tranne i selettori MODE-AXES-chiave
+)
+SHR  16
+ST   yPulsMacc2                    ** Uscite 2 per pulsantiera macchina
+
+END_PNORM:
+
+* Lettura selezioni
+
+LD   xSelFromInput                 ** Disabilita selezioni interne (monitor canale)
+JMPC SEL_FROM_INPUT
+
+LD   xSelModPaux                   ** Abilita selezione modo da puls. ausiliaria
+JMPC SEL_STA_FROM_PAUX
+
+LD   xSelFromPuls                  ** Abilita alcune selezioni da pulsantiera macchina
+JMPC SEL_STA_FROM_PULS
+
+* Legge selezioni da monitor canale
+
+LD   BUP_SEL_REF                   ** ui16.1 Modo REF selezionato da monitor canale
+OR   xSelREF                       ** selezione modo REF (con sel. esterna)
+ST   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+
+LD   BUP_SEL_JOG                   ** ui16.2 Modo JOG selezionato da monitor canale
+OR   xSelJOG                       ** selezione modo JOG (con sel. esterna)
+ST   BSG_MAN                       ** rg1.1 Selezione modo JOG (manuale)
+
+LD   BUP_SEL_INC                   ** ui16.3 Modo INC selezionato da monitor canale
+OR   xSelINC                       ** selezione modo INC (con sel. esterna)
+ST   BSG_INC                       ** rg1.2 Selezione modo INC (inc.fissi)
+
+LD   BUP_SEL_MDI                   ** ui16.4 Modo MDI selezionato da monitor canale
+OR   xSelMDI                       ** selezione modo MDI (con sel. esterna)
+ST   BSG_MDI                       ** rg1.3 Selezione modo MDI (semiautom)
+
+LD   BUP_SEL_AUT                   ** ui16.5 Modo AUT selezionato da monitor canale
+OR   xSelAUT                       ** selezione modo AUT (con sel. esterna)
+ST   BSG_AUT                       ** rg1.4 Selezione modo AUT (automatic)
+
+LD   BUP_JOGOPEN                   ** ui16.16 Selezione esecuzione JOG a loop aperto
+OR   xSelJogOpen                   ** selezione JOG OPEN (esterna)
+ST   BSG_JOGOPEN                   ** rg1.5 Selezione JOG a Loop Aperto
+
+LD   BUP_SINGREF                   ** ui16.28 Selezione REF singolo
+ST   BSG_SINGREF                   ** rg1.11 Selezione modo REF singolo
+
+LD   UP_JOGOPEN                    ** ui23 Tensione per JOG OPEN (mVolt)
+ST   SG_JOGOPEN                    ** rg5 Tensione JOG a Loop Aperto
+
+LD   UP_FIXINCR                    ** ui22 Quota per incrementi fissi
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+JMP  END_SEL_STA_INT
+
+SEL_STA_FROM_PULS:
+
+LDN  yPulsMacc2.13
+AND  yPulsMacc2.14
+ANDN yPulsMacc2.15
+OR   xSelREF                       ** selezione modo REF (con sel. esterna)
+ST   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+
+LD   yPulsMacc2.13
+ANDN yPulsMacc2.14
+ANDN yPulsMacc2.15
+OR   xSelJOG                       ** selezione modo JOG (con sel. esterna)
+ST   BSG_MAN                       ** rg1.1 Selezione modo JOG (manuale)
+
+LDN  yPulsMacc2.13
+ANDN yPulsMacc2.14
+AND  yPulsMacc2.15
+OR   xSelINC                       ** selezione modo INC (con sel. esterna)
+ST   BSG_INC                       ** rg1.2 Selezione modo INC (inc.fissi)
+
+LD   yPulsMacc2.13
+AND  yPulsMacc2.14
+ANDN yPulsMacc2.15
+OR   xSelMDI                       ** selezione modo MDI (con sel. esterna)
+ST   BSG_MDI                       ** rg1.3 Selezione modo MDI (semiautom)
+
+LDN  yPulsMacc2.13
+ANDN yPulsMacc2.14
+ANDN yPulsMacc2.15
+OR   xSelAUT                       ** selezione modo AUT (con sel. esterna)
+ST   BSG_AUT                       ** rg1.4 Selezione modo AUT (automatic)
+
+LD   StatoMemPuls.16
+OR   xSelJogOpen                   ** selezione JOG OPEN (esterna)
+ST   BSG_JOGOPEN                   ** rg1.5 Selezione JOG a Loop Aperto
+
+LD   UP_JOGOPEN                    ** ui23 Tensione per JOG OPEN (mVolt)
+ST   SG_JOGOPEN                    ** rg5 Tensione JOG a Loop Aperto
+
+LD   BUP_SINGREF                   ** ui16.28 Selezione REF singolo
+ST   BSG_SINGREF                   ** rg1.11 Selezione modo REF singolo
+
+LD   yPulsMacc1.4
+JMPCN END_INC1
+
+LD   10
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+JMP  END_SEL_INC
+
+END_INC1:
+
+LD   yPulsMacc1.2
+JMPCN END_INC10
+
+LD   100
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+JMP  END_SEL_INC
+
+END_INC10:
+
+LD   yPulsMacc1.5
+JMPCN END_INC100
+
+LD   1000
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+JMP  END_SEL_INC
+
+END_INC100:
+
+LD   yPulsMacc1.3
+JMPCN END_INC1000
+
+LD   10000
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+JMP  END_SEL_INC
+
+END_INC1000:
+
+LD   yPulsMacc1.6
+JMPCN END_INC10000
+
+LD   100000
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+JMP  END_SEL_INC
+
+END_INC10000:
+
+LD   UP_FIXINCR                    ** ui22 Quota per incrementi fissi
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+END_SEL_INC:
+
+JMP  END_SEL_STA_INT
+
+SEL_STA_FROM_PAUX:
+
+LD   BAP_SEL_REF                   ** IPuls3.0 Modo REF selezionato da puls. aux
+OR   BAP_SINGREF                   ** IPuls3.6 Modo REF singolo selezionato da puls. aux
+ST   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+
+LD   BAP_SEL_JOG                   ** IPuls3.1 Modo JOG selezionato da puls. aux
+OR   BAP_JOGOPEN                   ** IPuls3.2 Modo JOG OPEN selezionato da puls. aux
+ST   BSG_MAN                       ** rg1.1 Selezione modo JOG (manuale)
+
+LD   BAP_SEL_INC                   ** IPuls3.3 Modo INC selezionato da puls. aux
+ST   BSG_INC                       ** rg1.2 Selezione modo INC (inc.fissi)
+
+LD   BAP_SEL_MDI                   ** IPuls3.4 Modo MDI selezionato da puls. aux
+ST   BSG_MDI                       ** rg1.3 Selezione modo MDI (semiautom)
+
+LD   BAP_SEL_AUT                   ** IPuls3.5 Modo AUT selezionato da puls. aux
+ST   BSG_AUT                       ** rg1.4 Selezione modo AUT (automatic)
+
+LD   BAP_JOGOPEN                   ** IPuls3.2 Modo JOG OPEN selezionato da puls. aux
+ST   BSG_JOGOPEN                   ** rg1.5 Selezione JOG a Loop Aperto
+
+LD   BAP_SINGREF                   ** IPuls3.6 Modo REF singolo selezionato da puls. aux
+ST   BSG_SINGREF                   ** rg1.11 Selezione modo REF singolo
+
+LD   AP_JOGOPEN                    ** IPuls9 Tensione per JOG OPEN (mVolt)
+ST   SG_JOGOPEN                    ** rg5 Tensione JOG a Loop Aperto
+
+LD   AP_FIXINCR                    ** IPuls8 Quota per incrementi fissi
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+END_SEL_STA_INT:
+
+LD   BUP_PRESETREF                 ** ui16.29 Impulso REF manuale (preset)
+OR   xPresetRef                    ** selezione modo REF preset (esterna)
+ST   BSG_PRESETREF                 ** rg1.12 Selezione modo REF con preset
+
+LD   BUP_STEP                      ** ui16.10 Selezione esecuzione passo singolo
+OR   xSelStep                      ** selezione esec. passo-passo (esterna)
+ST   BSG_BLKSING                   ** rg1.6 Selezione esecuzione blocco Singolo
+
+LD   BUP_BLOCK                     ** ui16.11 Selezione esecuzione blocco barrato
+OR   xSelBBlock                    ** selezione esec. blocco barrato (esterna)
+ST   BSG_BLKSWTCH                  ** rg1.7 Selezione esecuzione blocco Barrato
+
+LD   BUP_DRYRUN                    ** ui16.12 Selezione esecuzione DRY RUN
+OR   xSelDryRun                    ** selezione esec. DRY RUN (esterna)
+ST   BSG_DRYRUN                    ** rg1.8 Selezione esecuzione dry Run
+
+LD   BUP_EXEM01                    ** ui16.13 Selezione esecuzione arresto su M01
+OR   xSelExeM01                    ** selezione esec. arresto su M01 (esterna)
+ST   BSG_EXEM01                    ** rg1.9 Selezione esecuzione arresto su M01
+
+LD   BUP_SIMUL                     ** ui16.15 Selezione esecuzione simulata
+OR   xSelSimul                     ** selezione esec. simulata (esterna)
+ST   BSG_TEST                      ** rg1.10 Selezione esecuzione simulata
+
+**LD   BUP_BLKSRC                    ** ui16.24 Selezione esecuzione ricerca blocco
+**OR   xBlkSearch                    ** selezione esec. ricerca blocco (esterna)
+**ST   BSG_BLKSRC                    ** rg1.13 Selezione ricerca blocco
+
+LD   0
+ST   SG_QTAIMM                     ** rg6 Quota per taratura immediata (preset)
+
+JMP  END_SEL_FROM_INPUT
+
+SEL_FROM_INPUT:
+
+* Legge selezioni da input FB
+
+LD   xSelREF                       ** selezione modo REF (con sel. esterna)
+ST   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+
+LD   xSelJOG                       ** selezione modo JOG (con sel. esterna)
+ST   BSG_MAN                       ** rg1.1 Selezione modo JOG (manuale)
+
+LD   xSelINC                       ** selezione modo INC (con sel. esterna)
+ST   BSG_INC                       ** rg1.2 Selezione modo INC (inc.fissi)
+
+LD   xSelMDI                       ** selezione modo MDI (con sel. esterna)
+ST   BSG_MDI                       ** rg1.3 Selezione modo MDI (semiautom)
+
+LD   xSelAUT                       ** selezione modo AUT (con sel. esterna)
+ST   BSG_AUT                       ** rg1.4 Selezione modo AUT (automatic)
+
+LD   xSelJogOpen                   ** selezione JOG OPEN (esterna)
+ST   BSG_JOGOPEN                   ** rg1.5 Selezione JOG a Loop Aperto
+
+LD   xSingleRef                    ** selezione modo REF singolo (esterna)
+ST   BSG_SINGREF                   ** rg1.11 Selezione modo REF singolo
+
+LD   xPresetRef                    ** selezione modo REF preset (esterna)
+ST   BSG_PRESETREF                 ** rg1.12 Selezione modo REF con preset
+
+LD   xSelStep                      ** selezione esec. passo-passo (esterna)
+ST   BSG_BLKSING                   ** rg1.6 Selezione esecuzione blocco Singolo
+
+LD   xSelBBlock                    ** selezione esec. blocco barrato (esterna)
+ST   BSG_BLKSWTCH                  ** rg1.7 Selezione esecuzione blocco Barrato
+
+LD   xSelDryRun                    ** selezione esec. DRY RUN (esterna)
+ST   BSG_DRYRUN                    ** rg1.8 Selezione esecuzione dry Run
+
+LD   xSelExeM01                    ** selezione esec. arresto su M01 (esterna)
+ST   BSG_EXEM01                    ** rg1.9 Selezione esecuzione arresto su M01
+
+LD   xSelSimul                     ** selezione esec. simulata (esterna)
+ST   BSG_TEST                      ** rg1.10 Selezione esecuzione simulata
+
+LD   xBlkSearch                    ** selezione esec. ricerca blocco (esterna)
+ST   BSG_BLKSRC                    ** rg1.13 Selezione ricerca blocco
+
+LD   xQuotaInc                     ** quota per incrementi fissi (esterna)
+ST   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+
+LD   xVJogOpen                     ** Tensione per JOG OPEN (mVolt) (esterna)
+ST   SG_JOGOPEN                    ** rg5 Tensione JOG a Loop Aperto
+
+LD   xQuotaPrs                     ** quota per taratura immediata (esterna)
+ST   SG_QTAIMM                     ** rg6 Quota per taratura immediata (preset)
+
+END_SEL_FROM_INPUT:
+
+* Comandi standard per canali
+
+LD   BUP_PRESETREF                 ** ui16.29 Impulso REF manuale (preset)
+AND  BUP_SINGREF                   ** ui16.28 Selezione REF singolo
+ANDN xSelFromInput                 ** Disabilita selezioni interne (monitor canale)
+OR   xStart                        ** comando START canali
+ST   BCG_START                     ** rg1.16 Comando START
+
+LD   xReset                        ** comando RESET canali e assi
+ST   BCG_RESET                     ** rg1.17 Comando RESET canali e assi
+
+LD   xHold                         ** comando Hold
+ST   BCG_HOLD                      ** rg1.19 Comando HOLD
+
+LD   xEmer                         ** comando Emergenza
+ST   BCG_EMERG                     ** rg1.20 Comando emergenza
+
+LD   xRepos                        ** comando REPOS dopo hold
+ST   BCG_REPOS                     ** rg1.21 Comando REPOS dopo HOLD
+
+LD   xPlus                         ** comando + agli assi
+ST   BCG_PLUS                      ** rg1.23 Comando PLUS
+
+LD   xMinus                        ** comando - agli assi
+ST   BCG_MINUS                     ** rg1.24 Comando MINUS
+
+LD   xStepIn                       ** comando Step entrando nel sottoprogramma
+ST   BCG_STPIN                     ** rg1.25 Comando STEP IN
+
+LD   xStepOut                      ** comando Step con uscita dal sottoprogramma
+ST   BCG_STPOUT                    ** rg1.26 Comando STEP OUT
+
+LD   xModRetrace                   ** abilitazione modalit� retrace
+ST   BSG_RETRACE                   ** rg1.14 Selezione retrace attivo
+
+LD   xRTPlus                       ** comando + in retrace
+ST   BCG_RTPLUS                    ** rg1.27 Comando + in retrace
+
+LD   xRTMinus                      ** comando - in retrace
+ST   BCG_RTMINUS                   ** rg1.28 Comando - in retrace
+
+LD   xRTDryRun                     ** comando dry run (rapido) in retrace
+ST   BCG_RTDRYRUN                  ** rg1.29 Comando dry run (rapido) in retrace
+
+LD   xModRepos                     ** comando attiva modalit� REPOS
+ST   BCG_MODREPOS                  ** rg1.30 Comando attivazione modalit� REPOS
+
+* Selezione canale/asse
+
+LD   AX_STOPPED                    ** rg0.2 Assi fermi
+JMPCN END_SEL_CH_AX
+
+* Selezione canale
+
+LD   UP_SELCHAN                    ** ui17 Canale selezionato da monitor canale
+ST   ChanSelect                    ** Canale selezionato
+
+LD   xSelACPaux                    ** Abilita selezione asse/canale da puls. ausiliaria
+JMPCN SEL_CH_FROM_PAUX
+
+LD   AP_SELCHAN                    ** IPuls6 Canale selezionato da puls. aux
+ST   ChanSelect                    ** Canale selezionato
+
+SEL_CH_FROM_PAUX:
+
+LD   ChanSelect                    ** Canale selezionato
+ST   SG_CHSEL                      ** rg11 Canale selezionato per visualizz.
+
+CAL  DECCH(IN=ALWAYS_ONE,REGM=ChanSelect) ** PLCFLAGS.1  Flag sempre stato on
+
+LD   DECCH.Q0
+ST   yChSelMask                    ** maschera canale selezionato
+
+* Selezione asse
+
+LD   UP_AXSEL                      ** ui18 Asse selezionato all'interno del canale
+ST   InAxisSelect                  ** Input numero asse selezionato
+
+LD   xSelFromPuls                  ** Abilita alcune selezioni da pulsantiera macchina
+JMPCN END_SEL_AX_FROM_PULS
+
+LD   yPulsMacc2                    ** Uscite 2 per pulsantiera macchina
+SHR  10
+AND  7
+ST   InAxisSelect                  ** Input numero asse selezionato
+
+END_SEL_AX_FROM_PULS:
+
+CAL  DECAX(IN=ALWAYS_ONE,REGM=InAxisSelect) ** PLCFLAGS.1  Flag sempre stato on
+
+LD   DECAX.Q0
+ST   yAxSelMask                    ** maschera asse selezionato all'interno del canale
+
+* Selezione asse da puls. aux.
+
+LD   xSelACPaux                    ** Abilita selezione asse/canale da puls. ausiliaria
+JMPCN END_SEL_CH_AX
+
+LD   AP_MSKAXSEL                   ** IPuls5 Asse selezionato da puls. aux (mask compatta)
+ST   MaskSel                       ** Maschera compressa asse selezionato
+ST   yAxSelMask                    ** maschera asse selezionato all'interno del canale
+
+* Ricava dalla maschera compressa il numero asse selezionato per monitor canale
+
+LD   0
+ST   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+
+NEXT_AX:
+
+LD   MaskSel.0
+JMPC END_SEL_CH_AX
+
+LD   MaskSel                       ** Maschera compressa asse selezionato
+SHR  1
+ST   MaskSel                       ** Maschera compressa asse selezionato
+
+LD   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+ADD  1
+ST   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+
+LD   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+LT   16
+JMPC NEXT_AX
+
+LD   0
+ST   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+
+END_SEL_CH_AX:
+
+*************************************************************************
+* GESTIONE PULSANTIERA AUSILIARIA
+*************************************************************************
+
+LD   xSelACPaux                    ** Abilita selezione asse/canale da puls. ausiliaria
+ST   BPA_INSER1                    ** QPuls1.0 Puls. aux inserita in pos. 1
+
+LD   xEnMovPaux                    ** Abilita movimentazione asse da puls. ausiliaria
+JMPCN ALL_PREC_VOL
+
+LD   0
+ST   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+ST   DiffQtaVolAbs                 ** Differenza quota volantino (assoluta)
+
+* Non campiona tutte le scansioni per ridurre le irregolarit�
+* nei valori campionati
+
+LDN  TON_REFRVOL.Q                 ** Fine tempo per lettura valori volantino
+ST   ScanVolant                    ** Start timer per campionamento volantino
+
+LD   100
+ST   TCampVol                      ** Tempo campionamento volantino
+
+LD   xVolExt                       ** Volantino esterno alla puls. aux.
+JMPCN END_FOR_TCAM
+
+LD   50
+ST   TCampVol                      ** Tempo campionamento volantino
+
+END_FOR_TCAM:
+
+CAL  TON_REFRVOL(IN=ScanVolant, PT=TCampVol) ** Start timer per campionamento volantino
+
+LD   TON_REFRVOL.Q                 ** Fine tempo per lettura valori volantino
+JMPCN END_SAMP_VOL
+
+* Carica la quota del volantino e fa la differenza con quella precedente
+
+LD   AP_QTAVOL                     ** IPuls1 Quota da volantino (0-65535)
+ST   QtaVolantAct                  ** Quota volantino attuale
+
+LD   QtaVolantAct                  ** Quota volantino attuale
+SUB  QtaVolantPrec                 ** Quota volantino precedente
+ST   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+
+LD   QtaVolantAct                  ** Quota volantino attuale
+ST   QtaVolantPrec                 ** Quota volantino precedente
+
+* Estensione del segno da 16 a 32 bit
+
+LD   DiffQtaVolant.15
+JMPC SIGNEXT_NEGATIVE
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+AND  16#0000FFFF
+ST   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+
+JMP  END_SIGNEXT
+
+SIGNEXT_NEGATIVE:
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+OR   16#FFFF0000
+ST   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+
+END_SIGNEXT:
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+LT   0
+S    PA_INV_DIR                    ** rg0.7 Movim. da volantino in direzione inversa
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+GT   0
+R    PA_INV_DIR                    ** rg0.7 Movim. da volantino in direzione inversa
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+ABS
+MUL  100
+DIV  TCampVol                      ** Tempo campionamento volantino
+ST   DiffQtaVolAbs                 ** Differenza quota volantino (assoluta)
+
+LD   DiffQtaVolAbs                 ** Differenza quota volantino (assoluta)
+MUL  2
+ST   OverrVolPaux                  ** Override da volantino
+
+LD   PA_INCJOG                     ** QPuls2 Quota incremento per posiz. da volantino
+LT   10
+JMPCN LIM_OVR_MUL1
+
+LD   OverrVolPaux                  ** Override da volantino
+DIV  20   * Limite override 5 % con moltiplica 1
+ST   OverrVolPaux                  ** Override da volantino
+
+JMP  END_LIM_OVR_MUL
+
+LIM_OVR_MUL1:
+
+LD   PA_INCJOG                     ** QPuls2 Quota incremento per posiz. da volantino
+LT   100
+JMPCN END_LIM_OVR_MUL
+
+LD   OverrVolPaux                  ** Override da volantino
+DIV  4    * Limite override 25 % con moltiplica 10
+ST   OverrVolPaux                  ** Override da volantino
+
+END_LIM_OVR_MUL:
+
+LD   OverrVolPaux                  ** Override da volantino
+GT   100
+JMPCN END_SAMP_VOL
+
+LD   100
+ST   OverrVolPaux                  ** Override da volantino
+
+JMP  END_SAMP_VOL
+
+ALL_PREC_VOL:
+
+LD   AP_QTAVOL                     ** IPuls1 Quota da volantino (0-65535)
+ST   QtaVolantPrec                 ** Quota volantino precedente
+
+END_SAMP_VOL:
+
+LD   BAP_SEL_MOV                   ** IPuls2.9 Movimentazione selezionata da puls. aux
+OR   xVolExt                       ** Volantino esterno alla puls. aux.
+AND  xEnMovPaux                    ** Abilita movimentazione asse da puls. ausiliaria
+ANDN AX_SEL_CHG                    ** rg0.12 Imp. modifica selezione asse
+ST   SelMovEnab                    ** Abil. e selez. asse OK per PAUX
+
+LD   DiffQtaVolAbs                 ** Differenza quota volantino (assoluta)
+GT   6
+ANDN xVolExt                       ** Volantino esterno alla puls. aux.
+OR   (
+LD   DiffQtaVolAbs                 ** Differenza quota volantino (assoluta)
+GT   40
+AND  xVolExt                       ** Volantino esterno alla puls. aux.
+)
+S    SelMovJog                     ** Movimentazione in JOG selezionata
+
+LD   DiffQtaVolAbs                 ** Differenza quota volantino (assoluta)
+EQ   0
+AND  AX_STOPPED                    ** rg0.2 Assi fermi
+ST   AppoggioVol                   ** Mem. Appoggio utilizzo volantino
+
+CAL  TON_ENDJOG(IN=AppoggioVol, PT=500) ** Mem. Appoggio utilizzo volantino
+
+LD   TON_ENDJOG.Q                  ** Fine tempo uscita da movimentazione in JOG
+ORN  SelMovEnab                    ** Abil. e selez. asse OK per PAUX
+R    SelMovJog                     ** Movimentazione in JOG selezionata
+
+* Forza un arresto all'inversione, altrimenti l'asse
+* continua nella direzione precedente
+
+CAL  TRIGINVJOG(CLK=PA_INV_DIR)    ** rg0.7 Movim. da volantino in direzione inversa
+
+LD   SelMovJog                     ** Movimentazione in JOG selezionata
+ANDN PA_ENAB_POS                   ** rg0.9 Abilita posiz. asse da volantino
+AND  (
+LDN  TRIGINVJOG.Q                  ** Impulso inversione direzione comando da volantino
+ORN  PA_MOV_JOG                    ** rg0.8 Richiesta movim. da volantino in JOG
+)
+ST   PA_MOV_JOG                    ** rg0.8 Richiesta movim. da volantino in JOG
+
+* Al di sotto di una certa velocit� effettua un posizionamento
+
+* Condizioni avvio posizionamento
+
+LDN  SelMovJog                     ** Movimentazione in JOG selezionata
+AND  SelMovEnab                    ** Abil. e selez. asse OK per PAUX
+AND  AppSelOk2                     ** Selez.OK2 da PAUX ritardata per aggiornamento Qta asse
+ANDN xVolGear                      ** Abilita volantino in albero elettrico
+ST   PA_ENAB_POS                   ** rg0.9 Abilita posiz. asse da volantino
+
+LD   AppSelOk1                     ** Selez.OK1 da PAUX ritardata per aggiornamento Qta asse
+ST   AppSelOk2                     ** Selez.OK2 da PAUX ritardata per aggiornamento Qta asse
+
+LD   AppSelOk                      ** Selez.OK da PAUX ritardata per aggiornamento Qta asse
+ST   AppSelOk1                     ** Selez.OK1 da PAUX ritardata per aggiornamento Qta asse
+
+LD   SelMovEnab                    ** Abil. e selez. asse OK per PAUX
+ST   AppSelOk                      ** Selez.OK da PAUX ritardata per aggiornamento Qta asse
+
+* Calcolo quota richiesta da volantino per il posizionamento
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+MUL  PA_INCJOG                     ** QPuls2 Quota incremento per posiz. da volantino
+ST   AppoggioReg                   ** Registro di appoggio
+
+LD   xVolExt                       ** Volantino esterno alla puls. aux.
+JMPC DIV_VOL_PULS
+
+LD   AppoggioReg                   ** Registro di appoggio
+DIV  4
+ST   AppoggioReg                   ** Registro di appoggio
+
+DIV_VOL_PULS:
+
+LD   AppoggioReg                   ** Registro di appoggio
+ADD  SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+ST   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+
+LD   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+LT   SG_MINQ_SEL                   ** rg12 Quota minima asse selezionato
+JMPCN END_MIN
+
+LD   SG_MINQ_SEL                   ** rg12 Quota minima asse selezionato
+ST   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+
+END_MIN:
+
+LD   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+GT   SG_MAXQ_SEL                   ** rg13 Quota massima asse selezionato
+JMPCN END_MAX
+
+LD   SG_MAXQ_SEL                   ** rg13 Quota massima asse selezionato
+ST   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+
+END_MAX:
+
+* Calcolo velocit� richiesta da volantino per il posizionamento
+
+LD   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+SUB  SG_QACT_SEL                   ** rg10 Quota asse selezionato
+ABS
+MUL  60
+DIV  TCampVol                      ** Tempo campionamento volantino
+DIV  4
+ST   AppoggioReg                   ** Registro di appoggio
+
+LD   AppoggioReg                   ** Registro di appoggio
+LT   SG_VEL_PAUX                   ** rg14 Velocit� per posiz. da puls. aux
+ST   AppTim                        ** Appoggio comando timer
+
+CAL  T_DECV(IN=AppTim, PT=1000)    ** Appoggio comando timer
+
+LD   AppoggioReg                   ** Registro di appoggio
+GT   SG_VEL_PAUX                   ** rg14 Velocit� per posiz. da puls. aux
+OR   T_DECV.Q                      ** Fine ritardo decremento velocit�
+JMPCN MOD_VEL
+
+LD   AppoggioReg                   ** Registro di appoggio
+ST   SG_VEL_PAUX                   ** rg14 Velocit� per posiz. da puls. aux
+
+MOD_VEL:
+
+LD   SG_VEL_PAUX                   ** rg14 Velocit� per posiz. da puls. aux
+LT   10
+JMPCN MIN_VEL
+
+LD   10
+ST   SG_VEL_PAUX                   ** rg14 Velocit� per posiz. da puls. aux
+
+MIN_VEL:
+
+
+* Riallineamento tra quota target e quota attuale asse
+
+LDN  PA_ENAB_POS                   ** rg0.9 Abilita posiz. asse da volantino
+JMPCN ENDLOAD_QTAR
+
+LD   SG_QACT_SEL                   ** rg10 Quota asse selezionato
+ST   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+
+ENDLOAD_QTAR:
+
+* Abilita albero elettrico su volantino
+
+LD   xVolGear                      ** Abilita volantino in albero elettrico
+AND  SelMovEnab                    ** Abil. e selez. asse OK per PAUX
+ST   PA_ENAB_ELS                   ** rg0.11 Abilita albero elettrico da volantino
+
+* Copia numero asse master per volantino
+
+LD   xVolAxis                      ** Numero asse master per volantino
+ST   SG_VOLAX                      ** rg16 Numero asse master per volantino
+
+* Copia quota incremento per posiz. da volantino.
+* NB: viene fatta alla fine del blocco per permettere
+* la sovrascrittura dall'esterno.
+
+LD   AP_INCJOG                     ** IPuls11 Quota incremento per posiz. da volantino
+ST   PA_INCJOG                     ** QPuls2 Quota incremento per posiz. da volantino
+
+*******************
+* IMPOSTA OVERRIDE
+*******************
+
+LD   SelMovJog                     ** Movimentazione in JOG selezionata
+JMPC OVAX_PAUX
+
+LD   StatoMemPuls.24
+JMPC OVAX100
+
+LD   xOverride                     ** override assi
+ST   SG_OVRDAX                     ** rg2 Override avanzamento
+
+JMP  END_OVAX
+
+OVAX_PAUX:
+
+LD   OverrVolPaux                  ** Override da volantino
+ST   SG_OVRDAX                     ** rg2 Override avanzamento
+
+JMP  END_OVAX
+
+OVAX100:
+
+LD   100
+ST   SG_OVRDAX                     ** rg2 Override avanzamento
+
+END_OVAX:
+
+LD   StatoMemPuls.23
+JMPC OVSP100
+
+LD   xSpinOverride                 ** override mandrini
+ST   SG_OVRDSP                     ** rg3 Override mandrini
+
+JMP  END_OVSP
+
+OVSP100:
+
+LD   100
+ST   SG_OVRDSP                     ** rg3 Override mandrini
+
+END_OVSP:
+
+* Lettura busy aggancio/sgancio asse a inizio scansione
+* visto che viene scritto dall'interpolatore e viene letto in shared
+
+LD   BSY_CONN_AX                   ** rg17.0 Busy aggancio/sgancio asse
+ST   APP_CONN_AX                   ** rg18.1 Appoggio busy aggancio/sgancio asse
+
+* Azzeramento segnali cumulativi
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   AX_IN_ALARM                   ** rg0.0 Asse in allarme
+ST   CH_IN_REPOS                   ** rg0.5 Repos in corso
+ST   CH_OVERSTORE                  ** rg0.6 Selezione overstore attiva
+ST   PROC_NO_CH0                   ** rg0.10 Canale in elaborazione diverso da 0
+ST   AX_SEL_CHG                    ** rg0.12 Imp. modifica selezione asse
+ST   BSY_CAX_PLC                   ** rg18.0 Busy aggancio/sgancio asse interno PLC
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   AX_ZEROED                     ** rg0.1 Assi tarati
+ST   AX_STOPPED                    ** rg0.2 Assi fermi
+ST   AX_DRV_ENAB                   ** rg0.13 signal to understand all drives are enabled
+
+LD   -1
+ST   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+
+END_FUNCTION_BLOCK
+
+
+
+* FB FINE GESTIONE MACCHINA
+
+FUNCTION_BLOCK GESTTMEND
+
+VAR_INPUT
+xSelFromInput: BOOL; * Disabilita selezioni interne (monitor canale)
+xSelAxExt: BOOL; * Selezione asse esterna
+xEnabOvsAuto: BOOL; * Abilita overstore automatico
+xAxSel: DWORD; * Numero asse selezionato all'interno del canale
+END_VAR
+
+VAR_OUTPUT
+yZeroed: BOOL; * Macchina tarata
+yInAlarm: BOOL; * Macchina in allarme
+yAxStopped: BOOL; * Assi fermi
+yRepos: BOOL; * stato REPOS attivo
+yAllDriveEn: BOOL; * all drives are enable
+END_VAR
+
+
+LD   AX_DRV_ENAB                   ** rg0.13 signal to understand all drives are enabled
+ST   yAllDriveEn                   ** all drives are enable
+
+
+LD   SG_CHSEL                      ** rg11 Canale selezionato per visualizz.
+ST   PU_CHSEL                      ** ui9 Canale selez. per visualizzazione
+
+* Comando cursore asse selezionato per monitor canale
+
+LD   xSelAxExt                     ** Selezione asse esterna
+JMPC SEL_AX_EXT
+
+LD   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+ST   PU_AXSEL                      ** ui8 Asse selez. nel canale per visualizzazione cursore
+
+JMP  END_SEL_AX_EXT
+
+SEL_AX_EXT:
+
+LD   xAxSel                        ** Numero asse selezionato all'interno del canale
+ST   PU_AXSEL                      ** ui8 Asse selez. nel canale per visualizzazione cursore
+
+END_SEL_AX_EXT:
+
+* Comando bit per monitor canale
+
+LD   xSelFromInput                 ** Disabilita selezioni interne (monitor canale)
+JMPC END_SEL_FROM_INPUT
+
+LD   CH_OVERSTORE                  ** rg0.6 Selezione overstore attiva
+ST   BPU_MONSENOVRSTR              ** ui12.0 Richiesta caricamento dati overstore
+
+LD   BSG_EXEM01                    ** rg1.9 Selezione esecuzione arresto su M01
+ST   BPU_MONEXECM01                ** ui12.1 Vis. selezione M01 attiva
+
+*LD   BUP_OVERSTORE ** ui16.26 Richiesta procedura overstore
+LD   xEnabOvsAuto                  ** Abilita overstore automatico
+ST   BPU_MONOVRAUTO                ** ui12.2 Abil. overstore automatico
+
+END_SEL_FROM_INPUT:
+
+* Azzeramento sincronismo aggancio-sgancio assi
+
+LDN  BSY_CAX_PLC                   ** rg18.0 Busy aggancio/sgancio asse interno PLC
+AND  APP_CONN_AX                   ** rg18.1 Appoggio busy aggancio/sgancio asse
+R    BSY_CONN_AX                   ** rg17.0 Busy aggancio/sgancio asse
+
+* Uscita segnali cumulativi
+
+LD   AX_IN_ALARM                   ** rg0.0 Asse in allarme
+ST   yInAlarm                      ** Macchina in allarme
+
+LD   AX_ZEROED                     ** rg0.1 Assi tarati
+ST   yZeroed                       ** Macchina tarata
+
+LD   AX_STOPPED                    ** rg0.2 Assi fermi
+ST   yAxStopped                    ** Assi fermi
+
+LD   CH_IN_REPOS                   ** rg0.5 Repos in corso
+ST   yRepos                        ** stato REPOS attivo
+
+END_FUNCTION_BLOCK
+
+
+* FB GESTIONE CANALE
+
+FUNCTION_BLOCK GESTCH
+
+VAR_INPUT
+xCmdFromInput: BOOL; * Disabilita comandi standard macchina
+xEscOpCmd: BOOL; * Disabilita comandi operativi standard macchina
+xStart: BOOL; * comando START al canale (esterno)
+xReset: BOOL; * comando RESET al canale (esterno)
+xHold: BOOL; * comando Hold al canale (esterno)
+xEmer: BOOL; * comando Emergenza al canale (esterno)
+xRepos: BOOL; * comando REPOS dopo hold (esterno)
+xBlkSearch: BOOL; * Selezione esec. ricerca blocco (esterno)
+xIntBlkSrc: BOOL; * Forzam. esec. ricerca blocco interna
+xDisBlkSrc: BOOL; * Disable channel block search
+xPlus: BOOL; * comando + agli assi (esterno)
+xMinus: BOOL; * comando - agli assi (esterno)
+xStepIn: BOOL; * comando Step entrando nel sottoprogramma (esterno)
+xStepOut: BOOL; * comando Step con uscita dal sottoprogramma (esterno)
+xRTPlus: BOOL; * comando + in retrace
+xRTMinus: BOOL; * comando - in retrace
+xAnnPercResiduo: BOOL; * comando annulla percorso residuo
+xAbilFhmb: BOOL; * abilita full-handshake motion block
+xAbilFastFhmb: BOOL; * abilita full-handshake motion block su PLC veloce
+xAckFhmb: BOOL; * acknowledge full-handshake motion block
+xSelFromInput: BOOL; * Disabilita selezioni standard macchina
+xSelREF: BOOL; * selezione modo REF (con sel. esterna)
+xSelJOG: BOOL; * selezione modo JOG (con sel. esterna)
+xSelINC: BOOL; * selezione modo INC (con sel. esterna)
+xSelMDI: BOOL; * selezione modo MDI (con sel. esterna)
+xSelAUT: BOOL; * selezione modo AUT (con sel. esterna)
+xSelJogOpen: BOOL; * selezione JOG OPEN (esterna)
+xSingleRef: BOOL; * selezione modo REF singolo (esterna)
+xPresetRef: BOOL; * selezione modo REF taratura immediata (preset)
+xSelStep: BOOL; * selezione esec. passo-passo (esterna)
+xSelBBlock: BOOL; * selezione esec. blocco barrato (esterna)
+xSelDryRun: BOOL; * selezione esec. DRY RUN (esterna)
+xSelExeM01: BOOL; * selezione esec. arresto su M01 (esterna)
+xSelSimul: BOOL; * selezione esec. simulata (esterna)
+xSelDripFeed: BOOL; * selezione esec. passante (esterna)
+xModRetrace: BOOL; * selezione modalit� retrace attiva (esterna)
+xOverstore: BOOL; * Ab. overstore dopo ricerca blocco (esterna)
+xMatJog: BOOL; * Ab. matrici dinamiche per il JOG (provv.)
+xSpeedDryRunEnab: BOOL; * Ab. velocita' di Dry Run
+xOverride: DWORD; * override assi (esterno)
+xQuotaInc: DWORD; * quota per incrementi fissi (esterno)
+xVJogOpen: DWORD; * Tensione per JOG OPEN in mV (esterno)
+xQuotaPrs: DWORD; * quota per taratura immediata (esterna)
+xPPNumber: DWORD; * numero part program da eseguire
+END_VAR
+
+VAR_OUTPUT
+yProgramRun: BOOL; * Programma in corso
+yProgramInt: BOOL; * Programma interrotto
+yChanReady: BOOL; * Canale Ready
+yChanInAlarm: BOOL; * Canale in allarme
+yRepos: BOOL; * stato REPOS attivo
+yBlkSearch: BOOL; * ricerca blocco in corso
+yBlkSrcEnded: BOOL; * ricerca blocco terminata
+yStbFhmb: BOOL; * strobe full-handshake motion block
+yFunM1: DWORD; * maschera funzioni M da 0 a 31
+yFunM2: DWORD; * maschera funzioni M da 32 a 63
+yFunM3: DWORD; * maschera funzioni M da 64 a 95
+yFunM4: DWORD; * maschera funzioni M da 96 a 127
+yFunT1: DWORD; * maschera funzioni T da 0 a 31
+yWaitMFun: BOOL; * Ritarda ACK funzioni M per M0-M1
+yOverstore: BOOL; * Ciclo di overstore in corso
+END_VAR
+
+VAR
+#defcom R_TRIGSTEP.Q Trigger comando STEP
+#defcom R_TRIGSTEPIN.Q Trigger comando STEP IN
+#defcom R_TRIGSTEPOUT.Q Trigger comando STEP OUT
+#defcom RT_REPOS.Q Imp. attivazione modalit� REPOS
+
+R_TRIGSTEP: R_TRIG;
+R_TRIGSTEPIN: R_TRIG;
+R_TRIGSTEPOUT: R_TRIG;
+RT_REPOS: R_TRIG;
+DECM: DECODM;
+DECT: DECODM;
+ForceSelAut: BOOL; * Condizioni forzamento stato AUT o MDI
+ForceSelJog: BOOL; * Condizioni forzamento stato JOG
+InSelMdi: BOOL; * Modo MDI selezionato
+MemSelMdi: BOOL; * Memoria modo MDI selezionato
+EnabRetrace: BOOL; * Abilita esecuzione in modalit� retrace
+CmdStart: BOOL; * Comando start
+CmdHold: BOOL; * Comando hold
+CmdReset: BOOL; * Comando reset
+CmdEmerg: BOOL; * Comando emergenza
+CmdRepos: BOOL; * Comando repos
+CmdBlkSearch: BOOL; * Comando ricerca blocco
+StartReceived: BOOL; * Mem. start ricevuto
+StepMode: BOOL; * Selezionato modo STEP
+PulsStep: BOOL; * Mem. comando step
+PulsStepIn: BOOL; * Mem. comando step IN
+PulsStepOut: BOOL; * Mem. comando step OUT
+ActiveM0M1: BOOL; * Arresto programmato (M0 o M1) attivo
+AntiripM0M1: BOOL; * Antiripet. sblocco arresto programmato (M0 o M1)
+MemModRepos: BOOL; * Mem. modalit� REPOS attiva
+MemReposCycle: BOOL; * Mem. ciclo REPOS in corso
+MemReposStarted: BOOL; * Mem. ciclo REPOS avviato
+MemHoldRetrace: BOOL; * Mem. programma interrotto in modalit� retrace
+MemBlkSrcCycle: BOOL; * Mem. ciclo ricerca blocco in corso
+MemBlkSrcEnded: BOOL; * Mem. ciclo ricerca blocco terminato
+PredOverstore: BOOL; * Predispone esecuzione ciclo overstore
+MemReqOvsData: BOOL; * Mem. richiesta preparazione dati overstore a UI
+StartOvsReady: BOOL; * Start canale con dati overstore pronti
+MemOvsCycle: BOOL; * Mem. ciclo overstore in corso
+MemAbilFhmb: BOOL; * Mem. abilit. full handshake motion blocks
+RETAIN RetCurrBlk: DWORD; * Blocco corrente (retentivo) per ric. blocco
+
+END_VAR
+
+* Selezione del modo operativo
+
+LD   BCO_PRGRUN                    ** rc8.0  Programma in corso
+ANDN BCO_PRGINT                    ** rc8.1  Programma interrotto
+OR   BCO_CUSTOM_RESET              ** rc8.20 Ciclo $RESET in corso
+ST   ForceSelAut                   ** Condizioni forzamento stato AUT o MDI
+
+LD   CH_AXJOG                      ** rgc0.21 Presente un asse in JOG nel canale
+ST   ForceSelJog                   ** Condizioni forzamento stato JOG
+
+LD   BSG_MDI                       ** rg1.3 Selezione modo MDI (semiautom)
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelMDI                       ** selezione modo MDI (con sel. esterna)
+ST   InSelMdi                      ** Modo MDI selezionato
+
+LD   InSelMdi                      ** Modo MDI selezionato
+S    MemSelMdi                     ** Memoria modo MDI selezionato
+
+LDN  InSelMdi                      ** Modo MDI selezionato
+ANDN ForceSelAut                   ** Condizioni forzamento stato AUT o MDI
+R    MemSelMdi                     ** Memoria modo MDI selezionato
+
+LD   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelREF                       ** selezione modo REF (con sel. esterna)
+ANDN ForceSelAut                   ** Condizioni forzamento stato AUT o MDI
+ANDN ForceSelJog                   ** Condizioni forzamento stato JOG
+ST   BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+
+LD   BSG_MAN                       ** rg1.1 Selezione modo JOG (manuale)
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelJOG                       ** selezione modo JOG (con sel. esterna)
+OR   MemModRepos                   ** Mem. modalit� REPOS attiva
+OR   ForceSelJog                   ** Condizioni forzamento stato JOG
+ANDN ForceSelAut                   ** Condizioni forzamento stato AUT o MDI
+ST   BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+
+LD   BSG_INC                       ** rg1.2 Selezione modo INC (inc.fissi)
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelINC                       ** selezione modo INC (con sel. esterna)
+ANDN ForceSelAut                   ** Condizioni forzamento stato AUT o MDI
+ANDN ForceSelJog                   ** Condizioni forzamento stato JOG
+ST   BCI_INC                       ** rc0.10  Selettore modi operativi su INC (inc.fissi)
+
+LD   BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+OR   BCI_INC                       ** rc0.10  Selettore modi operativi su INC (inc.fissi)
+ST   AX_EXEC_MODE                  ** rgc0.3 Canale in JOG o INC
+
+LD   MemSelMdi                     ** Memoria modo MDI selezionato
+ST   BCI_MDI                       ** rc0.11  Selettore modi operativi su MDI (semiautom)
+
+LD   BSG_AUT                       ** rg1.4 Selezione modo AUT (automatic)
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelAUT                       ** selezione modo AUT (con sel. esterna)
+ANDN ForceSelJog                   ** Condizioni forzamento stato JOG
+OR   (
+LD   ForceSelAut                   ** Condizioni forzamento stato AUT o MDI
+ANDN MemSelMdi                     ** Memoria modo MDI selezionato
+)
+ST   BCI_AUT                       ** rc0.12  Selettore modi operativi su AUT (automatic)
+
+LD   BSG_JOGOPEN                   ** rg1.5 Selezione JOG a Loop Aperto
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelJogOpen                   ** selezione JOG OPEN (esterna)
+ST   BCI_JOGOPEN                   ** rc0.22  Abilita esecuzione JOG a Loop Aperto
+
+LD   BCI_MDI                       ** rc0.11  Selettore modi operativi su MDI (semiautom)
+OR   BCI_AUT                       ** rc0.12  Selettore modi operativi su AUT (automatic)
+ST   PP_EXEC_MODE                  ** rgc0.2 Canale in AUT o MDI
+
+LD   BCI_JOGOPEN                   ** rc0.22  Abilita esecuzione JOG a Loop Aperto
+AND  BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+ST   ST_JOGOPEN                    ** rgc0.17 Stato JOG OPEN attivo
+
+LD   BSG_RETRACE                   ** rg1.14 Selezione retrace attivo
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+ANDN xEscOpCmd                     ** Disabilita comandi operativi standard macchina
+OR   xModRetrace                   ** selezione modalit� retrace attiva (esterna)
+ST   EnabRetrace                   ** Abilita esecuzione in modalit� retrace
+
+* Gestione comandi start, step, ecc.
+
+LD   BCG_EMERG                     ** rg1.20 Comando emergenza
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+OR   xEmer                         ** comando Emergenza al canale (esterno)
+ST   CmdEmerg                      ** Comando emergenza
+
+LD   BCG_RESET                     ** rg1.17 Comando RESET canali e assi
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+OR   xReset                        ** comando RESET al canale (esterno)
+ST   CmdReset                      ** Comando reset
+
+LD   BCG_START                     ** rg1.16 Comando START
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+ANDN xEscOpCmd                     ** Disabilita comandi operativi standard macchina
+OR   xStart                        ** comando START al canale (esterno)
+ANDN CmdEmerg                      ** Comando emergenza
+ANDN BCO_IN_ALARM                  ** rc8.3  Canale in allarme
+ANDN CmdReset                      ** Comando reset
+ANDN BCO_CUSTOM_RESET              ** rc8.20 Ciclo $RESET in corso
+ANDN BCO_CUSTOM_BOOT               ** rc8.18 Ciclo $BOOT in corso
+ST   CmdStart                      ** Comando start
+
+LD   CmdStart                      ** Comando start
+ANDN BCO_PRGRUN                    ** rc8.0  Programma in corso
+S    StartReceived                 ** Mem. start ricevuto
+
+LDN  CmdStart                      ** Comando start
+AND  BCO_PRGRUN                    ** rc8.0  Programma in corso
+OR   CmdReset                      ** Comando reset
+R    StartReceived                 ** Mem. start ricevuto
+
+LD   BCG_HOLD                      ** rg1.19 Comando HOLD
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+OR   xHold                         ** comando Hold al canale (esterno)
+ST   CmdHold                       ** Comando hold
+
+LD   BSG_BLKSING                   ** rg1.6 Selezione esecuzione blocco Singolo
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelStep                      ** selezione esec. passo-passo (esterna)
+ST   StepMode                      ** Selezionato modo STEP
+
+LD   CmdStart                      ** Comando start
+AND  StepMode                      ** Selezionato modo STEP
+ANDN StartReceived                 ** Mem. start ricevuto
+AND  PP_EXEC_MODE                  ** rgc0.2 Canale in AUT o MDI
+ST   PulsStep                      ** Mem. comando step
+
+LD   BCG_STPIN                     ** rg1.25 Comando STEP IN
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+ANDN xEscOpCmd                     ** Disabilita comandi operativi standard macchina
+OR   xStepIn                       ** comando Step entrando nel sottoprogramma (esterno)
+AND  BUP_DEBUG_ON                  ** ui24.0  Modo debug attivo (CN->PLC)
+AND  StepMode                      ** Selezionato modo STEP
+ANDN StartReceived                 ** Mem. start ricevuto
+AND  PP_EXEC_MODE                  ** rgc0.2 Canale in AUT o MDI
+ST   PulsStepIn                    ** Mem. comando step IN
+
+LD   BCG_STPOUT                    ** rg1.26 Comando STEP OUT
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+ANDN xEscOpCmd                     ** Disabilita comandi operativi standard macchina
+OR   xStepOut                      ** comando Step con uscita dal sottoprogramma (esterno)
+AND  BUP_DEBUG_ON                  ** ui24.0  Modo debug attivo (CN->PLC)
+AND  StepMode                      ** Selezionato modo STEP
+ANDN StartReceived                 ** Mem. start ricevuto
+AND  PP_EXEC_MODE                  ** rgc0.2 Canale in AUT o MDI
+ST   PulsStepOut                   ** Mem. comando step OUT
+
+* Comandi +,-,reset,start per assi
+
+LD   BCG_PLUS                      ** rg1.23 Comando PLUS
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+OR   xPlus                         ** comando + agli assi (esterno)
+ST   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+
+LD   BCG_MINUS                     ** rg1.24 Comando MINUS
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+OR   xMinus                        ** comando - agli assi (esterno)
+ST   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+
+LD   CmdReset                      ** Comando reset
+ST   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+
+LD   CmdStart                      ** Comando start
+ST   CMD_START_AXIS                ** rgc0.5 Comando start assi canale
+
+LD   CmdEmerg                      ** Comando emergenza
+ST   CMD_EMER_MAND                 ** rgc0.20 Arresto mandrini canale con emergenza
+
+* Decodifica funzioni M
+
+CAL  DECM(IN=BCO_STB_M,REGM=CO_MFUN) ** rc8.4  Strobe delle funzioni M
+
+LD   DECM.Q0
+ST   REG1_FUNM                     ** rgc1 Registro 1 funzioni M (da M0 a M31)
+ST   yFunM1                        ** maschera funzioni M da 0 a 31
+
+LD   DECM.Q1
+ST   REG2_FUNM                     ** rgc2 Registro 2 funzioni M (da M32 a M63)
+ST   yFunM2                        ** maschera funzioni M da 32 a 63
+
+LD   DECM.Q2
+ST   REG3_FUNM                     ** rgc3 Registro 3 funzioni M (da M64 a M95)
+ST   yFunM3                        ** maschera funzioni M da 64 a 95
+
+LD   DECM.Q3
+ST   REG4_FUNM                     ** rgc4 Registro 4 funzioni M (da M96 a M127)
+ST   yFunM4                        ** maschera funzioni M da 96 a 127
+
+* Decodifica funzioni T
+
+CAL  DECT(IN=BCO_STB_T,REGM=CO_TFUN) ** rc8.6  Strobe delle funzioni T
+
+LD   DECT.Q0
+ST   yFunT1                        ** maschera funzioni T da 0 a 31
+
+* Comando uscita per arresto su M0 o M1
+
+LD   BSG_EXEM01                    ** rg1.9 Selezione esecuzione arresto su M01
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelExeM01                    ** selezione esec. arresto su M01 (esterna)
+AND  FUN_M1                        ** rgc1.1  Funzione M1 attiva
+OR   FUN_M0                        ** rgc1.0  Funzione M0 attiva
+ST   ActiveM0M1                    ** Arresto programmato (M0 o M1) attivo
+
+LDN  ActiveM0M1                    ** Arresto programmato (M0 o M1) attivo
+S    AntiripM0M1                   ** Antiripet. sblocco arresto programmato (M0 o M1)
+
+LDN  CmdStart                      ** Comando start
+R    AntiripM0M1                   ** Antiripet. sblocco arresto programmato (M0 o M1)
+
+LDN  CmdStart                      ** Comando start
+OR   AntiripM0M1                   ** Antiripet. sblocco arresto programmato (M0 o M1)
+AND  ActiveM0M1                    ** Arresto programmato (M0 o M1) attivo
+ST   yWaitMFun                     ** Ritarda ACK funzioni M per M0-M1
+
+* Comando segnali start, hold, reset, emergenza, annulla perc. residuo
+
+LD   CmdStart                      ** Comando start
+ANDN PredOverstore                 ** Predispone esecuzione ciclo overstore
+OR   StartOvsReady                 ** Start canale con dati overstore pronti
+AND (
+LDN  StepMode                      ** Selezionato modo STEP
+OR   StartReceived                 ** Mem. start ricevuto
+OR   BCO_PRGINT                    ** rc8.1  Programma interrotto
+)
+ANDN MemModRepos                   ** Mem. modalit� REPOS attiva
+ANDN BCO_O_REPOS                   ** rc8.11 Ciclo Repos in corso
+AND  PP_EXEC_MODE                  ** rgc0.2 Canale in AUT o MDI
+ST   BCI_START                     ** rc0.2  NC-start
+
+LD   CmdHold                       ** Comando hold
+AND  PP_EXEC_MODE                  ** rgc0.2 Canale in AUT o MDI
+AND  BCO_PRGRUN                    ** rc8.0  Programma in corso
+ANDN EnabRetrace                   ** Abilita esecuzione in modalit� retrace
+ST   BCI_STOP                      ** rc0.3  Richiesta HOLD
+
+LD   CmdReset                      ** Comando reset
+ST   BCI_RESET                     ** rc0.0  Reset NC
+
+LD   BCO_PRGRUN                    ** rc8.0  Programma in corso
+ORN  PP_EXEC_MODE                  ** rgc0.2 Canale in AUT o MDI
+AND  CmdEmerg                      ** Comando emergenza
+ST   BCI_EMERG                     ** rc0.1  Emergenza
+
+LD   xAnnPercResiduo               ** comando annulla percorso residuo
+ST   BCI_I_ENDCOM                  ** rc0.25  Annulla percorso residuo
+
+* Gestione REPOS
+
+* NB: uso il fronte perch� alcuni CN forniscono un segnale permanente,
+* anzich� un pulsante.
+
+CAL  RT_REPOS(CLK=BCG_MODREPOS)    ** rg1.30 Comando attivazione modalit� REPOS
+
+LD   RT_REPOS.Q                    ** Imp. attivazione modalit� REPOS
+AND  BCO_PRGINT                    ** rc8.1  Programma interrotto
+S    MemModRepos                   ** Mem. modalit� REPOS attiva
+
+LD   BCO_O_REPOS                   ** rc8.11 Ciclo Repos in corso
+ORN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+R    MemModRepos                   ** Mem. modalit� REPOS attiva
+
+LD   BCG_REPOS                     ** rg1.21 Comando REPOS dopo HOLD
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+ANDN xEscOpCmd                     ** Disabilita comandi operativi standard macchina
+OR   xRepos                        ** comando REPOS dopo hold (esterno)
+ST   CmdRepos                      ** Comando repos
+
+LD   CmdStart                      ** Comando start
+AND  MemModRepos                   ** Mem. modalit� REPOS attiva
+OR   CmdRepos                      ** Comando repos
+S    MemReposCycle                 ** Mem. ciclo REPOS in corso
+
+LD   BCO_O_REPOS                   ** rc8.11 Ciclo Repos in corso
+AND  MemReposCycle                 ** Mem. ciclo REPOS in corso
+S    MemReposStarted               ** Mem. ciclo REPOS avviato
+
+LDN  BCO_O_REPOS                   ** rc8.11 Ciclo Repos in corso
+AND  MemReposStarted               ** Mem. ciclo REPOS avviato
+ANDN CmdRepos                      ** Comando repos
+ANDN CmdStart                      ** Comando start
+OR   BCI_RESET                     ** rc0.0  Reset NC
+R    MemReposCycle                 ** Mem. ciclo REPOS in corso
+R    MemReposStarted               ** Mem. ciclo REPOS avviato
+
+LD   MemReposCycle                 ** Mem. ciclo REPOS in corso
+ANDN MemReposStarted               ** Mem. ciclo REPOS avviato
+ST   BCI_REPOS                     ** rc0.15  Richiesta recover dopo Hold
+
+* Parallelo del segnale di repos in corso
+
+LD   BCO_O_REPOS                   ** rc8.11 Ciclo Repos in corso
+OR   MemModRepos                   ** Mem. modalit� REPOS attiva
+S    CH_IN_REPOS                   ** rg0.5 Repos in corso
+
+* Gestione RETRACE
+
+LD   EnabRetrace                   ** Abilita esecuzione in modalit� retrace
+ST   BCI_RT_ENABLE                 ** rc64.0  Retrace enable
+ST   BCI_RT_ELECT                  ** rc64.1  Retrace elect
+ST   BCI_RT_RUN                    ** rc64.2  Retrace run
+
+LD   CmdHold                       ** Comando hold
+S    MemHoldRetrace                ** Mem. programma interrotto in modalit� retrace
+
+LD   CmdStart                      ** Comando start
+ANDN MemModRepos                   ** Mem. modalit� REPOS attiva
+ANDN BCO_O_REPOS                   ** rc8.11 Ciclo Repos in corso
+AND  PP_EXEC_MODE                  ** rgc0.2 Canale in AUT o MDI
+ORN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+ORN  EnabRetrace                   ** Abilita esecuzione in modalit� retrace
+R    MemHoldRetrace                ** Mem. programma interrotto in modalit� retrace
+
+LD   BCG_RTPLUS                    ** rg1.27 Comando + in retrace
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+OR   xRTPlus                       ** comando + in retrace
+ORN  MemHoldRetrace                ** Mem. programma interrotto in modalit� retrace
+AND  EnabRetrace                   ** Abilita esecuzione in modalit� retrace
+AND  BCO_PRGRUN                    ** rc8.0  Programma in corso
+ANDN BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+ST   BCI_RT_FWD_PLAY               ** rc64.25 Comando forward retrace
+
+LD   BCG_RTMINUS                   ** rg1.28 Comando - in retrace
+ANDN xCmdFromInput                 ** Disabilita comandi standard macchina
+OR   xRTMinus                      ** comando - in retrace
+AND  MemHoldRetrace                ** Mem. programma interrotto in modalit� retrace
+AND  EnabRetrace                   ** Abilita esecuzione in modalit� retrace
+AND  BCO_PRGRUN                    ** rc8.0  Programma in corso
+ANDN BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+ST   BCI_RT_REV_PLAY               ** rc64.26 Comando reverse retrace
+
+LD   BCG_RTDRYRUN                  ** rg1.29 Comando dry run (rapido) in retrace
+AND  MemHoldRetrace                ** Mem. programma interrotto in modalit� retrace
+OR   xSpeedDryRunEnab              ** Ab. velocita' di Dry Run
+AND  ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   BCI_RT_DRYRUN                 ** rc64.28 Comando retrace dry run (rapido)
+
+LD   CP_VELDRY                     ** pc13 Velocit� per ciclo dry-run
+ST   CI_RT_DRUN_FEED               ** rc69 Velocit� dry run (rapido) per retrace
+
+* Gestione ricerca blocco
+
+LD   BSG_BLKSRC                    ** rg1.13 Selezione ricerca blocco
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+ANDN xDisBlkSrc                    ** Disable channel block search
+***ANDN PROC_NO_CH0                   ** rg0.10 Canale in elaborazione diverso da 0
+OR   xBlkSearch                    ** Selezione esec. ricerca blocco (esterno)
+ST   CmdBlkSearch                  ** Comando ricerca blocco
+
+LD   CmdBlkSearch                  ** Comando ricerca blocco
+AND  BCI_START                     ** rc0.2  NC-start
+S    MemBlkSrcCycle                ** Mem. ciclo ricerca blocco in corso
+
+LD   BCO_ENDSEARCH                 ** rc8.15 Fine ricerca blocco
+AND  MemBlkSrcCycle                ** Mem. ciclo ricerca blocco in corso
+S    MemBlkSrcEnded                ** Mem. ciclo ricerca blocco terminato
+
+LD   MemBlkSrcEnded                ** Mem. ciclo ricerca blocco terminato
+ANDN CmdBlkSearch                  ** Comando ricerca blocco
+OR   BCI_RESET                     ** rc0.0  Reset NC
+R    MemBlkSrcCycle                ** Mem. ciclo ricerca blocco in corso
+R    MemBlkSrcEnded                ** Mem. ciclo ricerca blocco terminato
+
+LD   MemBlkSrcCycle                ** Mem. ciclo ricerca blocco in corso
+ANDN MemBlkSrcEnded                ** Mem. ciclo ricerca blocco terminato
+ST   BCI_RICBLOCCO                 ** rc0.24  Ricerca blocco
+ST   yBlkSearch                    ** ricerca blocco in corso
+
+LD   MemBlkSrcEnded                ** Mem. ciclo ricerca blocco terminato
+ST   yBlkSrcEnded                  ** ricerca blocco terminata
+
+* Dati ricerca blocco
+
+LD   UP_NBLOCKSEARCH               ** ui27 Numero riga ricerca blocco
+*SUB  1
+ST   CI_BS_NUMLINE                 ** Numero linea per ricerca blocco
+
+LD   UP_FEEDSEARCH                 ** ui28 FEED Ricerca blocco
+ST   CI_BS_VELAT                   ** Velocit� di attacco al pezzo dopo ricerca blocco
+
+LD   UP_NITERSEARCH                ** ui29 Iterazioni ricerca blocco
+ST   CI_BS_NUMIT                   ** Numero iterazioni per ricerca blocco
+
+* Forzato sempre attivo per problemi con il correttore utensile
+*LD   BUP_AUXCMD    ** ui16.25 Modalit� AUXCMD selezionata
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   CI_BS_AUXCMD                  ** Attacco al pezzo all'inizio del blocco ricercato
+
+* Memorizza blocco corrente per eventuale ricerca blocco
+
+LD   BCO_PRGRUN                    ** rc8.0  Programma in corso
+ANDN BCI_RESET                     ** rc0.0  Reset NC
+ANDN BCI_EMERG                     ** rc0.1  Emergenza
+JMPCN BLK_READ
+
+LD   CI_CURRLEVBLCK                ** lev0.curline Numero blocco in esecuzione
+ST   RetCurrBlk                    ** Blocco corrente (retentivo) per ric. blocco
+
+BLK_READ:
+
+* NB: il blocco di inizio per la ricerca blocco viene fornito sempre
+* dal canale 0, che si suppone sia il canale principale.
+
+LD   PROC_NO_CH0                   ** rg0.10 Canale in elaborazione diverso da 0
+JMPC END_STR_BLK
+
+LD   RetCurrBlk                    ** Blocco corrente (retentivo) per ric. blocco
+ST   SG_CURRBLK                    ** rg15 Blocco corrente per ricerca blocco
+
+END_STR_BLK:
+
+* Ciclo di overstore
+
+*LD   BUP_OVERSTORE ** ui16.26 Richiesta procedura overstore
+LD   MemBlkSrcEnded                ** Mem. ciclo ricerca blocco terminato
+*ANDN xSelFromInput ** Disabilita selezioni standard macchina
+ST   PredOverstore                 ** Predispone esecuzione ciclo overstore
+
+LD   PredOverstore                 ** Predispone esecuzione ciclo overstore
+OR   xOverstore                    ** Ab. overstore dopo ricerca blocco (esterna)
+ST   BCI_OVERSTORE                 ** rc0.27  Abilita procedura di overstore
+
+LD   CmdStart                      ** Comando start
+S    MemReqOvsData                 ** Mem. richiesta preparazione dati overstore a UI
+
+LDN  PredOverstore                 ** Predispone esecuzione ciclo overstore
+R    MemReqOvsData                 ** Mem. richiesta preparazione dati overstore a UI
+
+LD   MemReqOvsData                 ** Mem. richiesta preparazione dati overstore a UI
+AND  BUP_OVRSTRREADY               ** ui16.27 Dati overstore pronti
+ST   StartOvsReady                 ** Start canale con dati overstore pronti
+
+LD   StartOvsReady                 ** Start canale con dati overstore pronti
+S    MemOvsCycle                   ** Mem. ciclo overstore in corso
+
+LD   BCO_END_OVERST                ** rc8.25 Esecuzione ciclo Overstore terminata
+ORN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+R    MemOvsCycle                   ** Mem. ciclo overstore in corso
+
+LD   MemOvsCycle                   ** Mem. ciclo overstore in corso
+ST   yOverstore                    ** Ciclo di overstore in corso
+
+LD   xSelFromInput                 ** Disabilita selezioni standard macchina
+JMPC END_BS_OPTION
+
+LD   16#1B
+ST   CI_BS_OPTION                  ** Opzioni ricerca blocco
+
+END_BS_OPTION:
+
+* Parallelo richiesta dati overstore
+
+LD   MemReqOvsData                 ** Mem. richiesta preparazione dati overstore a UI
+S    CH_OVERSTORE                  ** rg0.6 Selezione overstore attiva
+
+* Selezione modalit� di esecuzione del programma
+
+LD   StepMode                      ** Selezionato modo STEP
+ST   BCI_BLKSING                   ** rc0.17  Abilita esecuzione blocco Singolo
+
+LD   BSG_BLKSWTCH                  ** rg1.7 Selezione esecuzione blocco Barrato
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelBBlock                    ** selezione esec. blocco barrato (esterna)
+ST   BCI_BLKSWTCH                  ** rc0.18  Abilita esecuzione blocco Barrato
+
+LD   BSG_DRYRUN                    ** rg1.8 Selezione esecuzione dry Run
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelDryRun                    ** selezione esec. DRY RUN (esterna)
+ST   BCI_DRYRUN                    ** rc0.19  Abilita esecuzione dry Run
+
+LD   BUP_VISLOC                    ** ui16.14 Selezione visualizz. quota in rif. pezzo
+ST   BCI_VISLOC                    ** rc0.20  Abilita vis. quote in riferimento pezzo
+
+LD   BSG_TEST                      ** rg1.10 Selezione esecuzione simulata
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelSimul                     ** selezione esec. simulata (esterna)
+ST   BCI_TEST                      ** rc0.21  Abilita esecuzione simulata
+
+LD   BSG_PRESETREF                 ** rg1.12 Selezione modo REF con preset
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xPresetRef                    ** selezione modo REF taratura immediata (preset)
+ST   BSC_PRESETREF                 ** rgc0.19 Selezione modo REF preset nel canale
+
+LD   BSG_SINGREF                   ** rg1.11 Selezione modo REF singolo
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSingleRef                    ** selezione modo REF singolo (esterna)
+OR   BSC_PRESETREF                 ** rgc0.19 Selezione modo REF preset nel canale
+ST   BSC_SINGREF                   ** rgc0.18 Selezione modo REF singolo nel canale
+
+* Esecuzione passante
+
+LD   BUP_PASSTHRU                  ** ui30.0 abil. esecuzione passante da UI
+ANDN xSelFromInput                 ** Disabilita selezioni standard macchina
+OR   xSelDripFeed                  ** selezione esec. passante (esterna)
+AND  BCI_AUT                       ** rc0.12  Selettore modi operativi su AUT (automatic)
+ST   BCI_PASSTHRU                  ** rc84.31 Abilita esecuzione passante
+
+LD   BCI_PASSTHRU                  ** rc84.31 Abilita esecuzione passante
+OR   CP_OPZIONI27                  ** pc14.27 Abil. esecuzione passante da parametro
+AND  BCO_PRGRUN                    ** rc8.0  Programma in corso
+S    BPU_UISTART                   ** Comando START esec. passante
+
+LDN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+AND  BUP_UIRUN                     ** Esec. passante attiva
+R    BPU_UISTART                   ** Comando START esec. passante
+
+* Altri segnali
+
+LD   BCO_STB_GET                   ** rc8.17 Strobe per GET resources
+ST   BCI_ACK_GET                   ** rc0.29  ACK per GET resource
+
+LD   xAbilFhmb                     ** abilita full-handshake motion block
+OR   xAbilFastFhmb                 ** abilita full-handshake motion block su PLC veloce
+ST   BCI_STEP_MOTION               ** rc0.30  Abil. Full-handshake Motion block
+
+LD   xAbilFhmb                     ** abilita full-handshake motion block
+S    MemAbilFhmb                   ** Mem. abilit. full handshake motion blocks
+
+LD   CmdStart                      ** Comando start
+ANDN xAbilFhmb                     ** abilita full-handshake motion block
+ORN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+R    MemAbilFhmb                   ** Mem. abilit. full handshake motion blocks
+
+LD   xAbilFastFhmb                 ** abilita full-handshake motion block su PLC veloce
+JMPC END_ACK_FHMB
+
+LDN  MemAbilFhmb                   ** Mem. abilit. full handshake motion blocks
+AND  BCO_STB_PLC_SYNC              ** rc8.16 Strobe Full-Handshake Motion blocks
+OR   xAckFhmb                      ** acknowledge full-handshake motion block
+ST   BCI_ACK_PLC_SYNC              ** rc0.26 ACK Full-handshake Motion block
+
+END_ACK_FHMB:
+
+LDN  MemAbilFhmb                   ** Mem. abilit. full handshake motion blocks
+OR   xAckFhmb                      ** acknowledge full-handshake motion block
+ST   ACK_AX_FHMB                   ** rgc0.8 Abil. ACK Full-handshake Motion block per assi
+
+LD   BCO_STB_PLC_SYNC              ** rc8.16 Strobe Full-Handshake Motion blocks
+ST   yStbFhmb                      ** strobe full-handshake motion block
+
+LD   xMatJog                       ** Ab. matrici dinamiche per il JOG (provv.)
+ST   BCI_JOGMTXON                  ** rc0.28  Utilizza matrici dinamiche per il JOG
+
+* Comando segnali per esecuzione passo-passo
+
+CAL  R_TRIGSTEP(CLK=PulsStep)      ** Mem. comando step
+CAL  R_TRIGSTEPIN(CLK=PulsStepIn)  ** Mem. comando step IN
+CAL  R_TRIGSTEPOUT(CLK=PulsStepOut) ** Mem. comando step OUT
+
+LD   R_TRIGSTEP.Q                  ** Trigger comando STEP
+ANDN BCI_STEPIN                    ** rc0.14  DEBUG: esegui un solo blocco entrando nelle subroutine
+ANDN BCI_STEPOUT                   ** rc0.23  DEBUG: esegui fino al termine della funzione
+S    BCI_STEP                      ** rc0.13  DEBUG: esegui un solo blocco
+
+LD   R_TRIGSTEPIN.Q                ** Trigger comando STEP IN
+ANDN BCI_STEP                      ** rc0.13  DEBUG: esegui un solo blocco
+ANDN BCI_STEPOUT                   ** rc0.23  DEBUG: esegui fino al termine della funzione
+S    BCI_STEPIN                    ** rc0.14  DEBUG: esegui un solo blocco entrando nelle subroutine
+
+LD   R_TRIGSTEPOUT.Q               ** Trigger comando STEP OUT
+ANDN BCI_STEP                      ** rc0.13  DEBUG: esegui un solo blocco
+ANDN BCI_STEPIN                    ** rc0.14  DEBUG: esegui un solo blocco entrando nelle subroutine
+S    BCI_STEPOUT                   ** rc0.23  DEBUG: esegui fino al termine della funzione
+
+LDN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+ORN  BCO_WAIT                      ** rc8.13 Attesa comando di debug
+R    BCI_STEP                      ** rc0.13  DEBUG: esegui un solo blocco
+R    BCI_STEPIN                    ** rc0.14  DEBUG: esegui un solo blocco entrando nelle subroutine
+R    BCI_STEPOUT                   ** rc0.23  DEBUG: esegui fino al termine della funzione
+
+* Imposta numero part program
+
+LD   xPPNumber                     ** numero part program da eseguire
+ST   CI_NUMPPGM                    ** rc1  Numero part program selezionato per esec
+
+* Imposta quota INC e tensione JOG OPEN
+
+LD   xSelFromInput                 ** Disabilita selezioni standard macchina
+JMPC IMMSEL
+
+LD   SG_FIXINCR                    ** rg4 Quota per incrementi fissi
+ST   CI_FIXINCR                    ** rc4  Quota per incrementi fissi
+
+LD   SG_JOGOPEN                    ** rg5 Tensione JOG a Loop Aperto
+ST   CI_JOGOPEN                    ** rc5  Tensione JOG a Loop Aperto
+
+LD   SG_QTAIMM                     ** rg6 Quota per taratura immediata (preset)
+ST   SC_QTAIMM                     ** rgc6 Quota per taratura immediata (preset)
+
+JMP  END_SEL
+
+IMMSEL:
+
+LD   xQuotaInc                     ** quota per incrementi fissi (esterno)
+ST   CI_FIXINCR                    ** rc4  Quota per incrementi fissi
+
+LD   xVJogOpen                     ** Tensione per JOG OPEN in mV (esterno)
+ST   CI_JOGOPEN                    ** rc5  Tensione JOG a Loop Aperto
+
+LD   xQuotaPrs                     ** quota per taratura immediata (esterna)
+ST   SC_QTAIMM                     ** rgc6 Quota per taratura immediata (preset)
+
+END_SEL:
+
+* Imposta override assi e mandrini
+
+LD   xCmdFromInput                 ** Disabilita comandi standard macchina
+JMPC IMMCMD
+
+LD   SG_OVRDAX                     ** rg2 Override avanzamento
+ST   CI_OVRD1                      ** rc2  Override avanzamento
+
+JMP  END_CMD
+
+IMMCMD:
+
+LD   xOverride                     ** override assi (esterno)
+ST   CI_OVRD1                      ** rc2  Override avanzamento
+
+END_CMD:
+
+* Inizializza segnali cumulativi, bit per multimandrino,
+* consensi revolver per mandrino con revolver assente.
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   CH_IN_ALARM                   ** rgc0.6 Asse in allarme nel canale
+ST   CH_AXJOG                      ** rgc0.21 Presente un asse in JOG nel canale
+ST   CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+ST   CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   CH_ZEROED                     ** rgc0.7 Assi tarati nel canale
+ST   CH_STOPPED                    ** rgc0.9 Assi del canale fermi
+ST   SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+ST   SICROTJOG                     ** rgc0.13 Sic. da revolver per rotazione mandrino in JOG
+ST   SICCOPPIAMA                   ** rgc0.14 Sic. da revolver per messa in coppia mandrino
+
+LD   0
+ST   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+
+* Output di stato del canale
+
+LD   BCO_PRGRUN                    ** rc8.0  Programma in corso
+ST   yProgramRun                   ** Programma in corso
+
+LD   BCO_PRGINT                    ** rc8.1  Programma interrotto
+ST   yProgramInt                   ** Programma interrotto
+
+LD   BCO_CANREADY                  ** rc8.2  Canale Ready
+ST   yChanReady                    ** Canale Ready
+
+LD   BCO_IN_ALARM                  ** rc8.3  Canale in allarme
+ST   yChanInAlarm                  ** Canale in allarme
+
+LD   BCO_O_REPOS                   ** rc8.11 Ciclo Repos in corso
+OR   MemModRepos                   ** Mem. modalit� REPOS attiva
+ST   yRepos                        ** stato REPOS attivo
+
+END_FUNCTION_BLOCK
+
+
+
+* FB FINE GESTIONE CANALE
+
+FUNCTION_BLOCK GESTCHEND
+
+VAR_INPUT
+xWaitMFun: BOOL; * Attesa su funzione M
+xAckMFun: BOOL; * Sblocco funzione M
+xWaitTFun: BOOL; * Attesa su funzione T
+xAckTFun: BOOL; * Sblocco funzione T
+END_VAR
+
+VAR_OUTPUT
+yPercResEnded: BOOL; * Annullamento percorso residuo completato
+END_VAR
+
+* ACK funzioni M
+
+LDN  xWaitMFun                     ** Attesa su funzione M
+OR   xAckMFun                      ** Sblocco funzione M
+AND  BCO_STB_M                     ** rc8.4  Strobe delle funzioni M
+ST   BCI_ACK_M                     ** rc0.5  Conferma funzione M ricevuta
+
+* ACK funzioni T
+
+LDN  xWaitTFun                     ** Attesa su funzione T
+OR   xAckTFun                      ** Sblocco funzione T
+AND  BCO_STB_T                     ** rc8.6  Strobe delle funzioni T
+ST   BCI_ACK_T                     ** rc0.7  Conferma funzione T ricevuta
+
+* Parallelo del segnale di allarme assi attivo
+
+LD   CH_IN_ALARM                   ** rgc0.6 Asse in allarme nel canale
+OR   BCO_IN_ALARM                  ** rc8.3  Canale in allarme
+S    AX_IN_ALARM                   ** rg0.0 Asse in allarme
+
+* Serie del segnale di asse tarato
+
+LD   AX_ZEROED                     ** rg0.1 Assi tarati
+AND  CH_ZEROED                     ** rgc0.7 Assi tarati nel canale
+ST   AX_ZEROED                     ** rg0.1 Assi tarati
+
+* Serie del segnale di asse fermo
+
+LD   AX_STOPPED                    ** rg0.2 Assi fermi
+AND  CH_STOPPED                    ** rgc0.9 Assi del canale fermi
+ST   AX_STOPPED                    ** rg0.2 Assi fermi
+
+* Uscita per fine annullamento percorso residuo
+
+LD   BCO_O_ENDCOM                  ** rc8.9  Stato annulla percorso residuo attivo
+AND  CH_STOPPED                    ** rgc0.9 Assi del canale fermi
+ST   yPercResEnded                 ** Annullamento percorso residuo completato
+
+* Setta il bit di canale in elaborazione diverso da zero
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+S    PROC_NO_CH0                   ** rg0.10 Canale in elaborazione diverso da 0
+
+END_FUNCTION_BLOCK
+
+
+* FB GESTIONE ASSE (PROPORZIONALE STANDARD O NVEL)
+
+FUNCTION_BLOCK GESTAX
+
+VAR_INPUT
+xUnlock: BOOL;      * Sgancia asse virtuale
+xRefLS: BOOL;       * Finecorsa di taratura
+xPlusLS: BOOL;      * Finecorsa +
+xMinusLS: BOOL;     * Finecorsa -
+xSelected: BOOL;    * Asse selezionato
+xJogPlus: BOOL;     * Comando manuale avanti
+xJogMinus: BOOL;    * Comando manuale indietro
+xCloseLoop: BOOL;   * Richiesta messa in coppia
+xHoldMoving: BOOL;  * Richiesta blocco avanzamento
+xFromPlc: BOOL;     * Richiesta comando asse da PLC
+xZeroForced: BOOL;  * Forzamento asse tarato
+xCLoopAuto: BOOL;   * Messa in coppia autom. durante la movimentazione (provv.)
+xBrakeEnab: BOOL;   * Abilita gestione freno (provv.)
+xInitCan: BOOL;     * Inizializza asse CAN
+xEnLoopDelay: BOOL; * Abilita ritardo apertura loop (arresto preciso)
+xLoopDelay: DWORD;  * Ritardo apertura loop di posizione
+xEnFIR: BOOL;       * Abilita filtri FIR
+xEnFrComp: BOOL; * Abilita friction compensation
+xLockRef: BOOL;     * Blocco avvio ciclo REF da canale
+xEnabRef: BOOL;     * Abilita avvio ciclo REF
+xDisabVis: BOOL;    * Disabilita visualizzazone
+xSetAlarm: BOOL; * Forzamento allarme asse
+xDisLimiter: BOOL; * Disabilita limitatore 
+END_VAR
+
+VAR_OUTPUT
+yStopped: BOOL;     * Asse fermo
+yForward: BOOL;     * Direzione asse avanti
+yClosedLoop: BOOL;  * Asse in coppia
+yOrdineMoto: BOOL;  * Ordine di moto asse
+yZeroed: BOOL;      * Asse tarato
+yInAlarm: BOOL;     * Asse in allarme
+yBrake: BOOL;       * Comando freno
+yLimiter: BOOL; * Intervento limitatore
+yDriveNotEn: BOOL;  * Closeloop but drive not enabled (alarm)
+END_VAR
+
+VAR
+AsseNvel: BOOL;      * Asse di tipo NVEL
+RichCloseLoop: BOOL; * Richiesta di messa in coppia
+StartRef: BOOL;      * Avvio ciclo di taratura
+MemFreno: BOOL;      * Mem. attivazione freno
+MemConnAE: BOOL;     * Mem. collegamento richiesto con albero elettrico
+MemConnCP: BOOL;     * Mem. collegamento richiesto con coupling
+StPrFilterEnab: BOOL; * Stato precedente abilitazione filtri
+Preset: DWORD;       * Preset timer mantenimento coppia
+alarmEn:  BOOL;      * Drive is disable, with enable request enabled  
+Temp: DWORD;
+
+TOF_COPPIA: TOF;
+#defcom TOF_COPPIA.Q Fine tempo mantenimento coppia dopo tolleranza
+TON_FRENO: TON;
+#defcom TON_FRENO.Q Fine tempo apertura freno
+TOF_FRENO: TOF;
+#defcom TOF_FRENO.Q Fine tempo chiusura freno
+TOF_ONMOT: TOF;
+#defcom TOF_ONMOT.Q Fine tempo on motore
+RT_AXSEL: R_TRIG;
+#defcom RT_AXSEL.Q Imp. selezione asse
+JOG_AX: AX_JOGGING;
+POS_AX: AX_SINGVAR;
+EL_SH: AX_GEARING;
+CAM_AX: AX_COUP;
+*AX_CAN: AX_FROM_ISO;
+*AX_CAN_AUX: AX_CMD_AUX;
+TON_ALARM_DISABLE:  TON;
+END_VAR
+
+LD   AP_AXTYPE                     ** pa0 Tipo asse
+EQ   20
+ST   AsseNvel                      ** Asse di tipo NVEL
+
+* Forza al massimo l'override, che viene preso dal registro usato dai mandrini
+
+LD   AsseNvel                      ** Asse di tipo NVEL
+JMPCN END_OVR
+
+LD   100
+ST   AI_OVRD                       ** ra1  Override asse/mandrino
+
+LD   ALWAYS_ZERO
+ST   xEnFIR                         ** Abilita filtri FIR
+ST   xEnFrComp                      ** Abilita friction compensation
+
+LD   ALWAYS_ONE
+ST   xDisLimiter                    ** Disabilita limitatore 
+
+END_OVR:
+
+* Condizioni per la messa in coppia
+
+LD   0
+ST   Preset                        ** Preset timer mantenimento coppia
+
+LD   xEnLoopDelay                  ** Abilita ritardo apertura loop (arresto preciso)
+JMPCN STOPFINE
+
+LD   AP_TIMERTOLL                  ** pa8 Preset timer tolleranza
+DIV  4
+ST   Preset                        ** Preset timer mantenimento coppia
+
+LD   xLoopDelay                    ** Ritardo apertura loop di posizione
+EQ   0
+JMPC STOPFINE
+
+LD   xLoopDelay                    ** Ritardo apertura loop di posizione
+ST   Preset                        ** Preset timer mantenimento coppia
+
+STOPFINE:
+
+CAL TOF_COPPIA(IN=BAO_ORDM, PT=Preset) ** ra3.13  Ordine di moto
+
+LD   xCLoopAuto                    ** Messa in coppia autom. durante la movimentazione (provv.)
+AND  TOF_COPPIA.Q                  ** Fine tempo mantenimento coppia dopo tolleranza
+OR   xCloseLoop                    ** Richiesta messa in coppia
+ANDN ST_JOGOPEN                    ** rgc0.17 Stato JOG OPEN attivo
+OR   (
+LD   BAO_ONMT                      ** ra3.10  Richiesta abilitazione azionamento
+AND  ST_JOGOPEN                    ** rgc0.17 Stato JOG OPEN attivo
+)
+AND  BCO_CANREADY                  ** rc8.2  Canale Ready
+ANDN BAO_ALLM                      ** ra3.15  Asse in Allarme
+ST   RichCloseLoop                 ** Richiesta di messa in coppia
+
+* Gestione freno
+
+LD   xBrakeEnab                    ** Abilita gestione freno (provv.)
+JMPCN END_FRENO
+
+LD   RichCloseLoop                 ** Richiesta di messa in coppia
+AND  BAO_ONMT                      ** ra3.10  Richiesta abilitazione azionamento
+S    MemFreno                      ** Mem. attivazione freno
+
+LDN  RichCloseLoop                 ** Richiesta di messa in coppia
+AND  (
+LDN  BAO_ORDM                      ** ra3.13  Ordine di moto
+OR   %ra8.14                       * Conferma albero elettrico agganciato
+)
+R    MemFreno                      ** Mem. attivazione freno
+
+CAL TON_FRENO(IN=MemFreno, PT=AP_TIMERFRENO) ** Mem. attivazione freno
+
+CAL TOF_FRENO(IN=MemFreno, PT=AP_TIMERFRENO) ** Mem. attivazione freno
+
+LD   MemFreno                      ** Mem. attivazione freno
+ST   yBrake                        ** Comando freno
+
+END_FRENO:
+
+
+* Speed and acceleration limiter
+LD   AsseNvel                      ** Asse di tipo NVEL
+JMPC SkipAccLimMngt
+
+LDN  xDisLimiter                   ** Disabilita limitatore 
+ST   EFCR_CLAMP_V                  ** Enable velocity limiter
+ST   EFCR_CLAMP_A                  ** Enable acceleration limiter
+
+LD   AP_VELMAX                     ** pa9 Velocit� massima
+MUL  1100          * 1000 + 10%
+DIV  60
+ST   AI_EF_RT_VMON                 ** real-time velocity limiter [um/s]
+
+LD   AP_DECEL                      ** pa2 Decelerazione massima
+ST   Temp
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+GT   AP_DECEL                      ** pa2 Decelerazione massima
+JMPCN NoAccGTDec
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+ST   Temp
+
+NoAccGTDec:
+LD   Temp
+MUL  6000          * prende la piu' alta tra ACC e DEC e la moltiplica per 2
+ST   AI_EF_RT_AMON                 ** real-time acceleration limiter [um/s2]
+
+LD   EFSR_ACK_V_CLAMPED            ** Velocity clamped
+OR   EFSR_ACK_A_CLAMPED            ** Acceleration clamped
+S    yLimiter                      ** Intervento limitatore
+
+LD   yLimiter                      ** Intervento limitatore
+JMPCN LIM_SER
+
+LD   121
+ST   DFB_ERRCODE                   ** fb14 Codice errore procedura
+
+LIM_SER:
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+AND  (
+LD   DFB_ERRCODE                   ** fb14 Codice errore procedura
+EQ   121
+)
+JMPCN LIM_RER
+
+LD   0
+ST   DFB_ERRCODE                   ** fb14 Codice errore procedura
+
+LIM_RER:
+SkipAccLimMngt:
+
+* Attivazione albero elettrico per aggancio ad asse virtuale
+
+LD   REQ_CONN_AX                   ** rga0.0 Richiesta aggancio asse in albero elettrico
+S    MemConnAE                     ** Mem. collegamento richiesto con albero elettrico
+
+LD   REQ_SCON_AX                   ** rga0.1 Richiesta sgancio asse
+OR   REQ_CONN_CP                   ** rga0.2 Richiesta aggancio asse in coupling
+OR   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+OR   (
+LD   xUnlock                       ** Sgancia asse virtuale
+AND  %ra8.14
+)
+OR   xSetAlarm                     ** Forzamento allarme asse
+OR   yLimiter                      ** Intervento limitatore
+R    MemConnAE                     ** Mem. collegamento richiesto con albero elettrico
+
+* Attivazione albero elettrico per aggancio ad asse virtuale
+
+LD   REQ_CONN_CP                   ** rga0.2 Richiesta aggancio asse in coupling
+S    MemConnCP                     ** Mem. collegamento richiesto con coupling
+
+LD   REQ_SCON_AX                   ** rga0.1 Richiesta sgancio asse
+OR   REQ_CONN_AX                   ** rga0.0 Richiesta aggancio asse in albero elettrico
+OR   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+OR   (
+LD   xUnlock                       ** Sgancia asse virtuale
+AND  %ra8.14
+)
+OR   xSetAlarm                     ** Forzamento allarme asse
+OR   yLimiter                      ** Intervento limitatore
+R    MemConnCP                     ** Mem. collegamento richiesto con coupling
+
+* Comando bit chiudi anello, blocco avanz., grant al PLC
+
+LD   TOF_FRENO.Q                   ** Fine tempo chiusura freno
+AND  xBrakeEnab                    ** Abilita gestione freno (provv.)
+OR   RichCloseLoop                 ** Richiesta di messa in coppia
+ANDN ST_JOGOPEN                    ** rgc0.17 Stato JOG OPEN attivo
+OR   (
+LD   BCO_CANREADY                  ** rc8.2  Canale Ready
+AND  AsseNvel                      ** Asse di tipo NVEL
+)
+ST   BAI_CHAN                      ** ra0.0 Chiusura anello di posizione
+
+LD   RichCloseLoop                 ** Richiesta di messa in coppia
+ANDN TON_FRENO.Q                   ** Fine tempo apertura freno
+AND  xBrakeEnab                    ** Abilita gestione freno (provv.)
+ANDN AsseNvel                      ** Asse di tipo NVEL
+OR   xHoldMoving                   ** Richiesta blocco avanzamento
+ST   BAI_BLAV                      ** ra0.1 Blocco Avanzamento
+
+LDN  ST_JOGOPEN                    ** rgc0.17 Stato JOG OPEN attivo
+ST   BAI_CENC                      ** ra0.2 Abilita controllo encoder
+
+LD   PA_ENAB_POS                   ** rg0.9 Abilita posiz. asse da volantino
+OR   PA_MOV_JOG                    ** rg0.8 Richiesta movim. da volantino in JOG
+OR   PA_ENAB_ELS                   ** rg0.11 Abilita albero elettrico da volantino
+AND  xSelected                     ** Asse selezionato
+OR   MemConnAE                     ** Mem. collegamento richiesto con albero elettrico
+OR   MemConnCP                     ** Mem. collegamento richiesto con coupling
+OR   EL_SH.yax_RUNNING
+OR   CAM_AX.yax_RUNNING
+ANDN AsseNvel                      ** Asse di tipo NVEL
+OR   xFromPlc                      ** Richiesta comando asse da PLC
+AND  BCO_CANREADY                  ** rc8.2  Canale Ready
+ANDN CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+AND  BAO_SYNCUPDATE                ** ra13.2 Update dati asse effettuato
+ST   BAI_PLCREQ                    ** ra0.28 Richiesta gestione asse da PLC
+
+* Acquisizione immediata parametri
+* NB: in questo FB � stata inibita perch� i parametri vengono
+* aggiornati all'avvio del ciclo o del JOG, � invece necessaria
+* nelle macchine che muovono gli assi solo da PLC.
+
+*LDN  BAO_CHGCHKSUM ** ra13.5 Parametri asse non modificati
+*AND  BCO_CANREADY  ** rc8.2  Canale Ready
+*ANDN BCO_PRGRUN    ** rc8.0  Programma in corso
+*AND  BAO_ISO_NULLO ** ra19.0 Stato NULLO all'interno del canale
+*ANDN BAO_ALLM      ** ra3.15  Asse in Allarme
+*ANDN BAO_PEXEC     ** ra3.29 Exec procedura attivo da slave
+*ST   BAI_UPDATE    ** ra0.20 Richiesta aggiornamento parametri
+
+* Gestione filtri e limitatore
+
+* LD   xEnFIR                        ** Abilita filtri FIR
+* ANDN StPrFilterEnab                ** Stato precedente abilitazione filtri
+* JMPCN FLT_INI
+* 
+* LD   FIR_FTC1                      ** Filter Time Constant 1 (ms)
+* EQ   0
+* AND  (
+* LD   FIR_FTC2                      ** Filter Time Constant 2 (ms)
+* EQ   0
+* )
+* AND  (
+* LD   FIR_FEC                       ** Following Error Compensation [0..1000]
+* EQ   0
+* )
+* JMPCN INI_FLT1
+* 
+* LD   1
+* ST   FIR_FTC1                      ** Filter Time Constant 1 (ms)
+* 
+* INI_FLT1:
+* 
+* LD   OAP_INFWD                     ** Old axis Feed Forward [0..1000]
+* NE   0
+* JMPCN FLT_INI
+* 
+* LD   0
+* ST   OAP_INFWD                     ** Old axis Feed Forward [0..1000]
+* 
+* FLT_INI:
+
+LD   xEnFIR                        ** Abilita filtri FIR
+ST   StPrFilterEnab                ** Stato precedente abilitazione filtri
+
+LDN  xEnFIR                        ** Abilita filtri FIR
+ST   EFCR_NF_DISABLE               ** NanoFIR subsystem disable
+
+LDN  xEnFIR                        ** Abilita filtri FIR
+ORN  EFSR_ACK_NF_DISABLE           ** ACK nanoFIR subsystem disable
+AND  (
+LD   xEnFIR                        ** Abilita filtri FIR
+OR   EFSR_ACK_NF_DISABLE           ** ACK nanoFIR subsystem disable
+)
+ST   EFCR_SUBSYSTEM_EN             ** Filter subsystem master enable
+
+LD   yLimiter                      ** Intervento limitatore
+OR   xSetAlarm                     ** Forzamento allarme asse
+*ANDN %ra0.28       ** Mem. collegamento richiesto con albero elettrico
+ST   BAI_SETALARM                  ** ra0.27 Richiesta allarme asse
+
+LD   xUnlock                       * reset gestax
+R    yLimiter                      ** Intervento limitatore
+
+LD   xEnFrComp                     ** Abilita friction compensation
+ST   EFCR_FRICTION_COMP            ** Enable static friction comp.
+ST   EFCR_RT_CHANGES_EN            ** Enable run-time changes (RT)
+
+* Alarm if there is request of closeloop without drive enable
+
+LD   BAI_CHAN                      ** ra0.0 Chiusura anello di posizione
+AND  (
+LD   %nvel11
+EQ   3
+OR   (
+LD   %nvel11
+EQ   4
+)
+)
+ANDN BAI_AXEN                      ** Drive is enabled
+ANDN LINK_SIMUL                    ** PLCFLAGS.16 LINK=SIMUL
+ANDN AP_OPZIONI31                  ** pa3.31 Asse in simulato
+ST   alarmEn                       ** Drive is disable, with enable request enabled  
+
+CAL  TON_ALARM_DISABLE (IN:=alarmEn,PT:=2000) ** Drive is disable, with enable request enabled  
+
+LD   TON_ALARM_DISABLE.Q
+ST   yDriveNotEn                   ** Closeloop but drive not enabled (alarm)
+
+
+LD  TON_ALARM_DISABLE.Q
+JMPCN drive_is_enabled
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   AX_DRV_ENAB                   ** rg0.13 signal to understand all drives are enabled
+drive_is_enabled:
+
+* Comando bit avanti e indietro per i modi REF, JOG, INC
+
+LD   CMD_START_AXIS                ** rgc0.5 Comando start assi canale
+ANDN xLockRef                      ** Blocco avvio ciclo REF da canale
+OR   xEnabRef                      ** Abilita avvio ciclo REF
+AND  BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+AND  (
+LDN  xZeroForced                   ** Forzamento asse tarato
+ANDN BSC_SINGREF                   ** rgc0.18 Selezione modo REF singolo nel canale
+OR   (
+LD   xSelected                     ** Asse selezionato
+AND  BSC_SINGREF                   ** rgc0.18 Selezione modo REF singolo nel canale
+)
+)
+ST   StartRef                      ** Avvio ciclo di taratura
+
+LD   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+AND  xSelected                     ** Asse selezionato
+OR   xJogPlus                      ** Comando manuale avanti
+AND  AX_EXEC_MODE                  ** rgc0.3 Canale in JOG o INC
+OR(
+LD   StartRef                      ** Avvio ciclo di taratura
+AND  AP_OPZIONI0                   ** pa3.0 Bit inversione direzione taratura
+ANDN AsseNvel                      ** Asse di tipo NVEL
+)
+OR(
+LD   StartRef                      ** Avvio ciclo di taratura
+AND  NV_OPZIONI0                   ** pa1.0 Bit inversione direzione taratura (NVEL)
+AND  AsseNvel                      ** Asse di tipo NVEL
+)
+ST   BAI_AV                        ** ra0.8 Comando avanti
+
+LD   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+AND  xSelected                     ** Asse selezionato
+OR   xJogMinus                     ** Comando manuale indietro
+AND  AX_EXEC_MODE                  ** rgc0.3 Canale in JOG o INC
+OR(
+LD   StartRef                      ** Avvio ciclo di taratura
+ANDN AP_OPZIONI0                   ** pa3.0 Bit inversione direzione taratura
+ANDN AsseNvel                      ** Asse di tipo NVEL
+)
+OR(
+LD   StartRef                      ** Avvio ciclo di taratura
+ANDN NV_OPZIONI0                   ** pa1.0 Bit inversione direzione taratura (NVEL)
+AND  AsseNvel                      ** Asse di tipo NVEL
+)
+ST   BAI_IND                       ** ra0.9 Comando indietro
+
+* Passaggio finecorsa taratura e limite
+
+LD   xRefLS                        ** Finecorsa di taratura
+ST   BAI_FCRALL                    ** ra0.13 Finecorsa Taratura
+
+LD   xPlusLS                       ** Finecorsa +
+ST   BAI_FCHWAV                    ** ra0.10 Finecorsa avanti
+
+LD   xMinusLS                      ** Finecorsa -
+ST   BAI_FCHWIN                    ** ra0.11 Finecorsa indietro
+
+* Reset asse in allarme
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ST   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+
+* Full-handshake motion block sul singolo asse
+
+LD   BAO_STB_PLC_SYNC              ** ra22.16 strobe Full-handshake Motion block asse
+AND  ACK_AX_FHMB                   ** rgc0.8 Abil. ACK Full-handshake Motion block per assi
+ST   BAI_ACK_PLC_SYNC              ** ra0.26 ACK Full-handshake Motion block asse
+
+* Taratura immediata (preset) sul singolo asse
+
+LD   BSC_PRESETREF                 ** rgc0.19 Selezione modo REF preset nel canale
+ST   BAI_TARAIM                    ** ra0.24 Selezione taratura immediata
+
+LD   SC_QTAIMM                     ** rgc6 Quota per taratura immediata (preset)
+ST   AI_QTAIMM                     ** ra2  Quota taratura immediata
+
+* JOG DA VOLANTINO
+
+LD   xSelected                     ** Asse selezionato
+AND  PA_MOV_JOG                    ** rg0.8 Richiesta movim. da volantino in JOG
+ST   JOG_AX.xax_ENABLE
+
+LDN  JOG_AX.xax_ENABLE
+ST   JOG_AX.xax_CLEAR
+
+LD   JOG_AX.xax_ENABLE
+AND  JOG_AX.yax_READY
+ANDN JOG_AX.yax_RUNNING
+AND  (
+LDN  JOG_AX.yax_ENDERR
+OR   JOG_AX.yax_ERRCODE.1
+)
+ST   JOG_AX.xax_START
+
+LDN  PA_INV_DIR                    ** rg0.7 Movim. da volantino in direzione inversa
+ST   JOG_AX.xax_REVERSE
+
+CAL  JOG_AX
+
+* Rileva il cambio di selezione asse
+
+CAL  RT_AXSEL(CLK=xSelected)       ** Asse selezionato
+
+LD   RT_AXSEL.Q                    ** Imp. selezione asse
+S    AX_SEL_CHG                    ** rg0.12 Imp. modifica selezione asse
+
+* POSIZIONAMENTO TRAMITE VOLANTINO
+
+LD   xSelected                     ** Asse selezionato
+ANDN RT_AXSEL.Q                    ** Imp. selezione asse
+AND  PA_ENAB_POS                   ** rg0.9 Abilita posiz. asse da volantino
+ST   POS_AX.xax_ENABLE
+
+LDN  POS_AX.xax_ENABLE
+ST   POS_AX.xax_CLEAR
+
+LD   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+NE   AO_QUOTA                      ** ra4  Quota asse
+AND  POS_AX.xax_ENABLE
+AND  POS_AX.yax_READY
+ANDN POS_AX.yax_RUNNING
+ANDN POS_AX.yax_ENDERR
+ST   POS_AX.xax_START
+
+LD   SG_QTAR_PAUX                  ** rg9 Quota Target per posiz. da puls. aux
+ST   POS_AX.xax_QUOTA
+
+LD   SG_VEL_PAUX                   ** rg14 Velocit� per posiz. da puls. aux
+ST   POS_AX.xax_VEL
+
+LD   SG_VEL_PAUX                   ** rg14 Velocit� per posiz. da puls. aux
+GT   AP_VELMAX                     ** pa9 Velocit� massima
+JMPCN END_VMAX
+
+LD   AP_VELMAX                     ** pa9 Velocit� massima
+ST   POS_AX.xax_VEL
+
+END_VMAX:
+
+CAL  POS_AX
+
+* ALBERO ELETTRICO (per volantino e G4010)
+
+LD   xSelected                     ** Asse selezionato
+AND  PA_ENAB_ELS                   ** rg0.11 Abilita albero elettrico da volantino
+OR   MemConnAE                     ** Mem. collegamento richiesto con albero elettrico
+ANDN CAM_AX.yax_RUNNING
+ST   EL_SH.xax_ENABLE
+
+LDN  EL_SH.xax_ENABLE
+OR   EL_SH.yax_ENDERR
+ST   EL_SH.xax_CLEAR
+
+LD   EL_SH.xax_ENABLE
+AND  EL_SH.yax_READY
+ANDN EL_SH.yax_ENDOK
+ANDN EL_SH.yax_ENDERR
+ANDN EL_SH.yax_RUNNING  
+ST   EL_SH.xax_START
+
+LD   MemConnAE                     ** Mem. collegamento richiesto con albero elettrico
+JMPC ELS_CON
+
+LD   PA_INCJOG                     ** QPuls2 Quota incremento per posiz. da volantino
+ST   EL_SH.xax_TRNUM
+
+LD   EL_SH.xax_TRNUM
+LT   1
+JMPCN END_TRLIM
+
+LD   1
+ST   EL_SH.xax_TRNUM
+
+END_TRLIM:
+
+LD   1
+ST   EL_SH.xax_TRDEN
+
+LD   128
+ST   EL_SH.xax_MODE
+
+LD   SG_VOLAX                      ** rg16 Numero asse master per volantino
+ST   EL_SH.xax_MASTER
+
+JMP  ELS_END
+
+ELS_CON:
+
+LD   1
+ST   EL_SH.xax_TRNUM
+ST   EL_SH.xax_TRDEN
+
+LD   0
+ST   EL_SH.xax_MODE
+
+LD   CONN_MAST                     ** rga1 Numero asse master per aggancio albero elettrico
+ST   EL_SH.xax_MASTER
+
+ELS_END:
+
+CAL  EL_SH
+
+* AX COUPLING
+
+LD   MemConnCP                     ** Mem. collegamento richiesto con coupling
+ANDN EL_SH.yax_RUNNING
+ST   CAM_AX.xax_ENABLE
+
+LDN  CAM_AX.xax_ENABLE
+ST   CAM_AX.xax_CLEAR
+
+LD   CAM_AX.xax_ENABLE
+AND  CAM_AX.yax_READY
+ANDN CAM_AX.yax_ENDOK
+ANDN CAM_AX.yax_ENDERR
+ST   CAM_AX.xax_START
+
+LD   CP_TYPEC                      ** rga7 Tipo connessione per coupling
+ST   CAM_AX.xax_MODE
+
+*LD   0                      *non disponibile*
+*ST   CAM_AX.xax_INSTANCE
+
+LD   CP_MAST1                      ** rga3 Numero asse master 1 per coupling
+ST   CAM_AX.xax_MASTER0
+
+LD   CP_MAST2                      ** rga4 Numero asse master 2 per coupling
+ST   CAM_AX.xax_MASTER1
+
+LD   CP_MAST3                      ** rga5 Numero asse master 3 per coupling
+ST   CAM_AX.xax_MASTER2
+
+LD   CP_MAST4                      ** rga6 Numero asse master 4 per coupling
+ST   CAM_AX.xax_MASTER3
+
+LD   -1
+ST   CAM_AX.xax_MASTER4
+
+LD   -1
+ST   CAM_AX.xax_MASTER5
+
+CAL  CAM_AX
+
+* Conferma comando effettuato
+
+LD   MemConnAE                     ** Mem. collegamento richiesto con albero elettrico
+AND  EL_SH.yax_RUNNING
+AND  %ra8.14             * Conferma albero elettrico agganciato
+OR   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+AND  REQ_CONN_AX                   ** rga0.0 Richiesta aggancio asse in albero elettrico
+R    REQ_CONN_AX                   ** rga0.0 Richiesta aggancio asse in albero elettrico
+
+LD   MemConnCP                     ** Mem. collegamento richiesto con coupling
+AND  CAM_AX.yax_RUNNING
+AND  %ra8.14             * Conferma albero elettrico agganciato
+OR   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+AND  REQ_CONN_CP                   ** rga0.2 Richiesta aggancio asse in coupling
+R    REQ_CONN_CP                   ** rga0.2 Richiesta aggancio asse in coupling
+
+LDN  MemConnAE                     ** Mem. collegamento richiesto con albero elettrico
+ANDN EL_SH.yax_RUNNING
+ANDN MemConnCP                     ** Mem. collegamento richiesto con coupling
+ANDN CAM_AX.yax_RUNNING
+ANDN %ra8.14             * Conferma albero elettrico agganciato
+OR   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+AND  REQ_SCON_AX                   ** rga0.1 Richiesta sgancio asse
+R    REQ_SCON_AX                   ** rga0.1 Richiesta sgancio asse
+
+LD   REQ_CONN_AX                   ** rga0.0 Richiesta aggancio asse in albero elettrico
+OR   REQ_CONN_CP                   ** rga0.2 Richiesta aggancio asse in coupling
+OR   REQ_SCON_AX                   ** rga0.1 Richiesta sgancio asse
+S    BSY_CAX_PLC                   ** rg18.0 Busy aggancio/sgancio asse interno PLC
+
+LD   MemConnAE                     ** Mem. collegamento richiesto con albero elettrico
+AND  EL_SH.yax_RUNNING
+AND  %ra8.14             * Conferma albero elettrico agganciato
+ST   AX_CONN_OK                    ** rga2.0 Asse agganciato in albero elettrico
+
+LD   MemConnCP                     ** Mem. collegamento richiesto con coupling
+AND  CAM_AX.yax_RUNNING
+AND  %ra8.14             * Conferma albero elettrico agganciato
+ST   AX_CONCP_OK                   ** rga2.1 Asse agganciato in coupling
+
+* Parallelo del segnale di allarme assi attivo
+
+LD   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAO_ISO_ALARM                 ** ra19.4 Stato ALLARME all'interno del canale
+S    CH_IN_ALARM                   ** rgc0.6 Asse in allarme nel canale
+
+* Parallelo del segnale di asse in JOG presente
+
+LD   BAO_ISO_JOG                   ** ra19.1 Stato JOG all'interno del canale
+S    CH_AXJOG                      ** rgc0.21 Presente un asse in JOG nel canale
+
+* Serie del segnale di assi tarati
+
+LD   BAO_TARA                      ** ra3.14  Asse tarato
+OR   xZeroForced                   ** Forzamento asse tarato
+AND  CH_ZEROED                     ** rgc0.7 Assi tarati nel canale
+ST   CH_ZEROED                     ** rgc0.7 Assi tarati nel canale
+
+* Serie del segnale di assi fermi
+
+LD   CH_STOPPED                    ** rgc0.9 Assi del canale fermi
+AND  BAO_AFET                      ** ra3.0  Asse fermo teorico
+ST   CH_STOPPED                    ** rgc0.9 Assi del canale fermi
+
+* Registro asse selezionato per vis. cursore e quota asse
+
+LD   xSelected                     ** Asse selezionato
+JMPCN ENDAXSEL
+
+LD   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+ST   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+
+LD   AO_QUOTA                      ** ra4  Quota asse
+ST   SG_QACT_SEL                   ** rg10 Quota asse selezionato
+
+LD   AsseNvel                      ** Asse di tipo NVEL
+JMPC MinMaxNvel
+
+LD   AP_MINQUOTA                   ** pa21 Quota minima
+ST   SG_MINQ_SEL                   ** rg12 Quota minima asse selezionato
+
+LD   AP_MAXQUOTA                   ** pa22 Quota massima
+ST   SG_MAXQ_SEL                   ** rg13 Quota massima asse selezionato
+JMP  ENDAXSEL
+
+MinMaxNvel:
+LD   NV_MINQUOTA                   ** pa10 Quota minima (NVEL)
+ST   SG_MINQ_SEL                   ** rg12 Quota minima asse selezionato
+
+LD   NV_MAXQUOTA                   ** pa11 Quota massima (NVEL)
+ST   SG_MAXQ_SEL                   ** rg13 Quota massima asse selezionato
+
+ENDAXSEL:
+
+LD   xDisabVis                     ** Disabilita visualizzazone
+JMPC DV
+
+LD   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+ADD  1
+ST   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+
+DV:
+
+* Uscite di stato asse
+
+LD   BAO_AFET                      ** ra3.0  Asse fermo teorico
+ST   yStopped                      ** Asse fermo
+
+LD   BAO_AXAV                      ** ra3.2  Direzione moto asse avanti
+ST   yForward                      ** Direzione asse avanti
+
+* Il mantenimento dell'uscita di abilitazione azionamento
+* al rilascio del JOG OPEN su un asse con freno ha effetto
+* solo se l'uscita � comandata dal PLC, in caso contrario
+* on motore e freno si disattivano insieme, e su un asse
+* verticale questo potrebbe determinare una caduta.
+* Aggiunto TOF_ONMOT per evitare l'errore saltuario
+* "Richiesta allarme I/O di controllo"
+
+CAL TOF_ONMOT(IN=BAO_ONMT, PT=150) ** ra3.10  Richiesta abilitazione azionamento
+
+LD   TOF_FRENO.Q                   ** Fine tempo chiusura freno
+AND  ST_JOGOPEN                    ** rgc0.17 Stato JOG OPEN attivo
+AND  xBrakeEnab                    ** Abilita gestione freno (provv.)
+OR   TOF_ONMOT.Q                   ** Fine tempo on motore
+ST   yClosedLoop                   ** Asse in coppia
+
+LD   BAO_ORDM                      ** ra3.13  Ordine di moto
+ST   yOrdineMoto                   ** Ordine di moto asse
+
+LD   BAO_TARA                      ** ra3.14  Asse tarato
+OR   xZeroForced                   ** Forzamento asse tarato
+ST   yZeroed                       ** Asse tarato
+
+LD   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR (
+LD   REQ_CONN_AX                   ** rga0.0 Richiesta aggancio asse in albero elettrico
+OR   REQ_CONN_CP                   ** rga0.2 Richiesta aggancio asse in coupling
+OR   REQ_SCON_AX                   ** rga0.1 Richiesta sgancio asse
+ANDN RichCloseLoop                 ** Richiesta di messa in coppia
+)
+ST   yInAlarm                      ** Asse in allarme
+
+END_FUNCTION_BLOCK
+
+
+
+
+* FB DECODIFICA SELEZIONE ASSE
+
+VAR_IN_OUT
+CC_REGS AT %cc;
+END_VAR
+
+FUNCTION_BLOCK DEC_SEL_ASSE
+
+VAR_INPUT
+xMaskAxSel: DWORD; * Maschera compressa asse selezionato
+END_VAR
+
+VAR_OUTPUT
+yExtMask: DWORD; * Maschera estesa asse selezionato
+yNumAsse: DWORD; * Numero system-wide asse selezionato
+END_VAR
+
+VAR
+MaskCnf: DWORD; * Maschera estesa assi configurati
+MaskSel: DWORD; * Maschera compressa asse selezionato
+Index: DWORD; * Indice registro numero system-wide asse
+END_VAR
+
+LD   1
+ST   yExtMask                      ** Maschera estesa asse selezionato
+
+LD   2
+ST   Index                         ** Indice registro numero system-wide asse
+
+LD   xMaskAxSel                    ** Maschera compressa asse selezionato
+ST   MaskSel                       ** Maschera compressa asse selezionato
+
+LD   CC_MASKAXES                   ** cc1 Maschera configurazione assi nel canale
+ANDN %DisabVisAX
+ST   MaskCnf                       ** Maschera estesa assi configurati
+
+LOOP:
+
+LDN  MaskCnf.0
+JMPC NEXT_CNF
+
+LD   MaskSel.0
+JMPC END_LOOP
+
+LD   MaskSel                       ** Maschera compressa asse selezionato
+SHR  1
+ST   MaskSel                       ** Maschera compressa asse selezionato
+
+NEXT_CNF:
+
+LD   MaskCnf                       ** Maschera estesa assi configurati
+SHR  1
+ST   MaskCnf                       ** Maschera estesa assi configurati
+
+LD   MaskCnf                       ** Maschera estesa assi configurati
+EQ   0
+OR   (
+LD   MaskSel                       ** Maschera compressa asse selezionato
+EQ   0
+)
+JMPC MASK_NULL
+
+LD   yExtMask                      ** Maschera estesa asse selezionato
+SHL  1
+ST   yExtMask                      ** Maschera estesa asse selezionato
+
+LD   Index                         ** Indice registro numero system-wide asse
+ADD  1
+ST   Index                         ** Indice registro numero system-wide asse
+
+JMP  LOOP
+
+MASK_NULL:
+
+LD   0
+ST   yExtMask                      ** Maschera estesa asse selezionato
+
+LD   -1
+ST   yNumAsse                      ** Numero system-wide asse selezionato
+
+JMP  END_SEL
+
+END_LOOP:
+
+LD   CC_REGS[Index]                ** Indice registro numero system-wide asse
+ST   yNumAsse                      ** Numero system-wide asse selezionato
+
+END_SEL:
+
+END_FUNCTION_BLOCK
+
+* FB TOGGLE, per ora non usato
+
+FUNCTION_BLOCK TOGGLE
+
+VAR_INPUT
+CLK: BOOL; * Input toggle
+R: BOOL; * Reset forzato
+END_VAR
+
+VAR_OUTPUT
+Q: BOOL; * Output toggle
+END_VAR
+
+VAR
+PrevStatus: BOOL; * Stato precedente input toggle
+SetActive:  BOOL; * Impulso attivazione toggle
+Status: BOOL; * Stato interno toggle
+END_VAR
+
+LD   CLK                           ** Input toggle
+ANDN PrevStatus                    ** Stato precedente input toggle
+ANDN Status                        ** Stato interno toggle
+S    Status                        ** Stato interno toggle
+ST   SetActive                     ** Impulso attivazione toggle
+
+LD   CLK                           ** Input toggle
+ANDN PrevStatus                    ** Stato precedente input toggle
+ANDN SetActive                     ** Impulso attivazione toggle
+OR   R                             ** Reset forzato
+R    Status                        ** Reset forzato
+
+LD   CLK                           ** Input toggle
+ST   PrevStatus                    ** Stato precedente input toggle
+
+LD   Status                        ** Stato interno toggle
+ST   Q                             ** Output toggle
+
+END_FUNCTION_BLOCK
+
+
+
+* FB GESTIONE CAMBIO UTENSILE CON ASSE ROUND TABLE
+
+FUNCTION_BLOCK GESTTABLE
+
+VAR_INPUT
+xSelected: BOOL; * Asse selezionato
+xEnabOp: BOOL; * Sicurezze rotazione asse
+xSelCSingRot: BOOL; * Selezione rotazione ciclo singolo
+END_VAR
+
+VAR_OUTPUT
+yWaitMFun: BOOL; * Ritarda ACK funzioni M
+yToolChangeRun: BOOL; * Cambio utensile in corso
+yAlmPos: BOOL;  * Errore posizione finale
+END_VAR
+
+VAR
+#defcom R_TRIG1.Q Fronte per cambio utensile da programma (M6)
+#defcom R_TRIG2.Q Fronte per ciclo continuo singolo
+
+R_TRIG1: R_TRIG;
+R_TRIG2: R_TRIG;
+
+RTABLE: AX_RTABLE;
+
+Appoggio:       BOOL; * Appoggio
+ChToolRun:      BOOL; * Cambio utensile in corso
+CmdCicSing:     BOOL; * Comando ciclo singolo rotazione attivo
+ToolFromPP:     DWORD; * Utensile richiesto da part program
+END_VAR
+
+* Condizioni per cambio utensile da programma (M6)
+
+LD   FUN_M6                        ** rgc1.6  Funzione M6 attiva
+AND  xEnabOp                       ** Sicurezze rotazione asse
+ANDN ChToolRun                     ** Cambio utensile in corso
+ST   Appoggio                      ** Appoggio
+
+CAL  R_TRIG1(CLK=Appoggio)         ** Appoggio
+
+* Campiona funzione T solo sulla M6
+
+LDN  R_TRIG1.Q                     ** Fronte per cambio utensile da programma (M6)
+JMPC ENDTOOLPP
+
+LD   CO_TFUN                       ** rc11 Registro funzioni T
+ST   ToolFromPP                    ** Utensile richiesto da part program
+
+ENDTOOLPP:
+
+* Condizioni per ciclo continuo singolo
+
+LD   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+OR   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+OR   CMD_START_AXIS                ** rgc0.5 Comando start assi canale
+AND  xSelCSingRot                  ** Selezione rotazione ciclo singolo
+AND  xSelected                     ** Asse selezionato
+AND  xEnabOp                       ** Sicurezze rotazione asse
+ANDN yAlmPos                       ** Errore posizione finale
+ST   CmdCicSing                    ** Comando ciclo singolo rotazione attivo
+
+CAL  R_TRIG2(CLK=CmdCicSing)       ** Comando ciclo singolo rotazione attivo
+
+* Ciclo cambio utensile
+
+LD   R_TRIG1.Q                     ** Fronte per cambio utensile da programma (M6)
+OR   R_TRIG2.Q                     ** Fronte per ciclo continuo singolo
+S    ChToolRun                     ** Cambio utensile in corso
+
+LD   RTABLE.yax_ENDOK
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+OR   BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+OR   BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+R    ChToolRun                     ** Cambio utensile in corso
+
+LD   ChToolRun                     ** Cambio utensile in corso
+ST   yToolChangeRun                ** Cambio utensile in corso
+
+* Comando per arresto STEP asse con rilascio pulsante
+
+LDN  CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+AND  BCO_CANREADY                  ** rc8.2  Canale Ready
+AND  (
+LD   CmdCicSing                    ** Comando ciclo singolo rotazione attivo
+ORN  xSelCSingRot                  ** Selezione rotazione ciclo singolo
+ORN  RTABLE.yax_RUNNING
+)
+ST   RTABLE.xax_ENABLE
+
+LD   CmdCicSing                    ** Comando ciclo singolo rotazione attivo
+ORN  xSelCSingRot                  ** Selezione rotazione ciclo singolo
+AND  ChToolRun                     ** Cambio utensile in corso
+AND  RTABLE.yax_READY
+ANDN RTABLE.yax_ENDOK
+ANDN RTABLE.yax_ENDERR
+ST   RTABLE.xax_START
+
+LDN  ChToolRun                     ** Cambio utensile in corso
+AND  RTABLE.yax_ENDOK
+OR   (
+LD   RTABLE.yax_ERRCODE.1
+AND  xSelCSingRot                  ** Selezione rotazione ciclo singolo
+)
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ST   RTABLE.xax_CLEAR
+
+LD   xSelCSingRot                  ** Selezione rotazione ciclo singolo
+ANDN CMD_START_AXIS                ** rgc0.5 Comando start assi canale
+ST   RTABLE.xax_POSMODE
+
+LD   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+OR   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+ST   RTABLE.xax_INCMODE
+
+LD   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+ST   RTABLE.xax_REVERSE
+
+LD   xSelCSingRot                  ** Selezione rotazione ciclo singolo
+JMPC DATI_ROTSING
+
+LD   ToolFromPP                    ** Utensile richiesto da part program
+ST   RTABLE.xax_QUOTA
+
+LD   AP_VELMAX                     ** pa9 Velocit� massima
+ST   RTABLE.xax_VEL
+
+JMP  END_DATI_ROTSING
+
+DATI_ROTSING:
+
+LD   1
+ST   RTABLE.xax_QUOTA
+
+LD   AP_VELMAN                     ** pa23 Velocit� di JOG
+ST   RTABLE.xax_VEL
+
+LD   CI_FIXINCR                    ** rc4  Quota per incrementi fissi
+EQ   0
+JMPC END_DATI_ROTSING
+
+LD   CI_FIXINCR                    ** rc4  Quota per incrementi fissi
+DIV  1000          ** diviso 1000
+ST   RTABLE.xax_QUOTA
+
+END_DATI_ROTSING:
+
+CAL  RTABLE
+
+LDN  RTABLE.yax_ERRCODE.1
+ORN  xSelCSingRot                  ** Selezione rotazione ciclo singolo
+AND  RTABLE.yax_ENDERR
+ST   yAlmPos                       ** Errore posizione finale
+
+* Ritarda ACK M da cambio utensile
+
+LD   ChToolRun                     ** Cambio utensile in corso
+AND  FUN_M6                        ** rgc1.6  Funzione M6 attiva
+ST   yWaitMFun                     ** Ritarda ACK funzioni M
+
+END_FUNCTION_BLOCK
+
+
+
+
+* --------------------------------------------*
+* Blocco Funzionale ciclo di taratura completo
+* --------------------------------------------*
+
+FUNCTION_BLOCK CYC_HOMING
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (vmax, rampe) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_REVERSE:  BOOL;       * 0 = quote decrescenti, 1 = quote crescenti
+xax_MODE:     DWORD;      * Modo di taratura
+xax_QUOTA:    DWORD;      * Quota di taratura ( 0.001 mm )
+xax_VELFC:    DWORD;      * Velocita' ricerca micro ( mm/min )
+xax_VEL:      DWORD;      * Velocita' ricerca tacca ( mm/min )
+xax_VMAX:     DWORD;      * Velocita' massima ( mm/min )
+xax_ACCEL:    DWORD;      * Accelerazione e decelerazione (msec o mm/s2)
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+TarQuota: DWORD; * Quota di taratura
+VelMic: DWORD; * Velocita' ricerca micro
+VelTac: DWORD; * Velocita' ricerca tacca
+VelMax: DWORD; * Velocita' massima
+AccDec: DWORD; * Accelerazione e decelerazione
+TarMode: DWORD; * Modo di taratura
+DirZero: BOOL; * Direzione ric. zero: 0 = quote decrescenti, 1 = quote crescenti
+
+ZCOn: BOOL; * Ciclo ricerca zero attivo
+ZCRicAttMicro: BOOL; * Ciclo ricerca zero: ricerca attivazione micro
+ZCRicRilMicro: BOOL; * Ciclo ricerca zero: ricerca rilascio micro
+ZCRicTacca: BOOL; * Ciclo ricerca zero: ricerca tacca
+ZCEnabLSW: BOOL; * Ciclo ricerca zero: riabilita limiti SW
+ZCPark: BOOL; * Ciclo ricerca zero: parcheggio
+ZCEndOK: BOOL; * Ciclo ricerca zero terminato OK
+ZCEndErr: BOOL; * Ciclo ricerca zero terminato con errore
+
+Appoggio: BOOL; * Variabile di appoggio
+NoUseMicro: BOOL; * Ciclo senza fase di ricerca micro
+TaraFC: BOOL; * Ciclo zero su finecorsa (senza tacca)
+EnabPark: BOOL; * Ciclo con parcheggio finale
+
+HOMFB: AX_HOMING;
+JOGFB: AX_JOGGING;
+POSFB: AX_POSIZ;
+CNTFB: AX_CONTROLS;
+END_VAR
+
+LD   xax_IMMDATA                   ** dati (vmax, rampe) immediati
+JMPC IMMDATA
+
+LD   AP_AXTYPE                     ** pa0 Tipo asse
+EQ   20
+JMPC NV_DATA
+
+LD   AP_TARQUOTA                   ** pa18 Quota di taratura
+ST   TarQuota                      ** Quota di taratura
+
+LD   AP_VELMICRO                   ** pa19 Velocit� ricerca micro in taratura
+ST   VelMic                        ** Velocita' ricerca micro
+
+LD   AP_VELTACCA                   ** pa20 Velocit� ricerca tacca in taratura
+ST   VelTac                        ** Velocita' ricerca tacca
+
+LD   AP_VELMAX                     ** pa9 Velocit� massima
+ST   VelMax                        ** Velocita' massima
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+ST   AccDec                        ** Accelerazione e decelerazione
+
+LD   AP_TARTYPE                    ** pa16 Tipo di taratura
+ST   TarMode                       ** Modo di taratura
+
+LD   AP_OPZIONI0                   ** pa3.0 Bit inversione direzione taratura
+ST   DirZero                       ** Direzione ric. zero: 0 = quote decrescenti, 1 = quote crescenti
+
+JMP  END_DATA
+
+NV_DATA:
+
+LD   NV_TARQUOTA                   ** pa7 Quota di taratura (NVEL)
+ST   TarQuota                      ** Quota di taratura
+
+LD   NV_VELMICRO                   ** pa8 Velocit� ricerca micro in taratura (NVEL)
+ST   VelMic                        ** Velocita' ricerca micro
+
+LD   NV_VELTACCA                   ** pa9 Velocit� ricerca tacca in taratura (NVEL)
+ST   VelTac                        ** Velocita' ricerca tacca
+
+LD   NV_VELMAX                     ** pa4 Velocit� massima (NVEL)
+ST   VelMax                        ** Velocita' massima
+
+LD   0
+ST   AccDec                        ** Accelerazione e decelerazione
+
+LD   NV_TARTYPE                    ** pa6 Tipo di taratura (NVEL)
+ST   TarMode                       ** Modo di taratura
+
+LD   NV_OPZIONI0                   ** pa1.0 Bit inversione direzione taratura (NVEL)
+ST   DirZero                       ** Direzione ric. zero: 0 = quote decrescenti, 1 = quote crescenti
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_QUOTA                     ** Quota di taratura ( 0.001 mm )
+ST   TarQuota                      ** Quota di taratura
+
+LD   xax_VELFC                     ** Velocita' ricerca micro ( mm/min )
+ST   VelMic                        ** Velocita' ricerca micro
+
+LD   xax_VEL                       ** Velocita' ricerca tacca ( mm/min )
+ST   VelTac                        ** Velocita' ricerca tacca
+
+LD   xax_VMAX                      ** Velocita' massima ( mm/min )
+ST   VelMax                        ** Velocita' massima
+
+LD   xax_ACCEL                     ** Accelerazione e decelerazione (msec o mm/s2)
+ST   AccDec                        ** Accelerazione e decelerazione
+
+LD   xax_MODE                      ** Modo di taratura
+ST   TarMode                       ** Modo di taratura
+
+LD   xax_REVERSE                   ** 0 = quote decrescenti, 1 = quote crescenti
+ST   DirZero                       ** Direzione ric. zero: 0 = quote decrescenti, 1 = quote crescenti
+
+END_DATA:
+
+LD   AP_DRVTYPE                    ** nvel11 Tipo drive (0=analogico)
+NE   0
+OR   (
+LD   TarMode                       ** Modo di taratura
+EQ   2
+)
+ST   NoUseMicro                    ** Ciclo senza fase di ricerca micro
+
+LD   TarMode                       ** Modo di taratura
+EQ   3
+OR   (
+LD   TarMode                       ** Modo di taratura
+EQ   4
+)
+ANDN NoUseMicro                    ** Ciclo senza fase di ricerca micro
+ST   TaraFC                        ** Ciclo zero su finecorsa (senza tacca)
+
+LD   TarMode                       ** Modo di taratura
+EQ   1
+OR   (
+LD   TarMode                       ** Modo di taratura
+EQ   4
+)
+ANDN NoUseMicro                    ** Ciclo senza fase di ricerca micro
+ST   EnabPark                      ** Ciclo con parcheggio finale
+
+LD   xax_START                     ** start richiesta azione
+S    ZCOn                          ** Ciclo ricerca zero attivo
+
+LD   CNTFB.yax_ENDOK
+OR   NoUseMicro                    ** Ciclo senza fase di ricerca micro
+AND  ZCOn                          ** Ciclo ricerca zero attivo
+S    ZCRicAttMicro                 ** Ciclo ricerca zero: ricerca attivazione micro
+
+LD   BAI_FCRALL                    ** ra0.13 Finecorsa Taratura
+OR   NoUseMicro                    ** Ciclo senza fase di ricerca micro
+AND  ZCRicAttMicro                 ** Ciclo ricerca zero: ricerca attivazione micro
+S    ZCRicRilMicro                 ** Ciclo ricerca zero: ricerca rilascio micro
+
+LDN  BAI_FCRALL                    ** ra0.13 Finecorsa Taratura
+OR   NoUseMicro                    ** Ciclo senza fase di ricerca micro
+AND  ZCRicRilMicro                 ** Ciclo ricerca zero: ricerca rilascio micro
+S    ZCRicTacca                    ** Ciclo ricerca zero: ricerca tacca
+
+LD   HOMFB.yax_ENDOK
+AND  ZCRicTacca                    ** Ciclo ricerca zero: ricerca tacca
+S    ZCEnabLSW                     ** Ciclo ricerca zero: riabilita limiti SW
+
+LD   CNTFB.yax_ENDOK
+AND  ZCEnabLSW                     ** Ciclo ricerca zero: riabilita limiti SW
+S    ZCPark                        ** Ciclo ricerca zero: parcheggio
+
+LD   POSFB.yax_ENDOK
+ORN  EnabPark                      ** Ciclo con parcheggio finale
+AND  ZCPark                        ** Ciclo ricerca zero: parcheggio
+S    ZCEndOK                       ** Ciclo ricerca zero terminato OK
+
+LDN  xax_ENABLE                    ** abilita FB
+AND  ZCOn                          ** Ciclo ricerca zero attivo
+S    ZCEndErr                      ** Ciclo ricerca zero terminato con errore
+
+LD   ZCEndOK                       ** Ciclo ricerca zero terminato OK
+OR   ZCEndErr                      ** Ciclo ricerca zero terminato con errore
+AND  xax_CLEAR                     ** conferma fine comando
+R    ZCOn                          ** Ciclo ricerca zero attivo
+R    ZCRicAttMicro                 ** Ciclo ricerca zero: ricerca attivazione micro
+R    ZCRicRilMicro                 ** Ciclo ricerca zero: ricerca rilascio micro
+R    ZCRicTacca                    ** Ciclo ricerca zero: ricerca tacca
+R    ZCEnabLSW                     ** Ciclo ricerca zero: riabilita limiti SW
+R    ZCPark                        ** Ciclo ricerca zero: parcheggio
+R    ZCEndOK                       ** Ciclo ricerca zero terminato OK
+R    ZCEndErr                      ** Ciclo ricerca zero terminato con errore
+
+* Movimento asse in JOG
+
+LDN  ZCRicTacca                    ** Ciclo ricerca zero: ricerca tacca
+ORN  JOGFB.yax_RUNNING
+AND  xax_ENABLE                    ** abilita FB
+ST   JOGFB.xax_ENABLE
+
+LD   ZCRicAttMicro                 ** Ciclo ricerca zero: ricerca attivazione micro
+ANDN ZCRicTacca                    ** Ciclo ricerca zero: ricerca tacca
+ST   Appoggio                      ** Variabile di appoggio
+
+LD   xax_CLEAR                     ** conferma fine comando
+AND  JOGFB.yax_ENDERR
+ORN  Appoggio                      ** Variabile di appoggio
+ST   JOGFB.xax_CLEAR
+
+LD   Appoggio                      ** Variabile di appoggio
+AND  JOGFB.xax_ENABLE
+AND  JOGFB.yax_READY
+ANDN JOGFB.yax_ENDOK
+ANDN JOGFB.yax_ENDERR
+ST   JOGFB.xax_START
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   JOGFB.xax_VARVEL
+
+*LD   DirZero
+*ST   JOGFB.xax_REVERSE
+
+LD   ZCRicRilMicro                 ** Ciclo ricerca zero: ricerca rilascio micro
+JMPC RILMICRO
+
+LD   VelMic                        ** Velocita' ricerca micro
+ST   JOGFB.xax_VEL
+
+JMP  END_VJOG
+
+RILMICRO:
+
+LD   VelTac                        ** Velocita' ricerca tacca
+ST   JOGFB.xax_VEL
+
+END_VJOG:
+
+LD   DirZero                       ** Direzione ric. zero: 0 = quote decrescenti, 1 = quote crescenti
+AND  ZCRicRilMicro                 ** Ciclo ricerca zero: ricerca rilascio micro
+OR   (
+LDN  DirZero                       ** Direzione ric. zero: 0 = quote decrescenti, 1 = quote crescenti
+ANDN ZCRicRilMicro                 ** Ciclo ricerca zero: ricerca rilascio micro
+)
+JMPCN REV_VEL_JOG
+
+LD   JOGFB.xax_VEL
+MUL  -1
+ST   JOGFB.xax_VEL
+
+REV_VEL_JOG:
+
+CAL  JOGFB
+
+* Chiamata FB standard ricerca tacca (per assi analogici),
+* che per gli assi digitali realizza l'intero ciclo di zero.
+
+LD   xax_ENABLE                    ** abilita FB
+ST   HOMFB.xax_ENABLE
+
+LD   ZCRicTacca                    ** Ciclo ricerca zero: ricerca tacca
+ANDN ZCEnabLSW                     ** Ciclo ricerca zero: riabilita limiti SW
+ST   Appoggio                      ** Variabile di appoggio
+
+LD   xax_CLEAR                     ** conferma fine comando
+AND  HOMFB.yax_ENDERR
+ORN  Appoggio                      ** Variabile di appoggio
+ST   HOMFB.xax_CLEAR
+
+LD   Appoggio                      ** Variabile di appoggio
+ANDN JOGFB.yax_RUNNING
+AND  HOMFB.xax_ENABLE
+AND  HOMFB.yax_READY
+ANDN HOMFB.yax_ENDOK
+ANDN HOMFB.yax_ENDERR
+ST   HOMFB.xax_START
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   HOMFB.xax_IMMDATA
+
+LDN  DirZero                       ** Direzione ric. zero: 0 = quote decrescenti, 1 = quote crescenti
+ST   HOMFB.xax_REVERSE
+
+LD   TarMode                       ** Modo di taratura
+ST   HOMFB.xax_MODE
+
+LD   TaraFC                        ** Ciclo zero su finecorsa (senza tacca)
+JMPCN FORCE_IMM
+
+LD   2
+ST   HOMFB.xax_MODE
+
+FORCE_IMM:
+
+LD   TarQuota                      ** Quota di taratura
+ST   HOMFB.xax_QUOTA
+
+LD   VelTac                        ** Velocita' ricerca tacca
+ST   HOMFB.xax_VEL
+
+LD   VelMax                        ** Velocita' massima
+ST   HOMFB.xax_VMAX
+
+LD   AccDec                        ** Accelerazione e decelerazione
+ST   HOMFB.xax_ACCEL
+
+CAL  HOMFB
+
+* Posizionamento asse a quota di parcheggio
+
+LD   xax_ENABLE                    ** abilita FB
+ST   POSFB.xax_ENABLE
+
+LD   ZCPark                        ** Ciclo ricerca zero: parcheggio
+ANDN ZCEndOK                       ** Ciclo ricerca zero terminato OK
+ST   Appoggio                      ** Variabile di appoggio
+
+LD   xax_CLEAR                     ** conferma fine comando
+AND  POSFB.yax_ENDERR
+ORN  Appoggio                      ** Variabile di appoggio
+ST   POSFB.xax_CLEAR
+
+LD   Appoggio                      ** Variabile di appoggio
+AND  POSFB.xax_ENABLE
+AND  POSFB.yax_READY
+ANDN POSFB.yax_ENDOK
+ANDN POSFB.yax_ENDERR
+ST   POSFB.xax_START
+
+LD   AP_PARKQTA                    ** pa31 Quota di parcheggio
+ST   POSFB.xax_QUOTA
+
+LD   AP_VELMAX                     ** pa9 Velocit� massima
+ST   POSFB.xax_VEL
+
+CAL  POSFB
+
+* Disabilitazione bit asse tarato, per evitare che il JOG
+* si fermi sul limite SW, e successiva riabilitazione
+
+LD   xax_ENABLE                    ** abilita FB
+ST   CNTFB.xax_ENABLE
+
+LD   ZCOn                          ** Ciclo ricerca zero attivo
+ANDN ZCRicAttMicro                 ** Ciclo ricerca zero: ricerca attivazione micro
+OR   (
+LD   ZCEnabLSW                     ** Ciclo ricerca zero: riabilita limiti SW
+ANDN ZCPark                        ** Ciclo ricerca zero: parcheggio
+)
+ST   Appoggio                      ** Variabile di appoggio
+
+LD   xax_CLEAR                     ** conferma fine comando
+AND  CNTFB.yax_ENDERR
+ORN  Appoggio                      ** Variabile di appoggio
+ST   CNTFB.xax_CLEAR
+
+LD   Appoggio                      ** Variabile di appoggio
+AND  CNTFB.xax_ENABLE
+AND  CNTFB.yax_READY
+ANDN CNTFB.yax_ENDOK
+ANDN CNTFB.yax_ENDERR
+ST   CNTFB.xax_START
+
+LD   ZCRicTacca                    ** Ciclo ricerca zero: ricerca tacca
+JMPC RIAB_LIMSW
+
+LD   16#28
+ST   CNTFB.xax_DISMASK
+
+LD   0
+ST   CNTFB.xax_ENMASK
+
+JMP  END_LIMSW
+
+RIAB_LIMSW:
+
+LD   0
+ST   CNTFB.xax_DISMASK
+
+LD   16#8
+ST   CNTFB.xax_ENMASK
+
+END_LIMSW:
+
+CAL  CNTFB
+
+* Comando uscite
+
+LD   ZCOn                          ** Ciclo ricerca zero attivo
+ANDN ZCEndOK                       ** Ciclo ricerca zero terminato OK
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   HOMFB.yax_READY
+AND  JOGFB.yax_READY
+AND  POSFB.yax_READY
+AND  CNTFB.yax_READY
+ANDN yax_RUNNING                   ** Esecuzione FB in corso
+ST   yax_READY                     ** FB pronto per START
+
+LD   ZCEndOK                       ** Ciclo ricerca zero terminato OK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   JOGFB.yax_ENDERR
+ANDN ZCRicTacca                    ** Ciclo ricerca zero: ricerca tacca
+OR   HOMFB.yax_ENDERR
+OR   POSFB.yax_ENDERR
+OR   CNTFB.yax_ENDERR
+OR   ZCEndErr                      ** Ciclo ricerca zero terminato con errore
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   ZCEndErr                      ** Ciclo ricerca zero terminato con errore
+JMPCN GEN_ERR
+
+LD   2
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+GEN_ERR:
+
+LD   JOGFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+LD   HOMFB.yax_ENDERR
+JMPCN HOMERR
+
+LD   HOMFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+HOMERR:
+
+LD   POSFB.yax_ENDERR
+JMPCN POSERR
+
+LD   POSFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+POSERR:
+
+LD   CNTFB.yax_ENDERR
+JMPCN CNTERR
+
+LD   CNTFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+CNTERR:
+
+END_FUNCTION_BLOCK
+
+VAR_IN_OUT
+QTA_TARA_SLAVE AT %pa18; * pa18 Quota di taratura asse
+END_VAR
+
+* FB GESTIONE ASSI GANTRY
+
+FUNCTION_BLOCK GST_GANTRY
+
+VAR_INPUT
+xRefCycle: BOOL; * Comando esecuzione ciclo di taratura
+xReqPreset: BOOL; * Richiesta preset slave alla quota del master
+xReqAllin: BOOL; * Richiesta allineamento slave alla quota del master
+xReqSgancio: BOOL; * Richiesta sgancio gantry
+xReqAggancio: BOOL; * Richiesta aggancio gantry
+xReset: BOOL; * Reset comandi gantry
+xLSZeroM: BOOL; * Finecorsa taratura asse master
+xLSZeroS: BOOL; * Finecorsa taratura asse slave
+xExtCmd: BOOL; * Selezione comandi REF-JOG esterni (da canale)
+xParkCycle: BOOL; * Abilita ciclo parcheggio a fine taratura
+xZeroSetup: BOOL; * Esclude allineamento a fine taratura
+xNoAlarm: BOOL; * Esclude allarme massimo disallineamento
+xAuxBusy: BOOL; * Canale ausiliario impegnato
+xEmer: BOOL; * Condizioni di emergenza che forzano l'apertura del gantry
+xAutZeroSetup: BOOL; * Modifica automatica quota taratura a fine setup
+xNMaster: DWORD; * Numero asse master
+xNSlave: DWORD; * Numero asse slave
+xParkSpeed: DWORD; * Velocit� di parcheggio
+END_VAR
+
+VAR_OUTPUT
+yGantryOff: BOOL; * Accoppiamento gantry non attivo
+yGantryOn: BOOL; * Accoppiamento gantry attivo
+yEndCycRef: BOOL; * Fine ciclo taratura gantry
+yEndPrAll: BOOL; * Fine preset o allineamento slave a quota master
+yGrant: BOOL; * Richiesta comando assi da PLC
+yRefM: BOOL; * Richiesta ciclo zero su asse master
+yRefS: BOOL; * Richiesta ciclo zero su asse slave
+yOnOff: BOOL; * Comando aggancio-sgancio in corso
+yAlPr: BOOL; * Comando allineamento-preset dopo ripristino emergenza in corso
+yRefAlarm: BOOL; * Allarme allineamento durante ciclo zero
+yPresetReq: BOOL; * Richesta preset asse Slave
+ycn_ERRCODE: DWORD; *  Function-Block error code
+END_VAR
+
+VAR
+GantryOnS: BOOL; * Gantry attivo su asse slave
+AlarmS: BOOL; * Allarme su asse slave
+AxFermoS: BOOL; * Asse slave fermo
+AxTaratoS: BOOL; * Asse slave tarato
+IsoNullS: BOOL; * Asse slave in ISO nullo
+Ref1LS: BOOL; * Ciclo taratura con 1 finecorsa
+MemZeroM: BOOL; * Mem. asse master tarato
+EndZeroM: BOOL; * Ciclo taratura asse master effettuato
+MemZeroS: BOOL; * Mem. asse slave tarato
+EndZeroS: BOOL; * Ciclo taratura asse slave effettuato
+CTGPreset: BOOL; * Ciclo tara gantry: preset iniziale
+CTGFirstAgg: BOOL; * Ciclo tara gantry: primo aggancio gantry
+CTGZeroM: BOOL; * Ciclo tara gantry: ricerca zero su asse master
+CTGSlaveAgg: BOOL; * Ciclo tara gantry: aggancio gantry slave-master
+CTGZeroS: BOOL; * Ciclo tara gantry: ricerca zero su asse slave
+CTGLastSga: BOOL; * Ciclo tara gantry: ultimo sgancio gantry
+CTGAllin: BOOL; * Ciclo tara gantry: posiziona slave alla quota master
+CTGLastAgg: BOOL; * Ciclo tara gantry: ultimo aggancio gantry
+CTGPark: BOOL; * Ciclo tara gantry: parcheggio gantry
+CPASga: BOOL; * Ciclo allinea gantry: sgancio gantry
+CPAExec: BOOL; * Ciclo allinea gantry: esegue preset o allineamento
+CPARiagg: BOOL; * Ciclo allinea gantry: riaggancio gantry
+CARSga: BOOL; * Ciclo allinea al ripristino emergenza: sgancio gantry
+CARAllin: BOOL; * Ciclo allinea al ripristino emergenza: esegue allineamento
+CARRiagg: BOOL; * Ciclo allinea al ripristino emergenza: riaggancio gantry
+ForzAggancio: BOOL; * Cond. forzamento aggancio gantry (anche se lo � gi�)
+CodeLibereSlave: BOOL; * Nessun comando su coda slave
+MemAggancio: BOOL; * Mem. aggancio gantry
+MemSetupDone: BOOL; * Mem. eseguito ciclo setup
+AllDopoEmer: BOOL; * Abilita allineamento gantry dopo emergenza
+Appoggio: BOOL; * Appoggio
+PosMaster: DWORD; * Quota attuale asse master
+PosSlave: DWORD; * Quota attuale asse slave
+
+#defcom RT_TARAM.Q Imp. asse master tarato
+RT_TARAM: R_TRIG;
+#defcom RT_TARAS.Q Imp. asse slave tarato
+RT_TARAS: R_TRIG;
+#defcom RT_SLVQT.Q Imp. fine ciclo taratura gantry
+RT_SLVQT: R_TRIG;
+#defcom T_WSTREF.Q Fine attesa stop asse dopo taratura
+T_WSTREF: TON;
+#defcom T_ALL.Q Allineamento slave completato
+T_ALL: TON ;
+
+GANTFB: CN_GANTRY;
+TAR_X1: CYC_HOMING;
+TAR_X2: CYC_HOMING;
+POS_X1: AX_POSIZ;
+POS_X2: AX_POSIZ;
+PRS_X2: AX_PRESET;
+END_VAR
+
+PATH %ax[xNSlave]                  ** Numero asse slave
+
+LD   BAO_GTRYLINK                  ** ra3.17  Accoppiamento Gantry attivo
+ST   GantryOnS                     ** Gantry attivo su asse slave
+
+LD   BAO_ALLM                      ** ra3.15  Asse in Allarme
+ST   AlarmS                        ** Allarme su asse slave
+
+LD   BAO_AFET                      ** ra3.0  Asse fermo teorico
+ST   AxFermoS                      ** Asse slave fermo
+
+LD   BAO_TARA                      ** ra3.14  Asse tarato
+ST   AxTaratoS                     ** Asse slave tarato
+
+LD   BAO_ISO_NULLO                 ** ra19.0 Stato NULLO all'interno del canale
+ST   IsoNullS                      ** Asse slave in ISO nullo
+
+LD   AO_QUOTA                      ** ra4  Quota asse
+ST   PosSlave                      ** Quota attuale asse slave
+
+LD   %ra10
+EQ   0
+ST   CodeLibereSlave               ** Nessun comando su coda slave
+
+PATH %ax[xNMaster]                 ** Numero asse master
+PATH %gantry[AP_AXNGANTRY]         ** pa47 Indice tabella gantry
+
+CAL  RT_TARAM(CLK=BAO_TARA)        ** ra3.14  Asse tarato
+
+* Consensi gantry attivo/inattivo
+
+LDN  BAO_GTRYLINK                  ** ra3.17  Accoppiamento Gantry attivo
+ANDN GantryOnS                     ** Gantry attivo su asse slave
+ST   yGantryOff                    ** Accoppiamento gantry non attivo
+
+LD   BAO_GTRYLINK                  ** ra3.17  Accoppiamento Gantry attivo
+AND  GantryOnS                     ** Gantry attivo su asse slave
+ST   yGantryOn                     ** Accoppiamento gantry attivo
+
+* Tipo di taratura del gantry
+
+LD   GDAT6                         ** Gdat6 Tipo taratura (0=standard, 1=con 1 finecorsa)
+EQ   1
+ST   Ref1LS                        ** Ciclo taratura con 1 finecorsa
+
+LD   RT_TARAM.Q                    ** Imp. asse master tarato
+S    MemZeroM                      ** Mem. asse master tarato
+
+LDN  yRefM                         ** Richiesta ciclo zero su asse master
+R    MemZeroM                      ** Mem. asse master tarato
+
+LD   %ra10
+EQ   0
+AND  MemZeroM                      ** Mem. asse master tarato
+AND  xExtCmd                       ** Selezione comandi REF-JOG esterni (da canale)
+OR   TAR_X1.yax_ENDOK
+ST   EndZeroM                      ** Ciclo taratura asse master effettuato
+
+CAL  RT_TARAS(CLK=AxTaratoS)       ** Asse slave tarato
+
+LD   RT_TARAS.Q                    ** Imp. asse slave tarato
+S    MemZeroS                      ** Mem. asse slave tarato
+
+LDN  yRefS                         ** Richiesta ciclo zero su asse slave
+R    MemZeroS                      ** Mem. asse slave tarato
+
+LD   MemZeroS                      ** Mem. asse slave tarato
+AND  xExtCmd                       ** Selezione comandi REF-JOG esterni (da canale)
+AND  CodeLibereSlave               ** Nessun comando su coda slave
+OR   TAR_X2.yax_ENDOK
+ST   EndZeroS                      ** Ciclo taratura asse slave effettuato
+
+* Ciclo taratura con assi gantry
+
+LD   xRefCycle                     ** Comando esecuzione ciclo di taratura
+ANDN yOnOff                        ** Comando aggancio-sgancio in corso
+ANDN CPASga                        ** Ciclo allinea gantry: sgancio gantry
+ANDN CARSga                        ** Ciclo allinea al ripristino emergenza: sgancio gantry
+S    CTGPreset                     ** Ciclo tara gantry: preset iniziale
+
+LD   PRS_X2.yax_ENDOK
+OR   yGantryOn                     ** Accoppiamento gantry attivo
+AND  CTGPreset                     ** Ciclo tara gantry: preset iniziale
+S    CTGFirstAgg                   ** Ciclo tara gantry: primo aggancio gantry
+
+LD   yGantryOn                     ** Accoppiamento gantry attivo
+AND  GANTFB.ycn_ENDOK
+AND  CTGFirstAgg                   ** Ciclo tara gantry: primo aggancio gantry
+S    CTGZeroM                      ** Ciclo tara gantry: ricerca zero su asse master
+
+LD   EndZeroM                      ** Ciclo taratura asse master effettuato
+AND  CTGZeroM                      ** Ciclo tara gantry: ricerca zero su asse master
+ANDN Ref1LS                        ** Ciclo taratura con 1 finecorsa
+S    CTGSlaveAgg                   ** Ciclo tara gantry: aggancio gantry slave-master
+
+LD   yGantryOn                     ** Accoppiamento gantry attivo
+AND  GANTFB.ycn_ENDOK
+AND  CTGSlaveAgg                   ** Ciclo tara gantry: aggancio gantry slave-master
+S    CTGZeroS                      ** Ciclo tara gantry: ricerca zero su asse slave
+
+LD   EndZeroS                      ** Ciclo taratura asse slave effettuato
+AND  CTGZeroS                      ** Ciclo tara gantry: ricerca zero su asse slave
+OR   (
+LD   EndZeroM                      ** Ciclo taratura asse master effettuato
+AND  CTGZeroM                      ** Ciclo tara gantry: ricerca zero su asse master
+AND  Ref1LS                        ** Ciclo taratura con 1 finecorsa
+)
+S    CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+
+LD   yGantryOff                    ** Accoppiamento gantry non attivo
+AND  CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+ANDN xZeroSetup                    ** Esclude allineamento a fine taratura
+S    CTGAllin                      ** Ciclo tara gantry: posiziona slave alla quota master
+
+LD   T_ALL.Q                       ** Allineamento slave completato
+AND  CTGAllin                      ** Ciclo tara gantry: posiziona slave alla quota master
+S    CTGLastAgg                    ** Ciclo tara gantry: ultimo aggancio gantry
+
+LD   yGantryOn                     ** Accoppiamento gantry attivo
+AND  CTGLastAgg                    ** Ciclo tara gantry: ultimo aggancio gantry
+AND  xParkCycle                    ** Abilita ciclo parcheggio a fine taratura
+S    CTGPark                       ** Ciclo tara gantry: parcheggio gantry
+
+LDN  xRefCycle                     ** Comando esecuzione ciclo di taratura
+R    CTGPreset                     ** Ciclo tara gantry: preset iniziale
+R    CTGFirstAgg                   ** Ciclo tara gantry: primo aggancio gantry
+R    CTGZeroM                      ** Ciclo tara gantry: ricerca zero su asse master
+R    CTGSlaveAgg                   ** Ciclo tara gantry: aggancio gantry slave-master
+R    CTGZeroS                      ** Ciclo tara gantry: ricerca zero su asse slave
+R    CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+R    CTGAllin                      ** Ciclo tara gantry: posiziona slave alla quota master
+R    CTGLastAgg                    ** Ciclo tara gantry: ultimo aggancio gantry
+R    CTGPark                       ** Ciclo tara gantry: parcheggio gantry
+
+LD   yGantryOn                     ** Accoppiamento gantry attivo
+AND  CTGLastAgg                    ** Ciclo tara gantry: ultimo aggancio gantry
+ANDN xParkCycle                    ** Abilita ciclo parcheggio a fine taratura
+OR   (
+LD   POS_X1.yax_ENDOK
+AND  CTGPark                       ** Ciclo tara gantry: parcheggio gantry
+)
+OR   (
+LD   yGantryOff                    ** Accoppiamento gantry non attivo
+AND  CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+AND  xZeroSetup                    ** Esclude allineamento a fine taratura
+)
+ST   yEndCycRef                    ** Fine ciclo taratura gantry
+
+CAL  T_WSTREF(IN=CTGAllin, PT=1000) ** Ciclo tara gantry: posiziona slave alla quota master
+
+LD   AO_QUOTA                      ** ra4  Quota asse
+SUB  PosSlave                      ** Quota attuale asse slave
+ABS
+GE   GDAT3                         ** Gdat3 Tolleranza Allarme REF
+AND  T_WSTREF.Q                    ** Fine attesa stop asse dopo taratura
+S    yRefAlarm                     ** Allarme allineamento durante ciclo zero
+
+LD   xReset                        ** Reset comandi gantry
+R    yRefAlarm                     ** Allarme allineamento durante ciclo zero
+
+* Ciclo preset o allineamento slave alla quota del master
+
+LD   xReqPreset                    ** Richiesta preset slave alla quota del master
+OR   xReqAllin                     ** Richiesta allineamento slave alla quota del master
+ANDN yOnOff                        ** Comando aggancio-sgancio in corso
+ANDN CTGPreset                     ** Ciclo tara gantry: preset iniziale
+S    CPASga                        ** Ciclo allinea gantry: sgancio gantry
+
+LD   yGantryOff                    ** Accoppiamento gantry non attivo
+AND  CPASga                        ** Ciclo allinea gantry: sgancio gantry
+S    CPAExec                       ** Ciclo allinea gantry: esegue preset o allineamento
+
+LD   PRS_X2.yax_ENDOK
+AND  xReqPreset                    ** Richiesta preset slave alla quota del master
+OR   (
+LD   T_ALL.Q                       ** Allineamento slave completato
+AND  xReqAllin                     ** Richiesta allineamento slave alla quota del master
+)
+AND  CPAExec                       ** Ciclo allinea gantry: esegue preset o allineamento
+S    CPARiagg                      ** Ciclo allinea gantry: riaggancio gantry
+
+LDN  xReqPreset                    ** Richiesta preset slave alla quota del master
+ANDN xReqAllin                     ** Richiesta allineamento slave alla quota del master
+R    CPASga                        ** Ciclo allinea gantry: sgancio gantry
+R    CPAExec                       ** Ciclo allinea gantry: esegue preset o allineamento
+R    CPARiagg                      ** Ciclo allinea gantry: riaggancio gantry
+
+LD   yGantryOn                     ** Accoppiamento gantry attivo
+AND  CPARiagg                      ** Ciclo allinea gantry: riaggancio gantry
+ST   yEndPrAll                     ** Fine preset o allineamento slave a quota master
+
+* Memoria eseguito ciclo setup: il ciclo setup attiva il bit di asse tarato,
+* ma le quote di taratura degli assi non sono ancora state messe a punto,
+* quindi debbo bloccare l'allineamento automatico dopo emergenza finch�
+* non avr� eseguito un ciclo di taratura valido.
+
+LD   xZeroSetup                    ** Esclude allineamento a fine taratura
+AND  yEndCycRef                    ** Fine ciclo taratura gantry
+S    MemSetupDone                  ** Mem. eseguito ciclo setup
+
+LDN  xZeroSetup                    ** Esclude allineamento a fine taratura
+AND  yEndCycRef                    ** Fine ciclo taratura gantry
+R    MemSetupDone                  ** Mem. eseguito ciclo setup
+
+* Abilita allineamento gantry dopo emergenza: se attivo, allinea,
+* se inattivo, effettua il preset dello slave.
+* Serve per evitare il riallineamento automatico al ripristino da emergenza
+* finch� non � stato eseguito un ciclo di taratura valido,
+* altrimenti si rischia di allineare su quote errate e danneggiare il gantry.
+
+LDN  MemSetupDone                  ** Mem. eseguito ciclo setup
+AND  AxTaratoS                     ** Asse slave tarato
+AND  BAO_TARA                      ** ra3.14  Asse tarato
+ST   AllDopoEmer                   ** Abilita allineamento gantry dopo emergenza
+
+* Ciclo allineamento slave al ripristino da emergenza
+
+LD   xEmer                         ** Condizioni di emergenza che forzano l'apertura del gantry
+AND  BAO_AFET                      ** ra3.0  Asse fermo teorico
+AND  AxFermoS                      ** Asse slave fermo
+OR   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+S    CARSga                        ** Ciclo allinea al ripristino emergenza: sgancio gantry
+
+LDN  xEmer                         ** Condizioni di emergenza che forzano l'apertura del gantry
+ANDN xReset                        ** Reset comandi gantry
+AND  yGantryOff                    ** Accoppiamento gantry non attivo
+AND  CARSga                        ** Ciclo allinea al ripristino emergenza: sgancio gantry
+AND (
+LD   PosMaster                     ** Quota attuale asse master
+SUB  PosSlave                      ** Quota attuale asse slave
+ABS
+LT   GDAT2                         ** Gdat2 Tolleranza Allarme
+)
+S    CARAllin                      ** Ciclo allinea al ripristino emergenza: esegue allineamento
+
+LD   T_ALL.Q                       ** Allineamento slave completato
+OR   PRS_X2.yax_ENDOK
+AND  CARAllin                      ** Ciclo allinea al ripristino emergenza: esegue allineamento
+S    CARRiagg                      ** Ciclo allinea al ripristino emergenza: riaggancio gantry
+
+LD   yGantryOn                     ** Accoppiamento gantry attivo
+AND  CARRiagg                      ** Ciclo allinea al ripristino emergenza: riaggancio gantry
+OR   (
+LD   xEmer                         ** Condizioni di emergenza che forzano l'apertura del gantry
+AND  CARAllin                      ** Ciclo allinea al ripristino emergenza: esegue allineamento
+)
+R    CARSga                        ** Ciclo allinea al ripristino emergenza: sgancio gantry
+R    CARAllin                      ** Ciclo allinea al ripristino emergenza: esegue allineamento
+R    CARRiagg                      ** Ciclo allinea al ripristino emergenza: riaggancio gantry
+
+LD   CARSga                        ** Ciclo allinea al ripristino emergenza: sgancio gantry
+ST   yAlPr                         ** Comando allineamento-preset dopo ripristino emergenza in corso
+
+* FB attiva/disattiva GANTRY
+
+LD   BCO_CANREADY                  ** rc8.2  Canale Ready
+ANDN xReset                        ** Reset comandi gantry
+ST   BCI_PLCREQ                    ** cnfb23.28 Richiesta gestione processo da PLC
+ST   GANTFB.xcn_ENABLE       * abilita FB
+
+LD   CTGFirstAgg                   ** Ciclo tara gantry: primo aggancio gantry
+ANDN CTGZeroM                      ** Ciclo tara gantry: ricerca zero su asse master
+OR   (
+LD   CTGSlaveAgg                   ** Ciclo tara gantry: aggancio gantry slave-master
+ANDN CTGZeroS                      ** Ciclo tara gantry: ricerca zero su asse slave
+)
+ST   ForzAggancio                  ** Cond. forzamento aggancio gantry (anche se lo � gi�)
+
+LD   ForzAggancio                  ** Cond. forzamento aggancio gantry (anche se lo � gi�)
+OR   CTGLastAgg                    ** Ciclo tara gantry: ultimo aggancio gantry
+OR   CPARiagg                      ** Ciclo allinea gantry: riaggancio gantry
+OR   CARRiagg                      ** Ciclo allinea al ripristino emergenza: riaggancio gantry
+OR   xReqAggancio                  ** Richiesta aggancio gantry
+S    MemAggancio                   ** Mem. aggancio gantry
+
+LD   CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+ANDN CTGLastAgg                    ** Ciclo tara gantry: ultimo aggancio gantry
+OR   (
+LD   CPASga                        ** Ciclo allinea gantry: sgancio gantry
+ANDN CPAExec                       ** Ciclo allinea gantry: esegue preset o allineamento
+)
+OR   (
+LD   CARSga                        ** Ciclo allinea al ripristino emergenza: sgancio gantry
+ANDN CARAllin                      ** Ciclo allinea al ripristino emergenza: esegue allineamento
+)
+OR   xReqSgancio                   ** Richiesta sgancio gantry
+OR   BAO_GTRYALRM                  ** ra6.19 Allarme per disallineamento gantry
+R    MemAggancio                   ** Mem. aggancio gantry
+
+LD   MemAggancio                   ** Mem. aggancio gantry
+ANDN yGantryOn                     ** Accoppiamento gantry attivo
+OR   ForzAggancio                  ** Cond. forzamento aggancio gantry (anche se lo � gi�)
+* Controllo lo stato ISO nullo perch� se tento di agganciare il gantry al volo
+* mi d� errore, in particolare durante la taratura in cui in certi casi
+* lo slave toglieva il bit di gantry agganciato.
+AND  BAO_ISO_NULLO                 ** ra19.0 Stato NULLO all'interno del canale
+AND  IsoNullS                      ** Asse slave in ISO nullo
+ANDN xEmer                         ** Condizioni di emergenza che forzano l'apertura del gantry
+OR   (
+LDN  MemAggancio                   ** Mem. aggancio gantry
+ANDN yGantryOff                    ** Accoppiamento gantry non attivo
+)
+* Se l'aggancio va in allarme disallineamento, attende un attimo
+* prima di sganciare per sincronizzare il blocco di aggancio-sgancio
+AND  (
+LDN  BAO_GTRYALRM                  ** ra6.19 Allarme per disallineamento gantry
+ANDN GANTFB.ycn_ENDOK
+)
+AND  GANTFB.xcn_ENABLE       * abilita FB
+ST   yOnOff                        ** Comando aggancio-sgancio in corso
+
+LD   yOnOff                        ** Comando aggancio-sgancio in corso
+AND  GANTFB.ycn_READY
+ANDN GANTFB.ycn_ENDOK
+ANDN GANTFB.ycn_ENDERR
+ANDN xAuxBusy                      ** Canale ausiliario impegnato
+ST   GANTFB.xcn_START
+
+LDN  yOnOff                        ** Comando aggancio-sgancio in corso
+ST   GANTFB.xcn_CLEAR
+
+LD   MemAggancio                   ** Mem. aggancio gantry
+ST   GANTFB.xcn_ONOFF
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   GANTFB.xcn_COPY
+
+LD   AP_AXNGANTRY                  ** pa47 Indice tabella gantry
+ST   GANTFB.xcn_INDEX
+
+LD   xNMaster                      ** Numero asse master
+ST   GANTFB.xcn_MASTER
+
+LD   CTGSlaveAgg                   ** Ciclo tara gantry: aggancio gantry slave-master
+ANDN CTGAllin                      ** Ciclo tara gantry: posiziona slave alla quota master
+JMPCN GNT_SLAVE
+
+LD   xNSlave                       ** Numero asse slave
+ST   GANTFB.xcn_MASTER
+
+GNT_SLAVE:
+
+LD   CTGFirstAgg                   ** Ciclo tara gantry: primo aggancio gantry
+ANDN CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+OR   xNoAlarm                      ** Esclude allarme massimo disallineamento
+ST   GANTFB.xcn_REFTOLL
+
+CAL  GANTFB
+
+LD   GANTFB.ycn_ERRCODE
+ST   ycn_ERRCODE                   ** Function-Block error code
+
+* Comando output per richiesta comandi esterni
+
+LD   CTGZeroM                      ** Ciclo tara gantry: ricerca zero su asse master
+ANDN CTGSlaveAgg                   ** Ciclo tara gantry: aggancio gantry slave-master
+ANDN CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+AND  xExtCmd                       ** Selezione comandi REF-JOG esterni (da canale)
+ST   yRefM                         ** Richiesta ciclo zero su asse master
+
+LD   CTGZeroS                      ** Ciclo tara gantry: ricerca zero su asse slave
+ANDN CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+AND  xExtCmd                       ** Selezione comandi REF-JOG esterni (da canale)
+ST   yRefS                         ** Richiesta ciclo zero su asse slave
+
+LD   CTGPreset                     ** Ciclo tara gantry: preset iniziale
+ANDN xExtCmd                       ** Selezione comandi REF-JOG esterni (da canale)
+OR   CTGAllin                      ** Ciclo tara gantry: posiziona slave alla quota master
+ANDN CTGLastAgg                    ** Ciclo tara gantry: ultimo aggancio gantry
+OR   (
+LD   CTGPreset                     ** Ciclo tara gantry: preset iniziale
+ANDN CTGFirstAgg                   ** Ciclo tara gantry: primo aggancio gantry
+)
+OR   (
+LD   CPAExec                       ** Ciclo allinea gantry: esegue preset o allineamento
+ANDN CPARiagg                      ** Ciclo allinea gantry: riaggancio gantry
+)
+OR   (
+LD   CARAllin                      ** Ciclo allinea al ripristino emergenza: esegue allineamento
+ANDN CARRiagg                      ** Ciclo allinea al ripristino emergenza: riaggancio gantry
+)
+OR   CTGPark                       ** Ciclo tara gantry: parcheggio gantry
+ANDN yRefM                         ** Richiesta ciclo zero su asse master
+ANDN yRefS                         ** Richiesta ciclo zero su asse slave
+ST   yGrant                        ** Richiesta comando assi da PLC
+
+* Comandi asse master
+
+* Taratura asse con ricerca tacca
+
+LD   CTGZeroM                      ** Ciclo tara gantry: ricerca zero su asse master
+ANDN CTGSlaveAgg                   ** Ciclo tara gantry: aggancio gantry slave-master
+ANDN CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+ANDN xExtCmd                       ** Selezione comandi REF-JOG esterni (da canale)
+ANDN xReset                        ** Reset comandi gantry
+ST   TAR_X1.xax_ENABLE
+
+LDN  TAR_X1.xax_ENABLE
+ST   TAR_X1.xax_CLEAR
+
+LD   TAR_X1.xax_ENABLE
+AND  TAR_X1.yax_READY
+ANDN TAR_X1.yax_ENDOK
+ANDN TAR_X1.yax_ENDERR
+ST   TAR_X1.xax_START
+
+CAL  TAR_X1
+
+* Posizionamento asse
+
+LD   CTGPark                       ** Ciclo tara gantry: parcheggio gantry
+ANDN xReset                        ** Reset comandi gantry
+ST   POS_X1.xax_ENABLE
+
+LDN  POS_X1.xax_ENABLE
+ST   POS_X1.xax_CLEAR
+
+LD   POS_X1.xax_ENABLE
+AND  POS_X1.yax_READY
+ANDN POS_X1.yax_ENDOK
+ANDN POS_X1.yax_ENDERR
+ST   POS_X1.xax_START
+
+LD   AP_PARKQTA                    ** pa31 Quota di parcheggio
+ST   POS_X1.xax_QUOTA
+
+LD   xParkSpeed                    ** Velocit� di parcheggio
+EQ   0
+JMPC PARK_VELMAN
+
+LD   xParkSpeed                    ** Velocit� di parcheggio
+ST   POS_X1.xax_VEL
+
+JMP  PARK_VELEND
+
+PARK_VELMAN:
+
+LD   %pa60
+ST   POS_X1.xax_VEL
+
+PARK_VELEND:
+
+CAL  POS_X1
+
+LD   AO_QUOTA                      ** ra4  Quota asse
+ST   PosMaster                     ** Quota attuale asse master
+
+* Comandi asse slave
+
+PATH %ax[xNSlave]                  ** Numero asse slave
+
+* Taratura asse con ricerca tacca
+
+LD   CTGZeroS                      ** Ciclo tara gantry: ricerca zero su asse slave
+ANDN CTGLastSga                    ** Ciclo tara gantry: ultimo sgancio gantry
+ANDN xExtCmd                       ** Selezione comandi REF-JOG esterni (da canale)
+ANDN xReset                        ** Reset comandi gantry
+ST   TAR_X2.xax_ENABLE
+
+LDN  TAR_X2.xax_ENABLE
+ST   TAR_X2.xax_CLEAR
+
+LD   TAR_X2.xax_ENABLE
+AND  TAR_X2.yax_READY
+ANDN TAR_X2.yax_ENDOK
+ANDN TAR_X2.yax_ENDERR
+ST   TAR_X2.xax_START
+
+CAL  TAR_X2
+
+* Posizionamento asse
+
+LD   T_WSTREF.Q                    ** Fine attesa stop asse dopo taratura
+ANDN CTGLastAgg                    ** Ciclo tara gantry: ultimo aggancio gantry
+ANDN yRefAlarm                     ** Allarme allineamento durante ciclo zero
+OR   (
+LD   CPAExec                       ** Ciclo allinea gantry: esegue preset o allineamento
+ANDN CPARiagg                      ** Ciclo allinea gantry: riaggancio gantry
+AND  xReqAllin                     ** Richiesta allineamento slave alla quota del master
+)
+OR   (
+LD   CARAllin                      ** Ciclo allinea al ripristino emergenza: esegue allineamento
+ANDN CARRiagg                      ** Ciclo allinea al ripristino emergenza: riaggancio gantry
+AND  AllDopoEmer                   ** Abilita allineamento gantry dopo emergenza
+)
+ANDN xReset                        ** Reset comandi gantry
+ST   POS_X2.xax_ENABLE
+
+LDN  POS_X2.xax_ENABLE
+ST   POS_X2.xax_CLEAR
+
+LD   POS_X2.xax_ENABLE
+AND  POS_X2.yax_READY
+ANDN POS_X2.yax_ENDOK
+ANDN POS_X2.yax_ENDERR
+ST   POS_X2.xax_START
+
+LD   PosMaster                     ** Quota attuale asse master
+ST   POS_X2.xax_QUOTA
+
+LD   AP_VELMICRO                   ** pa19 Velocit� ricerca micro in taratura
+ST   POS_X2.xax_VEL
+
+CAL  POS_X2
+
+CAL  T_ALL(IN=POS_X2.yax_ENDOK, PT=AP_TIMERTOLL) ** pa8 Preset timer tolleranza
+
+* Preset asse
+
+LD   CPAExec                       ** Ciclo allinea gantry: esegue preset o allineamento
+ANDN CPARiagg                      ** Ciclo allinea gantry: riaggancio gantry
+AND  xReqPreset                    ** Richiesta preset slave alla quota del master
+OR   (
+LD   CTGPreset                     ** Ciclo tara gantry: preset iniziale
+ANDN CTGFirstAgg                   ** Ciclo tara gantry: primo aggancio gantry
+)
+OR   (
+LD   CARAllin                      ** Ciclo allinea al ripristino emergenza: esegue allineamento
+ANDN CARRiagg                      ** Ciclo allinea al ripristino emergenza: riaggancio gantry
+ANDN AllDopoEmer                   ** Abilita allineamento gantry dopo emergenza
+)
+ANDN xReset                        ** Reset comandi gantry
+ST   PRS_X2.xax_ENABLE
+
+LDN  PRS_X2.xax_ENABLE
+ST   PRS_X2.xax_CLEAR
+
+LD   PRS_X2.xax_ENABLE
+AND  PRS_X2.yax_READY
+ANDN PRS_X2.yax_ENDOK
+ANDN PRS_X2.yax_ENDERR
+ST   PRS_X2.xax_START
+
+LD   PosMaster                     ** Quota attuale asse master
+ST   PRS_X2.xax_QUOTA
+
+CAL  PRS_X2
+
+LD   PRS_X2.xax_ENABLE
+ST   yPresetReq                    ** Richesta preset asse Slave
+
+
+* Procedura modifica quota taratura slave alla fine del ciclo di zero setup.
+* Somma alla quota di zero slave la differenza tra i due assi.
+
+LD   yEndCycRef                    ** Fine ciclo taratura gantry
+ST   RT_SLVQT.CLK
+
+CAL  RT_SLVQT
+
+LD   RT_SLVQT.Q                    ** Imp. fine ciclo taratura gantry
+AND  xZeroSetup                    ** Esclude allineamento a fine taratura
+AND  xAutZeroSetup                 ** Modifica automatica quota taratura a fine setup
+JMPCN END_SLVQT
+
+LD   PosMaster                     ** Quota attuale asse master
+SUB  AO_QUOTA                      ** ra4  Quota asse
+ADD  QTA_TARA_SLAVE                ** pa18 Quota di taratura asse
+ST   QTA_TARA_SLAVE                ** pa18 Quota di taratura asse
+
+END_SLVQT:
+
+END_FUNCTION_BLOCK
+
+
+* FB Comando segnali modulo VRTC
+VAR_IN_OUT
+VRTC_CR0           AT %VrdwCtrlRegister0;   * VRTC control register 0
+VRTC_CR1           AT %VrdwCtrlRegister1;   * VRTC control register 1
+VRTC_AR0           AT %VrdwAckRegister0;    * VRTC acknowledge register 0
+VRTC_AR1           AT %VrdwAckRegister1;    * VRTC acknowledge register 1
+VRTC_SR0           AT %VrdwStatRegister0;   * VRTC status register 0
+VRTC_SR1           AT %VrdwStatRegister1;   * VRTC status register 1
+VRTC_SIMOFF_SET    AT %VrSim_Q_OffsetSet;   * VRTC simulation offset set
+VRTC_SIMOFF_CUR    AT %VrEq_Q_OffsetCur;    * VRTC simulation offset current
+VRTC_SETPOINT      AT %VrU_Setpoint;        * VRTC setpoint
+VRTC_SENSOR_IN     AT %VrSensorInput;       * VRTC Sensor Input
+
+VRTC_POS_UPLIM     AT %VrLimM_Q_U;          * VRTC mandatory position upper limit (mm)
+VRTC_POS_LWLIM     AT %VrLimM_Q_L;          * VRTC mandatory position lower limit (mm)
+VRTC_VEL_UPLIM     AT %VrLimM_Q_D_U;        * VRTC mandatory velocity upper limit
+VRTC_VEL_LWLIM     AT %VrLimM_Q_D_D;        * VRTC mandatory velocity lower limit
+VRTC_ACC_UPLIM     AT %VrLimM_Q_DD_U;       * VRTC mandatory acceleration upper limit (mm)
+VRTC_ACC_LWLIM     AT %VrLimM_Q_DD_D;       * VRTC mandatory acceleration lower limit (mm)
+VRTC_KPGAIN        AT %VrKpGain;            * VRTC Kp gain [[mm/s]/U]
+VRTC_NON_LINEAR_MODE AT %VrNonLinearMode;     * VRTC non-linear regulation mode
+VRTC_KP_TABLE      AT %VrKpTransPtr;        * VRTC Kp trans-characteristics table index
+VRTC_KP_TABLE_MUL  AT %VrKpTransMul;        * VRTC Kp trans-characteristics table multiplier
+VRTC_SLIDING_DECEL AT %VrSlidingDecel;      * VRTC sliding mode deceleration [mm/s�]
+VRTC_DB_POS        AT %VrU_DbPos;           * VRTC positive deadband
+VRTC_DB_NEG        AT %VrU_DbNeg;           * VRTC negative deadband
+VRTC_CUTOFF        AT %VrFilter_FreqHz;     * VRTC Filter cutoff frequency [Hz]
+VRTC_DAMPING       AT %VrFilter_DampingC;   * VRTC Damping filter
+VRTC_SIM_FADER     AT %VrSimFadingTime;     * VRTC Simulation Xfade time [ms]
+VRTC_TRIG_VEL_UP   AT %VrLimL_Flt_Q_D_U;    * VRTC Lock trigger velocity Up
+VRTC_TRIG_VEL_LW   AT %VrLimL_Flt_Q_D_D;    * VRTC Lock trigger velocity Down
+VRTC_TRIG_ACC      AT %VrLimL_Flt_Q_DD;     * VRTC Lock trigger acceleration
+END_VAR
+
+
+* VRTC_EX FB SECTION
+*=========================================================================
+
+VAR_IN_OUT
+VRTC_VECTOR_SELECT  AT %VrVectorSelect;      * VRTC vector select
+VRTC_SIM_OFFSET_SET AT %VrSim_Q_OffsetSet;   * VRTC simulation offset set
+VRTC_SIM_OFFSET_CUR AT %VrEq_Q_OffsetCur;    * VRTC simulation offset cur
+VRTC_FLT_Q          AT %VrMon_Q_Flt_Q;       * VRTC contribution
+END_VAR
+
+FUNCTION_BLOCK VRTC_EX
+
+VAR_INPUT
+xVectorSelect: DWORD; * Vector select
+xReset: BOOL; * Reset
+xSimul: BOOL; * Simulazione
+xMoveToTarget: BOOL; * Richiesta movimento su target
+xResPosInt: BOOL; * Reset position integrator
+xPosLimDisab: BOOL; * Disable mandatory position limit
+xDeOverlapEnab: BOOL; * Enable de-overlap
+xErrorAmpEnab: BOOL; * Enable error amplifier
+xMLonlyClampFilterIn:   BOOL;
+xMLonlyClampFilterInDot: BOOL;
+
+xSimOffsetSet: DWORD; * VRTC simulation offset set
+xSetPoint: DWORD; * VRTC set point
+xSensorIn: DWORD; * Sensor Input
+
+xUpPosLimit: DWORD; * Mandatory upper position limit
+xLwPosLimit: DWORD; * Mandatory lower position limit
+xVelLimitUp: DWORD; * Upward Mandatory velocity limit
+xVelLimitDown: DWORD; * Downward Mandatory velocity limit
+xAccLimitUp: DWORD; * Upward Mandatory velocity limit
+xAccLimitDown: DWORD; * Downward Mandatory velocity limit
+xKpGain: DWORD; * Kp gain [[mm/s]/U]
+xKpTransPtr:  DWORD; * Kp trans-characteristics table index
+xKpTransMul:  DWORD; * Kp trans-characteristics table multiplier (<>0 == enable)
+xSlidingDecel:  DWORD; * Sliding mode deceleration [mm/s�] (<>0 == enable)
+xDbPos:  DWORD; * positive deadband
+xDbNeg:  DWORD; * negative deadband
+xFilterCutOff: DWORD; * Filter cutoff frequency [Hz]
+xFilterDamping: DWORD; * Filter Damping Coefficient
+xSimFadingTime:  DWORD; * Simulation Xfade time [ms]
+xLockVelLimitUp:  DWORD; * Lock trigger velocity Up
+xLockVelLimitDown:  DWORD; * Lock trigger velocity Down
+xLockAccLimit:  DWORD; * Lock trigger acceleration
+
+END_VAR
+
+VAR_OUTPUT
+yBusy: BOOL; * Comando VRTC in corso
+ySignalLock: BOOL; * VRTC locked
+ySimOffsetCur: DWORD; * last VRTC simulation offset
+yFltQ: DWORD; * VRTC contribution
+END_VAR
+
+VAR
+#defcom TR_VRTSIM.Q Simulazione
+TR_VRTSIM: TRIG;
+#defcom TR_VRTRST.Q Reset VRTC
+TR_VRTRST: TRIG;
+#defcom TR_VRTRPI.Q Imp. reset position integrator
+TR_VRTRPI: TRIG;
+#defcom TR_VRTPLD.Q Imp. disable mandatory position limit
+TR_VRTPLD: TRIG;
+#defcom TR_DEOVER.Q Enable de-overlap
+TR_DEOVER: TRIG;
+#defcom TR_ERRAMP.Q Enable error amplifier
+TR_ERRAMP: TRIG;
+TR_MLonlyClamp: TRIG;
+TR_MLonlyClampDot: TRIG;
+
+CtrReg0: DWORD; * Appoggio control register 0
+CtrReg1: DWORD; * Appoggio control register 1
+DwCrtReg1: DWORD; * Appoggio DW control register 1
+AckReg0: DWORD; * Appoggio ACK register 0
+AckReg1: DWORD; * Appoggio ACK register 1
+StatReg0: DWORD; * Appoggio status register 0
+StatReg1: DWORD; * Appoggio status register 1
+
+PrevSimOffsetSet: DWORD; * Valore precedente simulation offset set
+
+PrevUpPosLim:       DWORD; * Previous mandatory upper position limit
+PrevLwPosLim:       DWORD; * Previous mandatory lower position limit
+PrevUpVelLim:       DWORD; * Previous Up mandatory velocity limit
+PrevDnVelLim:       DWORD; * Previous Down mandatory velocity limit
+PrevUpAccLim:       DWORD; * Previous Up mandatory acceleration limi
+PrevDnAccLim:       DWORD; * Previous Down mandatory acceleration limit
+PrevKpGain:         DWORD; * Previous Kp gain
+PrevKpTransPtr:     DWORD; * Previous Kp trans-characteristics table index
+PrevKpTransMul:     DWORD; * Previous Kp trans-characteristics table multiplier (<>0 == enable)
+PrevSlidingDecel:   DWORD; * Previous sliding mode deceleration [mm/s�] (<>0 == enable)
+PrevDbPos:          DWORD; * Previous positive deadband
+PrevDbNeg:          DWORD; * Previous negative deadband
+PrevFilterCutOff:   DWORD; * Previous Filter cutoff frequency
+PrevFilterDamping:  DWORD; * Previous filter damping value
+PrevSimFadingTime:  DWORD; * Previous Simulation Xfade time [ms]
+PrevLockVelLimitUp: DWORD; * Previous Lock trigger velocity Up
+PrevLockVelLimitDn: DWORD; * Previous Lock trigger velocity Down
+PrevLockAccLimit:   DWORD; * Previous Lock trigger acceleration
+PrevSetpoint:       DWORD; * Previous Setpoint
+END_VAR
+
+* Acknowledge register 0
+
+LD      VRTC_AR0                   ** VRTC acknowledge register 0
+ST      AckReg0                    ** Appoggio ACK register 0
+
+* Acknowledge register 1
+
+LD      VRTC_AR1                   ** VRTC acknowledge register 1
+ST      AckReg1                    ** Appoggio ACK register 1
+
+* Vector Select
+
+LD      xVectorSelect
+ST      VRTC_VECTOR_SELECT
+
+* Control register 0
+
+LD      %PLCFLAGS.1
+ST      CtrReg0.9           * Enable velocity feed-forward
+ST      CtrReg0.24          * Auxiliary signal #0 (registers update)
+
+* Master reset
+
+LD      xReset                     ** Reset
+ST      CtrReg0.0           * Master reset
+
+* Master enable
+
+LDN     xReset                     ** Reset
+ST      CtrReg0.1           * Master enable
+
+* Enable error amplifier
+
+LD      xErrorAmpEnab              ** Enable error amplifier
+ST      CtrReg0.2           * Enable error amplifier
+
+* Enable off-sensor simulation
+
+LD      xSimul                     ** Simulazione
+ST      CtrReg0.3           * Enable off-sensor simulation
+
+* Reset position integrator
+
+LD      xResPosInt                 ** Reset position integrator
+ST      CtrReg0.5           * Reset position integrator
+
+* Enable de-overlap
+
+LD      xDeOverlapEnab             ** Enable de-overlap
+ST      CtrReg0.18          * Enable de-overlap
+
+* Enable mandatory position limit
+
+LDN     xPosLimDisab               ** Disable mandatory position limit
+ANDN    xResPosInt                 ** Reset position integrator
+ANDN    xReset                     ** Reset
+ST      CtrReg1.12          * Enable mandatory position limit
+
+* Mandatory position limit
+
+LD      xUpPosLimit                ** Mandatory upper position limit
+ST      VRTC_POS_UPLIM             ** VRTC mandatory position upper limit (mm)
+LD      xLwPosLimit                ** Mandatory lower position limit
+ST      VRTC_POS_LWLIM             ** VRTC mandatory position lower limit (mm)
+
+* Mandatory velocity limit
+
+LD      xVelLimitUp                ** Upward Mandatory velocity limit
+ST      VRTC_VEL_UPLIM             ** VRTC mandatory velocity upper limit
+LD      xVelLimitDown              ** Downward Mandatory velocity limit
+ST      VRTC_VEL_LWLIM             ** VRTC mandatory velocity lower limit
+
+LD      xVelLimitUp                ** Upward Mandatory velocity limit
+NE      0
+OR (
+LD      xVelLimitDown              ** Downward Mandatory velocity limit
+NE      0
+)
+ST      CtrReg1.13                    * Enable mandatory velocity limit
+
+* Mandatory acceleration limit
+
+LD      xAccLimitUp                ** Upward Mandatory velocity limit
+ST      VRTC_ACC_UPLIM             ** VRTC mandatory acceleration upper limit (mm)
+LD      xAccLimitDown              ** Downward Mandatory velocity limit
+ST      VRTC_ACC_LWLIM             ** VRTC mandatory acceleration lower limit (mm)
+
+LD      xAccLimitUp                ** Upward Mandatory velocity limit
+NE      0
+OR (
+LD      xAccLimitDown              ** Downward Mandatory velocity limit
+NE      0
+)
+ST      CtrReg1.14                    * Enable mandatory acceleration limit
+
+* Kp gain
+
+LD      xKpGain                    ** Kp gain [[mm/s]/U]
+ST      VRTC_KPGAIN                ** VRTC Kp gain [[mm/s]/U]
+
+* Kp trans-characteristics table
+
+LD      xKpTransPtr                ** Kp trans-characteristics table index
+ST      VRTC_KP_TABLE              ** VRTC Kp trans-characteristics table index
+
+* Kp trans-characteristics multiplier (and enable)
+
+LD      xKpTransMul                ** Kp trans-characteristics table multiplier (<>0 == enable)
+ST      VRTC_KP_TABLE_MUL          ** VRTC Kp trans-characteristics table multiplier
+
+* Sliding mode deceleration
+
+LD      xSlidingDecel
+ST      VRTC_SLIDING_DECEL
+
+LD      0
+ST      VRTC_NON_LINEAR_MODE
+
+LD      xSlidingDecel
+EQ      0
+JMPC    endif_non_linear_mode
+    LD      1
+    ST      VRTC_NON_LINEAR_MODE
+endif_non_linear_mode:
+
+LD      xKpTransMul                ** Kp trans-characteristics table multiplier (<>0 == enable)
+NE      0
+OR (
+	LD      xSlidingDecel
+	NE      0
+)
+ST      CtrReg0.17          * Enable Kp trans-characteristics
+
+* Kp deadband
+
+LD      xDbPos                     ** positive deadband
+ST      VRTC_DB_POS                ** VRTC positive deadband
+LD      xDbNeg                     ** negative deadband
+ST      VRTC_DB_NEG                ** VRTC negative deadband
+
+**** can be disabled by simply setting parameter to 0
+LD      %PLCFLAGS.1
+ST      CtrReg0.8           * Enable deadband processing
+
+* Filter cutoff frequency
+
+LD      xFilterCutOff              ** Filter cutoff frequency [Hz]
+ST      VRTC_CUTOFF                ** VRTC Filter cutoff frequency [Hz]
+
+* filter Damping
+
+LD      xFilterDamping             ** Filter Damping Coefficient
+ST      VRTC_DAMPING               ** VRTC Damping filter
+
+* Error Fading Time
+
+LD      xSimFadingTime             ** Simulation Xfade time [ms]
+ST      VRTC_SIM_FADER             ** VRTC Simulation Xfade time [ms]
+
+**** can be disabled by simply setting parameter to 0
+LD      %PLCFLAGS.1
+ST      CtrReg0.11          * Enable off-sensor simulation fader
+
+* Velocity lock trigger (always enabled)
+
+LD      xLockVelLimitUp            ** Lock trigger velocity Up
+ST      VRTC_TRIG_VEL_UP           ** VRTC Lock trigger velocity Up
+LD      xLockVelLimitDown          ** Lock trigger velocity Down
+ST      VRTC_TRIG_VEL_LW           ** VRTC Lock trigger velocity Down
+
+LD      %PLCFLAGS.1
+ST      CtrReg1.16                  * Enable velocity lock trigger
+
+* Acceleration lock trigger (enabled if <> 0)
+
+LD      xLockAccLimit              ** Lock trigger acceleration
+ST      VRTC_TRIG_ACC              ** VRTC Lock trigger acceleration
+
+LD      xLockAccLimit              ** Lock trigger acceleration
+NE      0
+ST      CtrReg1.17                  * Enable acceleration lock trigger
+
+* ***
+
+LD      xMLonlyClampFilterIn
+ST      CtrReg1.11
+
+LD      xMLonlyClampFilterInDot
+ST      CtrReg1.10
+
+* Simulation offset set
+
+LDN   xReset                ** Reset
+JMPC  not_reset
+
+    LD   0
+    ST   VRTC_SIM_OFFSET_SET    ** VRTC simulation offset set
+
+    JMP  endif_offset
+not_reset:
+
+LD   xSimul                        ** Simulazione
+ORN  VRTC_SR0.28                   * VSR0_SIM_FADED_OUT
+    JMPC simul
+
+    LD   VRTC_SIM_OFFSET_CUR        ** VRTC simulation offset cur
+    ST   VRTC_SIM_OFFSET_SET        ** VRTC simulation offset set
+
+    JMP  endif_offset
+simul:
+
+    LDN  xMoveToTarget              ** Richiesta movimento su target
+        JMPC endif_offset
+
+        LD   xSimOffsetSet              ** VRTC simulation offset set
+        ST   VRTC_SIM_OFFSET_SET        ** VRTC simulation offset set
+
+endif_offset:
+
+* Setpoint
+
+LD   xSetPoint                     ** VRTC set point
+ST   VRTC_SETPOINT                 ** VRTC setpoint
+
+* Sensor input (commentare se non lo legge direttamente)
+
+*** LD   xSensorIn           ** Sensor Input
+*** ST   VRTC_SENSOR_IN      ** VRTC Sensor Input
+
+* Trasferimento dati
+
+CAL  TR_VRTSIM(CLK=xSimul)         ** Simulazione
+CAL  TR_VRTRST(CLK=xReset)         ** Reset
+CAL  TR_VRTRPI(CLK=xResPosInt)     ** Reset position integrator
+CAL  TR_VRTPLD(CLK=xPosLimDisab)   ** Disable mandatory position limit
+CAL  TR_DEOVER(CLK=xDeOverlapEnab) ** Enable de-overlap
+CAL  TR_ERRAMP(CLK=xErrorAmpEnab)  ** Enable error amplifier
+CAL  TR_MLonlyClamp(CLK=xMLonlyClampFilterIn)
+CAL  TR_MLonlyClampDot(CLK=xMLonlyClampFilterInDot)
+
+LD   VRTC_SIM_OFFSET_SET           ** VRTC simulation offset set
+NE   PrevSimOffsetSet              ** Valore precedente simulation offset set
+AND  xSimul                        ** Simulazione
+OR   (
+LD   xUpPosLimit                   ** Mandatory upper position limit
+NE   PrevUpPosLim                  ** Valore precedente mandatory upper position limit
+)
+OR   (
+LD   xLwPosLimit                   ** Mandatory lower position limit
+NE   PrevLwPosLim                  ** Valore precedente mandatory lower position limit
+)
+OR   (
+LD   xVelLimitUp                   ** Upward Mandatory velocity limit
+NE   PrevUpVelLim                  ** Valore precedente Up mandatory velocity limit
+)
+OR   (
+LD   xVelLimitDown                 ** Downward Mandatory velocity limit
+NE   PrevDnVelLim                  ** Valore precedente Down mandatory velocity limit
+)
+OR   (
+LD   xAccLimitUp                   ** Upward Mandatory velocity limit
+NE   PrevUpAccLim                  ** Valore precedente Up mandatory acceleration limi
+)
+OR   (
+LD   xAccLimitDown                 ** Downward Mandatory velocity limit
+NE   PrevDnAccLim                  ** Valore precedente Down mandatory acceleration limit
+)
+OR(
+LD   xKpGain                       ** Kp gain [[mm/s]/U]
+NE   PrevKpGain                    ** Valore precedente Kp gain
+)
+OR   (
+LD   xKpTransPtr                   ** Kp trans-characteristics table index
+NE   PrevKpTransPtr                ** Previous Kp trans-characteristics table index
+)
+OR   (
+LD   xKpTransMul                   ** Kp trans-characteristics table multiplier (<>0 == enable)
+NE   PrevKpTransMul                ** Previous Kp trans-characteristics table multiplier (<>0 == enable)
+)
+OR(
+LD   xSlidingDecel
+NE   PrevSlidingDecel
+)
+OR   (
+LD   xDbPos                        ** positive deadband
+NE   PrevDbPos                     ** Previous positive deadband
+)
+OR   (
+LD   xDbNeg                        ** negative deadband
+NE   PrevDbNeg                     ** Previous negative deadband
+)
+OR(
+LD   xFilterCutOff                 ** Filter cutoff frequency [Hz]
+NE   PrevFilterCutOff              ** Previous Filter cutoff frequency
+)
+OR(
+LD   xFilterDamping                ** Filter Damping Coefficient
+NE   PrevFilterDamping             ** Previous filter damping value
+)
+OR   (
+LD   xSimFadingTime                ** Simulation Xfade time [ms]
+NE   PrevSimFadingTime             ** Previous Simulation Xfade time [ms]
+)
+OR   (
+LD   xLockVelLimitUp               ** Lock trigger velocity Up
+NE   PrevLockVelLimitUp            ** Previous Lock trigger velocity Up
+)
+OR   (
+LD   xLockVelLimitDown             ** Lock trigger velocity Down
+NE   PrevLockVelLimitDn            ** Previous Lock trigger velocity Down
+)
+OR   (
+LD   xLockAccLimit                 ** Lock trigger acceleration
+NE   PrevLockAccLimit              ** Previous Lock trigger acceleration
+)
+OR   (
+LD   xSetPoint                     ** Setpoint
+NE   PrevSetpoint                  ** Previous setpoint
+)
+OR   TR_MLonlyClamp.Q
+OR   TR_MLonlyClampDot.Q
+OR   TR_VRTSIM.Q                   ** Simulazione
+OR   TR_VRTRST.Q                   ** Reset VRTC
+OR   TR_VRTRPI.Q                   ** Imp. reset position integrator
+OR   TR_VRTPLD.Q                   ** Imp. disable mandatory position limit
+OR   TR_DEOVER.Q                   ** Enable de-overlap
+OR   TR_ERRAMP.Q                   ** Enable error amplifier
+JMPCN END_T_VRTCMD
+
+LDN  CtrReg0.28          * Toggle bit #0
+ST   CtrReg0.28          * Toggle bit #0
+
+END_T_VRTCMD:
+
+LD   VRTC_SIM_OFFSET_SET           ** VRTC simulation offset set
+ST   PrevSimOffsetSet              ** Valore precedente simulation offset set
+
+LD   xUpPosLimit                   ** Mandatory upper position limit
+ST   PrevUpPosLim                  ** Valore precedente mandatory upper position limit
+
+LD   xLwPosLimit                   ** Mandatory lower position limit
+ST   PrevLwPosLim                  ** Valore precedente mandatory lower position limit
+
+LD   xVelLimitUp                   ** Upward Mandatory velocity limit
+ST   PrevUpVelLim                  ** Valore precedente Up mandatory velocity limit
+
+LD   xVelLimitDown                 ** Downward Mandatory velocity limit
+ST   PrevDnVelLim                  ** Valore precedente Down mandatory velocity limit
+
+LD   xAccLimitUp                   ** Upward Mandatory velocity limit
+ST   PrevUpAccLim                  ** Valore precedente Up mandatory acceleration limi
+
+LD   xAccLimitDown                 ** Downward Mandatory velocity limit
+ST   PrevDnAccLim                  ** Valore precedente Down mandatory acceleration limit
+
+LD   xKpGain                       ** Kp gain [[mm/s]/U]
+ST   PrevKpGain                    ** Valore precedente Kp gain
+
+LD   xKpTransPtr                   ** Kp trans-characteristics table index
+ST   PrevKpTransPtr                ** Previous Kp trans-characteristics table index
+
+LD   xKpTransMul                   ** Kp trans-characteristics table multiplier (<>0 == enable)
+ST   PrevKpTransMul                ** Previous Kp trans-characteristics table multiplier (<>0 == enable)
+
+LD   xSlidingDecel
+ST   PrevSlidingDecel
+
+LD   xDbPos                        ** positive deadband
+ST   PrevDbPos                     ** Previous positive deadband
+
+LD   xDbNeg                        ** negative deadband
+ST   PrevDbNeg                     ** Previous negative deadband
+
+LD   xFilterCutOff                 ** Filter cutoff frequency [Hz]
+ST   PrevFilterCutOff              ** Previous Filter cutoff frequency
+
+LD   xFilterDamping                ** Filter Damping Coefficient
+ST   PrevFilterDamping             ** Previous filter damping value
+
+LD   xSimFadingTime                ** Simulation Xfade time [ms]
+ST   PrevSimFadingTime             ** Previous Simulation Xfade time [ms]
+
+LD   xLockVelLimitUp               ** Lock trigger velocity Up
+ST   PrevLockVelLimitUp            ** Previous Lock trigger velocity Up
+
+LD   xLockVelLimitDown             ** Lock trigger velocity Down
+ST   PrevLockVelLimitDn            ** Previous Lock trigger velocity Down
+
+LD   xLockAccLimit                 ** Lock trigger acceleration
+ST   PrevLockAccLimit              ** Previous Lock trigger acceleration
+
+LD   xSetPoint                     ** Setpoint
+ST   PrevSetpoint                  ** Previous setpoint
+
+LDN  CtrReg0.28          * Toggle bit #0
+ST   CtrReg0.29          * Toggle bit #1
+
+LD   CtrReg0.28          * Toggle bit #0
+XOR  AckReg0.28          * Toggle strobe VRTC
+ST   yBusy                         ** Comando VRTC in corso
+
+LD   VRTC_SR0.8          * VSR0_SIGNAL_LOCK
+ANDN yBusy                         ** Comando VRTC in corso
+ANDN (
+    LD   xSimul                         ** Simulazione
+    ANDN VRTC_SR0.27                    * VSR0_SIM_FADED_IN
+)
+ANDN (
+    LDN  xSimul                         ** Simulazione
+    ANDN VRTC_SR0.28                    * VSR0_SIM_FADED_OUT
+)
+ANDN (
+    LD   xErrorAmpEnab                  ** Enable error amplifier
+    ANDN VRTC_SR0.25                    * VSR0_ERR_FADED_IN
+)
+ST   ySignalLock                   ** VRTC posizione raggiunta
+
+LD   VRTC_SIM_OFFSET_CUR
+ST   ySimOffsetCur
+
+LD   VRTC_FLT_Q
+ST   yFltQ
+
+LD   CtrReg1                       ** Appoggio control register 1
+ST   VRTC_CR1                      ** VRTC control register 1
+
+LD   CtrReg0                       ** Appoggio control register 0
+ST   VRTC_CR0                      ** VRTC control register 0
+
+END_VRTC:
+
+END_FUNCTION_BLOCK
+
+FUNCTION_BLOCK GSTFEED
+
+VAR_INPUT
+ENC: WORD; * Quota da encoder (0-65535)
+MUL: DWORD; * Moltiplicatore
+MAXINC: DWORD; * Massimo incremento
+END_VAR
+
+VAR_OUTPUT
+VAL: WORD; * Feedrate (0-120)
+END_VAR
+
+VAR
+Multiplier:  DWORD;  *  Encoder feed multiplier
+DiffQtaVolant: DWORD; * Differenza quota volantino rispetto alla precedente
+QtaVolantAct: DWORD; * Quota volantino attuale
+QtaVolantPrec: DWORD; * Quota volantino precedente
+RETAIN FeedAx: DWORD; * Feedrate assi
+END_VAR
+
+
+* Carica la quota del volantino e fa la differenza con quella precedente
+
+LD   ENC                           ** Quota da encoder (0-65535)
+ST   QtaVolantAct                  ** Quota volantino attuale
+
+LD   QtaVolantAct                  ** Quota volantino attuale
+SUB  QtaVolantPrec                 ** Quota volantino precedente
+ST   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+
+LD   QtaVolantAct                  ** Quota volantino attuale
+ST   QtaVolantPrec                 ** Quota volantino precedente
+
+* Estensione del segno da 16 a 32 bit
+
+LD   DiffQtaVolant.15
+JMPC SIGNEXT_NEGATIVE
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+AND  16#0000FFFF
+ST   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+GT   MAXINC                        ** Massimo incremento
+JMPCN LSF
+
+LD   0
+ST   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+
+LSF:
+
+JMP  END_SIGNEXT
+
+SIGNEXT_NEGATIVE:
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+OR   16#FFFF0000
+ST   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+
+END_SIGNEXT:
+
+LDN   HW_ENCTYPE                   ** HW Type :0=S500, 1=S510
+JMPC  S500
+*S510:
+LD   20
+ST   Multiplier                    ** Encoder feed multiplier
+
+JMP  END_S5X0
+
+S500:
+
+*LD   80
+*LD   27
+
+LD   MUL                           ** Moltiplicatore
+ST   Multiplier                    ** Encoder feed multiplier
+END_S5X0:
+
+LD   DiffQtaVolant                 ** Differenza quota volantino rispetto alla precedente
+MUL  Multiplier                    ** Moltiplicatore
+ADD  FeedAx                        ** Feedrate assi
+ST   FeedAx                        ** Feedrate assi
+
+LD   FeedAx                        ** Feedrate assi
+LT   0
+JMPCN LFDN
+
+LD   0
+ST   FeedAx                        ** Feedrate assi
+
+LFDN:
+
+LD   FeedAx                        ** Feedrate assi
+GT   4093
+JMPCN LFUP
+
+LD   4093
+ST   FeedAx                        ** Feedrate assi
+
+LFUP:
+
+LD   FeedAx                        ** Feedrate assi
+ST   VAL                           ** Feedrate (0-120)
+
+END_FUNCTION_BLOCK

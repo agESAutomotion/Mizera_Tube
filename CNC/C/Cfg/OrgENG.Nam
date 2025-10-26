@@ -1,0 +1,43 @@
+[PROMPT]
+KEY_ORG       =Channel origins
+
+G54X =Origin1: X axis target (G54/G54.0)
+G54Y =Origin1: Y axis target (G54/G54.0)
+G54Z =Origin1: Z axis target (G54/G54.0)
+G55X =Origin2: X axis target (G55)
+G55Y =Origin2: Y axis target (G55)
+G55Z =Origin2: Z axis target (G55)
+G56X =Origin3: X axis target (G56)
+G56Y =Origin3: Y axis target (G56)
+G56Z =Origin3: Z axis target (G56)
+G57X =Origin4: X axis target (G57)
+G57Y =Origin4: Y axis target (G57)
+G57Z =Origin4: Z axis target (G57)
+
+G54_1X =Origin5: X axis target (G54.1)
+G54_1Y =Origin5: Y axis target (G54.1)
+G54_1Z =Origin5: Z axis target (G54.1)
+G54_2X =Origin6: X axis target (G54.2)
+G54_2Y =Origin6: Y axis target (G54.2)
+G54_2Z =Origin6: Z axis target (G54.2)
+G54_3X =Origin7: X axis target (G54.3)
+G54_3Y =Origin7: Y axis target (G54.3)
+G54_3Z =Origin7: Z axis target (G54.3)
+G54_4X =Origin8: X axis target (G54.4)
+G54_4Y =Origin8: Y axis target (G54.4)
+G54_4Z =Origin8: Z axis target (G54.4)
+
+[HELP]
+
+G54X =Origin1: X axis target -> Enter the X target of the origin of workpiece N° 1 selected by means of command G54
+G54Y =Origin1: Y axis target -> Enter the Y target of the origin of workpiece N° 1 selected by means of command G54
+G54Z =Origin1: Z axis target -> Enter the Z target of the origin of workpiece N° 1 selected by means of command G54
+G55X =Origin2: X axis target -> Enter the X target of the origin of workpiece N° 2 selected by means of command G55
+G55Y =Origin2: Y axis target -> Enter the Y target of the origin of workpiece N° 2 selected by means of command G55
+G55Z =Origin2: Z axis target -> Enter the Z target of the origin of workpiece N° 2 selected by means of command G55
+G56X =Origin3: X axis target -> Enter the X target of the origin of workpiece N° 3 selected by means of command G56
+G56Y =Origin3: Y axis target -> Enter the Y target of the origin of workpiece N° 3 selected by means of command G56
+G56Z =Origin3: Z axis target -> Enter the Z target of the origin of workpiece N° 3 selected by means of command G56
+G57X =Origin4: X axis target -> Enter the X target of the origin of workpiece N° 4 selected by means of command G57
+G57Y =Origin4: Y axis target -> Enter the Y target of the origin of workpiece N° 4 selected by means of command G57
+G57Z =Origin4: Z axis target -> Enter the Z target of the origin of workpiece N° 4 selected by means of command G57

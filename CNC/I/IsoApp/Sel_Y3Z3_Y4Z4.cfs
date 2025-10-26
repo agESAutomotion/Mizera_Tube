@@ -1,0 +1,102 @@
+:
+;//
+;// Seleziona Testa Y3Z3+Y4Z4
+;//
+;// y_spacing deve essere definito esternamente ed eguagliato all'interasse con la testa principale
+;//
+
+ERROR(55)    ;operazione illegale (si tenta di muovere 2 travi contemporaneamente)
+
+DBL qOtherY
+
+DBL fc_y_minus = %ax[AXIDX(3,Y)].pa[21] / 1000.0
+
+;//Notifica al PLC
+;M(_xxx_seleziona_testa_Y3Z3_Y4Z4_xxx_)
+
+;//
+;// Predisponi interasse teste, aggancia testa Y3Z3 e Y4Z4
+;//
+
+;//Sgancia tutti gli assi
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+G4005 S(AXIDX(4,Y))
+G4005 S(AXIDX(4,Z))
+G4099
+
+;//Aggancia asse Z3 acquisendo le quote
+G153
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+G152
+G4099
+;//Parcheggia
+IF ( %twi[2].htwi.oarh.dZ < 0 ) THEN
+    G153 G0 Z(trav_safe_z + %twi[2].htwi.oarh.dZ)
+ELSE
+    G153 G0 Z(trav_safe_z)
+ENDIF
+;//Sgancia
+G4005 S(AXIDX(3,Z))
+G4099
+
+;//Aggancia asse Z4 acquisendo le quote
+G153
+G4010 M(AXIDX(Z)) S(AXIDX(4,Z)) I1
+G152
+G4099
+;//Parcheggia
+IF ( %twi[2].htwi.oarh.dZ < 0 ) THEN
+    G153 G0 Z(trav_safe_z)
+ELSE
+    G153 G0 Z(trav_safe_z - %twi[2].htwi.oarh.dZ)
+ENDIF
+;//Sgancia
+G4005 S(AXIDX(4,Z))
+G4099
+
+;//Usata da cicliche parcheggio Y
+SYN
+
+qOtherY = %ax[AXIDX(4,Y)].ra[24] / 1000 ;//QCALC(AXIDX(4,Y))
+
+;//Aggancia assi Y3 acquisendo le quote
+G153
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+G152
+G4099
+;//Parcheggia
+IF ( qOtherY - (y_spacing-%twi[2].htwi.oarh.dY) > fc_y_minus ) THEN
+    G153 G0 Y(qOtherY - (y_spacing-%twi[2].htwi.oarh.dY))
+ELSE
+    G153 G0 Y(fc_y_minus)
+ENDIF
+;//Sgancia
+G4005 S(AXIDX(3,Y))
+G4099
+
+IF ( qOtherY - (y_spacing-%twi[2].htwi.oarh.dY) > fc_y_minus ) THEN
+    ;//nothing to do
+ELSE
+    ;//Aggancia assi Y4 acquisendo le quote
+    G153
+    G4010 M(AXIDX(Y)) S(AXIDX(4,Y)) I1
+    G152
+    G4099
+    ;//Parcheggia
+    G153 G0 Y(fc_y_minus + (y_spacing-%twi[2].htwi.oarh.dY))
+    ;//Sgancia
+    G4005 S(AXIDX(4,Y))
+    G4099
+ENDIF
+
+;//Aggancia assi Y3Z3 e Y4Z4 acquisendo le quote di Y3Z3
+G153
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+G4010 M(AXIDX(Y)) S(AXIDX(4,Y))
+G4010 M(AXIDX(Z)) S(AXIDX(4,Z))
+G152
+G4099
+
+RET

@@ -1,0 +1,95 @@
+:
+;//
+;// Parcheggio teste utilizzate da questa applicazione
+;//
+
+IF (%cn[WHO()].rc[0].21) RET
+
+; Flap Flat
+M993
+
+G153
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+IF (AEXISTS(3,B)) G4010 M(AXIDX(B)) S(AXIDX(3,B)) I1
+G152
+G4099
+
+; If Z in simulation (no moving)
+IF( %LSRPlcOp[0].8 ) THEN
+    IF( (%ax[29].ra4) <= (%LSRCostK[48]))  G153 G0 Z(trav_safe_z)   
+	IF (AEXISTS(3,B)) G153 G0 B0
+ELSE
+    IF (!%gPlc13.27) G153 G0 Z(trav_safe_z_start) 
+    IF (AEXISTS(3,B)) G153 G0 B0
+ENDIF
+
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+G4099
+
+IF( %ServiceMillePGM.12 ) JMPF .skiparm
+
+; Park Loader Arms Back (Fast)
+M330
+SYN
+MSGOUT "Arm J Going Back Fast"	
+;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
+;I_I_Loader_Slow  AT %USR_M13.17; 
+AWAIT( (%USR_M13.10) || (%USR_M13.17) )
+
+; Park Loader Arms Back (Slow)
+M431
+SYN
+MSGOUT "Arm J Going Back Slow"	
+; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
+; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
+AWAIT( (!%USR_M13.11) && (%USR_M13.10) )
+
+.skiparm
+
+; Loader Supports Center needs to be open
+M452
+SYN
+;I_I_Centering_Open_1 AT %USR_M13.24;  
+;I_I_Centering_Open_2 AT %USR_M13.25;  
+;I_I_Centering_Open_3 AT %USR_M13.26;  
+;I_I_Centering_Open_4 AT %USR_M13.27; 
+WAITBIT("%USR_M13.24",1)
+WAITBIT("%USR_M13.25",1)
+WAITBIT("%USR_M13.26",1)
+WAITBIT("%USR_M13.27",1)
+
+?%UNLOADER.boolean.21 = 1
+
+;I_I_Flap_Home   AT %USR_M12.9;
+;I_I_FlapL2_Home AT %USR_M1.29; 
+;I_I_FlapL3_Home AT %USR_M12.27;
+;I_I_FlapL4_Home AT %USR_M12.29;
+;I_I_FlapL5_Home AT %USR_M12.31;
+SYN
+IF( AEXISTS(8,Y) ) WAITBIT("%USR_M12.9",1)
+IF( AEXISTS(8,Z) ) WAITBIT("%USR_M1.29",1)
+IF( AEXISTS(8,U) ) WAITBIT("%USR_M12.27",1)
+IF( AEXISTS(8,V) ) WAITBIT("%USR_M12.29",1)
+IF( AEXISTS(8,W) ) WAITBIT("%USR_M12.31",1)
+
+?%UNLOADER.boolean.21 = 0
+
+; IF( (!%ServiceMillePGM.13) && (!%ServiceMillePGM.12) ) THEN
+;     ; Park all unloader supports
+;     ;ParkAllCmd AT %UNLOADER.boolean.6;
+;     SYN
+;     ?%UNLOADER.boolean.6 = 1
+;     
+;     IF (AEXISTS(8,Z)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,Z)].ra4 / 1000)) < 0.1)
+;     IF (AEXISTS(8,Y)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,Y)].ra4 / 1000)) < 0.1)
+;     IF (AEXISTS(8,U)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,U)].ra4 / 1000)) < 0.1)
+;     IF (AEXISTS(8,V)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,V)].ra4 / 1000)) < 0.1)
+;     IF (AEXISTS(8,W)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,W)].ra4 / 1000)) < 0.1)
+;     SYN
+;     ?%UNLOADER.boolean.6 = 0
+; ENDIF
+
+?%gIso19.1 = 1
+
+RET

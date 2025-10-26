@@ -1,0 +1,21 @@
+
+[KEYS]
+TITLE=Bevel-Graph
+
+[PROMPT]
+KEY_NODE=Node
+GRAPH3=Leaf
+GroupBox=Angle Calibration Graph 1
+graph1=Bevel 0
+graph2=Bevel 15
+graph3=Bevel 30
+graph4=Bevel 45
+GroupBox1=Angle Calibration Graph 2
+graph5=Bevel 0
+graph6=Bevel 15
+graph7=Bevel 30
+graph8=Bevel 45
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,1800 @@
+#funcdec "DynMng.plc"
+
+VAR
+JUMP_INT:       LINEAR_CALC;  
+END_VAR 
+
+VAR_IN_OUT
+PercentOutRng  AT %LSRCostK17;
+END_VAR
+
+FUNCTION_BLOCK REG_STATE_MACHINE 
+
+VAR
+command:                DWORD;
+State:                  DWORD;
+LastCutDistance:        DWORD; 
+SetPointOutRange:       DWORD;      * PLC monitoring about set point out of range  
+RegFrozen:               BOOL;      * Regulation has been frozen from post processor
+autoRegJump:             BOOL;
+JumpinMode:              BOOL;
+JumpinL3Mode:            BOOL;
+                       
+autoRegL10:              BOOL;
+L10Mode:                 BOOL;           
+                       
+QJump:                  DWORD;
+VettYTot:               DWORD;       
+VettXTot:               DWORD;
+VettCTot:               DWORD;
+
+DistTot:                DWORD;
+ActualDistTot:          DWORD;
+ActualYDist:            DWORD;
+ActualXDist:            DWORD;
+ActualCDist:            DWORD;
+DeltaSetPoint:          DWORD;
+ZLinInterp:             DWORD;
+                       
+TON_TIME_OUT:             TON; 
+TON_ProbeTo:              TON;                      
+APPOGGIO:               DWORD;
+appoggio:               DWORD;
+
+firScan:                DWORD;
+firScan1:               DWORD;
+delScan:                DWORD;             
+error1:                 DWORD;
+error2:                 DWORD;
+error3:                 DWORD;
+ToolFlt_Q_FILTERED:     DWORD;
+ToolFlt_Q_FILTERED1:    DWORD;
+ToolFlt_Q_FILTERED_DEL: DWORD;
+ThrForOutRange:         DWORD;
+SetP_S_BeforeHold:      DWORD;
+tem_PercentOutRng:      DWORD;  
+
+ActualXDist_A:          DWORD;
+ActualYDist_A:          DWORD;
+ActualZDist_A:          DWORD;
+ActualCDist_A:          DWORD;
+Actual_Dist_A:          DWORD;
+ActualXDist_B:          DWORD;
+ActualYDist_B:          DWORD;
+ActualZDist_B:          DWORD;
+ActualCDist_B:          DWORD;
+Actual_Dist_B:          DWORD;
+Par:                   DWORD;
+
+END_VAR
+
+VAR_INPUT
+
+xFirstPlcHandling:       BOOL;
+xStartEx:                BOOL;
+xFreezeRegol:            BOOL;         * External command to freeze regulation
+xMove_Z:                   BOOL;
+xHold:                   BOOL;
+xFirstFirCost:          DWORD;         * ms
+xSecondFirCost:         DWORD;         * ms  
+xDelayCost:             DWORD;         * ms
+xMove_Z_SetP:             DWORD;
+
+xProbThres:             DWORD; 
+xZ_TCP:                 DWORD;
+xSetpoint:              DWORD;
+xIsoPhase:              DWORD;         * 1: probing phase, 2: Piercing ,4: Cutting 
+xSensorRange:           DWORD;         * Max ange of the sensor
+                       
+xNextPos_X_Jump:        DWORD;         * X setpoint coordinate for jump 
+xNextPos_Y_Jump:        DWORD;         * Y setpoint coordinate for jump
+xNextPos_C_Jump:        DWORD;         * C setpoint coordinate for jump
+xNextPos_Z_Jump:        DWORD;         * C setpoint coordinate for jump
+xInit_X_Posit:          DWORD;         * X init jump position
+xInit_Y_Posit:          DWORD;         * Y init jump position
+xInit_C_Posit:          DWORD;         * C init jump position
+xInit_Z_Posit:          DWORD;         * Z init jump position
+xActual_X_Posit:        DWORD;         * X Actual position 
+xActual_Y_Posit:        DWORD;         * Y Actual position   
+xActual_C_Posit:        DWORD;         * C Actual position   
+xActual_Z_Posit:        DWORD;         * Z Actual position  
+xNextSetp:              DWORD;         * Setpoint after jump    
+xPrevSetp:              DWORD;         * setpoint before jump   
+xDistEnabRegul:         DWORD;         * Distance from target to enab regulation during jump 
+xZDistStopProbeJ:       DWORD;         * Z dstance to disable Probe mode during jump
+xJumpReq:               BOOL;          * Jump request from ISO
+xJumpL3Req:             BOOL;          * Jump L3 request from ISO
+xL10Req:                BOOL;          * L10 Request from ISO              
+xCosBevelAngle:         DWORD;     
+                       
+* Surface VRTC         
+xSurfSignalLock:         BOOL;
+xSurfaceBusy:            BOOL;
+xISO_S_SimEnab:          BOOL;
+xISO_S_ErrAmp:           BOOL;
+                       
+* Tool VRTC            
+                       
+xToolSignalLock:         BOOL;
+xToolBusy:               BOOL; 
+xISO_T_SimEnab:          BOOL;
+xISO_T_ErrAmp:           BOOL;
+xISO_T_SetPoint:        DWORD; 
+xToolFlt_Q:             DWORD;  
+END_VAR
+
+VAR_OUTPUT
+* Surface_VRTC_Out
+y_S_SimEnab:            BOOL;             * Put Surface vrtc in Simulation 
+y_S_ErrAmp:             BOOL;             * Surface Error Amplifier
+y_S_SetPoint:          DWORD;             * surface setpoint
+                      
+* Tool_VRTC_Out       
+y_T_SimEnab:            BOOL;             * disable T vrtc simulation
+y_T_ErrAmp:             BOOL;             * Tool Error Amplifier
+y_T_SetPoint:          DWORD;
+                      
+* General             
+yComRunning:            BOOL;
+yWait:                  BOOL;
+yIncSetPReached:        BOOL;  
+yL3SetpointReached:     BOOL;
+
+yVPBSelect:            DWORD;     
+yStateMachinePhase:    DWORD;
+yState:                DWORD; 
+
+END_VAR
+
+
+* Reset variables at the first plc handling command
+
+LD   xFirstPlcHandling
+JMPCN no_default
+
+LD   xFirstFirCost            
+DIV  %plc0.PlcCycle         * plc scan
+ST   firScan      
+
+LD   xSecondFirCost         
+DIV  %plc0.PlcCycle         * plc scan
+ST   firScan1                      ** 
+
+LD   xDelayCost               
+DIV  %plc0.PlcCycle         * plc scan
+ST   delScan                      ** 
+
+LD   0               
+FIR_INIT (INS=1, LEN=firScan)   
+ST   error1           
+
+LD   0               
+FIR_INIT (INS=2, LEN=firScan1)     
+ST   error2             
+
+LD   0              
+DELAY_INIT (INS=1, LEN=delScan)       
+ST   error3             
+*
+
+LD   xISO_S_SimEnab
+ST   y_S_SimEnab
+
+LD   xISO_S_ErrAmp
+ST   y_S_ErrAmp
+
+LD   xISO_T_SimEnab
+ST   y_T_SimEnab
+
+LD   xISO_T_ErrAmp
+ST   y_T_ErrAmp
+
+LD   xISO_T_SetPoint
+ST   y_T_SetPoint
+ST   LastCutDistance
+
+LD   0
+ST   State 
+ST   y_S_SetPoint                 * surface setpoint
+ST   yVPBSelect 
+ST   yComRunning 
+ST   xStartEx
+ST   yStateMachinePhase
+ST   xJumpReq
+ST   RegFrozen
+ST   QJump
+ST   %M180
+ST   JumpinMode
+ST   JumpinL3Mode
+ST   yWait
+ST   yIncSetPReached
+ST   %PLCmsg0.8
+no_default:
+
+* Machine filters and delay model ALWAYS REFRESHED
+
+LD   0                       * N/C
+FIR_RUN (INS=1, X=xToolFlt_Q)     
+ST      ToolFlt_Q_FILTERED1           
+
+LD   0                       * N/C
+FIR_RUN (INS=2, X=ToolFlt_Q_FILTERED1)   
+ST      ToolFlt_Q_FILTERED           
+
+LD   0
+DELAY_RUN (INS=1,X=ToolFlt_Q_FILTERED)
+DIV  10
+ST  ToolFlt_Q_FILTERED_DEL
+
+*
+
+* Cut Distance Out of range monitoring
+
+LD   PercentOutRng
+ST   tem_PercentOutRng
+
+LD   PercentOutRng
+GT   70
+OR(
+LD   PercentOutRng
+LT   15 
+)
+JMPCN _SAFERNG
+     LD   70
+     ST   tem_PercentOutRng
+_SAFERNG:
+
+LD   xSensorRange
+MULDIV (M=tem_PercentOutRng,D=1000)           * 70% del range del sensore 
+ST   ThrForOutRange
+
+LD   xSetpoint
+GT   ThrForOutRange
+ST   SetPointOutRange
+
+*-----------------------------------------------------------------------------------------
+* Probing state machine
+
+LD   State
+EQ   0                                 
+JMPCN STATE0_end
+STATE0:
+
+ * Operative mode change
+ 
+ LD    xIsoPhase
+ EQ    2 
+ ANDN  JumpinMode
+ ANDN  JumpinL3Mode
+ JMPCN no_piercing_state
+  LD   200                 * Piercing in progress
+  ST   State 
+  JMP state_machine_end
+ no_piercing_state:
+ 
+ LD    xIsoPhase
+ EQ    4 
+ ANDN  JumpinMode
+ ANDN  JumpinL3Mode
+ JMPCN no_cut_state
+  LD   300                 * Cutting in progress  
+  ST   State
+  JMP state_machine_end
+ no_cut_state:
+ 
+ LD    xHold
+ JMPCN no_hold_sim
+  LD   20                 * Go in hold condition and stop the VRTC
+  ST   State
+  JMP state_machine_end
+ no_hold_sim:
+ 
+ *
+ LD    xIsoPhase
+ ST    yStateMachinePhase
+ 
+ *
+ */////////////////////////////////////////////////////////////////////////////////
+ *// Probing: vrtc wait the Z axis position threshold and disable the surface 
+ *// vrtc simulation and put the correct setpoint
+ */////////////////////////////////////////////////////////////////////////////////
+ 
+ LD    xIsoPhase
+ EQ    1                                   * 
+ ANDN  (
+ LD    xZ_TCP
+ LT    xProbThres
+ OR    %C18.17                             * Capacitive test in progress
+ )
+ AND   xStartEx
+ ST    appoggio
+ CAL   TON_ProbeTo(IN=appoggio,PT=10000)   * 10s
+ LD    TON_ProbeTo.Q
+ S     %PLCmsg0.8     
+ 
+ LD    xIsoPhase
+ EQ    1                                   * 
+ AND   (
+ LD    xZ_TCP
+ LT    xProbThres
+ OR    %C18.17                             * Capacitive test in progress
+ )
+ AND   xStartEx
+ JMPCN STATE0_endif_A
+ 
+  LD   1
+  R    y_S_SimEnab                         * Put Surface vrtc in Simulation 
+  
+  LD   2
+  ST   yVPBSelect
+  
+  LD   xToolFlt_Q
+  DIV  10
+  MULDIV(M=xCosBevelAngle,D=1000)
+  ST   y_S_SetPoint                        * surface setpoint
+  
+  LD   1
+  ST   yComRunning
+  
+  LD  10                                   
+  ST  State
+  JMP state_machine_end  
+ STATE0_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE0_end:
+
+
+LD   State                                                                          
+EQ   10                                                                            
+JMPCN STATE10_end                                                                  
+STATE10:                                                                           
+*/////////////////////////////////////////////////////////////////////////////////  
+*// Wait the position is reached from surface vrtc                                                    
+*/////////////////////////////////////////////////////////////////////////////////  
+
+ LD    xHold
+ JMPCN no_hold_real
+  LD   30                 * Go in hold condition and stop the VRTC
+  ST   State
+  JMP state_machine_end
+ no_hold_real:
+ 
+ LD   xSurfSignalLock                                                              
+ ANDN xSurfaceBusy    
+ ANDN xStartEx                                                                
+ JMPCN STATE10_endif_A                                                                                                                                                                                                            
+                                                                                    
+  LD   0                                                                          
+  ST   yComRunning 
+                                                                                    
+  LD   0                                                                       
+  ST   State                                                                    
+  JMP state_machine_end                                                              
+ STATE10_endif_A:                                                                   
+*///////////////////////////////////////////////////////////////////////////////    
+JMP state_machine_end                                                               
+STATE10_end:        
+
+* During hold not allow VRTC movement
+
+LD   State                                                                          
+EQ   20                                                                            
+JMPCN STATE20_end                                                                  
+STATE20:                                                                           
+*/////////////////////////////////////////////////////////////////////////////////  
+*// Hold the Z axis during the simulated descendent trajectory                                              
+*/////////////////////////////////////////////////////////////////////////////////  
+                                                                                                                                                                                                           
+ LD   1
+ R    y_S_ErrAmp
+  
+ LDN   xHold                                                              
+ JMPCN STATE20_endif_A 
+ 
+  LD   1
+  S    y_S_ErrAmp
+   
+  LD   0                                                                       
+  ST   State
+                                                                 
+  JMP state_machine_end                                                              
+ STATE20_endif_A:         
+                                                       
+*///////////////////////////////////////////////////////////////////////////////    
+JMP state_machine_end                                                               
+STATE20_end:  
+
+*
+LD   State                                                                          
+EQ   30                                                                            
+JMPCN STATE30_end                                                                  
+STATE30:                                                                           
+*/////////////////////////////////////////////////////////////////////////////////  
+*// Hold the Z axis during the real descendent trajectory                                              
+*/////////////////////////////////////////////////////////////////////////////////  
+                                                                                                                                                                                                           
+ LD   1
+ R    y_S_ErrAmp
+  
+ LDN   xHold                                                              
+ JMPCN STATE30_endif_A 
+ 
+  LD   1
+  S    y_S_ErrAmp
+   
+  LD   10                                                                       
+  ST   State
+                                                                 
+  JMP state_machine_end                                                              
+ STATE30_endif_A:         
+                                                       
+*///////////////////////////////////////////////////////////////////////////////    
+JMP state_machine_end                                                               
+STATE30_end:  
+
+*-----------------------------------------------------------------------------------------
+
+*-----------------------------------------------------------------------------------------
+* Piercing state
+
+LD   State
+EQ   200                                 
+JMPCN STATE200_end
+STATE200:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Set piercing vpb selector 
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD   xIsoPhase     
+ EQ   2
+ ANDN xToolBusy            * update
+ ANDN xSurfaceBusy         * update
+ JMPCN STATE200_endif_A
+
+  LD   3
+  ST   yVPBSelect
+ 
+  LD   1
+ * R    y_T_SimEnab                         * Enable Tool Vrtc simulation 
+  S    y_T_SimEnab                         * Enable Tool Vrtc simulation 
+
+  LD   1
+* S    y_S_SimEnab                         * Enable Surface vrtc Simulation
+  R    y_S_SimEnab                         * Enable Surface vrtc Simulation                          
+ 
+  LD  210                                    
+  ST  State
+  JMP state_machine_end  
+ STATE200_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE200_end:
+
+LD   State
+EQ   210                                 
+JMPCN STATE210_end
+STATE210:
+
+ * Operative mode change
+ 
+ LD    xIsoPhase
+ EQ    4
+ JMPCN no_cut_state1
+  LD    300                 * Cutting in progress  
+  ST    State
+  JMP state_machine_end
+ no_cut_state1:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Change setpoint during piercing and synchronize the Piercing state with
+*// Iso.
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD   xIsoPhase
+ ST   yStateMachinePhase
+
+ LD   xIsoPhase     
+ EQ   2
+ AND  xStartEx
+ ANDN xToolBusy
+ ANDN xSurfaceBusy         
+ JMPCN STATE210_endif_A
+ 
+  ** TEST  : in case there is a switch from out of range to in range
+   LD   3
+   ST   yVPBSelect
+  **
+  LD   1
+** R    y_T_SimEnab                        * Enable Tool Vrtc simulation  
+  S    y_T_SimEnab                        * Enable Tool Vrtc simulation  
+
+  LD   1
+** S    y_S_SimEnab                         * Enable Surface vrtc Simulation
+  R    y_S_SimEnab                         * Enable Surface vrtc Simulation 
+ 
+  LD  SetPointOutRange                    * 
+  JMPCN no_sim_tool
+  ** TEST 
+   LD   6
+   ST   yVPBSelect
+  **
+  
+   LD   1
+   S    y_T_SimEnab                       * Enable Tool Vrtc simulation   
+
+   LD   1
+*  S    y_S_SimEnab                         * Enable Surface vrtc Simulation
+   S    y_S_SimEnab                         * Enable Surface vrtc Simulation
+
+  no_sim_tool:
+  
+  LD  xSetpoint
+  ST  y_T_SetPoint                        * Tool setpoint
+  ST  LastCutDistance
+    
+  LD  1
+  ST  yComRunning
+   
+  LD  220                                    
+  ST  State
+  JMP state_machine_end  
+ STATE210_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE210_end:
+
+LD   State
+EQ   220                                 
+JMPCN STATE220_end
+STATE220:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Setpoint reached:end of the command is set and fo to state 210 ready for 
+*// for next change
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD   ToolFlt_Q_FILTERED_DEL
+ LT   ThrForOutRange
+ AND (  
+  LD  LastCutDistance
+  LT  ThrForOutRange 
+  )
+ JMPCN no_setp_copy5
+     
+  LD   3
+  ST   yVPBSelect
+   
+  LD   1
+  R    y_S_SimEnab                         * Put Surface vrtc in Simulation 
+ 
+  LD   ToolFlt_Q_FILTERED_DEL
+  MULDIV(M=xCosBevelAngle,D=1000)    
+  ST   y_S_SetPoint                       * Surface setpoint 
+  
+ no_setp_copy5:
+
+** LD   xToolSignalLock
+** ANDN xToolBusy
+ LD   xSurfSignalLock                                                              
+ ANDN xSurfaceBusy 
+ ANDN xStartEx
+ JMPCN STATE220_endif_A
+
+**  LD  xSetpoint
+**  ST  LastCutDistance
+
+  LD  0
+  ST  yComRunning
+
+ ** LD   1
+ ** S    y_T_SimEnab                       * Enable Tool Vrtc simulation 
+ 
+  LD  210                                    
+  ST  State
+  JMP state_machine_end  
+ STATE220_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE220_end:
+
+      
+*-----------------------------------------------------------------------------------------            
+* Cutting phase  
+
+LD   State
+EQ   300                                 
+JMPCN STATE300_end
+STATE300:
+
+ LD  xIsoPhase
+ ST  yStateMachinePhase
+*/////////////////////////////////////////////////////////////////////////////////
+*// This is a transition state in order to set the surface vrtc ready for  
+*// regulation. If the setpoint is out of range S vrtc will be in simulation.
+*// 
+*/////////////////////////////////////////////////////////////////////////////////
+ LD  xIsoPhase
+ EQ  4 
+ ANDN xToolBusy            * update
+ ANDN xSurfaceBusy         * update
+ JMPCN STATE300_endif_A
+ 
+  LD   1
+  S    y_T_SimEnab                        * Enable Tool Vrtc simulation  
+
+  LD   1
+  R    y_S_SimEnab                        * Put Surface vrtc in Simulation 
+  
+  LD   4
+  ST   yVPBSelect
+  
+  LD   310                                    
+  ST   State
+ 
+  LD  SetPointOutRange                     
+  JMPCN no_sim_surf
+   LD   1
+   S    y_S_SimEnab                       * Put Surface vrtc in Simulation  
+   JMP state_machine_end                   
+  no_sim_surf:  
+* If the surface vrtc is in simulation not change the setpoint, otherwise it will wrong the surface position
+  
+  LD   ToolFlt_Q_FILTERED_DEL
+  MULDIV(M=xCosBevelAngle,D=1000)    
+  ST   y_S_SetPoint                       * Surface setpoint 
+  
+  JMP state_machine_end  
+ STATE300_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE300_end:
+                                                           
+LD   State
+EQ   310                                 
+JMPCN STATE310_end
+STATE310:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Cutting mode idle: from this state is possible freeze and unfreeze regulation,  
+*// manage runtime setpoint change and jump request 
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD   ToolFlt_Q_FILTERED_DEL
+ LT   ThrForOutRange
+ AND (  
+  LD  LastCutDistance
+  LT  ThrForOutRange 
+  )
+ ANDN RegFrozen 
+ ANDN L10Mode
+ ANDN JumpinMode
+ ANDN JumpinL3Mode
+ JMPCN no_setp_copy
+     
+  LD   4
+  ST   yVPBSelect
+   
+  LD   1
+  R    y_S_SimEnab                         * Put Surface vrtc in Simulation 
+ 
+  LD   ToolFlt_Q_FILTERED_DEL
+  MULDIV(M=xCosBevelAngle,D=1000)    
+  ST   y_S_SetPoint                       * Surface setpoint 
+  
+ no_setp_copy:
+  
+* Reset L5 Routine
+
+ LDN  xJumpReq
+ JMPCN no_res_jump
+  LD  1 
+  R   JumpinMode
+ no_res_jump:
+ 
+ 
+ * Reset L3 Routine
+
+ LDN  xJumpL3Req
+ JMPCN no_res_jumpL3
+  LD  1 
+  R   JumpinL3Mode
+ no_res_jumpL3:
+ 
+ 
+* Reset L10 Routine
+
+ LDN  xL10Req
+ JMPCN no_res_L10
+  LD  1 
+  R   L10Mode
+ no_res_L10: 
+
+* Change operative mode to Piercing
+
+ LD    xIsoPhase
+ EQ    2 
+ ANDN  JumpinMode
+ ANDN  JumpinL3Mode
+ ANDN  L10Mode
+ JMPCN no_piercing_state1
+  LD   200                 * Piercing in progress
+  ST   State 
+  JMP state_machine_end
+ no_piercing_state1:
+
+* Managment of freeze regulation from post processor
+* Freeze Regulation
+ LD   xFreezeRegol
+ ANDN RegFrozen
+ JMPCN no_freeze_en
+  LD  330
+  ST  State
+  JMP state_machine_end *
+ no_freeze_en:
+ 
+* Jumping Request
+ 
+ LD   xJumpReq
+ ANDN JumpinMode
+ ANDN JumpinL3Mode
+ ANDN L10Mode
+ JMPCN no_jump_req
+  
+  LD  1 
+  S   JumpinMode
+ 
+  LD  350
+  ST  State
+  JMP state_machine_end
+ no_jump_req:
+*
+
+* Jumping L3 Request
+ 
+ LD   xJumpL3Req
+ ANDN JumpinMode
+ ANDN L10Mode
+ JMPCN no_jump_reqL3
+  
+  LD  1 
+  S   JumpinL3Mode
+ 
+  LD  430
+  ST  State
+  JMP state_machine_end
+ no_jump_reqL3:
+*
+
+* L10 Request (used for cutting to piercing height)
+ 
+ LD   xL10Req
+ ANDN JumpinMode
+ ANDN JumpinL3Mode
+ ANDN L10Mode
+ JMPCN no_L10_req
+  
+  LD  1 
+  S   L10Mode
+ 
+  LD  370
+  ST  State
+  JMP state_machine_end
+ no_L10_req:
+*
+* Hold Request During cut
+
+ LD   xMove_Z
+ JMPCN no_hold_req
+  
+  LD  y_S_SetPoint
+  ST  SetP_S_BeforeHold
+ 
+  LD  400
+  ST  State
+  JMP state_machine_end
+ no_hold_req:
+
+*
+*/////////////////////////////////////////////////////////////////////////////////
+*// If the cut distance need to be changed, this state
+*// enable the simulation on the surface vrtc, disable simulation on tool vrtc
+*// and set the new setpoint 
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD   LastCutDistance
+ NE   xSetpoint
+ JMPCN STATE310_endif_A
+ 
+  LD   1
+  R    y_S_SimEnab                         * Put Surface vrtc in Simulation 
+   
+  LD   1
+  S    y_T_SimEnab                         * Enable Tool Vrtc simulation  
+  
+  LD   xSetpoint
+  ST   y_T_SetPoint                        * Tool setpoint
+  ST   LastCutDistance                     * new
+  
+  LD   320                                    
+  ST   State
+   
+  LD  ToolFlt_Q_FILTERED_DEL
+  GT  ThrForOutRange                    * 
+  OR  RegFrozen
+  OR (  
+  LD  xSetpoint
+  GT  ThrForOutRange 
+  )
+  JMPCN no_sim_tool1
+   ** TEST :set simulated vrtc parameters  
+   LD   6
+   ST   yVPBSelect
+   **
+   
+   LD   1
+   S    y_S_SimEnab                        * Put Surface vrtc in Simulation 
+  JMP state_machine_end 
+  no_sim_tool1:
+ 
+  LD   ToolFlt_Q_FILTERED_DEL
+  MULDIV(M=xCosBevelAngle,D=1000)    
+  ST   y_S_SetPoint                       * Surface setpoint 
+ 
+  JMP state_machine_end  
+ STATE310_endif_A:
+
+* Enable regulation Request  
+* This request must be here in order to not exchange the order of
+* the command with the set point change 
+    
+ LDN  xFreezeRegol               
+ AND  RegFrozen                  
+ JMPCN no_freeze_dis             
+  LD  340                        
+  ST  State                      
+  JMP state_machine_end         
+ no_freeze_dis:                   
+ 
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE310_end:
+
+LD   State
+EQ   320                                
+JMPCN STATE320_end
+STATE320:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Wait the position is reached RUN-TIME. Added a  time-out condition
+*/ to avoid the regulation stack on the reaching of one setpoint
+*/////////////////////////////////////////////////////////////////////////////////
+  
+  LD   ToolFlt_Q_FILTERED_DEL
+  LT   ThrForOutRange 
+  AND (  
+   LD  LastCutDistance
+   LT  ThrForOutRange 
+   )
+  ANDN RegFrozen 
+  JMPCN no_setp_copy1
+   ** TEST  
+   LD   4
+   ST   yVPBSelect
+   **
+  
+   LD   1
+   R    y_S_SimEnab                         * Put Surface vrtc in Simulation 
+   
+   LD   ToolFlt_Q_FILTERED_DEL
+   MULDIV(M=xCosBevelAngle,D=1000)    
+   ST   y_S_SetPoint                       * Surface setpoint 
+  no_setp_copy1: 
+  
+  LDN  xToolSignalLock
+  ANDN xToolBusy
+  ST   appoggio
+  
+* Time-out is mandatory, in order to avoid the regulation keep this state
+* and saturate the vrtc limit
+  
+  CAL  TON_TIME_OUT (IN:=appoggio,PT:=250)
+  
+  LD   xToolSignalLock
+  ANDN xToolBusy
+  OR   TON_TIME_OUT.Q
+  JMPCN STATE320_endif_A
+    ** TEST  
+    LD   4
+    ST   yVPBSelect
+    **
+    
+    LD   1
+    R    y_S_SimEnab                         * Put Surface vrtc in Simulation 
+    
+    LD   1
+    S    y_T_SimEnab                         * Enable Tool Vrtc simulation  
+    
+    LD   310
+    ST   State
+    
+    LD  SetPointOutRange               **** Verificare se va aggiornato con le condizioni fatte per gli altri stati
+    OR  RegFrozen                  
+    JMPCN no_sim_surf1
+     ** TEST  
+     LD   6
+     ST   yVPBSelect
+     **
+     
+     LD   1
+     S    y_S_SimEnab                       * Put Surface vrtc in Simulation  
+     JMP state_machine_end                   
+    no_sim_surf1:  
+    
+* If the surface vrtc is in simulation not change the setpoint, otherwise it will wrong the surface position
+                   
+   LD   ToolFlt_Q_FILTERED_DEL
+   MULDIV(M=xCosBevelAngle,D=1000)
+   ST   y_S_SetPoint                       * Surface setpoint 
+    
+ JMP state_machine_end  
+ STATE320_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE320_end:
+
+LD   State
+EQ   330                                
+JMPCN STATE330_end
+STATE330:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Enable the simulation of the sensor when post processor need freeze
+*// the height control
+*/////////////////////////////////////////////////////////////////////////////////
+ 
+ ** TEST  
+ LD   6
+ ST   yVPBSelect
+ **
+ 
+ LD  1
+ S   y_S_SimEnab                       * Put Surface vrtc in Simulation  
+
+ LD  1
+ S   y_T_SimEnab                         * Enable Tool Vrtc simulation   
+ 
+ LD  1  
+ S   RegFrozen
+ 
+ LD  310
+ ST  State
+   
+ JMP state_machine_end  
+STATE330_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE330_end:
+
+LD   State
+EQ   340                                
+JMPCN STATE340_end
+STATE340:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Post processor command regulation again, but need to be careful about set point 
+*// if it is inside the range, surface can back to regulate otherwise no
+*/////////////////////////////////////////////////////////////////////////////////
+
+  LD   ToolFlt_Q_FILTERED_DEL
+  LT   ThrForOutRange 
+  AND (  
+   LD  LastCutDistance
+   LT  ThrForOutRange 
+   )
+ JMPCN no_remove_sim_S
+  ** TEST  
+  LD   4
+  ST   yVPBSelect
+  **
+
+  LD  1
+  R   y_S_SimEnab                        * Surface vrtc in Simulation  
+  
+* Need give setpoint because if it change distance when is frozen and setpoint is inside the range
+* it is not refresced on surface regulator
+  
+  LD   ToolFlt_Q_FILTERED_DEL
+  MULDIV(M=xCosBevelAngle,D=1000)
+  ST   y_S_SetPoint                      * Surface setpoint
+  
+ no_remove_sim_S:
+ 
+ LD  1
+ S   y_T_SimEnab                         * Enable Tool Vrtc simulation   
+ 
+ LD  1  
+ R   RegFrozen
+ 
+ LD  310
+ ST  State
+   
+ JMP state_machine_end  
+STATE340_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE340_end:
+
+* Jump
+LD   State
+EQ   350                                
+JMPCN STATE350_end
+STATE350:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Jump Request: select VPBselect at 1 for jump column,put vrtc surface in 
+*// simulation. The algorithm calulates the setpoint for Surface and Tool
+*// Vrtc. Surface will perform the parabolic trajectory, the Tool will apply the 
+*// setpoint change  
+*/////////////////////////////////////////////////////////////////////////////////
+ LD  xStartEx
+ JMPCN no_start_jump
+ 
+  LD   1
+  ST   yComRunning
+  
+  LD   1
+  ST   yVPBSelect
+   
+  LD   1
+  S    y_S_SimEnab              * Surface vrtc in Simulation  
+  
+  LD   xNextPos_Y_Jump         * Y setpoint coordinate for jump
+  SUB  xInit_Y_Posit           * Y init jump position
+  ABS 
+  ST   VettYTot                * Distance in Y direction
+  
+  LD   xNextPos_X_Jump         * X setpoint coordinate for jump 
+  SUB  xInit_X_Posit           * X init jump position
+  ABS 
+  ST   VettXTot                * Distance in X direction
+
+  LD   0
+  ST   VettCTot                      ** Distance in C direction
+
+  LD   xNextPos_C_Jump
+  SUB  xInit_C_Posit
+  ABS 
+  ST   VettCTot                      ** Distance in C direction
+
+  LD   0 
+  HYPOT (X=VettXTot,Y=VettYTot)
+  ST   DistTot                 * total distance for jump
+
+  LD   0
+  HYPOT (X=DistTot,Y=VettCTot)       ** total distance for jump
+  ST   DistTot                       ** total distance for jump
+  
+  LD   xActual_X_Posit
+  SUB  xInit_X_Posit                 * X init jump position
+  ABS 
+  ST   ActualXDist
+  
+  LD   xActual_Y_Posit               * Y Actual position
+  SUB  xInit_Y_Posit                 * Y init jump position
+  ABS
+  ST   ActualYDist
+
+  LD   xActual_C_Posit
+  SUB  xInit_C_Posit
+  ABS
+  ST   ActualCDist
+  
+  LD   0 
+  HYPOT (X=ActualXDist,Y=ActualYDist)
+  ST   ActualDistTot
+
+  LD   0 
+  HYPOT (X=ActualDistTot,Y=ActualCDist)
+  ST   ActualDistTot
+  ST   %M181
+  
+  * Calcolo quota per jumping mode
+                         
+  LD   ActualDistTot                                                
+  ST   JUMP_INT.xInput               * Distance to go                                               
+                                                                                                            
+  LD   130                
+  ST   JUMP_INT.xIndex               * cut line index (initial value 1 to 10)                               
+                                                                                                                                                                                                                                                
+  CAL  JUMP_INT                                                                                             
+                                                                                                            
+  LD   JUMP_INT.yResult              * Result                                                                
+  DIV  10
+  ST   QJump                         ** Quota Z per Jumping
+  
+  LD   xPrevSetp                      * setpoint before jump 
+  DIV  10
+  ADD  QJump   
+  ST   y_S_SetPoint
+  ST   %M184
+  
+  ************************************************************************************
+*  Algorithm for auto jump regulation enable 
+*  and setpoint changing compensation
+  
+  LD   xNextSetp                * Setpoint after jump
+  SUB  xPrevSetp                * setpoint before jump 
+  ST   DeltaSetPoint
+  
+* TEST  
+ * LD   ActualDistTot
+ * MUL  2
+ * ST   APPOGGIO
+  
+ * LD   APPOGGIO 
+ * GT   DistTot
+ * JMPCN forcedist
+ *  LD   DistTot
+ *  ST   APPOGGIO
+ * forcedist:
+***  
+ * LD   APPOGGIO
+  LD   ActualDistTot
+  MULDIV (M=DeltaSetPoint,D=DistTot) ** total distance for jump
+  DIV  10                            *cmm
+  ST   ZLinInterp
+ 
+  LD   xPrevSetp                * setpoint before jump 
+  DIV  10
+  ADD  ZLinInterp
+  ST   y_T_SetPoint
+  
+  
+  ** Test of regulation on fly       
+     
+  LD   DistTot                       ** total distance for jump
+  SUB  ActualDistTot                 * Actual total distance by measured speed                          
+  LE   xDistEnabRegul                * Distance from target to enab regulation   
+  ST   autoRegJump                   ** During jump allow auto regulation on  
+  
+  LD   autoRegJump
+  JMPCN no_jump_end
+  
+    LD  xZ_TCP
+    GT  xZDistStopProbeJ             * distance along Z to disable the probe vpbselector during jump
+    JMPCN no_Zover_range
+        
+     LD  0
+     ST  yVPBSelect
+     
+     LD   xPrevSetp                * setpoint before jump  
+     DIV  10
+     MULDIV(M=xCosBevelAngle,D=1000)
+     ST  y_S_SetPoint
+          
+    JMP no_jump_end
+    no_Zover_range:
+  
+    LD  1
+    R   y_S_SimEnab                 * Surface vrtc in Simulation  
+    
+    LD  2
+    ST  yVPBSelect
+    
+    LD   ToolFlt_Q_FILTERED_DEL  
+    MULDIV(M=xCosBevelAngle,D=1000)
+    ST  y_S_SetPoint
+    ST  %M183           
+   
+  no_jump_end:
+ no_start_jump:
+ 
+ LDN  xJumpReq
+ JMPCN no_end_jump
+ 
+  LD  1
+  R   y_S_SimEnab                 * Surface vrtc in Simulation  
+    
+  LD  2
+  ST  yVPBSelect
+    
+  LD   ToolFlt_Q_FILTERED_DEL  
+  MULDIV(M=xCosBevelAngle,D=1000)
+  ST  y_S_SetPoint         
+ 
+  LD  360
+  ST  State
+ no_end_jump:
+
+ JMP state_machine_end  
+STATE350_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE350_end:
+
+LD   State
+EQ   360                                
+JMPCN STATE360_end
+STATE360:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Wait the position is reached after jump
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD   ToolFlt_Q_FILTERED_DEL  
+ MULDIV(M=xCosBevelAngle,D=1000)
+ ST  y_S_SetPoint 
+
+ LD   xSurfSignalLock                                                              
+ ANDN xSurfaceBusy  
+ ANDN xStartEx
+ JMPCN STATE360_endif_A
+ 
+    LD   0
+    ST   yComRunning
+
+    LD   xNextSetp                * Setpoint after jump
+    DIV  10
+    ST   LastCutDistance
+    
+    LD   1                        * Reset bit to enable always regulation after jump
+    R    RegFrozen
+     
+    LD   310
+    ST   State    
+ JMP state_machine_end  
+STATE360_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE360_end:
+
+LD   State
+EQ   370                                
+JMPCN STATE370_end
+STATE370:
+*/////////////////////////////////////////////////////////////////////////////////
+*// This state manage the L10 cutting transition, to reach the set point it is only
+*// interpolated the Tool VRTC from cutting position to Piercing position.
+*/////////////////////////////////////////////////////////////////////////////////
+ 
+ LD  xStartEx
+ JMPCN no_start_L10
+ 
+  LD   1
+  ST   yComRunning
+  
+  LD   1
+  ST   yVPBSelect
+   
+  LD   1
+  S    y_S_SimEnab              * Surface vrtc in Simulation  
+  
+  LD   xNextPos_Y_Jump         * Y setpoint coordinate for jump
+  SUB  xInit_Y_Posit           * Y init jump position
+  ABS 
+  ST   VettYTot                * Distance in Y direction
+  
+  LD   xNextPos_X_Jump         * X setpoint coordinate for jump 
+  SUB  xInit_X_Posit           * X init jump position
+  ABS 
+  ST   VettXTot                * Distance in X direction
+   
+  LD   0 
+  HYPOT (X=VettXTot,Y=VettYTot)
+  ST   DistTot                 * total distance for jump
+  
+  LD   xActual_X_Posit
+  SUB  xInit_X_Posit                 * X init jump position
+  ABS 
+  ST   ActualXDist
+  
+  LD   xActual_Y_Posit               * Y Actual position
+  SUB  xInit_Y_Posit                 * Y init jump position
+  ABS
+  ST   ActualYDist
+  
+  LD   0 
+  HYPOT (X=ActualXDist,Y=ActualYDist)
+  ST   ActualDistTot
+  ST   %M181
+  
+  ************************************************************************************
+*  Algorithm for auto jump regulation enable 
+*  and setpoint changing compensation
+  
+  LD   xNextSetp                * Setpoint after jump
+  SUB  xPrevSetp                * setpoint before jump 
+  ST   DeltaSetPoint
+  
+* TEST  
+ * LD   ActualDistTot
+ * MUL  2
+ * ST   APPOGGIO
+  
+ * LD   APPOGGIO 
+ * GT   DistTot
+ * JMPCN forcedist1
+ *  LD   DistTot
+ *  ST   APPOGGIO
+ * forcedist1:
+***  
+  *LD   APPOGGIO
+  LD   ActualDistTot
+  MULDIV (M=DeltaSetPoint,D=DistTot) ** total distance for jump
+  DIV  10                            *cmm
+  ST   ZLinInterp
+ 
+  LD   xPrevSetp                * setpoint before jump 
+  DIV  10
+  ADD  ZLinInterp
+  ST   y_T_SetPoint
+  
+  ** Test of regulation on fly       
+     
+  LD   DistTot                       ** total distance for jump
+  SUB  ActualDistTot                 * Actual total distance by measured speed                          
+  LE   xDistEnabRegul                * Distance from target to enab regulation   
+  ST   autoRegL10                   ** During jump allow auto regulation on  
+  
+  LD   autoRegL10
+  JMPCN no_L10_end
+   
+    LD  1
+    R   y_S_SimEnab                 * Surface vrtc in Simulation  
+    
+    LD  2
+    ST  yVPBSelect
+    
+    LD   ToolFlt_Q_FILTERED_DEL  
+    MULDIV(M=xCosBevelAngle,D=1000)
+    ST  y_S_SetPoint
+    ST  %M183           
+   
+  no_L10_end:
+ no_start_L10:
+ 
+ LDN  xL10Req
+ JMPCN no_end_L10
+ 
+  LD  1
+  R   y_S_SimEnab                 * Surface vrtc in Simulation  
+    
+  LD  2
+  ST  yVPBSelect
+    
+  LD   ToolFlt_Q_FILTERED_DEL  
+  MULDIV(M=xCosBevelAngle,D=1000)
+  ST  y_S_SetPoint         
+ 
+  LD  380
+  ST  State
+ no_end_L10:
+ 
+ JMP state_machine_end  
+STATE370_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE370_end:
+*
+LD   State
+EQ   380                                
+JMPCN STATE380_end
+STATE380:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Wait the position is reached after L10
+*/////////////////////////////////////////////////////////////////////////////////
+ 
+ LD   ToolFlt_Q_FILTERED_DEL  
+ MULDIV(M=xCosBevelAngle,D=1000)
+ ST  y_S_SetPoint 
+
+ LD   xSurfSignalLock                                                              
+ ANDN xSurfaceBusy  
+ ANDN xStartEx
+ JMPCN STATE380_endif_A
+ 
+    LD   0
+    ST   yComRunning
+
+    LD   xNextSetp                * Setpoint after jump       CAMBIARE NOME
+    DIV  10
+    ST   LastCutDistance
+    
+    LD   310
+    ST   State    
+ JMP state_machine_end  
+STATE380_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE380_end:
+
+* Hold
+
+LD   State
+EQ   400                                
+JMPCN STATE400_end
+STATE400:
+*///////////////////////////////////////////////////////////////////////////////////
+*// Hold management: Z is moved according the Z inc movement; when xZmove is  
+*// removed, the Z back in the prevous point. If the operator move by retrace
+*// the tool setpoint is updated run-time, the freeze conditition due to the 
+*// M82 M83 or distance out of range that can happen during the retrace are managed. 
+*///////////////////////////////////////////////////////////////////////////////////
+ 
+  LD  1
+  S   y_S_SimEnab                 * Surface vrtc in Simulation  
+  
+  LD  xMove_Z_SetP
+  ST  y_S_SetPoint 
+  
+  LD  5
+  ST  yVPBSelect
+  
+  LD  xSetpoint
+  ST  y_T_SetPoint
+  ST  LastCutDistance
+  
+  LD  xFreezeRegol
+  ST  RegFrozen
+  
+  LDN  yIncSetPReached
+  JMPCN no_wait_incSetp 
+    LD   410
+    ST   State  
+    JMP  state_machine_end 
+  no_wait_incSetp:
+   
+  LDN  xMove_Z 
+  JMPCN no_return_pause
+  
+    LD  1
+    S   yWait
+      
+* IF stand-off is in capacitive range
+
+    LD  ToolFlt_Q_FILTERED_DEL
+    LT  ThrForOutRange 
+    AND (  
+    LD  LastCutDistance
+    LT  ThrForOutRange 
+    )
+    ANDN RegFrozen 
+    JMPCN no_setp_copy3
+    ** TEST  
+     LD   5
+     ST   yVPBSelect
+    **
+     LD   1
+     R    y_S_SimEnab                        * Put Surface vrtc in Simulation 
+   
+     LD   ToolFlt_Q_FILTERED_DEL
+     MULDIV(M=xCosBevelAngle,D=1000)    
+     ST   y_S_SetPoint                       * Surface setpoint 
+     
+     LD   420
+     ST   State
+    JMP state_machine_end
+    no_setp_copy3: 
+    
+    LD  ToolFlt_Q_FILTERED_DEL
+    GT  ThrForOutRange 
+    OR (  
+    LD  LastCutDistance
+    GT  ThrForOutRange 
+    )
+    OR  RegFrozen
+    JMPCN no_setp_copy4
+     
+     **   
+     LD   5
+     ST   yVPBSelect
+     **
+     LD   1
+     S    y_S_SimEnab                        * Put Surface vrtc in Simulation 
+   
+     LD   SetP_S_BeforeHold   
+     ST   y_S_SetPoint                       * Surface setpoint 
+     
+     LD   420
+     ST   State 
+     JMP state_machine_end
+    no_setp_copy4:
+  
+  no_return_pause:   
+       
+ STATE400_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE400_end:
+
+LD   State
+EQ   410                                
+JMPCN STATE410_end
+STATE410:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Wait Z reach the setpoint from inc movement
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD   xSurfSignalLock                                                              
+ ANDN xSurfaceBusy  
+ JMPCN STATE410_endif_A
+ 
+  LD   1
+  S    yIncSetPReached  
+  
+  LD   400
+  ST   State  
+       
+ STATE410_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE410_end:
+
+
+LD   State
+EQ   420                                
+JMPCN STATE420_end
+STATE420:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Wait the position is reached after return from hold
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD   xSurfSignalLock                                                              
+ ANDN xSurfaceBusy  
+ JMPCN STATE420_endif_A
+  
+  LD   1
+  R    yWait
+  
+  LD   1
+  R    yIncSetPReached 
+ 
+  LD   310
+  ST   State 
+         
+ STATE420_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE420_end:
+
+
+* Jump L3 Between Sides
+LD   State
+EQ   430                                
+JMPCN STATE430_end
+STATE430:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Jump L3 Request: VRTC is in simulation state, and must wait that interpolation
+*// finish. Basically works like L5 but there is oly the interpolation of the 
+*// set-point but parabolic movement is done by the interpolator.
+*/////////////////////////////////////////////////////////////////////////////////
+ LD  xStartEx
+ JMPCN no_start_jump1
+ 
+  LD   1
+  ST   yComRunning
+  
+  LD   6
+  ST   yVPBSelect
+   
+  LD   1
+  S    y_S_SimEnab              * Surface vrtc in Simulation  
+
+* Calculate vector A
+
+  LD   xActual_X_Posit
+  SUB  xInit_X_Posit                 * X init jump position 
+  DIV  100
+  ABS  
+  ST   ActualXDist_A
+
+  LD   xActual_Y_Posit
+  SUB  xInit_Y_Posit                 * Y init jump position 
+  DIV  100
+  ABS  
+  ST   ActualYDist_A
+
+  LD   xActual_Z_Posit
+  SUB  xInit_Z_Posit                 * Z init jump position 
+  DIV  100
+  ABS  
+  ST   ActualZDist_A
+
+  LD   xActual_C_Posit
+  SUB  xInit_C_Posit                 * C init jump position 
+  DIV  100
+  ABS  
+  ST   ActualCDist_A
+  
+* || A ||  
+  
+  LD   ActualXDist_A
+  MUL  ActualXDist_A
+  ADD (
+  LD   ActualYDist_A
+  MUL  ActualYDist_A  
+  )
+  ADD (
+  LD   ActualZDist_A
+  MUL  ActualZDist_A  
+  )
+  ADD (
+  LD   ActualCDist_A
+  MUL  ActualCDist_A  
+  )
+  ST   Actual_Dist_A
+  
+  LD   Actual_Dist_A
+  SQRT
+  ST   Actual_Dist_A
+
+* Calculate vector B
+
+  LD   xActual_X_Posit
+  SUB  xNextPos_X_Jump                 * X Next jump position 
+  DIV  100
+  ABS  
+  ST   ActualXDist_B
+
+  LD   xActual_Y_Posit
+  SUB  xNextPos_Y_Jump                 * Y Next jump position 
+  DIV  100
+  ABS  
+  ST   ActualYDist_B
+
+  LD   xActual_Z_Posit
+  SUB  xNextPos_Z_Jump                 * Z Next jump position 
+  DIV  100  
+  ABS  
+  ST   ActualZDist_B
+
+  LD   xActual_C_Posit
+  SUB  xNextPos_C_Jump                 * C Next jump position 
+  DIV  100
+  ABS  
+  ST   ActualCDist_B
+  
+* || B ||  
+  
+  LD   ActualXDist_B
+  MUL  ActualXDist_B
+  ADD (
+  LD   ActualYDist_B
+  MUL  ActualYDist_B  
+  )
+  ADD (
+  LD   ActualZDist_B
+  MUL  ActualZDist_B  
+  )
+  ADD (
+  LD   ActualCDist_B
+  MUL  ActualCDist_B  
+  )
+  ST   Actual_Dist_B
+
+  LD   Actual_Dist_B
+  SQRT
+  ST   Actual_Dist_B
+
+* Par = (|| A ||) / ( || A || + || B || )
+
+  LD   Actual_Dist_A
+  MUL  100
+  DIV  (
+  LD   Actual_Dist_A
+  ADD  Actual_Dist_B
+  )
+  ST   Par
+  
+  LD   xPrevSetp                      * setpoint before jump 
+  DIV  10  
+  ST   y_S_SetPoint
+  ST   %M184
+  
+  
+  LD   xNextSetp                * Setpoint after jump
+  SUB  xPrevSetp                * setpoint before jump 
+  ST   DeltaSetPoint
+
+  *LD   ActualDistTot
+  *MULDIV (M=DeltaSetPoint,D=DistTot) ** total distance for jump
+  *DIV  10                            *cmm
+  *ST   ZLinInterp
+  
+  LD   Par
+  MULDIV (M=DeltaSetPoint,D=100) ** total distance for jump
+  DIV  10                            *cmm
+  ST   ZLinInterp
+ 
+  LD   xPrevSetp                * setpoint before jump 
+  DIV  10
+  ADD  ZLinInterp
+  ST   y_T_SetPoint
+  
+  LD   Par 
+  GE   100
+  *ST   %M189.1
+  ST   yL3SetpointReached
+  
+ no_start_jump1: 
+  
+ LDN  xJumpL3Req
+ JMPCN no_end_jump1
+ 
+  LD  1
+  R   y_S_SimEnab                 * Surface vrtc in Simulation  
+    
+  LD  3
+  ST  yVPBSelect
+    
+  LD   ToolFlt_Q_FILTERED_DEL  
+  MULDIV(M=xCosBevelAngle,D=1000)
+  ST  y_S_SetPoint         
+ 
+  LD  440
+  ST  State
+ no_end_jump1:
+
+ JMP state_machine_end  
+STATE430_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE430_end:
+
+LD   State
+EQ   440                                
+JMPCN STATE440_end
+STATE440:
+*/////////////////////////////////////////////////////////////////////////////////
+*// Wait the position is reached after jump
+*/////////////////////////////////////////////////////////////////////////////////
+
+ LD  1
+ R   y_S_SimEnab                 * Surface vrtc in Simulation
+
+ LD   ToolFlt_Q_FILTERED_DEL  
+ MULDIV(M=xCosBevelAngle,D=1000)
+ ST  y_S_SetPoint 
+
+ LD   xSurfSignalLock                                                              
+ ANDN xSurfaceBusy  
+ ANDN xStartEx
+ JMPCN STATE440_endif_A
+ 
+    LD   0
+    ST   yComRunning
+
+    LD   xNextSetp                * Setpoint after jump
+    DIV  10
+    ST   LastCutDistance
+    
+ *  LD   1                        * Reset bit to enable always regulation after jump
+ *  R    RegFrozen
+     
+    LD   310
+    ST   State    
+ JMP state_machine_end  
+STATE440_endif_A:
+*///////////////////////////////////////////////////////////////////////////////
+JMP state_machine_end                    
+STATE440_end:
+
+
+
+
+
+
+
+state_machine_end:
+IDLE_end:
+
+LD   State
+ST   yState
+ST   %M182
+
+LD   y_S_SetPoint
+ST   %M180
+
+LD   y_T_SetPoint
+ST   %M192
+
+LD   LastCutDistance
+ST   %M190
+
+LD   xSetpoint
+ST   %M191
+
+END_FUNCTION_BLOCK

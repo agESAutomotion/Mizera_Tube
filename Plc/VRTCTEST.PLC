@@ -1,0 +1,110 @@
+#include "iol.inc"
+
+VAR
+
+RTRIG_PROGRUN: R_TRIG;
+
+loadconfig:    DWORD;
+calcBeam:      DWORD; 
+
+END_VAR
+
+FUNCTION VRTC_TEST
+********************************************************************************
+
+* FOX=0,FOY=0,FOZ=0) ORIGINE PIANO
+* FRX=0,FRY=0,FRZ=0 MILIONESIMI DI GRADO ESPRIMO ROTAZIONE SU UN ASSE
+
+
+CAL  RTRIG_PROGRUN (CLK:=PRGRUN_CN0)
+
+
+* Test Vrtc 
+
+LD   RTRIG_PROGRUN.Q
+JMPCN  no_load_wjs1
+
+LD   0               * N/C
+WJS_LOAD (INS=3,CH=3,TWI=1,THD=1,CED=1,SVL=0,CHX=0,CHY=1,CHZ=2,FRX=%M161,FRY=0,FRZ=0,FOX=0,FOY=0,FOZ=0)
+ST   loadconfig      * 0 = OK
+no_load_wjs1:
+
+LD   loadconfig
+NE   0
+JMPC errorAngle
+
+LD      0               * N/C
+WJS_BEAM_CALC (INS=3,SVL=0)
+ST      calcBeam            * 0 = OK
+
+LD      calcBeam
+NE      0
+JMPC    errorAngle
+
+*  Tilt angle 
+
+LD      0               * N/C
+WJS_GETZ_FTCP (INS=3)   * DISTANZA DAL PIANO (ORTOGONALE ) per simulazione capacitivo e monitoraggio
+ST   DistZPianoSimul     
+
+LD      0               * N/C
+WJS_GETX_M (INS=3)             * coordinata X/Y/Z di intersezione col piano. monitor deviazione traiettoria         
+ST   x_TCPDeviaz
+
+LD      0               * N/C
+WJS_GETY_M(INS=3)              * coordinata X/Y/Z di intersezione col piano. monitor deviazione traiettoria  
+ST   y_TCPDeviaz
+
+LD      0               * N/C
+WJS_GETZ_M(INS=3)             * coordinata X/Y/Z di intersezione col piano.  monitor altezza piano nel punto di intersezione
+ST   Z_TCPDeviaz
+
+LD      0               * N/C
+WJS_DIST_T(INS=3)              * Ritorna la distanza col segno del TCP dal punto di intersezione col piano. monitor stand off istantaneo
+ST   StandOff_Calc
+*****
+* creare nuova istanza wjs con le quote calcolate ch0
+
+
+LD   RTRIG_PROGRUN.Q
+JMPCN no_load_wjs
+
+LD   0               * N/C
+WJS_LOAD (INS=6,CH=3,TWI=1,THD=1,CED=1,SVL=0,CHX=16#40000000,CHY=16#40000001,CHZ=16#40000002,FRX=0,FRY=0,FRZ=0,FOX=0,FOY=0,FOZ=0)
+ST   loadconfig      * 0 = OK
+
+no_load_wjs:
+
+LD   loadconfig
+NE   0
+JMPC errorAngle
+
+LD      0               * N/C
+WJS_BEAM_CALC (INS=6,SVL=0)
+ST      calcBeam            * 0 = OK
+
+LD      calcBeam
+NE      0
+JMPC    errorAngle
+
+LD      0               * N/C
+WJS_GETX_TCP(INS=6)            * Ritorna la coordinata X/Y/Z del TCP. 
+ST   X_TCP 
+
+LD      0               * N/C
+WJS_GETY_TCP(INS=6)            * Ritorna la coordinata X/Y/Z del TCP. 
+ST   Y_TCP 
+
+* ra54 cn0 Quota asse riferita al TCP. Attenzione alla rotazione origini
+
+JMP noerror
+errorAngle:
+
+LD   1
+S    %PLCerr8.31
+noerror:
+
+LD   Pul_Reset
+R    %PLCerr8.31ù
+
+END_FUNCTION

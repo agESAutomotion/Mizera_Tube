@@ -1,0 +1,49 @@
+
+[KEYS]
+TITLE=PROCON
+TXT0=Height Control
+TXT5=Calibration Check
+TXT6=Capacitive Linearization Bevel
+TXT7=Parameters
+TXT16=Service 1
+TXT17=Service 2 (MDI)
+TXT18=Service 3
+
+[PROMPT]
+KEY_NODE=
+CAPFOC_PROCON=Leaf
+GroupBox1=ISO Info
+GroupBoxDiag=Diagnostic
+lbDiagPar1=Actual POWER [w]
+lbDiagPar2=Actual DUTY [%]
+lbDiagPar3=Actual FREQUENCY [Hz]
+lbDiagPresSetted=GAS PRESSURE setted [BAR]
+lbDiagPresReaded=GAS PRESSURE readed [BAR]
+GroupBoxCapacitive=Capacitive
+LabelPrec1=I_TIP_BODY_TOUCH_A11
+LabelPrec2=I_CABLE_CUT_A12
+LabelPrec11=CAPACITIVE
+ButtonStartCalib1=START CALIBRATION
+GroupBoxFocal=Focal
+LabelFoc1=FOCAL [mm]
+LabelPrec12=I_PRECITEC_ERROR
+LabelPrec13=I_PREC_POS_REACHED
+Reference travel=Move Focus
+LabelCalikOK1=Calibration OK
+Label1=No data
+Label2=Calibration not OK
+LabelTrack1=Track Num
+LabelExeTime1=Execution time
+LabelExeTime2=Feed [m/min]
+lbDiagPar4=Total / Curr. Pieces
+P_REF1=Feed +
+Label3=%
+P_REF4=Feed -
+Label4=%
+ButtonInitNominal2=Nominal curve setting
+GroupBox2=Alarms / Messages
+ErrorHandler2=Alarms / Messages
+
+[STATUS]
+
+[HELP]

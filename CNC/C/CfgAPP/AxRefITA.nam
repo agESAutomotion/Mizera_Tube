@@ -1,0 +1,8 @@
+[PROMPT]
+KEY_REFAXES = Config. extracorsa e taratura
+
+REF_MODE = Tipologia taratura
+NO_NC = Finecorsa asse (1=NC, 0=NA)  
+
+REF_LIST = NA,NC,lim.posit,lim.neg
+

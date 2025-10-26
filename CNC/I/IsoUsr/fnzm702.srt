@@ -1,0 +1,81 @@
+: M702    ; Blendswitch (OFF), disabilitazione
+
+IF(%cn[WHO()].rc[0].21) RET               
+
+IF( CouplingFollowEnLoad ) THEN 
+    IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))
+	IF (AEXISTS(5,Z)) G4005 S(AXIDX(5,Z))
+    IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))
+    IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))
+    IF (AEXISTS(5,W)) G4005 S(AXIDX(5,W))
+    G4099
+ENDIF
+
+IF( CouplingFollowEnLoadLat ) THEN 
+    IF (AEXISTS(9,Y)) G4005 S(AXIDX(9,Y))
+	IF (AEXISTS(9,Z)) G4005 S(AXIDX(9,Z))
+    IF (AEXISTS(9,U)) G4005 S(AXIDX(9,U))
+    IF (AEXISTS(9,V)) G4005 S(AXIDX(9,V))
+    G4099
+ENDIF
+
+IF( CouplingFollowEn ) THEN 
+    IF (AEXISTS(8,Y)) G4005 S(AXIDX(8,Y))
+	IF (AEXISTS(8,Z)) G4005 S(AXIDX(8,Z))  
+    IF (AEXISTS(8,U)) G4005 S(AXIDX(8,U))
+    IF (AEXISTS(8,V)) G4005 S(AXIDX(8,V))
+    IF (AEXISTS(8,W)) G4005 S(AXIDX(8,W))
+    G4099
+ENDIF
+
+IF( CouplingFollowEnUnHor ) THEN 
+    IF (AEXISTS(7,Z)) G4005 S(AXIDX(7,Z))
+    IF (AEXISTS(7,U)) G4005 S(AXIDX(7,U))
+    IF (AEXISTS(7,V)) G4005 S(AXIDX(7,V))
+    IF (AEXISTS(7,W)) G4005 S(AXIDX(7,W))
+    G4099
+ENDIF
+
+SYN
+SetupAidsDone = 0
+CouplingFollowEn = 0
+CouplingFollowEnUnHor = 0
+CouplingFollowEnLoad = 0
+CouplingFollowEnLoadLat = 0
+
+?%gIso19.0 = 0
+?%gIso19.1 = 0
+?%gIso39.0 = 0    
+?%gIso39.1 = 0    
+?%gIso49.0 = 0    
+?%gIso49.1 = 0  
+?%gIso39.3 = 0      
+?%gIso39.4 = 1      
+
+; Loader
+?%ax51.rgau0 = 0
+?%ax52.rgau0 = 0
+?%ax53.rgau0 = 0
+?%ax54.rgau0 = 0
+?%ax55.rgau0 = 0
+
+; Lateral
+?%ax81.rgau0 = 0
+?%ax82.rgau0 = 0
+?%ax83.rgau0 = 0
+?%ax84.rgau0 = 0
+
+; Horizontal
+?%ax85.rgau0 = 0
+?%ax86.rgau0 = 0
+?%ax87.rgau0 = 0
+?%ax88.rgau0 = 0
+
+; Unloader
+?%ax71.rgau0 = 0
+?%ax72.rgau0 = 0
+?%ax73.rgau0 = 0
+?%ax74.rgau0 = 0
+?%ax75.rgau0 = 0
+
+RET

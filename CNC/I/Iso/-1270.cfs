@@ -1,0 +1,25 @@
+ : G270
+;// Switch to inch programming
+G70
+IF( procvar_unit == 70 ) RET
+
+procvar_unit = 70
+
+;//start
+trav_safe_z=CFRMM(trav_safe_z)
+trav_safe_z_start=CFRMM(trav_safe_z_start)
+;//G806
+head_safe_dist=CFRMM(head_safe_dist)
+;//G650
+workpiece_safe_dist=CFRMM(workpiece_safe_dist)
+workpiece_safe_dist_leave=CFRMM(workpiece_safe_dist_leave)
+lead_in_speed=CFRMM(lead_in_speed)
+cut_speed=CFRMM(cut_speed)
+feed1=CFRMM(feed1)
+feed2=CFRMM(feed2)
+feed3=CFRMM(feed3)
+feed4=CFRMM(feed4)
+feed5=CFRMM(feed5)
+feed6=CFRMM(feed6)
+
+RET

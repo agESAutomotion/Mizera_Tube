@@ -1,0 +1,104 @@
+* Timer Function Block
+
+FUNCTION_BLOCK TimCnt
+
+VAR_INPUT
+xEnable:          BOOL;  * To start the timer
+xPreset:          BOOL;  * To preset the timer
+xPreSec:         DWORD;  * Preset timer value in seconds
+xPreDay:         DWORD;  * Preset timer value in days
+xMode:           DWORD;  * 0 == timer count up, 1 == timer count down
+END_VAR
+
+VAR_OUTPUT
+yOutSec:         DWORD;  * Outputs in seconds
+yOutDay:         DWORD;  * Outputs in days
+END_VAR
+
+VAR
+Cnt_sec:         DWORD;
+Cnt_day:         DWORD;
+R_TRIG_CNTRST:  R_TRIG;
+R_TRIG_CNT:     R_TRIG;
+END_VAR
+
+
+* Body of FB
+
+CAL  R_TRIG_CNT (CLK:=%PLCFLAGS.10)
+
+LD   xMode
+EQ   0
+JMPCN CNTUPCASE
+     LD   R_TRIG_CNT.Q
+     AND  xEnable
+     JMPCN no_inc  
+          LD   Cnt_sec               
+          ADD  1
+          ST   Cnt_sec                   
+     no_inc:
+     
+     LD   Cnt_sec                
+     EQ   86400
+     JMPCN no_day_inc     
+          LD   0
+          ST   Cnt_sec               
+          
+          LD   Cnt_day              
+          ADD  1
+          ST   Cnt_day              
+     no_day_inc:
+CNTUPCASE:
+
+LD   xMode
+NE   0
+JMPCN CNTDWNCASE
+     LD   R_TRIG_CNT.Q
+     AND  xEnable
+     ANDN(
+     LD   Cnt_sec
+     EQ   0
+     )
+     JMPCN no_inc_1  
+          LD   Cnt_sec               
+          SUB  1
+          ST   Cnt_sec                   
+     no_inc_1:
+     
+     LD   Cnt_sec                
+     EQ   0
+     ANDN(
+     LD   Cnt_day
+     EQ   0
+     )
+     JMPCN no_day_inc_1     
+          LD   86400
+          ST   Cnt_sec               
+          
+          LD   Cnt_day              
+          SUB  1
+          ST   Cnt_day              
+     no_day_inc_1:
+
+CNTDWNCASE:
+
+* Preset the timer result
+CAL  R_TRIG_CNTRST (CLK:=xPreset)
+LD   R_TRIG_CNTRST.Q
+JMPCN PRESETCASE
+LD   xPreSec
+ST   Cnt_sec
+
+LD   xPreDay
+ST   Cnt_day
+PRESETCASE:
+
+* Outputs 
+
+LD   Cnt_sec
+ST   yOutSec
+
+LD   Cnt_day
+ST   yOutDay
+
+END_FUNCTION_BLOCK

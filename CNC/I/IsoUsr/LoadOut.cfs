@@ -1,0 +1,249 @@
+: LoadOut
+
+; Semi-Loader Part 1: Park all components, allow the operator to load the pipe
+
+DBL Debug_Loader = 0
+DBL UpSupVoffset = 0
+DBL UpSupHgt = ABS(%gIso24) / 2.000
+DBL SkipStpTo = %PROG_ONE.values11
+
+IF( %cn[WHO()].pc[14].25 ) RET
+
+SYN
+IF( ABS( %ax36.pa22 / 1000 - %ax36.ra4 / 1000 ) > 5000 ) THEN
+   RPT .Prk_WMax_Start, .Prk_WMax_End, 1
+ENDIF
+
+SYN
+; Break Point Selector
+IF( LstBreakPoint != 0 ) JMPF(SkipStpTo)
+
+SYN
+; Tube Dimention Graph Level Protection
+IF( UpSupHgt < 1.0 ) THEN
+    ?%ui0.7 = 1
+	SYN
+	G4 F1
+	SYN
+	?%ui0.7 = 0
+    UpSupHgt = ABS(%gIso24) / 2.000
+	IF( UpSupHgt < 1.0 ) THEN
+	    MSGOUT "Tube Dimention Wrong, Please Reload the program"
+		M0
+		ERROR(55)
+	ENDIF
+ENDIF
+
+; MidSpdClosing  AT  %USR_M41.27;
+; SlaveSpdClosing  AT  %USR_M41.29;
+WAITBIT("%USR_M41.27",0)
+WAITBIT("%USR_M41.29",0)
+
+; Open X
+IF( !%USR_M0.27 ) M720 
+; Open W
+IF( !%USR_M0.31 ) M981 
+; Open V
+IF( !%USR_M0.29 ) M722 
+SYN      
+IF( (!%USR_M0.27) || (!%USR_M0.31) || (!%USR_M0.29) )  G4 F2                                                    
+
+G153
+G4005 S(AXIDX(3,Z))
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,C))
+G152
+G4099
+ 
+G153 
+G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1         
+G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1    
+G152   
+G4099 
+
+IF ( Debug_Loader ) M0
+G153 G0 Z(MaxQta_Z-15)   ;;YANG
+G153 G1 X( %ax30.pa22/1000 ) C0 F30000  
+
+; Put all supports Centering Device suitable height
+G153
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+IF (AEXISTS(3,V)) G4005 S(AXIDX(3,V))    
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+G152
+G4099
+SYN
+
+IF(!SetupAidsDone) JSR "setup_aids_poly.cfs" 
+SetupAidsDone = 0
+
+IF( Debug_Loader ) M0
+M443   
+SYN
+MSGOUT "Chain Forward in process..."
+;I_I_TubeOnChain_D AT %USR_M13.14;
+AWAIT( (%USR_M13.14) || (%STORE.boolean.0) )
+IF( Debug_Loader ) M0
+SYN
+M443
+SYN
+;I_I_HomeChain_E AT %USR_M13.21;
+AWAIT( %USR_M13.21 )
+; Clear Bistate 
+M499        
+
+IF( %STORE.boolean.0 ) THEN	
+    SYN
+    MSGOUT "Loader empty, please put tubes in the loader"
+    M0
+    SYN
+    MSGOUT "Press START to continue"
+    M0
+ENDIF
+	
+%PROG_ONE.values11 = 1
+N1
+
+IF( Debug_Loader ) M0
+M334
+SYN
+MSGOUT "Support G going up"
+;I_I_CylinderUp_G AT %USR_M13.15; 	
+WAITBIT("%USR_M13.15",1)
+
+%PROG_ONE.values11 = 2
+N2
+
+IF( Debug_Loader ) M0
+M434
+SYN
+MSGOUT "Support G going forward (F)"		
+;I_I_CylinderForw_F AT %USR_M13.19;
+WAITBIT("%USR_M13.19",1)
+
+%PROG_ONE.values11 = 3
+N3
+
+IF( Debug_Loader ) M0
+M335
+SYN
+MSGOUT "Support G going down"	 
+;I_I_CylinderDwn_G AT %USR_M13.16;	
+WAITBIT("%USR_M13.16",1)
+
+%PROG_ONE.values11 = 4
+N4
+
+SYN
+MSGOUT "Waiting Tube Detected On Support"
+;I_I_TubeOnSup_C AT %USR_M13.18;
+;DisAbleTubeOnC AT %STORE.boolean.2;
+IF( !%STORE.boolean.2 ) THEN
+    WAITBIT("%USR_M13.18",1)
+ELSE
+    G4 F2
+ENDIF	
+
+; Put M1 M2 M3 in machine
+IF ( Debug_Loader ) M0
+M331
+SYN
+MSGOUT " Arm J Going In Machine Fast "
+; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
+; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
+AWAIT( (%USR_M13.11) && (!%USR_M13.10) )
+
+%PROG_ONE.values11 = 5
+N5
+
+G153 
+G4010 M(AXIDX(X)) S(AXIDX(5,Z)) I1
+IF (AEXISTS(5,Y)) G4010 M(AXIDX(Y)) S(AXIDX(5,Y)) I1
+IF (AEXISTS(5,U)) G4010 M(AXIDX(Z)) S(AXIDX(5,U)) I1         
+IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1 
+G152   
+G4099 
+
+; SUPPORT AT HOOKING POSITION (Related with tube diameter?)
+IF ( Debug_Loader ) M0
+G153 G1 X(UpSupHgt + UpSupVoffset) Y(UpSupHgt + UpSupVoffset) Z(UpSupHgt + UpSupVoffset) V(UpSupHgt + UpSupVoffset) F10000  
+
+G153
+G4005 S(AXIDX(5,Z))
+IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))
+IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))
+IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))
+G152
+G4099
+
+%PROG_ONE.values11 = 6
+N6
+
+; Close All Cylinders for Centering Purpose
+SYN
+M455
+G4 F1
+
+%PROG_ONE.values11 = 7
+N7
+
+; Arms back to loader
+IF ( Debug_Loader ) M0
+; Park Loader Arms Back (Fast)
+M330
+SYN
+MSGOUT "Arm J Going Back Fast"	
+;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
+;I_I_Loader_Slow  AT %USR_M13.17; 
+AWAIT( (%USR_M13.10) || (%USR_M13.17) )
+
+%PROG_ONE.values11 = 8
+N8
+
+; Park Loader Arms Back (Slow)
+M431
+SYN
+MSGOUT "Arm J Going Back Slow"	
+; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
+; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
+AWAIT( (!%USR_M13.11) && (%USR_M13.10) )
+
+%PROG_ONE.values11 = 9
+N9
+
+RET
+
+.Prk_WMax_Start
+	G153
+    G4005 S(AXIDX(3,Z))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,W))       
+	G152
+	G4099
+
+	G153
+	G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+	G4010 M(AXIDX(V)) S(AXIDX(3,W)) I1
+	G152
+	G4099
+	
+	G153 G0 Z(MaxQta_Z)
+	G153 G1 Y(MinQta_Y) F30000
+	G153 G1 V(%ax36.pa22/1000) F30000
+	
+	G153
+	G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Z))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,W))     
+    G4005 S(AXIDX(3,V))    
+	G152
+	G4099
+.Prk_WMax_End

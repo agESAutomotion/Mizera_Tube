@@ -1,0 +1,22 @@
+[PROMPT]
+KEY_TOR =Torcia al Plasma
+
+REGIN =Registro di ingresso
+TDAT0 =Tensione nominale  (V)
+TDAT1 =Deviazione massima (V)
+TDAT2 =Derivata massima   (V/s)
+TDAT3 =Divisioni di zero
+TDAT4 =Fattore scala (V)
+TDAT5 =Fattore scala (divisioni)
+TDAT6 =Frequenza taglio FIR1 (Hz)
+KEY_REGOLATORE =
+TDAT7 =Velocità Congelamento (%)
+TDAT8 =Correzione massima [mm]
+TDAT9 =Correzione minima  [mm]
+TDAT10 =Frequenza taglio FIR2 (Hz)
+TDAT11 =Regolatore a0
+TDAT12 =Regolatore a1
+TDAT13 =Controllo anticollisione (ACA) (%)
+
+[HELP]
+

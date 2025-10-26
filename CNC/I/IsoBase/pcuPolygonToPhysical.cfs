@@ -1,0 +1,23 @@
+ : pcuPolygonToPhysical
+;// pipe calibration cycles:
+;// Maps C Offset from Polygon reference system to
+;// user Physical reference system.
+;//
+;// INPUT:
+;//     none
+;// OUTPUT:
+;//     pcPolyToPhy
+
+SWITCH (tubeAxis)
+CASE 0
+    pcPolyToPhy = 0.0
+CASE 1
+    pcPolyToPhy = -90.0
+CASE 2
+    ;// C (and transverse axis) to be defined
+    ERROR(55) ;unhandled tube axis
+OTHERWISE
+    ERROR(55) ;bad tube axis
+ENDSWITCH
+
+RET

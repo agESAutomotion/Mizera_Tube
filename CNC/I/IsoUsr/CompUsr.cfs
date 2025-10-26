@@ -1,0 +1,34 @@
+:CompUsr
+
+
+RET
+;******************************************************************************
+;   Computational cycle running on channel 6
+;   Started and stopped by PLC
+;   Called from 6666.PGM
+;******************************************************************************
+
+
+;USER COMP
+;**********************************************************
+DBL TubW,TubH,TubR
+SYN
+SWITCH (%CompData[5])
+  CASE 10
+   ;Calcolo posizione supporti
+    TubH=(%Rd[101]/1000.0)
+    TubW=(%Rd[102]/1000.0)
+    TubR=(%Rd[103]/1000.0)
+
+    IF (%Rd[100]==0) THEN ;Tondo
+     %Rd[130]=((SQRT(TubH**2 + TubW**2)-(SQRT(TubH**2 + TubH**2)-TubH))*1000)
+    ENDIF
+    IF (%Rd[100]==1) THEN ;Quadrato
+     %Rd[130]=((SQRT(TubH**2 + TubW**2)-(SQRT((TubR*2)**2 + (TubR*2)**2)-(TubR*2)))*1000)
+    ENDIF
+
+ENDSWITCH
+%CompData[5]=0
+
+RET
+

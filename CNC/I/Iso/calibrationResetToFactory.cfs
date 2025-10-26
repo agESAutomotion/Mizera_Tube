@@ -1,0 +1,29 @@
+ : calibrationResetToFactory
+
+;// RTCP Calibration Cycle
+;// DEFINED -> rtcp_calib
+;// Resets Current calibration data to Factory Defaults data.
+
+DBL dstTable
+DBL srcTable
+DBL subTable
+
+SYN
+IF (%twi[tbFactory].yKine == 0) $No factory data!
+IF (%twi[tbFactory].yKine == 0) RET
+
+dstTable = tbCurrent
+srcTable = tbFactory
+JSR "copyCalibrationData.cfs"
+
+;//reset delta
+dstTable = tbTemporary
+srcTable = tbCurrent
+JSR "copyCalibrationData.cfs"
+dstTable = tbDelta
+srcTable = tbTemporary
+subTable = tbCurrent
+JSR "diffCalibrationData.cfs"
+
+$Re-set to factory.
+RET

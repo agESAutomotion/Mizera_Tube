@@ -1,0 +1,85 @@
+#funcdec "SPist.plc"
+
+#include "usrMem.inc"
+#include "Iol.inc"
+
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"
+END_VAR
+
+VAR
+B1_B2_MOVE:        SINGLE_PISTON;
+END_VAR
+
+FUNCTION UNLOADER
+
+*****LD   PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+*****ST   B1_B2_MOVE.xAuto
+*****
+*****LD   Pul_Reset                      ** (gPlc0.3)Reset pushbutton
+*****OR   Pul_Start                      ** (gPlc0.1)Start pushbutton
+*****ST   B1_B2_MOVE.xReset	  
+*****        
+*****LD   BtnGui_B1_B2_Open
+*****ST   B1_B2_MOVE.xManualPlus	  
+*****    
+*****LD   BtnGui_B1_B2_Close
+*****ST   B1_B2_MOVE.xManualMinus    
+*****
+*****LD   Fun_M336_Ch0                                            
+*****ST   B1_B2_MOVE.xAutoPlus
+*****
+*****LD   Fun_M337_Ch0
+*****ST   B1_B2_MOVE.xAutoMinus    
+*****
+*****LD   I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
+*****ST   B1_B2_MOVE.xAirPressure
+*****
+*****LD   I_I_B1_B2_OPEN
+*****ST   B1_B2_MOVE.xSensorPlus 
+*****
+*****LD   I_I_B1_B2_CLOSE
+*****ST   B1_B2_MOVE.xSensorMinus           
+*****
+*****LD   I_I_B1_B2_OPEN
+*****ST   B1_B2_MOVE.xPlusAtInit           
+*****
+*****LD   0
+*****ST   B1_B2_MOVE.xSingleEffect
+*****
+*****LD   10000             
+*****ST   B1_B2_MOVE.xTimeOut     
+*****
+*****LDN  I_I_EMERGENZA                  ** Machine OK (no EMERG.)
+*****ST   B1_B2_MOVE.xEmerg	          
+*****
+*****CAL  B1_B2_MOVE
+*****
+*****LD   B1_B2_MOVE.yPistonPlus 
+*****ST   O_O_B1_B2_Open
+*****
+*****LD   B1_B2_MOVE.yAlarm 
+*****OR   I_I_B1_B2_ALARM
+*****ST   %PLCerr21.8
+*****
+*****LD   B1_B2_MOVE.yPistonMinus 
+*****ST   O_O_B1_B2_Close
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+END_FUNCTION

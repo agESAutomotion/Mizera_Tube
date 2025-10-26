@@ -1,0 +1,128 @@
+:
+
+G153    ;//*** WARNING
+
+LSYN
+DBL fx = QPREF(X)
+DBL fy = QPREF(Y)
+DBL fz = QPREF(Z)
+DBL fu = IFEXP(AEXISTS(U), QPREFQ(U) - pl_add1_u, QNAN())
+DBL fv = IFEXP(AEXISTS(V), QPREFQ(V) - pl_add1_v, QNAN())
+DBL fa = QPREFQ(A)
+DBL fb = QPREFQ(B)
+;DBL fc = QPREFQ(C)
+DBL fc = IFEXP(AEXISTS(C), QPREFQ(C) - pl_add1_c, QNAN())
+;per comodita', sul canale 0, A e B sono sempre presenti
+IF (!AEXISTS(3,A)) fa = QNAN()
+IF (!AEXISTS(3,B)) fb = QNAN()
+IF (!VALID(tx)) tx = fx
+IF (!VALID(ty)) ty = fy
+IF (!VALID(tz)) tz = fz
+IF (!VALID(tu)) tu = fu
+IF (!VALID(tv)) tv = fv
+IF (!VALID(ta)) ta = fa
+IF (!VALID(tb)) tb = fb
+IF (!VALID(tc)) tc = fc
+
+DBL pi = tubePI             
+
+IF (never_split) JMPF .neverSplit
+
+;// traverse splitting for generalized polygonal tube (C axis)
+DBL deEps = 0.01        ;// minimum ahead distance for splitting angles
+DBL fDebug = 0          ;// stop at each split and display angle
+
+DBL bx, by
+DBL cx, cy
+DBL lx, ly
+DBL angleBC
+DBL length
+DBL delta
+DBL nearestDelta
+DBL fcR, tcR
+DBL i, n, ti
+
+DBL dir
+DBL p
+
+n = %gmaPolygons[pi].gmanVertices
+IF (n < 3) ERROR(55);// at least 3p for a polygon
+
+fcR = fc        ;//C axis
+tcR = tc        ;//C axis
+
+WHILE (ABS(tcR - fcR) > 0.001)
+    dir = SGN(tcR - fcR)
+    nearestDelta = tcR - fcR
+    FOR i = 0 TO n - 1
+        ;// load data for BC, where polygon is closed
+        ti = i
+        bx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+        by = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+        ti = i+1
+        IF (ti >= n) ti = ti - n
+        cx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+        cy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+        ;// obtain BC orientation
+        lx = cx - bx
+        ly = cy - by
+        length = SQRT(lx * lx + ly * ly)
+        IF (length < 0.1) ERROR(55);// null segment
+        angleBC = ATANXY(ly, lx)
+
+        ;//-0 = aid_v_neg, -90 = aid_u_neg, -180 = aid_v_pos, -270 = aid_u_pos
+        angleBC = angleBC - 0
+
+        ;// Assume N >= 3 and 'Too sharp a vertex' check present.  This means
+        ;// that we'll surely find the next vertex within (180 - some degrees).
+
+        ;// check if current side is inside traverse span
+            ;// modulo difference algorithm => [+180..-180)
+        delta = (-angleBC) - fcR
+        delta = MOD(delta, 360.0)
+        IF (delta < 0.0)   delta = delta + 360.0
+        IF (delta > 180.0) delta = delta - 360.0
+
+        IF ((dir > 0) && (delta > +deEps) && (nearestDelta > delta)) nearestDelta = delta
+        IF ((dir < 0) && (delta < -deEps) && (nearestDelta < delta)) nearestDelta = delta
+    ENDFOR
+
+    p = nearestDelta / (tcR-fcR)
+
+    fx = fx + p*(tx-fx)
+    fy = fy + p*(ty-fy)
+    fz = fz + p*(tz-fz)
+        IF (VALID(fu)) fu = fu + p*(tu-fu)
+        IF (VALID(fv)) fv = fv + p*(tv-fv)
+    IF (VALID(fa)) fa = fa + p*(ta-fa)
+    IF (VALID(fb)) fb = fb + p*(tb-fb)
+    IF (VALID(fc)) fc = fc + p*(tc-fc)
+
+    IF (fDebug) MSGOUT "split " fc " (" MOD(MOD(fc,360)+360,360) ")"
+    IF (fDebug) M0
+    G(g_type_par) F(feed_par) X(fx) Y(fy) Z(fz) U(fu) V(fv) A(fa) B(fb) C(fc)
+
+    fcR = fc        ;//C axis
+ENDWHILE
+
+.neverSplit
+
+IF( %SUPPORTS_SYSTEM.boolean1.31 ) JMPF .no_m700
+IF ((tc >= (XGET("@C")+95)) || (tc <= (XGET("@C")-95)) && (%UNLOADER.values1.1) && (roundFlag == 0)) THEN
+   IF (tc >= (XGET("@C")+95))  ?%gIso37 = (tc - 45) * 1000
+   IF (tc <= (XGET("@C")-95))  ?%gIso37 = (tc + 45) * 1000 
+   IF ( CouplingFollowEn )  M700
+ENDIF
+.no_m700
+
+G(g_type_par) F(feed_par) X(tx) Y(ty) Z(tz) U(tu) V(tv) A(ta) B(tb) C(tc)
+
+IF( %SUPPORTS_SYSTEM.boolean1.31 ) JMPF .no_m704
+IF ((%UNLOADER.values1.1) && (roundFlag == 0) && CouplingFollowEn ) M704
+.no_m704
+
+G152    ;//*** WARNING
+
+RET

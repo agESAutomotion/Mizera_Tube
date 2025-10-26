@@ -1,0 +1,23 @@
+[Variabili]
+Nome Var1=IA_Feedback_GAS_IN_DIG
+Type Vis1=10
+Nome Var2=OA_GAS
+Type Vis2=10
+Nome Var3=OA_GAS_HOERB
+Type Vis3=10
+Nome Var4=IA_Feedback_GAS_IN_AN
+Type Vis4=10
+Nome Var5=O_EV_OPEN_N2
+Type Vis5=2
+Nome Var6=O_EV_OPEN_O2
+Type Vis6=2
+Nome Var7=O_EV_OPEN_ARIA
+Type Vis7=10
+Nome Var8=O_EV_OPEN_N2_HOERB
+Type Vis8=2
+Nome Var9=O_EV_OPEN_O2_HOERB
+Type Vis9=2
+Nome Var10=O_EV_OPEN_ARIA_HOERB
+Type Vis10=2
+Nome Var11=OA_GAS_ECAT_TYPE0
+Type Vis11=10

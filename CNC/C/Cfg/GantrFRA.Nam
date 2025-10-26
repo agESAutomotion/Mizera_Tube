@@ -1,0 +1,16 @@
+[PROMPT]
+KEY_GANTRY =Configura Gantry
+
+GDAT0 = SysWide Slave
+KEY_REGOLATORE =
+GDAT1 = Tolleranza Warning
+GDAT2 = Tolleranza Allarme
+GDAT3 = Tolleranza Allarme REF
+GDAT4 = Guadagno Bilanciamento
+GDAT5 = Frequenza Taglio
+GDAT6 = Tipo Gantry
+GDAT7 = REF Alert tolerance Initial value
+
+[HELP]
+GDAT6 = 0 standard 1 un finecorsa di taratura
+

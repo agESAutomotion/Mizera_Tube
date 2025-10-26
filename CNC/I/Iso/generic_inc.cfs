@@ -1,0 +1,24 @@
+: generic_inc.cfs
+
+IF(DEFINED("generic_included")) RET
+
+DBL generic_included = 1
+
+;//VerLim.cfs
+DBL OutOfLimit
+
+// Piercing tables pointer 
+DBL pbase
+DBL max_value_pieces
+DBL max_value_geometry
+
+; G261 enable
+IF( %PlcOp0.30 ) THEN
+    max_value_pieces = 10000
+    max_value_geometry = 10000
+ELSE
+    max_value_pieces = 1000
+    max_value_geometry = 1000
+ENDIF
+
+RET

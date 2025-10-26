@@ -1,0 +1,34 @@
+
+[KEYS]
+TITLE=Parametri piercing
+
+[PROMPT]
+KEY_NODE=Node
+EDGE=Leaf
+LBL_VELOCITA1=Vel. corner
+LBL_MMMIN2=[mm/min] 90°
+Label1=7
+Label2=6
+Label3=5
+Label4=4
+Label5=3
+Label6=2
+Label7=1
+Label8=8
+Label9=9
+Label10=10
+LBL_VELOCITA2=Vel. raggio
+LBL_MMMIN1=[mm/min] R=10 mm
+LBL_VELOCITA4=Tempo Cooling P.
+LBL_MMMIN4=[ms]
+Label11=Abilita Corner
+Label12=Abilita Cooling Point
+Label13=11
+Label14=12
+Label15=13
+Label16=14
+Label17=15
+
+[STATUS]
+
+[HELP]

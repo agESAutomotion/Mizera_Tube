@@ -1,0 +1,50 @@
+ [D] [T] [E] [L] [X] [Y] [Z] [A] [B] [C] [P]0 :G180
+DBL flg, dmy, ml_save, ml=VA11, prefetch=VA15
+
+;//$GRAPH
+IF( %cn[WHO()].pc[14].25 != 0 ) THEN
+    kine_x = VA23
+    kine_y = VA24
+    kine_z = VA25
+    kine_a = VA0
+    kine_b = VA1
+    kine_c = VA2
+ENDIF
+IF( %cn[WHO()].pc[14].25 != 0 ) RET
+;//$GRAPH
+
+DBL qkx=CTOMM(VA23)
+DBL qky=CTOMM(VA24)
+DBL qkz=CTOMM(VA25)
+DBL sav_G70=XGET("@G70")
+G71
+
+;//$APP
+IF( (!ISQNAN(VA0)) || (!ISQNAN(VA1)) || (!ISQNAN(VA2)) ) gOptim=0
+;//$APP
+
+flg=EGbiaREQ(VA3,VA19,VA4,ml,qkx,qky,qkz,VA0,VA1,VA2,prefetch)
+IF((flg&0x1) && (prefetch==1)) LSYN
+IF((flg&0x1) && (prefetch==0)) SYN
+IF(!(flg&0x2)) THEN
+    dmy=EGbia(VA3,VA19,VA4,ml,qkx,qky,qkz,VA0,VA1,VA2,prefetch,pl_orig_a,pl_orig_b,pl_orig_c,pl_tool_a,pl_tool_b,pl_tool_c,pl_add2_a,pl_add2_b,pl_add2_c)
+    G(sav_G70)
+    kine_x = CFRMM(kine_x)
+    kine_y = CFRMM(kine_y)
+    kine_z = CFRMM(kine_z)
+ENDIF
+IF(!(flg&0x2)) RET
+ml_save = ml_curr
+IF(ISQNAN(ml)) ml = ml_curr
+IF(ml < -1) ERROR(61)  ;//Valore troppo elevato
+IF(ml > ml_peak) ERROR(61)  ;//Valore troppo elevato
+ml_curr = ml
+G1152
+dmy=EGbia(VA3,VA19,VA4,ml,qkx,qky,qkz,VA0,VA1,VA2,prefetch,pl_orig_a,pl_orig_b,pl_orig_c,pl_tool_a,pl_tool_b,pl_tool_c,pl_add2_a,pl_add2_b,pl_add2_c)
+ml_curr = ml_save
+G1152
+G(sav_G70)
+kine_x = CFRMM(kine_x)
+kine_y = CFRMM(kine_y)
+kine_z = CFRMM(kine_z)
+RET

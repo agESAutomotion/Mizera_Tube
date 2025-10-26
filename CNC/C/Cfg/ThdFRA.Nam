@@ -1,0 +1,36 @@
+[PROMPT]
+KEY_THD       =Données Porte-outils
+
+THD_Z0        =Coordonnée pivot s'additionne à Z
+THD_C         =Rotation autour de l'axe Z
+THD_FLG       =Indic. type de transformation
+THD_X1        =Coordonnée X du pivot
+THD_Y1        =Coordonnée Y du pivot
+THD_B         =Rotation autour de l'axe Y
+THD_X2        =Coordonnée X de la base outil
+THD_Z2        =Coordonnée Z de la base outil
+THD_DSC       =Descrizione
+
+THD_MAXRPM    =Nombre maximum de tours/minute
+THD_REV       =Transm. avec inversion sens de rotat.
+
+THD_IDX       =Indice descripteur outil
+THD_CONE      =Identif. cône de changement outil
+
+
+[HELP]
+THD_Z0        =Coordonnée pivot que l'on somme à Z du point déterminé par les données du Mandrin
+THD_C         =Rotation autour de l'axe Z du système de référence ayant comme origine le point déterminé par les données du Mandrin
+THD_FLG       =Indicateur du type de transformation :  (1) D'abord rotation autour de l'axe Z, ensuite translation X Y pivot (2) D'abord translation, puis rotation (conseillé).
+THD_X1        =Coordonnée X du pivot par rapport au système de référence ayant pour origine le Porte-outils
+THD_Y1        =Coordonnée Y du pivot par rapport au système de référence ayant pour origine le Porte-outils
+THD_B         =Rotation autour de l'axe Y' du système de référence avant pour origine le PIVOT1
+THD_X2        =Coordonnée X de la base outil par rapport au système de référence centré dans PIVOT1
+THD_Z2        =Coordonnée Z de la base outil par rapport au système de référence centré dans PIVOT1
+
+THD_MAXRPM    =Nombre maximum de tours/minute
+THD_REV       =Transmission. avec inversion sens de rotation
+
+THD_IDX       =Indice descripteur outil
+THD_CONE      =Identificateur cône d'accrochage pour changement outil
+

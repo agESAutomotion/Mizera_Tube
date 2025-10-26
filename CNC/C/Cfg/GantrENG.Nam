@@ -1,0 +1,16 @@
+[PROMPT]
+KEY_GANTRY =Configure Gantry Axes
+
+GDAT0 = Axes system-wide number
+KEY_REGOLATORE =
+GDAT1 = Warning tolerance
+GDAT2 = Alert tolerance
+GDAT3 = REF Alert tolerance
+GDAT4 = Cross-coupling gain
+GDAT5 = Cut-Off frequency
+GDAT6 = Gantry Type
+GDAT7 = REF Alert tolerance Initial value
+
+[HELP]
+GDAT6 = 0 standard 1 only one homing limit switch
+

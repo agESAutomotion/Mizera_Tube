@@ -1,0 +1,17 @@
+
+[KEYS]
+TITLE=PWM
+
+[PROMPT]
+KEY_NODE=Node
+PWM=Leaf
+PIN1=PIN1: Ground reference
+PIN2=PIN5: PWM PUSH PULL OUTPUT
+PIN3=PIN4: PUSH PULL power supply input
+PIN4=PIN3: + 5V power supply output
+PIN5=PIN2: power supply reference
+PIN6=PIN6: PWM LINE DRIVER OUTPUT
+
+[STATUS]
+
+[HELP]

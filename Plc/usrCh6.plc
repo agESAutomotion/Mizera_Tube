@@ -1,0 +1,258 @@
+*******************************************************************************
+*******************************************************************************
+*   @@@ CH6: LOG and COM Function Requests
+*******************************************************************************
+*******************************************************************************
+#funcdec "assi.plc"
+#funcdec "cnc.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+#funcdec "SupForce.plc"
+
+#include "usrMem.inc"
+#include "iol.inc"
+
+VAR_IN_OUT
+#include "mem.inc"
+#include "usrIol.inc"
+END_VAR
+
+VAR
+#include "cnc.inc"
+
+Ax60PosEnd:         BOOL;
+Ax61PosEnd:         BOOL;
+
+TON_CH6_RUN_STP:    TON;        * TON for CH6_RUN_STP
+RTRIG_CH6_RUN_STP:  R_TRIG;     * RTRIG for CH6_RUN_STP
+FTRIG_CH6_RUN_STP:  F_TRIG;     * FTRIG for CH6_RUN_STP
+
+GESTCH6:            GESTCH;
+CH6END:             GESTCHEND;
+GESTAX60:           GESTAX;
+GESTAX61:           GESTAX;
+PRS_AX60:           AX_PRESET;
+PRS_AX61:           AX_PRESET;
+CYCOMSUP:           CALC_CYCOMSUP;
+CYCOMSUP_UN:        CALC_CYCOMSUP;
+END_VAR
+
+FUNCTION CH6 
+
+PATH %cn6
+
+LD   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+R    UI_CH6_RUN_STP                ** (M1.0) START/STOP channel 6
+
+CAL  TON_CH6_RUN_STP(IN=ALWAYS_ONE,PT=3000) ** TON for CH6_RUN_STP
+CAL  RTRIG_CH6_RUN_STP(CLK:=TON_CH6_RUN_STP.Q) ** RTRIG for CH6_RUN_STP
+CAL  FTRIG_CH6_RUN_STP(CLK:=UI_CH6_RUN_STP) ** FTRIG for CH6_RUN_STP
+
+LD   RTRIG_CH6_RUN_STP.Q
+OR   UI_CH6_RUN_STP                ** (M1.0) START/STOP channel 6
+S    CH6_RUN_STP                   ** (M1.1) START/STOP channel 6 flag
+
+LD   FTRIG_CH6_RUN_STP.Q
+OR   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+R    CH6_RUN_STP                   ** (M1.1) START/STOP channel 6 flag
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   GESTCH6.xCmdFromInput        * Disabilita comandi standard macchina
+ST   GESTCH6.xSelFromInput        * Disabilita selezioni standard macchina
+
+LD   %PLCFLAGS.0                  ** Condizioni richiesta hold canale 0
+ST   GESTCH6.xHold                * comando Hold al canale (esterno)
+ST   GESTCH6.xEmer                * comando Emergenza al canale (esterno)
+ST   GESTCH6.xBlkSearch
+ST   GESTCH6.xIntBlkSrc           * Forzam. esec. ricerca blocco interna
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   GESTCH6.xSelAUT             * selezione modo AUT (con sel. esterna)
+
+LDN  CH6_RUN_STP                   ** (M1.1) START/STOP channel 6 flag
+ST   GESTCH6.xReset               * comando RESET al canale (esterno)
+                                                           
+LD   CH6_RUN_STP                   ** (M1.1) START/STOP channel 6 flag
+ST   GESTCH6.xStart
+
+LD   ChannelFeedrate               ** feedrate for channel
+ST   GESTCH6.xOverride            * override assi (esterno)
+
+LD   CH6_RUN_STP                   ** (M1.1) START/STOP channel 6 flag
+JMPC InRun
+
+LD   -1
+ST   GESTCH6.xPPNumber            * numero part program da eseguire
+JMP  ComRS
+
+InRun:
+LD   6666
+ST   GESTCH6.xPPNumber            * numero part program da eseguire
+
+ComRS:
+
+LD   ALWAYS_ONE                   ** PLCFLAGS.1  Flag sempre stato on
+ST   GESTCH6.xCmdFromInput
+
+CAL  GESTCH6
+
+LDN  BCO_PRGRUN			          ** rc8.0  Programma in corso
+AND  TON_CH6_RUN_STP.Q
+ST   %PLCerr0.16                  ** canale 6 in STOP
+
+*******************************************************************************
+*   Virtual X axis for motor cylinder composite support quota (Loader)
+*******************************************************************************
+PATH %ax60
+
+LD   %cc1.0                        * Maschera assi associata al canale 0
+JMPCN NOAX60
+                                       
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   GESTAX60.xZeroForced          * Forzamento asse tarato
+ST   GESTAX60.xLockRef             * Blocco avvio ciclo REF da canale
+ST   GESTAX60.xEnFIR               * Abilita filtri FIR     
+ST   GESTAX60.xEnFrComp            ** Abilita friction compensation
+ST   GESTAX60.xDisLimiter
+
+LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
+ST   GESTAX60.xUnlock                                                                  
+
+* LD   %rc8.3                        * Current channel in alarm
+* OR   %cn0.rc8.3                    * ch0 in alarm 
+* OR   %cn3.rc8.3                    * ch3 in alarm 
+* ST   GESTAX60.xSetAlarm            ** Forzamento allarme asse 
+
+*   Virtual X Quota Preset
+
+LDN  Ax60PosEnd
+ANDN Pul_Reset
+ST   PRS_AX60.xax_ENABLE
+ST   GESTAX60.xFromPlc
+
+LDN  PRS_AX60.xax_ENABLE
+OR   Pul_Reset
+ST   PRS_AX60.xax_CLEAR
+
+LD   PRS_AX60.xax_ENABLE
+AND  PRS_AX60.yax_READY
+ANDN PRS_AX60.yax_ENDERR
+ST   PRS_AX60.xax_START
+
+*LD   %pa9
+*ST   PRS_AX60.xax_VEL
+
+CAL  CYCOMSUP(xLenCy:=CyComLenLoader, xEnCyTubeSiz:=EnCyComTubeDim, xAxNum:=60)
+
+LD   CYCOMSUP.yModeCode.1
+JMPCN _OFTLOADER
+     LD   CyComLenLoader
+	 MUL  1000
+     ST   PRS_AX60.xax_QUOTA  
+_OFTLOADER:
+
+LD   CYCOMSUP.yModeCode.0
+ORN  %config_machine0.7
+JMPCN _NO_OFTLOADER
+     LD   0
+     ST   PRS_AX60.xax_QUOTA  
+_NO_OFTLOADER:
+
+LD   CYCOMSUP.yModeCode.2
+AND  %config_machine0.7
+ST   %PLCerr20.27	 
+	 
+LD   %ra24
+SUB  PRS_AX60.xax_QUOTA
+ABS                    
+LT   100  
+ST   Ax60PosEnd	 
+
+CAL  GESTAX60
+CAL  PRS_AX60
+
+NOAX60:
+
+*******************************************************************************
+*   Virtual Y axis for motor cylinder composite support quota (Unloader)
+*******************************************************************************
+PATH %ax61
+
+LD   %cc1.1                        * Maschera assi associata al canale 0
+JMPCN NOAX61
+                                       
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   GESTAX61.xZeroForced          * Forzamento asse tarato
+ST   GESTAX61.xLockRef             * Blocco avvio ciclo REF da canale
+ST   GESTAX61.xEnFIR               * Abilita filtri FIR     
+ST   GESTAX61.xEnFrComp            ** Abilita friction compensation
+ST   GESTAX61.xDisLimiter
+
+LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
+ST   GESTAX61.xUnlock                                                                  
+
+* LD   %rc8.3                        * Current channel in alarm
+* OR   %cn0.rc8.3                    * ch0 in alarm 
+* OR   %cn3.rc8.3                    * ch3 in alarm 
+* ST   GESTAX61.xSetAlarm            ** Forzamento allarme asse 
+
+*   Virtual Y Quota Preset
+
+LDN  Ax61PosEnd
+ANDN Pul_Reset
+ST   PRS_AX61.xax_ENABLE
+ST   GESTAX61.xFromPlc
+
+LDN  PRS_AX61.xax_ENABLE
+OR   Pul_Reset
+ST   PRS_AX61.xax_CLEAR
+
+LD   PRS_AX61.xax_ENABLE
+AND  PRS_AX61.yax_READY
+ANDN PRS_AX61.yax_ENDERR
+ST   PRS_AX61.xax_START
+
+*LD   %pa9
+*ST   PRS_AX61.xax_VEL
+
+CAL  CYCOMSUP_UN(xLenCy:=CyComLenUnloader, xEnCyTubeSiz:=EnCyComTubeDimUn, xAxNum:=61)
+
+LD   CYCOMSUP_UN.yModeCode.1
+JMPCN _OFTUNLOADER
+     LD   CyComLenUnloader
+	 MUL  1000
+     ST   PRS_AX61.xax_QUOTA  
+_OFTUNLOADER:
+
+LD   CYCOMSUP_UN.yModeCode.0  
+ORN  %config_machine0.8   
+JMPCN _NO_OFTUNLOADER
+     LD   0
+     ST   PRS_AX61.xax_QUOTA  
+_NO_OFTUNLOADER:
+
+LD   CYCOMSUP_UN.yModeCode.2
+AND  %config_machine0.8
+ST   %PLCerr20.28	
+
+LD   %ra24
+SUB  PRS_AX61.xax_QUOTA
+ABS                    
+LT   100  
+ST   Ax61PosEnd	 
+
+CAL  GESTAX61
+CAL  PRS_AX61
+
+NOAX61:
+
+**************************
+* Acknowledg funzioni "M"
+**************************
+*
+LD   %PLCFLAGS.0
+ST   CH6END.xWaitMFun
+
+CAL  CH6END
+
+END_FUNCTION

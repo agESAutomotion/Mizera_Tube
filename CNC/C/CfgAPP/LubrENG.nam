@@ -1,0 +1,24 @@
+
+[KEYS]
+TITLE=Lubrication
+
+[PROMPT]
+KEY_NODE=Node
+LUBR=Leaf
+GroupBox=Lubrication Settings
+Label=Timer for lubrication [ h]
+Label1=Timer for lubrication [ min ]
+Label2=Lubrication time On [ sec ]
+Label3=Pump On
+Label4=Oil Low level
+Label5=Axes movement time [ h ]
+Label6=Axes movement time [ min ]
+Label7=Enable timer with minutes
+Button=Manual Lubrication
+Label8=Oil Low Pressure
+Label9=Lubrication time Off [ sec ]
+Label10=Repetition
+
+[STATUS]
+
+[HELP]

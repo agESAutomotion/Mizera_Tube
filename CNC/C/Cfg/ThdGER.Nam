@@ -1,0 +1,36 @@
+[PROMPT]
+KEY_THD       =Daten Werkzeugträger
+
+THD_Z0        =Koordinate Pivot,zu Z zu summieren
+THD_C         =Rotation um Z-Achse
+THD_FLG       =Flag Transformationstyp
+THD_X1        =Koordinatw X des Pivot
+THD_Y1        =Koordinatw Y des Pivot
+THD_B         =Rotation um Y-Achse
+THD_X2        =Koordinate X der Werkzeugbasis
+THD_Z2        =Koordinate Z der Werkzeugbasis
+THD_DSC       =Description
+
+THD_MAXRPM    =Größte Drehzahl U/min
+THD_REV       =Übertr. mit Umkehr Drehrichtung
+
+THD_IDX       =Kennung Werkzeugdeskriptor
+THD_CONE      =Kennung Werkzeugwechselkonus
+
+
+[HELP]
+THD_Z0        =Koordinate Pivot, die zum Z der Stelle summiert wird, die man in den Daten der Spindel gefunden hat
+THD_C         =Rotation um die Achse Z des Bezugssystems mit Ursprung in den Punkt, den man in den Daten der Spindel gefunden hat
+THD_FLG       =Flag Typ der Transformation:  (1) Zuerst Rotation rings um die Achse Z, dann Translation X Y Pivot (2) Zuerst Translation, dann Rotation (zu empfehlen).
+THD_X1        =Koordinate X des Pivot im Bezug zum Bezugssystem, mit Ursprung an der Stelle des Werkzeugträgers
+THD_Y1        =Koordinate Y des Pivot im Bezug zum Bezugssystem, mit Ursprung an der Stelle des Werkzeugträgers
+THD_B         =Rotation rings um die Achse Y' des Bezugssystems mit Ursprung im PIVOT1
+THD_X2        =Koordinate X der Werkzeugbasis im Bezug zum Bezugssystem mit Mittelpunkt PIVOT1
+THD_Z2        =Koordinate Z der Werkzeugbasis im Bezug zum Bezugssystem mit Mittelpunkt PIVOT1
+
+THD_MAXRPM    =Größte Drehzahl U/min
+THD_REV       =Übertr. mit Umkehr Drehrichtung
+
+THD_IDX       =Kennung Werkzeugdeskriptor
+THD_CONE      =Kennung Einrastkonus für Werkzeugwechsel
+

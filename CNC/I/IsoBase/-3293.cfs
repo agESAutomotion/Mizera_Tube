@@ -1,0 +1,107 @@
+ [S]0 [X]0 [Y]0 [Z]0 [U] [V] [W] R : G2293
+;//Cylindical part/subpart
+DBL subpart = VA18
+DBL pi = IFEXP((subpart == 0), tubePI, tubePI+1)
+DBL xa = CTOMM(VA23), ya = CTOMM(VA24), za = CTOMM(VA25)
+DBL xb = CTOMM(VA20), yb = CTOMM(VA21), zb = CTOMM(VA22)
+DBL r  = CTOMM(VA17)
+DBL color
+DBL xS, yS, zS
+DBL xE, yE, zE
+DBL shx = 0, shy = 0, shz = 0
+DBL sav_G70 = XGET("@G70")
+G71
+
+IF (VALID(xb) && VALID(yb)) ERROR(55)
+IF (VALID(yb) && VALID(zb)) ERROR(55)
+IF (VALID(zb) && VALID(xb)) ERROR(55)
+IF ((!VALID(xb)) && (!VALID(yb)) && (!VALID(zb))) ERROR(55)
+
+IF (VALID(zb)) THEN
+    ;//per SHP
+    xS = -r + xa
+    yS = -r + ya
+    xE = +r + xa
+    yE = +r + ya
+    zS = MIN(za, zb)
+    zE = MAX(za, zb)
+    ;//also sort Z coordinates
+    za = zS
+    zb = zE
+ELSEIF (VALID(xb)) THEN
+    ;//per SHP
+    yS = -r + ya
+    zS = -r + za
+    yE = +r + ya
+    zE = +r + za
+    xS = MIN(xa, xb)
+    xE = MAX(xa, xb)
+    ;//also sort X coordinates
+    xa = xS
+    xb = xE
+ELSE
+    ;//per SHP
+    zS = -r + za
+    xS = -r + xa
+    zE = +r + za
+    xE = +r + xa
+    yS = MIN(ya, yb)
+    yE = MAX(ya, yb)
+    ;//also sort Y coordinates
+    ya = yS
+    yb = yE
+ENDIF
+
+IF (subpart == 0) THEN
+    ;//SHP currently required for ranging
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+    ;//GUI: SHP data is in CN_MMINCI unit, not in current unit
+    IF (%cg[8] != 0) THEN
+        SHP(CTOIN(shx+xS),CTOIN(shy+yS),CTOIN(shz+zS),CTOIN(shx+xE),CTOIN(shy+yE),CTOIN(shz+zE))
+    ELSE
+        SHP(shx+xS,shy+yS,shz+zS,shx+xE,shy+yE,shz+zE)
+    ENDIF
+ENDIF
+
+;//  0   Black   8   Dark gray
+;//  1   Blue    9   Light blue
+;//  2   Green   10  Light green
+;//  3   Cyan    11  Light cyan
+;//  4   Red     12  Light red
+;//  5   Magenta 13  Light magenta
+;//  6   Brown   14  Yellow
+;//  7   White   15  Bright white
+
+IF (subpart == 0)  color = 12  ;//(Light red)
+IF (subpart == 1)  color = 13  ;//(Light magenta)
+IF (subpart == 2)  color = 9   ;//(Light blue)
+IF (subpart == 3)  color = 11  ;//(Light cyan)
+IF (subpart == 4)  color = 10  ;//(Light green)
+IF (subpart == 5)  color = 5   ;//(Magenta)
+IF (subpart == 6)  color = 1   ;//(Blue)
+IF (subpart == 7)  color = 3   ;//(Cyan)
+IF (subpart == 8)  color = 2   ;//(Green)
+IF (subpart >= 9)  color = 7   ;//(White)
+
+SYN
+%gmaPolygons[pi].gmanVertices = 0
+
+IF (VALID(zb)) THEN
+    G2803 C(color) X(xa) Y(ya) Z(za) W(zb) R(r)
+ELSEIF (VALID(xb)) THEN
+    G168
+    G160  I0 J1 K0  P0 Q0 R1  U1 V0 W0
+    G2803 C(color) X(ya) Y(za) Z(xa) W(xb) R(r)
+    G169
+ELSE
+    G168
+    G160  I0 J0 K1  P1 Q0 R0  U0 V1 W0
+    G2803 C(color) X(za) Y(xa) Z(ya) W(yb) R(r)
+    G169
+ENDIF
+
+tubeClass = 0
+G(sav_G70)
+RET

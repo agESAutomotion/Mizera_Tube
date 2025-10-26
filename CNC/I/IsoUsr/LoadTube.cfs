@@ -1,0 +1,190 @@
+: LoadTube
+
+; Load Tube Automomatically 
+DBL Debug_LoadTube = 0
+
+DBL Vout0 = 0x04
+DBL VOUT = 0x08
+DBL Vmax = 0x10
+DBL VHIGH = 5000
+DBL VLOW  = 1000
+
+;[mm] Tube head position in loader with respect to the head (where to catch)
+DBL AcqPosX
+DBL Tube_PaddlePos = 850 
+DBL CatchVLessZone = 150
+
+IF( %cn[WHO()].rc[0].21 ) RET
+IF( %cn[WHO()].pc[14].25 ) RET
+IF( %LSRPlcOp0.21 ) RET
+
+IF( %STORE.boolean.0 ) THEN	
+   SYN
+   MSGOUT "Loader empty, please put tubes in the loader"
+   M0
+   SYN
+   MSGOUT "Press START to continue"
+   M0
+ENDIF
+
+IF( start_track == 0 ) THEN 
+
+  ;============================================================================
+  ;Park all axes to loading quote
+  ;============================================================================ 
+  
+  ; Disable Load
+  IF (!%PlcOp0.18) THEN
+  
+       IF( (tube_len == 0) || ( tube_len >= (%ax30.pa22/1000)) ) THEN 
+         SYN
+         MSGOUT " Tube length is 0 / exceeds X maximum travel "	   
+	     M0
+	     ERROR(793)
+       ENDIF
+       ;ThreshLoadingSupDown AT %LOADER.values8;  
+       ?%LOADER.values8 = NearParkOffset    
+   
+  ; // Part 1: To initialize loader ***************************************************//
+	   JSR "LoadInit.cfs"
+  
+  ; // Part 2: Positioning Spindles ***************************************************// 
+	   JSR "LoadOut.cfs"
+	   
+  ; // Part 3: CN8 Request to prepare next tube ***************************************//
+       SYN
+	   IF( %LOADER.boolean.31 ) THEN
+          .FAULT_STATE_LOADER_2
+          SYN 
+          MSGOUT "Loader error / No tubes"	   
+		  M0
+          JMP .FAULT_STATE_LOADER_2	   		   
+       ENDIF  
+	   
+	   %LOADER.boolean.31 = 1
+	   SYN
+	   AWAIT( !%SUPPORTS_SYSTEM.boolean.31 )
+	   AWAIT( %LOADER.boolean.30 )
+	   %LOADER.boolean.30 = 0
+	   	   
+       SYN
+       MSGOUT " Catching Tube ... " 
+       
+       G153 
+       G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+       G152   
+       G4099 
+	   
+	   ; Ensure photocells working well
+	   ; I_I_TubeMobile_Spindle AT  %USR_M1.27;
+	   ; I_I_TubeFix_Spindle    AT  %USR_M1.28; 
+	   SYN
+	   MSGOUT "Photocell tube detected on spindles" 
+	   AWAIT( (!%USR_M1.27) && (!%USR_M1.28) )
+       
+       ; ; Catch the tube until (tube length + Tube_PaddlePos)
+       ; IF ( Debug_LoadTube ) M0
+       ; G153 G1 X(tube_len + Tube_PaddlePos + CatchVLessZone) F8000  
+       ; G153 G1 X(tube_len + Tube_PaddlePos) F2000  
+	   
+	   ; Catch the tube with sensor
+	   IF ( Debug_LoadTube ) M0
+       SYN
+       G153
+	   
+	   ACCTRJ = 5000
+	   DECTRJ = 5000
+	   JRKTRJ = 50000
+	   
+	   ;I_I_TubeMobile_Spindle AT  %USR_M1.27;
+	   _singfc( ( Vmax | Vout0 ),X, 2, VHIGH, 0, "%USR_M[1].27", 1 )       	   
+	   G4 F0.1
+	   SYN
+	   AcqPosX = GET(X)
+	   G10 G0 X(QCALC(X))			
+	   G152	
+	     
+	   SYN	
+	   ; Close Spindle Position
+	   IF ( Debug_LoadTube ) M0
+	   G153 G1 X(QCALC(X) - CatchLoadOft) F10000  	 
+		 
+	   SYN
+	   ; New Tube Length = paddle pos + QCALC(X)
+	   IF ( Debug_LoadTube ) M0
+	   tube_len = QCALC(X) - ( %LOADER.values4 / 1000 )  
+	   MSGOUT " Tube Length: " tube_len
+	   
+	   SYN
+       IF( tube_len < (ABS(xe-xs) - 100) ) THEN
+          SYN 
+          MSGOUT " Tube Length >> 100mm shorter than the program, press START to continue "	   
+   		  M0 
+       ENDIF  
+		 
+       ; Close master mobile spindle
+       ; I_I_Mobile_Spindle_Close  AT  %USR_M0.28;  
+       IF ( Debug_LoadTube ) M0
+       M721                      
+       G4 F2
+       	   
+       ; Extra Offset Push Tube More Inside the Machine
+       IF ( Debug_LoadTube ) M0 
+       G153 G1 X(tube_len-150) F15000
+	   
+	   ; Ensure photocells working well (Middle Spindle)
+	   ; I_I_TubeFix_Spindle    AT  %USR_M1.28; 
+	   SYN
+	   MSGOUT " Photocell(Tube on spindles Detecting ... ) " 
+	   AWAIT( (%USR_M1.27) && (%USR_M1.28) )
+        
+       ; Close Fixed spindle
+       IF ( Debug_LoadTube ) M0
+	   
+	   ; MidSpdOpening  AT  %USR_M41.28;
+	   WAITBIT("%USR_M41.28",0)
+
+       ; I_I_FixedSpindle_Close   AT  %USR_M1.31; 
+       M982   
+       G4 F2
+	   
+	   ; Open All Centering Clamps
+       IF ( Debug_LoadTube ) M0
+	   ; Loader Supports Center needs to be open
+       M452
+       SYN
+       ;I_I_Centering_Open_1 AT %USR_M13.24;  
+       ;I_I_Centering_Open_2 AT %USR_M13.25;  
+       ;I_I_Centering_Open_3 AT %USR_M13.26;  
+       ;I_I_Centering_Open_4 AT %USR_M13.27; 
+       WAITBIT("%USR_M13.24",1)
+       WAITBIT("%USR_M13.25",1)
+       WAITBIT("%USR_M13.26",1)
+       WAITBIT("%USR_M13.27",1)
+       
+       ; Graphic Tube Length Info
+       %funz[%IndexORG].origprgX = tube_len
+       
+	   ;ThreshLoadingSupDown     AT %LOADER.values8;  
+       ?%LOADER.values8 = 0
+	   
+       MSGOUT "Tube Loaded"
+  
+	   ACCTRJ = %cn[WHO()].pc6			
+       DECTRJ = %cn[WHO()].pc7
+       JRKTRJ = %cn[WHO()].pc16
+	   
+	   G153
+       IF (AEXISTS(5,Z)) G4005 S(AXIDX(5,Z))
+       IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))
+       IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))
+       IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))
+       G152
+       G4099
+  
+  ENDIF
+ENDIF  
+	   
+%PROG_ONE.values11 = 0
+
+RET

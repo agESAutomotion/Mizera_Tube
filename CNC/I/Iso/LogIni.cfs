@@ -1,0 +1,26 @@
+:LogIni
+;******************************************************************************
+;******************************************************************************
+
+SYN
+CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+RPT .format_a, .format_z, 1
+CALL fileOpenAsAppend(0, path1, 0)
+;;CALL fileOpenAsAppend(0, "D:/CFU/Lget.log", 0)
+CALL filePutItems(0, sYY , "/", sMM, "/", sDD,  "; ", shh, ":", smm, "; ")
+CALL filePutItems(0, "0001", "; " , "Power On;")
+CALL fileWriteLine(0)
+CALL fileClose(0)
+
+;******************************************************************************
+
+RET
+
+.format_a                                                          
+    CALL stringFormatInteger32(^sYY, 4, 4, 10, 0x2, bYY, ^overflow)
+    CALL stringFormatInteger32(^sMM, 2, 2, 10, 0x2, bMM, ^overflow)
+    CALL stringFormatInteger32(^sDD, 2, 2, 10, 0x2, bDD, ^overflow)
+    CALL stringFormatInteger32(^shh, 2, 2, 10, 0x2, bhh, ^overflow)
+    CALL stringFormatInteger32(^smm, 2, 2, 10, 0x2, bmm, ^overflow)
+    CALL stringFormatInteger32(^sss, 2, 2, 10, 0x2, bss, ^overflow)
+.format_z

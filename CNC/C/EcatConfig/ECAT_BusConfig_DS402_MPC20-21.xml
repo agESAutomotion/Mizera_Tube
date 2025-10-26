@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--Indradrive-->
+<Config DeviceConfig="BoschRexroth_IndraDrive_CoE_01V11.xml">
+
+    <Device>IndraDrive MPC20/21 CoE</Device>
+    
+    <Slot>Axis 1</Slot>
+    
+    <Module>Cyclic sync position mode</Module>
+
+	<RxPdo Index="#x1600">
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+	</TxPdo>
+
+
+	<DistribuitedClock>1</DistribuitedClock>
+	
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>1</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>500</Sync1ShiftTime>
+	</CyclicOperation>
+
+</Config>
+
+
+

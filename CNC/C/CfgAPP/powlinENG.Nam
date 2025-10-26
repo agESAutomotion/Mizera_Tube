@@ -1,0 +1,19 @@
+
+[KEYS]
+TITLE=POWER DATA
+
+[PROMPT]
+KEY_NODE=
+POWLIN=POWER lin
+Plot2=Power linearization
+L_POW_NOMINAL=REAL
+L_POWER2=SET
+L_TYPE_INTERP2=Pattern
+LIST0=Linear,Segment,Smoothing
+L_TYPE_INTERP1=Points
+LabelActualPW=Actual power [W]
+
+[STATUS]
+Plot2=SET(W),REAL(W)
+
+[HELP]

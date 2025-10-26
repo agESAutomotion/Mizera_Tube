@@ -1,0 +1,14 @@
+
+#include "Can?.nam"
+
+[KEYS]
+TITLE=Diagnostica
+
+[PROMPT]
+KEY_NODE=CanDiag
+PROVA=Diagnostica
+HELLO=
+
+[STATUS]
+
+[HELP]

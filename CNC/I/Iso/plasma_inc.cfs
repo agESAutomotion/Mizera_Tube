@@ -1,0 +1,457 @@
+: PLASMA_INC
+
+IF(DEFINED("plasma_included")) RET
+
+DBL plasma_included = 1
+DBL rtcp_calib = 1
+
+INCLUDE "LoadUnload_inc.cfs"
+INCLUDE "tube_inc.cfs"
+
+IF(!DEFINED("vax_included")) INCLUDE "vax_inc.cfs"
+IF(!DEFINED("vars_included")) INCLUDE "vars_inc.cfs"
+IF(!DEFINED("generic_included")) INCLUDE "generic_inc.cfs"
+
+;//shape flatness (bottom, left, top, right)
+DBL aid_isFlat[4]
+
+; Jump BTW faces
+INCLUDE "jump_inc.cfs"
+
+; Vrtc initialization variables
+
+INCLUDE "vrtc_ex_inc.cfs"
+JSR "init_vrtc_ex.cfs"
+
+;//====================================================================
+;//Utilizzate dal part-program
+DBL trav_safe_z=0, trav_safe_z_start=0
+DBL workpiece_safe_dist=0, workpiece_safe_dist_leave=0
+DBL lead_in_speed=0
+DBL cut_speed=0
+DBL feed1=0, feed2=0, feed3=0, feed4=0, feed5=0, feed6=0
+DBL AlphaP=0, AlphaN=0, BetaP=0, BetaN=0
+DBL head_safe_dist=(0.0 + (%CostK[13]) / 1000)   ;//XXX calcolare automaticamente
+DBL sav_G70_inc=XGET("@G70")
+DBL procvar_unit=sav_G70_inc           ;//Unita' in cui sono memorizzate le var di processo
+G271
+;//====================================================================
+
+;//Usate da G920
+DBL mi_last_finishing = 0
+DBL mi_last_compress = 0
+DBL mi_last_accel = QNAN()
+DBL mi_last_decel = QNAN()
+DBL mi_last_jerk = QNAN()
+DBL mi_prepro = 0
+
+;//Utilizzate da G800
+DBL gTravT=0, gTravH=0, gTravD=0, gTravS=0, gTravE=0, gTravI=0, gLastTravE=-1
+DBL gTravTech=0, gTravUnit=0
+DBL gKerfType, gKerfDescr, gKerfSvr
+DBL gTechType=0, gMachining=0, gTouchMode = 1, gRegolMode = 0
+DBL gTechLastIndex=0, gLastCompress=0, gLastG = 0
+
+;//Utilizzate da G700
+;DBL gBevelMode, gCurBevel, gCurLead, gCurAng, gCurForce, gCurTan, gCurVecX, gCurVecY
+;DBL gKerfType7, gKerfDescr7, gKerfSvr7
+;DBL gForcedInitialC, gKineFlip, gKineOffs
+;DBL gCurX, gCurY
+;DBL gAttachState = 0
+;DBL gRegol
+;DBL kf_a11=1, kf_a12=0, kf_a13=0
+;DBL kf_a21=0, kf_a22=1, kf_a23=0
+;DBL kf_a31=0, kf_a32=0, kf_a33=1
+;DBL kf_identity=1
+;DBL kf_HeadIsAB7=0
+DBL tube_y=0
+DBL iCh=WHO()
+DBL pi_ix
+
+;//$APP
+;//passthru writes
+DBL gL_CutDistance, gL_Tickness, gL_UserInt3, gL_SourceInt16x0, gL_SourceInt16x5, gLrecordTrumpf, gLcutId
+DBL gZoomValue,gFreeze
+DBL g840executed = 0
+DBL g650executed = 0
+DBL g1000executed = 0
+DBL HeadingExecuted = 0
+DBL WeldDetecDone = 0
+DBL indwloop = 0
+
+DBL PercentOutRng = IFEXP( ((%LSRCostK[17] < 70) && (%LSRCostK[17] > 15)), %LSRCostK[17], 70 )
+PercentOutRng = PercentOutRng / 100
+
+DBL cut_type = 2      ; 2=2D  3=3D
+DBL saveTypeCut 
+DBL Cir_circle
+DBL glbphase = 0
+
+DBL CouplingFollowEn = 0
+DBL CouplingFollowEnUnHor = 0
+DBL SetupAidsDone = 0
+DBL SetupAidsLatDone = 0
+DBL CouplingFollowEnLoad = 0
+DBL CouplingFollowEnLoadLat = 0
+
+IF( !ISQNAN(QCALCQ(Z)) ) trav_safe_z= (%ax29.pa[22] - 1500 ) / 1000     ;//Same as G0 Z in $START
+
+DBL ls_stateping=0      ;//stato ping per logica traslazione Laser
+DBL start_track
+DBL laserChg0=0, laserChg1=0
+DBL laserChg0_834=0, laserChg1_834=0
+DBL default_lun=1
+DBL first_mach=0
+;//G806 multiutensile
+DBL luns_cnt=0, luns_tech, prev_luns_cnt=0
+DBL gOptimEnableG806=1
+DBL wj_tick_read=0
+DBL head_y_dist=%Cost_User0/1000
+DBL tabColor=0
+DBL Follower_ok =0
+DBL LastSpindlMode = 0
+DBL LastWpos = 0
+DBL LastXpos = 0
+DBL LastVpos = 0
+DBL LastUnloadPiece = 0
+
+DBL cutDistRtChg=0
+DBL initialCutDist=0
+DBL rtCutDist=0
+DBL doM30 = 0
+DBL cleanexecuted = 0
+DBL Kdyn = 1
+
+DBL gG806FlyCutMode = 0
+DBL gPiercingMode=0
+DBL roundFlag=0                ; Se = 0 Tubo non tondo, [ con facce piane ]
+DBL UserCalibSpindle=0         ; Se=0 disabilita G2300
+DBL UserExecutedCalibSp=0      ; G2300 eseguita
+
+;//$APP #MAG: Show required A
+DBL wah_phy_a_inited=0, wah_a_inited=0
+DBL wah_a
+
+;//Probing
+DBL old_td_z = 0
+
+;//Gestione origini
+DBL orig_x=0,orig_y=0,orig_z=0,orig_c=0
+DBL ml_usr_origin
+;//origini di partenza (G254 ed altre)
+DBL base_orig = %IndexORG
+
+;//Gestione LISTE DI LAVORO
+DBL wlist_skipm30           ; Non eseguire M30 se gestione liste lavoro
+DBL wlist_stop_piece        ; Forza uno stop fine pezzo tra un programma e l'altro
+
+
+;// APA management
+DBL apa_lef_a1
+DBL apa_lef_d1
+DBL apa_lef_a2
+DBL apa_lef_d2
+DBL apa_lef_a3
+DBL apa_lef_d3
+DBL apa_enable              ; abilitazione generale apa
+DBL apa_list_enable         ; lista programmi abilitata
+DBL apa_call_byprog         ; apa richiamata da part program
+DBL apa_along_y             ; =0 lungo x, =1 lungo y
+DBL apa_mode                ; disab, 1 punto, 2 punti ecc
+DBL apa_submode             ; =1 acquisizione FISSA per 1 punto su pagina liste
+DBL apa_firstpoint_x        ; Punti abs calcolati per liste
+DBL apa_firstpoint_y        ; Punti abs calcolati per liste
+DBL apa_secondpoint_x       ; Punti abs calcolati per liste
+DBL apa_secondpoint_y       ; Punti abs calcolati per liste
+DBL apa_optimize_x          ;
+DBL apa_optimize_y          ;
+DBL apa_safe_z              ; altezza di sicurezza traslazioni
+;DBL absinc  = 0x01         ; per ottimizzare le DBL che sono al limite!
+DBL vout0   = 0x04
+;DBL vout    = 0x08         ; per ottimizzare le DBL che sono al limite!
+DBL vmax    = 0x10
+
+;//Gestione CAMBIO PALLET da PROG.
+DBL cp_call_byprog          ; CambioPallet richiamato da part program
+DBL cp_pallet_to_load       ; CambioPallet n. palled da caricare in macchina
+DBL cp_from_cststart        ; CambioPallet con traccia diversa da zero
+
+;//Gestione CALIBRAZIONE capacitivo
+DBL cl_done                 ; Calibrazione capacitivo fatto
+DBL cl_last_th              ; Ultimo spessore utilizzato per la calibrazione
+DBL cl_qta_x                ; Coordinata X per calibrazione
+DBL cl_qta_y                ; Coordinata Y per calibrazione
+
+DBL iso_enab_m1000
+
+;//Locali
+DBL TechType
+DBL qcz_mm
+
+DBL gOptim=1    ;//XXX ottimizzazione grafica e ricerca blocco qdo in modo 3 assi
+DBL gMatCount
+
+;Heading function (pipe)
+DBL heading_x
+DBL HeadingRequest = 0                  ; Heading pipe enable
+DBL HeadingTrackNum = 0
+DBL lstisbeveltrack = 0
+DBL HeadingLastLen = 0
+DBL HeadRecSelfLock = 0 
+DBL SelfLockSLoader = 0
+
+;Welding function (pipe)
+DBL WeldingRequest = %LSRPlcOp0.22      ; Welding pipe enable
+
+DBL MinQta_X = %ax30.pa21 / 1000 
+DBL MaxQta_X = %ax30.pa22 / 1000 
+DBL MinQta_W = %ax36.pa21 / 1000 
+DBL MaxQta_W = %ax36.pa22 / 1000 
+DBL MinQta_V = %ax31.pa21 / 1000 
+DBL MaxQta_V = %ax31.pa22 / 1000 
+DBL MinQta_Y = %ax28.pa21 / 1000 
+DBL MaxQta_Y = %ax28.pa22 / 1000 
+DBL MaxQta_Z = %ax29.pa22 / 1000 
+
+CALL phGraphInitialize()
+
+;//XXX Multiutensile non disponibile con grafica (manca istanza grafica)
+IF( %cn[WHO()].pc[14].25 == 0 ) THEN
+	;//!Grafica (automatico || verify)
+    ;//Esecuzione
+    FOR pi_ix = 0 TO 0
+        %UnitWork.uxh[pi_ix].uxh_SpacingX = 0
+        %UnitWork.uxh[pi_ix].uxh_SpacingY = 0
+        %UnitWork.uxh[pi_ix].uxh_Flags=0
+    ENDFOR
+ENDIF
+
+
+IF( %tab[1].t_yKine==3 ) THEN
+    ;//$APP Tubo parallelo ad Y
+    IF( %tab[1].t_ttab.t_oart.t_yOrient == 8 ) tube_y=1
+ENDIF
+
+; Se gestione start_track classica
+IF( !%PlcOp0.31 ) THEN
+
+    IF( (%cn[WHO()].rc[0].21 == 0) || (%cn[WHO()].pc[14].25 == 0) ) THEN
+        ;Esecuzione o Verify
+        start_track = %R18
+        ;IF(start_track == 0) start_track = 1 ;  (Dino) Tenuto a zero per eseguire comandi Coiler che sono su "N0"
+        ?%R18 = start_track
+    ELSE
+        ;Grafica
+        start_track = 1
+    ENDIF
+ENDIF
+
+; Se gestione PEZZO e GEOMETRIA
+IF( %PlcOp0.31 ) THEN
+
+    IF( (%cn[WHO()].rc[0].21 == 0) || (%cn[WHO()].pc[14].25 == 0) ) THEN
+        ;Esecuzione o Verify
+        start_track =  (%PEZZO * 1000) + (%GEOMETRIA)
+    ELSE
+        ;Grafica
+        start_track = 0
+    ENDIF
+ENDIF 
+
+;//XXX IF ( start_track == 1 ) first_mach = 1
+
+;//XXX Se utilizzato un selettore, riassegnare qui default_lun
+;//XXX (su alcune versioni � usato %rPlc2)
+
+;//Seleziona tecnologia di default
+gTechType = %UnitLun[default_lun].UL_gTravTech
+
+TechType = gTechType
+
+;//Metti questi dati a valori di sicurezza o che causino errore nel caso sia
+;//selezionata una tecnologia che non le usa
+cut_speed = 0
+lead_in_speed = 0
+feed1 = 0
+feed2 = 0
+feed3 = 0
+feed4 = 0
+feed5 = 0
+;;;G310 D1 L0 R(0)
+;;;G310 D2 L0 R(0)
+;;;G310 D3 L0 R(0)
+workpiece_safe_dist = 30
+workpiece_safe_dist_leave = 30
+F(0)
+
+
+IF( TechType == 3 ) THEN
+    ;//Laser
+    IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+        ;//Esecuzione
+        ;//XXX %TabLsr[0].L_Tickness = 0
+        IF(%TabLsr[0].L_Tickness < 0) %TabLsr[0].L_Tickness = 0
+    ENDIF
+
+    orig_z=%TabLsr[0].L_Tickness / 1000
+    
+    feed1 = %TabLsr[0].L_FeedA
+    feed2 = %TabLsr[0].L_FeedB
+    feed3 = %TabLsr[0].L_FeedC
+    feed4 = %TabLsr[0].L_FeedMarking
+    feed5 = %TabLsr[0].L_FeedDecoating
+    G310 D1 L0 R(%TabLsr[0].L_KerfA)
+    G310 D2 L0 R(%TabLsr[0].L_KerfB)
+    G310 D3 L0 R(%TabLsr[0].L_KerfC)
+    ;;;workpiece_safe_dist = %TabLsr[0].L_SafeDistance
+    ;;;workpiece_safe_dist_leave = %TabLsr[0].L_SafeDistance
+    IF( workpiece_safe_dist < 10 ) workpiece_safe_dist = 30
+    IF( workpiece_safe_dist_leave < 10 ) workpiece_safe_dist_leave = 30
+    F(feed1)
+ENDIF
+
+gMatCount = %matPrg[0].MatCount
+
+; Se liste di lavoro abilitata utilizza orig. 20 per grafica e 21 per orig. pezzo.
+IF( %LSRPlcOp0.5 ) THEN
+    ;;; X PIANO
+    ;;; %IndexORG = 20 (per il piano)
+    ;;; %funz[%IndexORG].origprgX = 0
+    ;;;%funz[%IndexORG].origprgY = 0
+    %IndexORG = 19
+ENDIF
+base_orig = %IndexORG
+
+IF( %cn[WHO()].rc[0].21 ) THEN
+    ;modo test: Verify o grafica
+    IF( %cn[WHO()].pc[14].25 == 0 ) THEN
+        ;Verify
+        orig_x=%funz[%IndexORG].origprgX
+        orig_y=%funz[%IndexORG].origprgY
+        orig_c=%funz[%IndexORG].rotEA
+    ELSE
+        ;Grafica
+        orig_x=0
+        orig_y=0
+        orig_z=0	;graphics: overwrite Z origin with 0
+        orig_c=0
+    ENDIF
+ELSE
+    ;Esecuzione
+    orig_x=%funz[%IndexORG].origprgX
+    orig_y=%funz[%IndexORG].origprgY
+    orig_c=%funz[%IndexORG].rotEA                      ; attention for pipe it is managed in g806
+
+    ;DryRun con Laser
+    IF( %PlcOp[0].2 ) THEN
+        orig_x=orig_x-(%config_machine14/1000)          ; Offset laser X
+        orig_y=orig_y-(%config_machine15/1000)          ; Offset laser Y
+    ENDIF
+
+    ;XXX inconsistente con tubo, messe rotazioni piane a 0
+    ;XXX forse serve Mat_tCoff
+
+    ;tubo
+    ;IF( gTravE != 0 ) THEN
+    IF (1) THEN
+        ;//XXX rotazione tavola intorno ad X, annulla origini Y e Z e la rotazione
+        ?%matPrg[0].a[0]  = 1
+        ?%matPrg[0].a[1]  = 0
+        ?%matPrg[0].a[2]  = 0
+        ?%matPrg[0].a[3]  = orig_x * 1000
+        
+        ?%matPrg[0].a[4]  = 0
+        ?%matPrg[0].a[5]  = 1
+        ?%matPrg[0].a[6]  = 0
+        ?%matPrg[0].a[7]  = orig_y * 1000
+        
+        ?%matPrg[0].a[8]  = 0
+        ?%matPrg[0].a[9]  = 0
+        ?%matPrg[0].a[10] = 1
+        ?%matPrg[0].a[11] = 0.0 * 1000
+    ELSE       
+        ;Matrici per Visualizzazione Quote Programma
+        %matPrg[0].a[0] = COS(0)
+        %matPrg[0].a[1] = -SIN(0)
+        %matPrg[0].a[2] = 0
+        %matPrg[0].a[3] = orig_x * 1000
+
+        %matPrg[0].a[4] = SIN(0)
+        %matPrg[0].a[5] = COS(0)
+        %matPrg[0].a[6] = 0
+        %matPrg[0].a[7] = orig_y * 1000
+
+        %matPrg[0].a[8]  = 0
+        %matPrg[0].a[9]  = 0
+        %matPrg[0].a[10] = 1
+        %matPrg[0].a[11] = orig_z * 1000
+    ENDIF
+    %matPrg[0].Mat_tCoff = 0                ; offset C per gui
+    %matPrg[0].Mat_tBoff = 0                ; offset B per gui
+
+    %matPrg[0].sts[0] = 2
+    %matPrg[0].sts[1] = AXIDX(X)
+    %matPrg[0].sts[2] = AXIDX(Y)
+    %matPrg[0].sts[3] = AXIDX(Z)
+
+    gMatCount=gMatCount+1
+    IF( gMatCount >= 200 ) gMatCount=0
+    %matPrg[0].MatCount = gMatCount
+ENDIF
+
+;Gestione origini
+G168
+ml_usr_origin = ml_curr
+
+IF( %LSRPlcOp0.5 ) %IndexORG = 19
+
+IF( !ISQNAN(QCALCQ(Z)) ) THEN
+    ;//XXX 1) la tecnologia di default e' la prima che useremo?
+    ;//XXX 2) combinata: vedere in generale problematiche di passaggio tra
+    ;//XXX    tecnologie (hanno diverse workpiece_safe_dist) ed anche possibili
+    ;//XXX    differenze tra workpiece_safe_dist e workpiece_safe_dist_leave.
+    ;//XXX 3) Si assume che G161 Z abbia stabilito lo spessore del pezzo.
+    ;//XXX    Se mettono uno spessore a 0 per rilevarlo esclusivamente con la
+    ;//XXX    tastatura, ovviamente workpiece_safe_dist deve essere addizionato
+    ;//XXX    (dall'utente) del massimo spessore del pezzo.
+    ;;;G806 T(default_lun) H1 D1 Q0
+    ;;;qcz_mm = QCALC(Z)
+    ;;;G180 X0 Y0 Z(0.0+workpiece_safe_dist) A0 B0 C0
+    ;;;trav_safe_z_start = MAX( kine_z+head_safe_dist, qcz_mm )
+    ;//XXX Sicurezza per Durma: calcolo disabilitato
+    trav_safe_z_start = trav_safe_z
+ENDIF
+
+;//Surface normal vector is relative to the workpiece frame
+ECLMXM=1
+;//face milling mode
+G183 J1    ;;;SPC 30150,1
+SPC 30149,1 ;//bG0ExtSetOnlyWithRtcp 
+
+IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+    ;//Esecuzione
+    FOR pi_ix = 0 TO 0
+        %UnitWork.uxh[pi_ix].old_td_z = old_td_z
+        %UnitWork.uxh[pi_ix].uxh_Thickness = 0.0
+    ENDFOR
+ENDIF
+
+;//XXX attualmente la G651 non scrive in shared in grafica.  Questo e' corretto per le
+;//XXX monoboard, ma forse andrebbero memorizzate come informazioni geometriche ad uso
+;//XXX grafica (e' il caso dello spessore e piercing dinamico).
+IF( %cn[WHO()].rc[0].21 ) THEN  ;Canale in test
+    feed1 = 1000
+    feed2 = 1000
+    feed3 = 1000
+    feed4 = 1000
+    feed5 = 1000
+    feed6 = 1000
+    cut_speed = 1000
+    lead_in_speed = 1000
+ENDIF
+
+gOptim=1
+
+G(200+sav_G70_inc)
+
+RET

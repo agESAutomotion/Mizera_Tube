@@ -1,0 +1,16 @@
+ L :G167
+;//
+;// G167    L<ml_index>
+;//
+;//Annulla [temporaneamente] un certo numero di sistema di riferimento
+;//Scrive sui coefficienti mx_...
+DBL ml = VA11
+
+IF(ml < -1) ERROR(61)  ;//Valore troppo elevato
+IF(ml > ml_peak) ERROR(61)  ;//Valore troppo elevato
+
+ml_curr = ml
+
+G1152
+G152
+RET

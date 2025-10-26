@@ -1,0 +1,107 @@
+ D T [X] [Y] : G11035
+;// Calculates either forward or inverse n-polinomial table transform.
+;// Either x or y result is returned in table_x or table_y respectively
+;// (to be defined externally).
+;/
+;// Table function must be monotone for inverse function evaluation to be
+;// correct.  Also, it cannot be multidimensional.
+;/
+;// Please look at the code below for remarks on implementation dependent
+;// possible limitations.
+DBL transform = VA3
+DBL table = VA19
+DBL x = VA23
+DBL y = VA24
+DBL min, max, n
+DBL step
+DBL p, pf
+DBL i
+DBL ya, yb
+DBL found
+
+;//0-dimensional interpolation not allowed
+IF (%ptbiTrans[table].ptbiNdivs[0] == 0) ERROR(55)
+SWITCH (transform)
+CASE 0
+    ;//Inverse table transform
+    IF (VALID(x) || !VALID(y)) ERROR(55)
+
+    ;//IMPLEMENTATION RESTRICTION
+    ;//At present time, inverse function cannot be higher degree than linear
+    ;//because there would be no trivial analytic solution.
+    IF ((%ptbiTrans[table].ptbiIpType & 0x3) != 0x0) ERROR(55)
+
+    ;//Inverse function cannot be multi-dimensional
+    IF (%ptbiTrans[table].ptbiNdivs[1] != 0) ERROR(55)
+    IF (%ptbiTrans[table].ptbiNdivs[2] != 0) ERROR(55)
+
+    min = %ptbiTrans[table].ptbiInMin[0] / 1000.0
+    max = %ptbiTrans[table].ptbiInMax[0] / 1000.0
+    n = %ptbiTrans[table].ptbiNdivs[0]
+    step = (max - min) / n
+
+    ;//Must not be degenerate
+    IF (step <= 0.001) ERROR(55)
+
+    ya = %ptbiTrans[table].ptbiOut[0] / 1000.0
+    yb = %ptbiTrans[table].ptbiOut[n] / 1000.0
+
+    i = 0
+    found = 0
+    WHILE (!found && (i < n))
+        ya = %ptbiTrans[table].ptbiOut[i]   / 1000.0
+        yb = %ptbiTrans[table].ptbiOut[i+1] / 1000.0
+
+        IF (ABS(yb - ya) < 0.005) ERROR(55)
+
+        p = (y - ya) / (yb - ya)
+        IF ((p >= -0.000001) && (p <= +1.000001)) found = 1
+
+        IF (!found) i = i + 1
+    ENDWHILE
+    IF (!found) ERROR(55) ;zone not found
+
+    x = min + (i + p) * step
+
+    table_x = x
+    table_y = y
+CASE 1
+    ;//Direct table transform
+    IF (VALID(y) || !VALID(x)) ERROR(55)
+
+    ;//IMPLEMENTATION RESTRICTION
+    ;//Direct function, at present time, cannot be cubic or multi-dimensional
+    IF ((%ptbiTrans[table].ptbiIpType & 0x3) != 0x0) ERROR(55)
+    IF (%ptbiTrans[table].ptbiNdivs[1] != 0) ERROR(55)
+    IF (%ptbiTrans[table].ptbiNdivs[2] != 0) ERROR(55)
+
+    min = %ptbiTrans[table].ptbiInMin[0] / 1000.0
+    max = %ptbiTrans[table].ptbiInMax[0] / 1000.0
+    n = %ptbiTrans[table].ptbiNdivs[0]
+    step = (max - min) / n
+
+    ;//Must not be degenerate
+    IF (step <= 0.001) ERROR(55)
+
+    p = (x - min) / step
+    pf = FLOOR(p)
+    p = p - pf
+    i = FLOOR(0.5 + pf)
+
+    IF (i < 0) THEN
+        y = %ptbiTrans[table].ptbiOut[0] / 1000.0
+    ELSEIF (i >= n) THEN
+        y = %ptbiTrans[table].ptbiOut[n] / 1000.0
+    ELSE
+        ya = %ptbiTrans[table].ptbiOut[i]   / 1000.0
+        yb = %ptbiTrans[table].ptbiOut[i+1] / 1000.0
+        y = ya + p * (yb - ya)
+    ENDIF
+
+    table_x = x
+    table_y = y
+OTHERWISE
+    ERROR(55)
+ENDSWITCH
+
+RET

@@ -1,0 +1,46 @@
+
+[KEYS]
+TITLE=VALVOLA
+TXT6=Linearizzazione
+TXT7=Parametri
+TXT8=Test Gas
+TXT9=Test Assistenza taglio
+TXT10=Test Aria ugello
+TXT11=Test ARIA
+TXT12=Test OSSIGENO
+TXT13=Test AZOTO
+
+[PROMPT]
+KEY_NODE=
+LASERPAGE=Leaf
+GroupBox2=Feedback
+GroupBoxGasOption=Parametri e opzioni
+GroupBox5=Settaggio pressioni gas
+Label1=Pressione max. valvola proporzionale bar]
+Label2=Pressione massima OSSIGENO [bar]
+Label3=Pressione massima AZOTO [bar]
+Label4=Pressione massima ARIA [bar]
+Label5=Pressione per TEST [bar]
+LabelPresReaded=Pressione letta [bar]
+LabelTollPresAlarm=Tolleranza controllo allarme (=0 disabilitato) [%]
+Label9=Tempo di ritardo controllo allarme [s]
+Label12=EV Assistenza tag.
+Label13=EV Aria ugello
+Label29=Maximum diff. input pressure [bar]
+Label30=Delay feedback input gas control [s]
+LabelAitOff2=ARIA
+LabelN2Off2=N2
+LabelO2Off2=O2
+LabelAit2=ARIA
+LabelN2=N2
+LabelO2=O2
+LabelTesting=Test in corso...
+LabelPresCommanded=Pressione impostata [bar]
+LabelExtraEv=Aux EV.
+LabelExtraEv_ON=Aux EV.
+P_REF2=VEL. +
+P_REF1=VEL. -
+
+[STATUS]
+
+[HELP]

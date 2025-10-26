@@ -1,0 +1,27 @@
+
+[KEYS]
+TITLE=USER FUNCTION
+TXT0=Cabin light
+TXT1=Laser head light
+TXT2=Gaurd Door 1 Up
+TXT3=Gaurd Door 1 Down
+TXT4=Gaurd Door 2 Up
+TXT5=Gaurd Door 2 Down
+TXT8=Team Viewer
+
+[PROMPT]
+KEY_NODE=
+USER=
+ButtonAspiratorMngt=ASPIRATOR MANAGEMENT
+ButtonCleanHead=CLEAN HEAD
+ButtonService=SERVICE
+ButtonInpTest=DIGITAL I/O
+ButtonIOanalog=ANALOG I/O
+ButtonAspiratorMngt1=MANUAL CUT
+ButtonCleanHead1=LUBRICATION
+ButtonIOanalog1=Log
+ButtonCleanHead2=PIPE CALIBRATION
+
+[STATUS]
+
+[HELP]

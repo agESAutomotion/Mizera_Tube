@@ -1,0 +1,129 @@
+: M30
+; Fine programma
+DBL indwloop
+DBL park_twi, park_ax
+DBL predispA, predispB
+trav_safe_z = (MaxQta_Z) - 1.5
+
+;Tube Info PreRead 
+IF( (%cn[WHO()].pc[14].25 == 1) && (WHO() == 0) ) THEN
+   %R35 = HeadingTrackNum
+   IF( HeadingTrackNum == 1 ) %R35 = 0
+   COPYVTOR(^%R35)
+   COPYVTOR(^%gIso22) 
+   COPYVTOR(^%gIso23)
+   COPYVTOR(^%gIso24)
+   COPYVTOR(^%gIso25)
+   COPYVTOR(^%gIso26)
+   FOR indwloop = 0 TO 16
+       COPYVTOR(^%HMI_ONE.value[indwloop])
+   ENDFOR
+ENDIF
+
+; Weldseam detection function will clear angle end of program
+IF( (!%ServiceMillePGM.11) && (WeldDetecDone == 1) ) THEN
+    ?%funz[19].rotEA = 0
+ENDIF 
+
+IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+IF( WHO() == 0 ) THEN
+    SYN
+    IF( AEXISTS(8,Y) ) AWAIT( %ax[AXIDX(8,Y)].ra3.0 )
+    IF( AEXISTS(8,Z) ) AWAIT( %ax[AXIDX(8,Z)].ra3.0 )
+    IF( AEXISTS(8,U) ) AWAIT( %ax[AXIDX(8,U)].ra3.0 )
+    IF( AEXISTS(8,V) ) AWAIT( %ax[AXIDX(8,V)].ra3.0 ) 	 
+    IF( AEXISTS(8,W) ) AWAIT( %ax[AXIDX(8,W)].ra3.0 )
+	
+	IF( AEXISTS(5,Y) ) AWAIT( %ax[AXIDX(5,Y)].ra3.0 )
+    IF( AEXISTS(5,Z) ) AWAIT( %ax[AXIDX(5,Z)].ra3.0 )
+    IF( AEXISTS(5,U) ) AWAIT( %ax[AXIDX(5,U)].ra3.0 )
+    IF( AEXISTS(5,V) ) AWAIT( %ax[AXIDX(5,V)].ra3.0 )
+ENDIF
+ENDIF
+
+IF( WHO() != 0 ) M30
+SYN
+IF( (%ServiceMillePGM != 0) || (%gPlc0.29) || (%CalPipe.General.3) || (%gPlc13.27) ) THEN 
+	;iso_ResetCmd AT %LsIso9.6;
+	SYN
+	?%LsIso9.6 = 1
+	G4 F0.5
+ENDIF     
+IF( %LsIso9.0 ) M30     ; only M30
+
+DBL sav_G70=XGET("@G70")
+DBL ScanId = 0
+
+?%LSRPlcOp0.21 = 0  ; Heading pipe OFF
+?%LsIso30 = 0       ;timer
+IF( !%LSRPlcOp0.5 ) SelfLockSLoader = 0
+
+G271
+
+; Se gestione start_track classica
+IF( !%PlcOp0.31 ) THEN
+    start_track=0
+    ?%R18=start_track
+ENDIF
+; Se gestione PEZZO e GEOMETRIA
+IF( %PlcOp0.31 ) THEN
+    start_track=0
+    %PEZZO = 0
+    %GEOMETRIA = 0
+ENDIF
+
+M498 ; Spegnimento gas Laser
+
+IF (%rLsGui29.7) THEN 
+    ?%rLsGui29.7 = 0         ; Pre piercing option
+    ?%rLsGui29.5 = 1         ; disable piercing option
+    G168
+    IF( %PlcOp0.31 == 0 ) RETSKIP(1)
+    IF( %PlcOp0.31 == 1 ) RETSKIP(1001)
+ENDIF
+
+IF (%rLsGui29.5 == 1) %rLsGui29.5 = 0         ; disable piercing option
+
+;IF ((%gGui[0].6 == 0) && (!%LSRPlcOp[0].8)) G153 G0 Z(trav_safe_z)
+
+;//Parcheggia gli assi di tutte le teste 5 assi
+kine_a=QNAN()
+kine_b=QNAN()
+kine_c=QNAN()
+FOR park_twi=1 TO 2
+    IF(%twi[park_twi].yKine == 3) THEN
+        park_ax = %twi[park_twi].htwi.oarh.yECAx
+        IF(park_ax==7) kine_a=0
+        IF(park_ax==8) kine_b=0
+        IF(park_ax==9) kine_c=90
+        park_ax = %twi[park_twi].htwi.oarh.yEBAx
+        IF(park_ax==7) kine_a=0
+        IF(park_ax==8) kine_b=0
+        IF(park_ax==9) kine_c=90
+    ENDIF
+ENDFOR
+
+G153 G0 A(kine_a) B(kine_b) C(kine_c)
+
+;//Parcheggia gli assi di tutte le teste a predisposizione
+predispA = QNAN()
+;//XXX$AdvanceTech IF( (!ISQNAN(QCALCQ(A))) ) predispA = 0.0
+predispB = QNAN()
+;//XXX$AdvanceTech IF( (!ISQNAN(QCALCQ(B))) ) predispB = 0.0
+
+G0 A(predispA) B(predispB)
+
+.ExitM30
+
+; Disable all follower
+M702 
+
+; Clear Bistate 
+M499
+
+G(200+sav_G70)
+
+; Se gestione LISTE NON inserire la M30
+IF( !wlist_skipm30 )  M30
+
+RET

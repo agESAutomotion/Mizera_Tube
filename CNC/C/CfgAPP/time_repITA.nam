@@ -1,0 +1,25 @@
+
+[KEYS]
+TITLE=Tempi di lavoro
+
+[PROMPT]
+KEY_NODE=Node
+TIME_REP=Leaf
+GroupBox1=Report
+Label1=Giorni
+Label2=Giorni
+Label3=Anni
+Label4=Tempo totale macchina accesa :
+Label5=Tempo macchina accesa :
+Label6=Tempo esecuzione ultimo pezzo :
+Label7=Tempo totale laser acceso :
+Label8=Giorni
+Button=VISUALIZZA LOG
+GroupBox2=il disco tempo utilizzato
+Label9=il disco tempo utilizzato
+Label10=Giorni
+Button1=RESET
+
+[STATUS]
+
+[HELP]

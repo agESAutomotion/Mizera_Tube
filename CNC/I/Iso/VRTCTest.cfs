@@ -1,0 +1,324 @@
+% cutting machine with tool and normal VRTC example
+
+INCLUDE "plasma_inc.cfs"
+
+DBL toolVidx = VRTCIDX(0)       ;//this example may refer to these to access
+DBL surfaceVidx = VRTCIDX(1)    ;//some parameters, such as mandatory pos range
+
+;//1 = tool, 2 = surface, 6 = Z
+DBL vectorSelect = 6
+
+DBL touch_enable = 1
+
+DBL pierce_height = 20
+
+
+;;;G2292 X50 U350 Y-50 V+50 Z0 W0
+;//T11: generic AB
+;//D12: L100 R5
+
+RTCP = 1
+VECRTC = 1
+G183 J1     ;//face milling mode
+
+;//See example.plc for complete registers mapping
+;//uvh{Tool|Surface}Command[0] mask
+DBL c_reset             = 0x00000001
+DBL c_simul             = 0x00000002
+DBL c_move_to_target    = 0x00000004
+DBL c_reset_pos_int     = 0x00000008
+DBL c_pos_lim_disab     = 0x00000010
+DBL c_de_overlap        = 0x00000020
+DBL c_error_amp         = 0x00000040
+DBL c_toggle            = 0x80000000
+;//uvh{Tool|Surface}Command[_]
+DBL cr_SimOffsetSet = 1
+DBL cr_Setpoint     = 2
+DBL cr_VectorSelect = 3
+;//uvh{Tool|Surface}Status[0] mask
+;//uvh{Tool|Surface}Status[0].2     SignalLock
+;//uvh{Tool|Surface}Status[0].31    ToggleAck
+;//uvh{Tool|Surface}Status[_]
+DBL sr_SimOffsetCur = 1
+DBL sr_FltQ         = 2
+
+DBL hix = 0
+; present in 3333.pgm
+;DBL tcr = 0
+;DBL scr = 0
+DBL i
+DBL x, y, z
+DBL flt_qT, flt_qS
+DBL tx, ty, tz
+DBL ni, nj, nk, nijk
+DBL projection, h1, h2
+
+DBL ti, tj, tk
+DBL ta, tb
+DBL repeat
+
+
+FOR repeat = 1 TO 2
+
+G172 T1 H1 D1
+G64
+
+tx = 100
+ty = 0
+tz = 0
+ti = 0.0
+tj = 1.0
+tk = 0.0
+ta = 0
+tb = 0
+G180 D1 P1 A(ta) B(tb)
+
+SWITCH (vectorSelect)
+CASE 1
+    ni = tf_a13
+    nj = tf_a23
+    nk = tf_a33
+CASE 2
+    ni = ti
+    nj = tj
+    nk = tk
+    ;//surface normal unit vector
+    nijk = SQRT(ni*ni + nj*nj + nk*nk)
+    ;//segmento nullo
+    IF (nijk > 0.001) THEN
+        ni = ni / nijk
+        nj = nj / nijk
+        nk = nk / nijk
+    ENDIF
+CASE 6
+    ni = 0.0
+    nj = 0.0
+    nk = 1.0
+ENDSWITCH
+
+;//go to piercing point
+G153 G0 Z400
+
+G180 X(tx+ni*50) Y(ty+nj*50) Z(tz+nk*50) A(ta) B(tb) ; 50 dal punto di touch
+G153 G0 X(kine_x) Y(kine_y) A(kine_a) B(kine_b)
+G153 G0 Z(kine_z)
+
+EI(ti) EJ(tj) EK(tk)
+G152    ;//update VRTC normal vector
+
+;//stand-off range error
+IF (pierce_height > (%vrtc[toolVidx].VrLimM_Q_U/1000)) ERROR(787)
+IF (pierce_height < (%vrtc[toolVidx].VrLimM_Q_L/1000)) ERROR(787)
+
+IF (touch_enable) THEN
+    x = XGET("@X")
+    y = XGET("@Y")
+    z = XGET("@Z")
+ELSE
+    x = tx + tf_a13 * pierce_height
+    y = ty + tf_a23 * pierce_height
+    z = tz + tf_a33 * pierce_height
+    G0 X(x) Y(y) Z(z)
+ENDIF
+
+;//calculate T unit vector projection on S
+projection = tf_a13 * ni + tf_a23 * nj + tf_a33 * nk
+
+;//calculate piercing point vector projection on S for setpoint scaling
+;//and de-overlap
+h1 = pierce_height * projection
+;//calculate current position vector projection on S, minus h1, for de-overlap
+h2 = ((x-tx) * ni + (y-ty) * nj + (z-tz) * nk) - h1
+
+;//Convert to absolute from now on
+G180 P1 X(x) Y(y) Z(z)
+x = kine_x
+y = kine_y
+z = kine_z
+
+;//wait for not busy state (optimization, see at the end)
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+;//clear T reset, start T de-overlap,
+;//set vector and assign initial setpoint
+;//disable RTCP (optimization)
+?%uvHeads[hix].uvhToolCommand[cr_VectorSelect] = 1
+?%uvHeads[hix].uvhToolCommand[cr_Setpoint] = pierce_height *100
+tcr = tcr & XOR((c_reset | c_error_amp), -1)
+tcr = tcr | c_de_overlap
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+G153
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+
+;//perform T de-overlap
+x = x - tf_a13 * pierce_height
+y = y - tf_a23 * pierce_height
+z = z - tf_a33 * pierce_height
+_deoverlap(0x00, X, Y, Z, x, y, z)
+G10 G0 X(x) Y(y) Z(z)
+
+;//stop T de-overlap, clear S reset, start S de-overlap,
+;//set vector and assign initial setpoint, DISABLE POSITION LIMIT
+tcr = tcr | c_error_amp
+tcr = tcr & XOR(c_de_overlap, -1)
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+?%uvHeads[hix].uvhSurfaceCommand[cr_VectorSelect] = vectorSelect
+?%uvHeads[hix].uvhSurfaceCommand[cr_Setpoint] = 0 *100
+scr = scr & XOR((c_reset | c_error_amp), -1)
+scr = scr | c_de_overlap | c_pos_lim_disab
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+
+;//perform S de-overlap
+IF (touch_enable) THEN
+    x = x - ni * h2
+    y = y - nj * h2
+    z = z - nk * h2
+    _deoverlap(0x00, X, Y, Z, x, y, z)
+    G10 G0 X(x) Y(y) Z(z)
+ENDIF
+
+;//disable S de-overlap
+;//reenable RTCP (optimization)
+scr = scr | c_error_amp
+scr = scr & XOR(c_de_overlap, -1)
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+G152
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+;//wait for signal lock
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].2", 1)
+
+;//surface tolerance error
+;///////////////////////////////////////////////////////////////////////
+;// done by PLC while switching tables and removing c_pos_lim_disab ...
+;///////////////////////////////////////////////////////////////////////
+
+;//move aside to piercing point
+IF (touch_enable) THEN
+    G0 X(tx) Y(ty) Z(tz)
+ENDIF
+
+
+M0
+
+;//enable PLC vrtc handling
+?%uvHeads[hix].uvhCommand[0].1 = 1
+;//NOTE: check for uvhStatus[0].1 == 1 deferred
+
+;//machining
+F2000
+G1 X200
+
+;///////////////////////////////////////////////
+;// asynchronous action normally done by PLC...
+;// here we commented out WAITBIT to avoid fly errors
+?%uvHeads[hix].uvhToolCommand[cr_Setpoint] = pierce_height/2 *100
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+;//wait for not busy state
+;WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+G1 X210
+;//wait for not busy state
+;WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+;//wait for signal lock
+;WAITBIT("%uvHeads[hix].uvhToolStatus[0].2", 1)
+M0
+G1 X220
+;///////////////////////////////////////////////
+
+G1 X300
+
+;//leave machining
+EI0 EJ0 EK0
+
+;//disable PLC vrtc handling
+WAITBIT("%uvHeads[hix].uvhStatus[0].1", 1)
+?%uvHeads[hix].uvhCommand[0].1 = 0
+WAITBIT("%uvHeads[hix].uvhStatus[0].1", 0)
+;//THIS WORKS AS A COMMAND CHANGE AND REQUIRES TO TOGGLE
+
+;//quickly stop and start T de-overlap
+;//disable RTCP (optimization)
+tcr = tcr & XOR(c_error_amp, -1)
+tcr = tcr | c_de_overlap
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+scr = scr & XOR(c_error_amp, -1)
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+G153
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+;//wait for signal lock
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].2", 1)
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].2", 1)
+
+M0
+
+SYN
+flt_qT = %uvHeads[hix].uvhToolStatus[sr_FltQ] / 1000
+flt_qS = %uvHeads[hix].uvhSurfaceStatus[sr_FltQ] / 1000
+;//perform T de-overlap
+G180 D1 P1
+x = QPREF(X) + tf_a13 * flt_qT
+y = QPREF(Y) + tf_a23 * flt_qT
+z = QPREF(Z) + tf_a33 * flt_qT
+_deoverlap(0x00, X, Y, Z, x, y, z)
+G10 G0 X(x) Y(y) Z(z)
+
+M0
+
+;//stop T de-overlap and start S de-overlap
+tcr = tcr & XOR(c_de_overlap, -1)
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+scr = scr | c_de_overlap
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+
+M0
+
+;//perform S de-overlap
+x = x + ni * flt_qS
+y = y + nj * flt_qS
+z = z + nk * flt_qS
+_deoverlap(0x00, X, Y, Z, x, y, z)
+G10 G0 X(x) Y(y) Z(z)
+
+M0
+
+;//reset and disable S de-overlap
+;//reset setpoint command registers
+;//reenable RTCP (optimization)
+?%uvHeads[hix].uvhToolCommand[cr_Setpoint] = 0
+?%uvHeads[hix].uvhSurfaceCommand[cr_Setpoint] = 0
+tcr = tcr | c_reset | c_error_amp
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+scr = scr | c_reset | c_error_amp
+scr = scr & XOR((c_de_overlap | c_pos_lim_disab), -1)
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+G152
+;//wait for not busy state moved to the start of first phase
+;//so that it overlaps with rapid motion to next track (optimization)
+
+G153 G0 Z140
+
+G173
+
+ENDFOR  ;//repeat
+
+M2

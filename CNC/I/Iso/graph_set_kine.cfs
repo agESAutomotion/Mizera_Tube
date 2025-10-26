@@ -1,0 +1,24 @@
+:
+;//
+;// Predisposizione grafica run-time
+;// Cinematica
+;//
+
+?%ChanMon[WHO()].CmGraphCmd = 0x0;           Attivazione Ut in Graph
+
+?%ChanMon[WHO()].CmGraphRefTwi = gTravT
+?%ChanMon[WHO()].CmGraphRefThd = gTravH
+?%ChanMon[WHO()].CmGraphRefCed = gTravD
+?%ChanMon[WHO()].CmGraphRefTab = gTravE
+?%ChanMon[WHO()].CmGraphRefSvl = gTravS
+
+?%ChanMon[WHO()].CmGraphCmd = 0x101;           Attivazione Ut in Graph
+
+;//Se cambia la cinematica potrebbe cambiare il sistema delle origini
+IF( %LSRPlcOp0.5 == 0 ) JSR "graph_set_orig.cfs"
+;//Se cambia la cinematica cambiano i dati tecnologici
+;//In questo modo visualizza le coordinate dello spot di taglio, anche in rapido
+;//Disabilitare se, in rapido, si vogliono visualizzare le coordinate della punta della torcia
+;JSR "graph_set_tech.cfs"
+
+RET

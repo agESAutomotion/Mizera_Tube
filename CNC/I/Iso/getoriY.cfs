@@ -1,0 +1,245 @@
+: getoriY
+;******************************************************************************
+;   ACQUISIZIONE ORIGINE LUNGO Y
+;
+;   Puo' essere chiamata dall'acquisizione manuale oppure da part program
+;******************************************************************************
+DBL OffsetXlaser, OffsetYlaser
+DBL Ax, Ay, Bx, By, Cx, Cy
+DBL CCx, CCy
+DBL Ox, Oy, Orot
+DBL Dx, Dy, Ex, Ey, Lx, Ly  ;//for plate size measurement cycles (5 pts)
+DBL offx, offy              ; offset for APA acquire
+DBL beta,ip                 ; hypotenuse angle for apa point offset FUNCTION
+
+;//laser edge find
+DBL lef_a ;//asse (system wide)
+DBL lef_d ;//direzione (+1/-1)
+DBL PrbRad
+DBL secondPointDeY
+DBL Zdisab = 0 ;;;;; %config_machine40      ; =0 APA with capacitive, 1= APA with sensor IN (no Z axis)
+
+IF( apa_mode == 0 ) RET
+IF(XGET("@G70")!=71) ERROR(55)  ;Illegal operation
+
+secondPointDeY = apa_secondpoint_y
+PrbRad = %config_machine12              ;//plate sensor spot size
+
+?%C18.2 = 0                             ;Acquisizione origine effettuata
+
+offx = %rLsGui43 / 1000            ; Parameter from gui
+offy = %rLsGui44 / 1000             ; Parameter from gui
+
+OffsetXlaser = 0
+OffsetYlaser = 0
+
+G172 T1 H1 D1      ; (Abilita RTCP)
+IF (%IndexORG != 19) JSR "Sel_Y3Z3.cfs" ; Acquisisce anche LE quote Y dell'asse Vero (Funziona solo per 1 punto)
+
+;******************************************************************************
+;   Acquire by 1 point
+;******************************************************************************
+IF( apa_mode == 1 ) THEN
+
+    G806 T3 N1 H1 D1 E1 A11
+    gOptimEnableG806 = 0
+
+    G161 L(ml_usr_origin)
+    G186 L(ml_usr_origin)
+    G179 C0
+
+    $Acquire part origin
+    G172 T1 H1 D1  ;//XXX Scegliere testa
+    G180 D1
+
+    IF (%IndexORG != 19) THEN 
+        ;Calculate origin
+        Ox = kine_x
+        Oy = kine_y
+        Orot = %funz[%IndexORG].rotEA 
+    
+    ELSEIF (%IndexORG == 19) THEN
+  
+        ; W axis present in channel 3
+        IF (%cn[3].cc[1].5) THEN 
+            IF (%CalPipe[0].General[0].4) THEN  ; pipe along x axis
+                Ox = %ax36.ra4 / 1000
+                Oy = 0
+                Orot = 0
+            ENDIF
+            
+            IF (%CalPipe[0].General[0].5) THEN  ; pipe along Y axis
+                Ox = 0
+                Oy = %ax36.ra4 / 1000
+                Orot = 0
+            ENDIF
+        ENDIF
+         
+        ; W axis not present in channel 3   
+        IF (!%cn[3].cc[1].5) THEN 
+        
+            IF (%CalPipe[0].General[0].4) THEN  ; pipe along x axis
+                Ox = kine_x
+				IF( %LSRPlcOp0.21 ) Ox = kine_x - %cn0.PartSizePointB[0]
+                Oy = 0
+                Orot = 0 
+            ENDIF 
+          
+            IF (%CalPipe[0].General[0].5) THEN  ; pipe along Y axis
+                Ox = 0
+                Oy =  kine_y
+				IF( %LSRPlcOp0.21 ) Oy = kine_y - %cn0.PartSizePointA[0]
+                Orot = 0
+            ENDIF   
+        ENDIF 
+    ENDIF
+
+    POP(1)
+    JMP .endOriginY
+ENDIF
+
+;******************************************************************************
+;   Acquire by 3 point
+;******************************************************************************
+IF( apa_mode == 3 ) THEN
+    G806 T3 N1 H1 D1
+	gOptimEnableG806 = 0
+
+    G161 L(ml_usr_origin) Z(orig_z)
+    G186 L(ml_usr_origin)
+    G179 C0
+    ERROR(55) ;non consistente con tubo (3punti)
+
+
+      ;  IF( !Zdisab ) G153 G0 Z(apa_safe_z)
+    IF( !Zdisab ) G0 Z(apa_safe_z)
+
+    ; ###POS 1
+    G153 G1 X(apa_firstpoint_x) Y(apa_optimize_y) F(%config_machine24)
+
+    SYN
+    %gIso[1]=QTA(X)            ;mem.quota start ciclo acquisizione
+    %gIso[2]=QTA(Y)            ;mem.quota start ciclo acquisizione
+
+        $Learning point n.1 ...
+
+    SYN
+    G153
+            lef_a = apa_lef_a1
+            lef_d = apa_lef_d1
+            ; ###FIND 1
+            JSR "LaserEdgeFind.cfs"
+        G4 F0.1
+        SYN
+        kine_x = kine_x + OffsetXlaser
+        kine_y = kine_y + OffsetYlaser
+        G10 G0 X(QCALC(X)) Y(QCALC(Y))
+            
+      G152
+    IF( !Zdisab ) G0 Z(apa_safe_z)
+        ; ###POS 2
+
+      G153  G1 X(apa_optimize_x) Y(apa_firstpoint_y) F(%config_machine24)
+    $
+
+    Cx = kine_x
+    Cy = kine_y
+    %gIso[3] = kine_x
+    %gIso[4] = kine_y
+
+    G152
+    $
+    Ex = kine_x
+    Ey = kine_y
+    %gIso[11] = kine_x
+    %gIso[12] = kine_y
+
+        $Learning point n.2 ...
+
+    SYN
+    G153
+        lef_a = apa_lef_a2
+        lef_d = apa_lef_d2
+        ; ###FIND 2
+        JSR "LaserEdgeFind.cfs"
+        G4 F0.1
+        SYN
+        kine_x = kine_x + OffsetXlaser
+        kine_y = kine_y + OffsetYlaser
+        G10 G0 X(QCALC(X)) Y(QCALC(Y))
+    G152
+        
+    IF( !Zdisab ) G0 Z(apa_safe_z)
+        ;;; todo (per andare direttamente sul secondo punto senza passare per il primo)
+        ;;;G1 X(%gIso[1]) Y(%gIso[2]) F(%config_machine24)
+    G152
+    $
+
+    Ax = kine_x
+    Ay = kine_y
+    %gIso[5] = kine_x
+    %gIso[6] = kine_y
+
+        $Learning point n.3 ...
+
+    SYN
+    G153
+        ; ###POS 3
+        G1 X(apa_optimize_x) Y(secondPointDeY) F(%config_machine24)
+        lef_a = apa_lef_a3
+        lef_d = apa_lef_d3
+        ; ###FIND 3
+        JSR "LaserEdgeFind.cfs"
+        G4 F0.1
+        SYN
+        kine_x = kine_x + OffsetXlaser
+        kine_y = kine_y + OffsetYlaser
+        G10 G0 X(QCALC(X)) Y(QCALC(Y))
+    G152
+    
+    IF( !Zdisab ) G0 Z(apa_safe_z)
+    ;; G0 X(%gIso[1]) Y(%gIso[2])
+    $
+
+    Bx = kine_x
+    By = kine_y
+    %gIso[7] = kine_x
+    %gIso[8] = kine_y
+
+    CCx = Ax + (By - Ay)
+    CCy = Ay - (Bx - Ax)
+
+    ;Calculate origin
+    G196 X(Ax) Y(Ay) Z0 A(Bx) B(By) C0 M(CCx) N(CCy) O0 U(Cx) V(Cy) W0 G(PrbRad) D(-1) E(-1)
+    Ox = uf_o1
+    Oy = uf_o2
+    Orot = ATANXY( uf_a22, uf_a12 )
+
+    POP(1)
+    JMP .collectOrigin
+ENDIF
+
+$ERR: ukn origin mode
+COMMIT
+AWAIT(0)
+ERROR(3)
+.collectOrigin
+
+;Add an offset on the APA result along X & Y axis
+IF ((apa_mode==3) && (%rLsGui[45].0)) THEN
+SYN
+ip = SQRT((offx *offx)+(offy*offy)) ; hypotenuse formula
+beta = ATANXY(offy,offx)            ; angle between hypotenuse AND X axis
+?%LsIso[38]= beta                   ;to check angle
+Ox = Ox + ip * COS(beta + Orot)
+Oy = Oy + ip * SIN(beta+ Orot)
+ENDIF
+
+.endOriginY
+%funz[%IndexORG].origprgX = Ox
+%funz[%IndexORG].origprgY = Oy
+%funz[%IndexORG].rotEA = Orot
+
+M498
+
+RET

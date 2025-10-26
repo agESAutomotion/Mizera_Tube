@@ -1,0 +1,26 @@
+
+[KEYS]
+TITLE=Raster Print
+TXT0=Load Image
+
+[PROMPT]
+KEY_NODE=
+RASTER_PRINT=Raster Print
+GroupBox1=Image
+GroupBox=Parameters
+Label=Vertical Scan
+Label1=Rotation 90°
+Label2=Lead [mm]
+Label3=Pitch [mm]
+Label4=Gamma
+Label5=Reference for black [%]
+Label6=Reference for white [%]
+Label7=Edge [mm]
+Label8=Height [mm]
+Label11=Raster Latency [ms]
+Label9=Width Image [pixel]
+Label10=Height Image [pixel]
+
+[STATUS]
+
+[HELP]

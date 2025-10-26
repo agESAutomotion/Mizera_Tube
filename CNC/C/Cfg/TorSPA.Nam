@@ -1,0 +1,21 @@
+[PROMPT]
+KEY_TOR =Antorcha de Plasma
+
+REGIN =Registro de entrada
+TDAT0 =Tension nominal   (V)
+TDAT1 =Desviación maxima (V)
+TDAT2 =Derivada maxima   (V/s)
+TDAT3 =Division de cero
+TDAT4 =Factor de escala (V)
+TDAT5 =Factor escala (division)
+TDAT6 =Frecuencia corte FIR1 (Hz)
+KEY_REGOLATORE =
+TDAT7 =Velocità Congelamento (%)
+TDAT8 =Corrección maxima  [mm]
+TDAT9 =Corrección minima  [mm]
+TDAT10 =Frecuencia corte FIR2 (Hz)
+TDAT11 =Regulador a0
+TDAT12 =Regulador a1
+TDAT13 =Control anticolisión (ACA) (%)
+
+[HELP]

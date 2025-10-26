@@ -1,0 +1,33 @@
+ [X] [Y] [F]1000 : G12001
+ 
+; Auxyliary movement for tube AND spindle calibration 
+
+DBL x_coordinates = CTOMM(VA23)
+DBL y_coordinates = CTOMM(VA24)
+DBL f_speed = CTOMM(VA5)
+
+ IF( %cn[WHO()].pc[14].25 == 0 ) THEN
+  IF (%CalPipe.General.6) THEN   
+   
+   IF( tube_y ) THEN
+    
+    IF (!ISQNAN(x_coordinates)) ERROR (786)
+    IF (ISQNAN(y_coordinates)) ERROR (786)
+     x_coordinates = %tab1.t_ttab.t_oart.t_dX
+    
+    G180 X(x_coordinates) Y(y_coordinates) Z0.000 
+    G153 G1 Y(kine_y) F(f_speed) 
+  
+   ELSE
+   
+    IF (!ISQNAN(y_coordinates)) ERROR (786)
+    IF (ISQNAN(x_coordinates)) ERROR (786)
+     y_coordinates = %tab1.t_ttab.t_oart.t_dY
+    
+    G180 X(x_coordinates) Y(y_coordinates) Z0.000 
+    G153 G1 X(kine_x) F(f_speed)
+  
+   ENDIF 
+  ENDIF  
+ ENDIF 
+RET

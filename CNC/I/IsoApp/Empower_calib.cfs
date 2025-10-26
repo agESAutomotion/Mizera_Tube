@@ -1,0 +1,71 @@
+:Empower 16 point calibration 
+;Empower (Duo)
+
+INCLUDE "var_usr.cfs"
+
+DBL ABSINC  = 0x01
+DBL VOUT0   = 0x04
+DBL VOUT    = 0x08
+DBL VMAX    = 0x10
+DBL VHIGH   = 2000
+DBL VLOW    = 200
+DBL LevelE  = 0                                                               ;[(Normale close)  Aspetta il segnale a 0 per uscire dal comando]
+DBL LevelS  = 1                                                               ;[(Normale open)   Aspetta il segnale a 1 per uscire dal comando] 
+DBL Z_FEED = 10000                                                                   
+DBL strobeFAR = 1                                                                
+DBL strobeLOST = 1  
+DBL strobeMAX = 1
+DBL strobeMIN = 1                                                                                
+DBL Speed = 5000                                                              ;Velocita' di discesa Z
+DBL Attesa = 0.1                                                                   ;Attesa tra un posiz e l'altro                                                          
+
+SYN
+?%LsIso10.0 = 0                                                                    ;ISO said Sensor Calibration OK                                                                             
+?%C26.0=1
+                                                                             
+MSGOUT " CALIBRATION IN PROGRESS... "                                                      
+SYN
+
+GRPQ[W]=0
+G153 G1 F(Z_FEED) Z((%ax[AXIDX(3,Z)].pa22 / 1000) - 10)      ;Posizione "Z" al finecorsa Software - 10 mm
+
+IF( %LSRPlcOp0.20 ) THEN        ; FAR INPUT management enabled
+   MSGOUT " Waiting Far ... "                                                      
+SYN
+   AWAIT( %EmConfig.Far_signal.0 )
+ENDIF
+
+;Disable tip touch        
+?%LsIso17.0 = 1
+
+; ### Not in SIMulation
+IF( %M33 == 0 ) THEN
+       G153
+   IF( %LSRPlcOp0.20 ) THEN        ; FAR INPUT management enabled
+   _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%EmConfig.Far_signal.0 ", LevelE )  ;Far
+   G4 F0.1
+   SYN
+   ENDIF
+   _singfc( ( VMAX | VOUT0 ), Z, 2, VLOW, 0, "%C31.1 ", LevelS )                   ;Touch
+   G4 F0.1
+   SYN
+   _singfc( ( VMAX | VOUT0 ), Z, 1, VLOW/4, 0, "%C31.1 ", LevelE )                 ;Release 
+
+   G4 F0.1
+SYN
+            kine_z = GET(Z) 
+            G10 G0 Z(QCALC(Z)) 
+			touch_pos = kine_z
+      G152
+ELSE
+    IF ((%LSRCostK[31]/1000)== 10)  G153 G1 F(Z_FEED) Z(10) ;Posizionamento a 10mm dalla lamiera tastata
+    IF ((%LSRCostK[31]/1000)== 20)  G153 G1 F(Z_FEED) Z(20) ;Posizionamento a 20mm dalla lamiera tastata
+ENDIF	
+                                                             	
+SYN
+?%C26.0=0
+?%LsIso10.0 = 1     ;ISO said Sensor Calibration OK
+
+;Disable tip touch        
+?%LsIso17.0 = 0
+RET

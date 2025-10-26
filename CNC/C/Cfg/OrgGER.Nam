@@ -1,0 +1,43 @@
+[PROMPT]
+KEY_ORG       =Ursprünge Kanal
+
+G54X =Ursprung1: Wert X-Achse (G54/G54.0)
+G54Y =Ursprung1: Wert Y-Achse (G54/G54.0)
+G54Z =Ursprung1: Wert Z-Achse (G54/G54.0)
+G55X =Ursprung2: Wert X-Achse (G55)
+G55Y =Ursprung2: Wert Y-Achse (G55)
+G55Z =Ursprung2: Wert Z-Achse (G55)
+G56X =Ursprung3: Wert X-Achse (G56)
+G56Y =Ursprung3: Wert Y-Achse (G56)
+G56Z =Ursprung3: Wert Z-Achse (G56)
+G57X =Ursprung4: Wert X-Achse (G57)
+G57Y =Ursprung4: Wert Y-Achse (G57)
+G57Z =Ursprung4: Wert Z-Achse (G57)
+
+G54_1X =Ursprung5: Wert X-Achse (G54.1)
+G54_1Y =Ursprung5: Wert Y-Achse (G54.1)
+G54_1Z =Ursprung5: Wert Z-Achse (G54.1)
+G54_2X =Ursprung6: Wert X-Achse (G54.2)
+G54_2Y =Ursprung6: Wert Y-Achse (G54.2)
+G54_2Z =Ursprung6: Wert Z-Achse (G54.2)
+G54_3X =Ursprung7: Wert X-Achse (G54.3)
+G54_3Y =Ursprung7: Wert Y-Achse (G54.3)
+G54_3Z =Ursprung7: Wert Z-Achse (G54.3)
+G54_4X =Ursprung8: Wert X-Achse (G54.4)
+G54_4Y =Ursprung8: Wert Y-Achse (G54.4)
+G54_4Z =Ursprung8: Wert Z-Achse (G54.4)
+
+[HELP]
+
+G54X =Ursprung1: Wert X-Achse -> Eingabe des X-Wertes des Ursprungs Stück Nr.1 anwählbar mit Befehl G54
+G54Y =Ursprung1: Wert Y-Achse -> Eingabe des Y-Wertes des Ursprungs Stück Nr.1 anwählbar mit Befehl G54
+G54Z =Ursprung1: Wert Z-Achse -> Eingabe des Z-Wertes des Ursprungs Stück Nr.1 anwählbar mit Befehl G54
+G55X =Ursprung2: Wert X-Achse -> Eingabe des X-Wertes des Ursprungs Stück Nr.2 anwählbar mit Befehl G55
+G55Y =Ursprung2: Wert Y-Achse -> Eingabe des Y-Wertes des Ursprungs Stück Nr.2 anwählbar mit Befehl G55
+G55Z =Ursprung2: Wert Z-Achse -> Eingabe des Z-Wertes des Ursprungs Stück Nr.2 anwählbar mit Befehl G55
+G56X =Ursprung3: Wert X-Achse -> Eingabe des X-Wertes des Ursprungs Stück Nr.3 anwählbar mit Befehl G56
+G56Y =Ursprung3: Wert Y-Achse -> Eingabe des Y-Wertes des Ursprungs Stück Nr.3 anwählbar mit Befehl G56
+G56Z =Ursprung3: Wert Z-Achse -> Eingabe des Z-Wertes des Ursprungs Stück Nr.3 anwählbar mit Befehl G56
+G57X =Ursprung4: Wert X-Achse -> Eingabe des X-Wertes des Ursprungs Stück Nr.4 anwählbar mit Befehl G57
+G57Y =Ursprung4: Wert Y-Achse -> Eingabe des Y-Wertes des Ursprungs Stück Nr.4 anwählbar mit Befehl G57
+G57Z =Ursprung4: Wert Z-Achse -> Eingabe des Z-Wertes des Ursprungs Stück Nr.4 anwählbar mit Befehl G57

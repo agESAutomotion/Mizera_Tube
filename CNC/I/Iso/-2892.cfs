@@ -1,0 +1,160 @@
+ N [G]0.0 X Y Z [U] [V] [W] [P] [Q] [R] [I] [J] [K] : G1892
+
+;//
+;// G1892   N<phase> [G<tip_radius>]
+;//         X<ax> Y<ay> Z<az>    (N1, N2, N3)
+;//         U<bx> V<by> W<bz>    (N1, N2)
+;//         P<cx> Q<cy> R<cz>    (N1)
+;//        [I<dx> J<dy> K<dz>    (N1)]
+;//
+;// Maps a box given a set of 6(7) points.
+;// Tool tip radius sign depend on surface side.
+;// Multiple calls with ascending values of N have to be made.
+;//
+;// -- N1 --
+;// Maps Z-normal flat surface given 3(4) points.
+;//
+;// uf_a<1..3><1..3> is initialized so that frame Z is parallel to AB ^ AC
+;// (or AD ^ BC in case of 4 points).
+;// Frame X is chosen so that it's parallel to AB.
+;// uf_o<1..3> is set to A (or (A+B+C+D)/4 in case of 4 points).
+;//
+;// -- N2 --
+;// Maps Y-normal flat surface, parallel to frame Z axis, given 2 points.
+;// Requires a previous call to N1.
+;//
+;// uf_a<1..3><1..3> is rotated around its Z so that frame X is parallel to AB.
+;// uf_o<1..3> position along frame Y axis is finalized.
+;//
+;// -- N3 --
+;// Maps X-normal flat surface given 1 point.
+;// Requires a previous call to N2.
+;//
+;// uf_o<1..3> contains finalized origin (box vertex).
+;//
+
+DBL ax = VA23, ay = VA24, az = VA25
+DBL bx = VA20, by = VA21, bz = VA22
+DBL cx = VA15, cy = VA16, cz = VA17
+DBL dx = VA8 , dy = VA9 , dz = VA10
+DBL tip_rad = VA6
+DBL phase = VA13
+
+DBL abx, aby, abz
+DBL acx, acy, acz
+DBL d
+
+JMPF phase
+
+N1
+
+IF (!(VALID(ax) && VALID(ay) && VALID(az))) ERROR(55)
+IF (!(VALID(bx) && VALID(by) && VALID(bz))) ERROR(55)
+IF (!(VALID(cx) && VALID(cy) && VALID(cz))) ERROR(55)
+
+IF (VALID(dx) || VALID(dy) || VALID(dz)) THEN
+    IF (!(VALID(dx) && VALID(dy) && VALID(dz))) ERROR(55)
+    ;//ab = d - a
+    abx = dx - ax
+    aby = dy - ay
+    abz = dz - az
+
+    ;//ac = c - b
+    acx = cx - bx
+    acy = cy - by
+    acz = cz - bz
+ELSE
+    ;//ab = b - a
+    abx = bx - ax
+    aby = by - ay
+    abz = bz - az
+
+    ;//ac = c - a
+    acx = cx - ax
+    acy = cy - ay
+    acz = cz - az
+ENDIF
+;//uf_a_3 = norm(ab ^ ac)
+uf_a13 = aby * acz - abz * acy
+uf_a23 = abz * acx - abx * acz
+uf_a33 = abx * acy - aby * acx
+
+d = SQRT(uf_a13 * uf_a13 + uf_a23 * uf_a23 + uf_a33 * uf_a33)
+
+IF (d < 0.001) ERROR(38) ;//divide by zero
+
+uf_a13 = uf_a13 / d
+uf_a23 = uf_a23 / d
+uf_a33 = uf_a33 / d
+
+IF (VALID(dx) || VALID(dy) || VALID(dz)) THEN
+    ;//uf_o_ = a
+    uf_o1 = (ax+bx+cx+dx) / 4
+    uf_o2 = (ay+by+cy+dy) / 4
+    uf_o3 = (az+bz+cz+dz) / 4
+ELSE
+    ;//uf_o_ = a
+    uf_o1 = ax
+    uf_o2 = ay
+    uf_o3 = az
+ENDIF
+;//uf_o_' = uf_o_ - tip_rad * uf_a_3
+uf_o1 = uf_o1 - tip_rad * uf_a13
+uf_o2 = uf_o2 - tip_rad * uf_a23
+uf_o3 = uf_o3 - tip_rad * uf_a33
+
+tip_rad = 0.0
+
+N2
+
+IF (!(VALID(ax) && VALID(ay) && VALID(az))) ERROR(55)
+IF (!(VALID(bx) && VALID(by) && VALID(bz))) ERROR(55)
+
+;//ab = b - a
+abx = bx - ax
+aby = by - ay
+abz = bz - az
+
+;//uf_a_2 = norm(uf_a_3 ^ ab)
+uf_a12 = uf_a23 * abz - uf_a33 * aby
+uf_a22 = uf_a33 * abx - uf_a13 * abz
+uf_a32 = uf_a13 * aby - uf_a23 * abx
+
+d = SQRT(uf_a12 * uf_a12 + uf_a22 * uf_a22 + uf_a32 * uf_a32)
+
+IF (d < 0.001) ERROR(38) ;//divide by zero
+
+uf_a12 = uf_a12 / d
+uf_a22 = uf_a22 / d
+uf_a32 = uf_a32 / d
+
+;//uf_a_1 = uf_a_2 ^ uf_a_3
+uf_a11 = uf_a22 * uf_a33 - uf_a32 * uf_a23
+uf_a21 = uf_a32 * uf_a13 - uf_a12 * uf_a33
+uf_a31 = uf_a12 * uf_a23 - uf_a22 * uf_a13
+
+;//d = (a - uf_o_) * uf_a_2 - tip_rad
+d = ((ax - uf_o1) * uf_a12 + (ay - uf_o2) * uf_a22 + (az - uf_o3) * uf_a32)
+d = d - tip_rad
+
+;//uf_o_' = uf_o_ + d * uf_a_2
+uf_o1 = uf_o1 + d * uf_a12
+uf_o2 = uf_o2 + d * uf_a22
+uf_o3 = uf_o3 + d * uf_a32
+
+tip_rad = 0.0
+
+N3
+
+IF (!(VALID(ax) && VALID(ay) && VALID(az))) ERROR(55)
+
+;//d = (a - uf_o_) * uf_a_1 - tip_rad
+d = ((ax - uf_o1) * uf_a11 + (ay - uf_o2) * uf_a21 + (az - uf_o3) * uf_a31)
+d = d - tip_rad
+
+;//uf_o_' = uf_o_ + d * uf_a_1
+uf_o1 = uf_o1 + d * uf_a11
+uf_o2 = uf_o2 + d * uf_a21
+uf_o3 = uf_o3 + d * uf_a31
+
+RET

@@ -1,0 +1,162 @@
+: Spline calculation for jump
+
+;% laser polynomial traversal demo
+;// NOTE:
+;// To simulate with TM: TMZ = AXIDX(V)
+;// Head for simulation: T9 H1 D9
+
+DBL tb          = 130         ;// POWDEL spline table index
+
+DBL max_x1      = %ax0.pa9 /60 ;// max X axis velocity [mm/s]
+DBL max_x2      = %ax0.pa1      ;// max X axis acceleration [mm/s/s]
+DBL max_y1      = %ax1.pa9 /60 ;// max Y axis velocity [mm/s]
+DBL max_y2      = %ax1.pa1      ;// max Y axis acceleration [mm/s/s]
+DBL max_c1      = %ax5.pa9 /60 ;// max C axis velocity [mm/s]
+DBL max_c2      = %ax5.pa1      ;// max C axis acceleration [mm/s/s]
+
+DBL max_z0      = %LSRCostK[28]/1000    ;;ax29.pa22     ;// max Z axis position [mm]
+
+DBL max_z1      = %ax29.pa9 /60 ;// max Z axis velocity [mm/s]
+DBL max_z2      = %ax29.pa1      ;// max Z axis acceleration [mm/s/s]
+
+DBL dxa, dya, dca  
+DBL r
+DBL max1, max2
+DBL dh
+DBL xe, ye
+DBL a2
+DBL sp
+DBL q0, q2
+DBL i, j, k
+
+;;;;;;;;;;;;;;;SYN
+IF (gTravE == 0)  max_z0      = %LSRCostK[28]/1000        ;// max Z axis position [mm] PLANE
+IF (gTravE != 0)  max_z0      = %LSRCostK[47]/1000        ;// max Z axis position [mm] TUBE
+;// ---------------------------------------------
+;// 2) build the spline given traversed distance
+;// ---------------------------------------------
+    dxa = ABS(tax-fax) 
+    dya = ABS(tay-fay)
+    dca = ABS(tac-fac)
+    distance = SQRT(dxa*dxa + dya*dya + dca*dca)    
+    
+;; Change the Z axis dynamic parameter in FUNCTION of distance
+    
+    ;//void jump height in case of null distance
+    q0 = 0.0
+    dh = 0.0
+    IF (distance < 0.1) JMPF .dot_calc
+    ;//calculate trajectory XY projection velocity and acceleration
+    max1 = 999999
+    max2 = 999999
+    IF (dxa >= 0.01) THEN
+        r = distance/dxa
+        max1 = MIN(max1, max_x1 * r)
+        max2 = MIN(max2, max_x2 * r)
+    ENDIF
+    IF (dya >= 0.01) THEN
+        r = distance/dya
+        max1 = MIN(max1, max_y1 * r)
+        max2 = MIN(max2, max_y2 * r)
+    ENDIF
+    IF (dca >= 0.01) THEN
+        r = distance/dca
+        max1 = MIN(max1, max_c1 * r)
+        max2 = MIN(max2, max_c2 * r)
+    ENDIF
+    ;//in case maximum velocity cannot be reached with given distance and
+    ;//acceleration/deceleration, adjust it to its actual value for subsequent
+    ;//calculation not to resolve in suboptimal motion on small distances.
+     max1 = MIN(max1, SQRT(2 * max2 * distance/2))
+          
+    ;//determine curve parameter span for first segment given height and
+    ;//boundary conditions on first and second parametric derivatives at begin
+    ;//of span and second polynomial derivative at end of span.
+    ;//This is the 1D equivalent of limiting tangential velocity, tangential
+    ;//acceleration, and centripetal acceleration in a 2D case.
+    ;//In case distance is not enough to contain acceleration/deceleration
+    ;//phases, reduce jump height.
+    ;//The same (reversed) applies to last segment.
+    ;//Refer to [JUMP_Quadratic.MCD]
+    q0 = max_z0
+    r = MAX(max1/max_z1, max2/max_z2)
+    dh = MAX((2 * q0 * r), (max1 * SQRT(2 * q0 / max_z2)))
+    IF (dh > distance/2) THEN
+        dh = distance/2
+        q0 = MIN((dh * 0.5 / r), (0.5 * max_z2 / (max1*max1) * (dh * dh)))
+    ENDIF
+.dot_calc
+    ;//(not required) q1 = 2 * q0
+    q2 = -2 * q0
+
+    ;//Build quadratic spline
+    ;//Parameter must range from 0.0 to the traversed distance
+    xe = 0
+    ye = 0
+    sp = 0
+
+    ;//ACCELERATION PHASE
+    ;//curve initial coordinates
+    ?%pd_splines[tb].pd_spans[sp].pds_xs = xe
+    ?%pd_splines[tb].pd_spans[sp].pds_ys = ye
+    ;//new end-point and coefficients
+    xe = dh
+    ye = q0
+    a2 = 0.5 * q2
+    ;//curve final coordinates
+    ?%pd_splines[tb].pd_spans[sp].pds_xe = xe
+    ?%pd_splines[tb].pd_spans[sp].pds_ye = ye
+    ;//n-th degree coefficient (only [2..5] used)
+    ?%pd_splines[tb].pd_spans[sp].pds_a[2] = a2
+    ?%pd_splines[tb].pd_spans[sp].pds_a[3] = 0.0
+    ?%pd_splines[tb].pd_spans[sp].pds_a[4] = 0.0
+    ?%pd_splines[tb].pd_spans[sp].pds_a[5] = 0.0
+    ;//parameter span
+    ?%pd_splines[tb].pd_spans[sp].pds_ps = 1.0
+    sp = sp + 1
+
+    ;//CRUISE PHASE
+    ;//curve initial coordinates
+    ?%pd_splines[tb].pd_spans[sp].pds_xs = xe
+    ?%pd_splines[tb].pd_spans[sp].pds_ys = ye
+    ;//new end-point and coefficients
+    xe = distance - dh
+    ye = q0
+    a2 = 0.0
+    ;//curve final coordinates
+    ?%pd_splines[tb].pd_spans[sp].pds_xe = xe
+    ?%pd_splines[tb].pd_spans[sp].pds_ye = ye
+    ;//n-th degree coefficient (only [2..5] used)
+    ?%pd_splines[tb].pd_spans[sp].pds_a[2] = a2
+    ?%pd_splines[tb].pd_spans[sp].pds_a[3] = 0.0
+    ?%pd_splines[tb].pd_spans[sp].pds_a[4] = 0.0
+    ?%pd_splines[tb].pd_spans[sp].pds_a[5] = 0.0
+    ;//parameter span
+    ?%pd_splines[tb].pd_spans[sp].pds_ps = 1.0
+    sp = sp + 1
+
+    ;//DECELERATION PHASE
+    ;//curve initial coordinates
+    ?%pd_splines[tb].pd_spans[sp].pds_xs = xe
+    ?%pd_splines[tb].pd_spans[sp].pds_ys = ye
+    ;//new end-point and coefficients
+    xe = distance
+    ye = 0.0
+    a2 = 0.5 * q2
+    ;//curve final coordinates
+    ?%pd_splines[tb].pd_spans[sp].pds_xe = xe
+    ?%pd_splines[tb].pd_spans[sp].pds_ye = ye
+    ;//n-th degree coefficient (only [2..5] used)
+    ?%pd_splines[tb].pd_spans[sp].pds_a[2] = a2
+    ?%pd_splines[tb].pd_spans[sp].pds_a[3] = 0.0
+    ?%pd_splines[tb].pd_spans[sp].pds_a[4] = 0.0
+    ?%pd_splines[tb].pd_spans[sp].pds_a[5] = 0.0
+    ;//parameter span
+    ?%pd_splines[tb].pd_spans[sp].pds_ps = 1.0
+    sp = sp + 1
+
+    ;//number of spans
+    ?%pd_splines[tb].pd_nSpans = sp
+ 
+  
+RET

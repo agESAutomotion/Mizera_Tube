@@ -1,0 +1,35 @@
+ [X]0 [Y]0 [Z]0 [L] [M]0 :G161
+;//
+;// G161    [X<org_x>]   [Y<org_y>]   [Z<org_z>]
+;//         [L<ml_index>][M<inc_flag>]
+;//
+;//Traslazione sistema di riferimento
+;//Scrive sui coefficienti mx_...
+DBL ml = VA11
+DBL inc = VA12
+DBL qox=CTOMM(VA23)
+DBL qoy=CTOMM(VA24)
+DBL qoz=CTOMM(VA25)
+DBL sav_G70=XGET("@G70")
+G71
+
+IF(ISQNAN(ml)) ml = ml_curr
+IF(ml < 0) ERROR(61)  ;//Valore troppo elevato
+IF(ml > ml_curr) ERROR(61)  ;//Valore troppo elevato
+
+IF( inc ) THEN
+    ;//Traslazione
+    ml_to1[ml] = ml_to1[ml] + qox
+    ml_to2[ml] = ml_to2[ml] + qoy
+    ml_to3[ml] = ml_to3[ml] + qoz
+ELSE
+    ;//Traslazione
+    ml_to1[ml] = qox
+    ml_to2[ml] = qoy
+    ml_to3[ml] = qoz
+ENDIF
+
+G1152
+G152
+G(sav_G70)
+RET

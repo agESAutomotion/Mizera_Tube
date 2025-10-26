@@ -1,0 +1,142 @@
+*************************************************************************************
+* Only Used during program running
+*
+* CAL MOVE_AXIS0(xAxNum:=,xMove:=,xTarget:=,xSpeed:=,xAutMode:=)
+* 
+* LD  MOVE_AXIS0.yFromPlc     * Axis is controlled by plc to move(Also Identifier ING)
+* ST  GESTAX*.xFromPlc
+* 
+* LD  MOVE_AXIS0.yHoldMov
+* ST  GESTAX*.xHoldMoving
+*
+* LD  MOVE_AXIS0.yRunPos      * Positioning
+*
+*************************************************************************************
+#funcdec "FLP.plc"
+#funcdec "assi.plc"
+#funcdec "cnc.plc"
+#include "iol.inc"
+
+VAR
+#include "assi.inc"
+#include "cnc.inc"
+#include "mem.inc"
+END_VAR
+
+FUNCTION_BLOCK  MOVE_AX_VAR
+
+*************************************************************************************
+* The Function Block to simply move one axis by plc
+*************************************************************************************
+
+VAR_INPUT
+xAxNum:            DWORD;         * Axis ID
+xMove:             BOOL;          * Move CMD
+xTarget:           DWORD;         * Destination
+xSpeed:            DWORD;         * Moving Speed
+xAutMode:          BOOL;          * Mode Selection When Using (0=JOG, 1=AUT)
+END_VAR
+
+VAR_OUTPUT
+yHoldMov:          BOOL;
+yFromPlc:          BOOL;
+yRunPos:           BOOL;
+END_VAR
+
+VAR
+MoveAx:            FF;
+TON_MoveAx:        TON;
+TOF_RESET:         TOF;
+TP_Stop:           TP;   
+TP_Start:          TP;  
+TP_Reset:          TP;    
+TP_PRGOFF:         TP;
+EndPos_Ax:         BOOL;
+appoggio:          BOOL;
+State_Reach:       BOOL;
+POS_AX:            AX_SINGVAR; 
+END_VAR
+
+PATH %ax[xAxNum]
+
+*************************************************************************************
+LD   xTarget
+SUB  %ra4
+ABS
+LT   %pa6                         * Rough Positioning Tolerance
+ST   State_Reach
+
+LD   xMove
+AND  MACC_TARATA 
+ANDN EMER_GEN
+ANDN MACC_ALARM                 
+ANDN MoveAx.yComandOn
+ST   MoveAx.xPulsante              
+                              
+CAL  TP_Reset(IN=Pul_Reset,PT=10)  				  
+LD   EMER_GEN    
+OR   MACC_ALARM                                    
+OR(  
+LD   xAutMode
+ANDN %cn0.rc8.0                   
+)
+OR(
+LDN  xAutMode
+AND  TP_Stop.Q
+)
+OR   TP_Reset.Q
+OR   State_Reach
+ST   MoveAx.xResetState           
+
+CAL  MoveAx
+
+LD   MoveAx.yComandOn
+ST   POS_AX.xax_ENABLE
+ST   yFromPlc
+
+LDN  %cn0.rc8.0                    
+ST   appoggio
+CAL  TP_PRGOFF(IN=appoggio, PT=10) 
+CAL  TOF_RESET(IN=Pul_Reset, PT=10)
+
+LDN  POS_AX.xax_ENABLE
+OR   TP_PRGOFF.Q
+OR   TOF_RESET.Q
+ST   POS_AX.xax_CLEAR
+
+LD   POS_AX.xax_ENABLE
+AND  POS_AX.yax_READY
+ANDN POS_AX.yax_ENDOK
+ANDN POS_AX.yax_ENDERR
+ST   POS_AX.xax_START
+
+LD   xTarget                       
+ST   POS_AX.xax_QUOTA
+
+LD   xSpeed                     
+ST   POS_AX.xax_VEL
+
+CAL  POS_AX
+
+LD   POS_AX.yax_ENDOK
+ST   EndPos_Ax                   
+
+CAL  TP_Stop(IN=Pul_Stop,PT=10)     
+LD   TP_Stop.Q
+AND  MoveAx.yComandOn
+AND  xAutMode
+S    yHoldMov
+
+CAL  TP_Start(IN=Pul_Start,PT=10)
+LD   TP_Start.Q
+OR   MoveAx.xResetState
+AND  xAutMode
+ORN  %cn0.rc8.0
+R    yHoldMov
+
+LDN  State_Reach
+OR   yFromPlc
+ST   yRunPos
+*****************************************************************************************
+
+END_FUNCTION_BLOCK

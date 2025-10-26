@@ -1,0 +1,29 @@
+: select the Head 1
+
+    G153
+    G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,Z))
+    IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+    IF (AEXISTS(3,V)) G4005 S(AXIDX(3,V))    
+    IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+    IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+    IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+	;Saw Cutting
+	IF (AEXISTS(5,W)) G4005 S(AXIDX(5,W))
+    IF (AEXISTS(5,A)) G4005 S(AXIDX(5,A))
+    G152
+    G4099
+
+    G153
+
+    G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+    G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1 
+    IF (AEXISTS(3,C)) G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1            
+    IF (AEXISTS(3,B)) G4010 M(AXIDX(B)) S(AXIDX(3,B)) I1   
+
+    G152
+    G4099
+    
+RET

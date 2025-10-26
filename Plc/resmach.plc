@@ -1,0 +1,85 @@
+*******************************************************************************
+*   RESMACH.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+*
+* Reset function
+* There is update:
+* To Reset Axes with TON maybe OK, but CN Reset should check real feedback
+* Res_Ch3 is also used to xReset CN4 on this machine
+*
+* Reset must be:
+* 1) Disable gearing to unlock real axes from virtual axes,
+* 2) Reset channel 3 4
+* 3) Reset channel 0 2 5 
+*******************************************************************************
+#funcdec "assi.plc"
+#funcdec "cnc.plc"
+
+VAR                          
+#include "assi.inc"     
+#include "cnc.inc"      
+     
+END_VAR    
+
+VAR_IN_OUT
+#include "mem.inc"              
+END_VAR
+              
+#include "iol.inc"      
+                                                                                                                                                                                                                                           
+VAR                                                                                  
+RTRIG_RESET:        R_TRIG;
+TON_RES_AXES:       TON;
+TON_RESCH3:         TON;
+TON_RESCH0:         TON;
+ResetCh0Ok:         BOOL;     
+ResetCh3Ok:         BOOL;  
+check_ch3:          BOOL;      
+END_VAR
+ 
+*******************************************************************************
+FUNCTION  MACHINE_RESET       
+
+LDN  %cn0.rc8.0
+ANDN %cn0.rc8.1
+ST   ResetCh0Ok
+
+LDN  %cn3.rc8.0
+ANDN %cn3.rc8.1
+ST   ResetCh3Ok
+
+CAL  RTRIG_RESET(CLK:=ResetMach)          * Reset pushbutton     
+
+LD   RTRIG_RESET.Q
+S    Res_Axes
+
+CAL  TON_RES_AXES(IN:=Res_Axes,PT:=200)
+LD   TON_RES_AXES.Q
+***OR(
+***LD   ResetCh0Ok
+***ANDN ResetCh3Ok
+***)
+R    Res_Axes
+R    check_ch3
+S    Res_Ch3
+
+* In Main, not to allow START with any Res_
+
+CAL  TON_RESCH3(IN:=Res_Ch3,PT:=200)
+LD   TON_RESCH3.Q
+S    check_ch3
+R    Res_Ch3
+
+LD   check_ch3
+AND  %cn3.rc8.21
+R    check_ch3
+S    Res_Ch0
+
+CAL  TON_RESCH0(IN:=Res_Ch0,PT:=200)
+LD   TON_RESCH0.Q
+R    Res_Ch0
+
+
+END_FUNCTION                                                               

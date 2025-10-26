@@ -1,0 +1,43 @@
+[PROMPT]
+KEY_ORG       =Origines Canal
+
+G54X =Origine1: cote axe X (G54/G54.0)
+G54Y =Origine1: cote axe Y (G54/G54.0)
+G54Z =Origine1: cote axe Z (G54/G54.0)
+G55X =Origine2: cote axe X (G55)
+G55Y =Origine2: cote axe Y (G55)
+G55Z =Origine2: cote axe Z (G55)
+G56X =Origine3: cote axe X (G56)
+G56Y =Origine3: cote axe Y (G56)
+G56Z =Origine3: cote axe Z (G56)
+G57X =Origine4: cote axe X (G57)
+G57Y =Origine4: cote axe Y (G57)
+G57Z =Origine4: cote axe Z (G57)
+
+G54_1X =Origine5: cote axe X (G54.1)
+G54_1Y =Origine5: cote axe Y (G54.1)
+G54_1Z =Origine5: cote axe Z (G54.1)
+G54_2X =Origine6: cote axe X (G54.2)
+G54_2Y =Origine6: cote axe Y (G54.2)
+G54_2Z =Origine6: cote axe Z (G54.2)
+G54_3X =Origine7: cote axe X (G54.3)
+G54_3Y =Origine7: cote axe Y (G54.3)
+G54_3Z =Origine7: cote axe Z (G54.3)
+G54_4X =Origine8: cote axe X (G54.4)
+G54_4Y =Origine8: cote axe Y (G54.4)
+G54_4Z =Origine8: cote axe Z (G54.4)
+
+[HELP]
+
+G54X =Origine1: cote axe X -> Définir la cote X d'origine pièce n.1 sélectionnée par la commande G54
+G54Y =Origine1: cote axe Y -> Définir la cote Y d'origine pièce n.1 sélectionnée par la commande G54
+G54Z =Origine1: cote axe Z -> Définir la cote Z d'origine pièce n.1 sélectionnée par la commande G54
+G55X =Origine2: cote axe X -> Définir la cote X d'origine pièce n.2 sélectionnée par la commande G55
+G55Y =Origine2: cote axe Y -> Définir la cote Y d'origine pièce n.2 sélectionnée par la commande G55
+G55Z =Origine2: cote axe Z -> Définir la cote Z d'origine pièce n.2 sélectionnée par la commande G55
+G56X =Origine3: cote axe X -> Définir la cote X d'origine pièce n.3 sélectionnée par la commande G56
+G56Y =Origine3: cote axe Y -> Définir la cote Y d'origine pièce n.3 sélectionnée par la commande G56
+G56Z =Origine3: cote axe Z -> Définir la cote Z d'origine pièce n.3 sélectionnée par la commande G56
+G57X =Origine4: cote axe X -> Définir la cote X d'origine pièce n.4 sélectionnée par la commande G57
+G57Y =Origine4: cote axe Y -> Définir la cote Y d'origine pièce n.4 sélectionnée par la commande G57
+G57Z =Origine4: cote axe Z -> Définir la cote Z d'origine pièce n.4 sélectionnée par la commande G57

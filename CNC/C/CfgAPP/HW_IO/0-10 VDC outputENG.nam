@@ -1,0 +1,13 @@
+
+[KEYS]
+TITLE=0-10 VDC Output
+
+[PROMPT]
+KEY_NODE=Node
+0-10_VDC_OUTPUT=Leaf
+PIN1=PIN1: Output signal
+PIN2=PIN2: Ground Referencel
+
+[STATUS]
+
+[HELP]

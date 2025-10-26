@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="Hilscher NIC 52 RE BRD_007_456.xml">
+
+    <Comment><![CDATA[Manufacturer Code BRD.007.456]]></Comment>
+
+    <Device>NIC 52-RE/ECS</Device>
+
+    <Slot></Slot>
+    
+    <Module></Module>
+
+	<RxPdo Index="#x1600">
+		<SMObject>
+		  <Comment><![CDATA[WORD 1 Ouput]]></Comment>
+		  <Address>#x20100110</Address>
+		</SMObject>
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+		<SMObject>
+		  <Comment><![CDATA[WORD 1 Input]]></Comment>
+		  <Address>#x30100110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[WORD 2 Status]]></Comment>
+		  <Address>#x30100210</Address>
+		</SMObject>
+	</TxPdo>
+
+	<DistribuitedClock>0</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>0</Enabled>
+
+		<Sync0>0</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+</Config>
+
+
+

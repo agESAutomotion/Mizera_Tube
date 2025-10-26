@@ -1,0 +1,359 @@
+ [S]0 N R [A]0.0 [X] [Y] [Z] [U] [V] [W] [I] [J] [K] : G2297
+;//(Rounded) Regular polygon part/subpart
+DBL subpart = VA18
+DBL pi = IFEXP((subpart == 0), tubePI, tubePI+1)
+DBL nSides = VA13
+DBL radius = CTOMM(VA17)
+DBL phase = VA0
+DBL xa = CTOMM(VA23), ya = CTOMM(VA24), za = CTOMM(VA25)
+DBL xb = CTOMM(VA20), yb = CTOMM(VA21), zb = CTOMM(VA22)
+DBL xr = CTOMM(VA8),  yr = CTOMM(VA9),  zr = CTOMM(VA10)
+DBL xS, yS, zS
+DBL xE, yE, zE
+DBL color
+DBL shx = 0, shy = 0, shz = 0
+DBL sav_G70 = XGET("@G70")
+DBL angle
+DBL a
+DBL i
+G71
+
+IF( %cn[WHO()].pc[14].25 ) THEN
+   FOR indwloop = 0 TO 16
+       %HMI_ONE.value[indwloop] = 0
+   ENDFOR
+ENDIF
+
+SWITCH (tubeAxis)
+CASE 0
+    IF (VALID(yb) || VALID(yr)) ERROR(55)
+    IF (VALID(zb) || VALID(zr)) ERROR(55)
+    IF ((!VALID(xa)) || (!VALID(xb)) || (!VALID(xr))) ERROR(55)
+    IF (!VALID(ya)) ya = 0.0
+    IF (!VALID(za)) za = 0.0
+    ;//per SHP
+    yS = -radius + ya
+    zS = -radius + za
+    yE = +radius + ya
+    zE = +radius + za
+    xS = MIN(xa, xb)
+    xE = MAX(xa, xb)
+    ;//also sort X coordinates
+    xa = xS
+    xb = xE
+CASE 1
+    IF (VALID(zb) || VALID(zr)) ERROR(55)
+    IF (VALID(xb) || VALID(xr)) ERROR(55)
+    IF ((!VALID(ya)) || (!VALID(yb)) || (!VALID(yr))) ERROR(55)
+    IF (!VALID(za)) za = 0.0
+    IF (!VALID(xa)) xa = 0.0
+    ;//per SHP
+    zS = -radius + za
+    xS = -radius + xa
+    zE = +radius + za
+    xE = +radius + xa
+    yS = MIN(ya, yb)
+    yE = MAX(ya, yb)
+    ;//also sort Y coordinates
+    ya = yS
+    yb = yE
+CASE 2
+    IF (VALID(xb) || VALID(xr)) ERROR(55)
+    IF (VALID(yb) || VALID(yr)) ERROR(55)
+    IF ((!VALID(za)) || (!VALID(zb)) || (!VALID(zr))) ERROR(55)
+    IF (!VALID(xa)) xa = 0.0
+    IF (!VALID(ya)) ya = 0.0
+    ;//per SHP
+    xS = -radius + xa
+    yS = -radius + ya
+    xE = +radius + xa
+    yE = +radius + ya
+    zS = MIN(za, zb)
+    zE = MAX(za, zb)
+    ;//also sort Z coordinates
+    za = zS
+    zb = zE
+OTHERWISE
+    ERROR(55) ;invalid tube axis
+ENDSWITCH
+
+IF (subpart == 0) THEN
+
+    ; Publish the information about pipe
+    %gIso[22] = xE - xS
+    %gIso[23] = yE - yS
+    %gIso[24] = zE - zS
+    %gIso[26] = 2   ; Code to identify the polygon
+
+    ;//SHP currently required for ranging
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+    ;//GUI: SHP data is in CN_MMINCI unit, not in current unit
+    IF (%cg[8] != 0) THEN
+        SHP(CTOIN(shx+xS),CTOIN(shy+yS),CTOIN(shz+zS),CTOIN(shx+xE),CTOIN(shy+yE),CTOIN(shz+zE))
+    ELSE
+        SHP(shx+xS,shy+yS,shz+zS,shx+xE,shy+yE,shz+zE)
+    ENDIF
+ENDIF
+
+;//  0   Black   8   Dark gray
+;//  1   Blue    9   Light blue
+;//  2   Green   10  Light green
+;//  3   Cyan    11  Light cyan
+;//  4   Red     12  Light red
+;//  5   Magenta 13  Light magenta
+;//  6   Brown   14  Yellow
+;//  7   White   15  Bright white
+
+IF (subpart == 0)  color = 12  ;//(Light red)
+IF (subpart == 1)  color = 13  ;//(Light magenta)
+IF (subpart == 2)  color = 9   ;//(Light blue)
+IF (subpart == 3)  color = 11  ;//(Light cyan)
+IF (subpart == 4)  color = 10  ;//(Light green)
+IF (subpart == 5)  color = 5   ;//(Magenta)
+IF (subpart == 6)  color = 1   ;//(Blue)
+IF (subpart == 7)  color = 3   ;//(Cyan)
+IF (subpart == 8)  color = 2   ;//(Green)
+IF (subpart >= 9)  color = 7   ;//(White)
+
+SYN
+%gmaPolygons[pi].gmanVertices = nSides
+angle = 360.0 / nSides
+
+SWITCH (tubeAxis)
+CASE 0
+    FOR i = 0 TO nSides - 1
+        a = angle * i + phase
+        %gmaPolygons[pi].gmaVertices[i].gma_u = ya + radius * COS(a)
+        %gmaPolygons[pi].gmaVertices[i].gma_v = za + radius * SIN(a)
+        %gmaPolygons[pi].gmaVertices[i].gma_r = xr
+    ENDFOR
+    G168
+    G160  I0 J1 K0  P0 Q0 R1  U1 V0 W0
+    G2808 C(color) I(pi) Z(xa) W(xb)
+    G169
+CASE 1
+    FOR i = 0 TO nSides - 1
+        a = angle * i + phase
+        %gmaPolygons[pi].gmaVertices[i].gma_u = za + radius * COS(a)
+        %gmaPolygons[pi].gmaVertices[i].gma_v = xa + radius * SIN(a)
+        %gmaPolygons[pi].gmaVertices[i].gma_r = yr
+    ENDFOR
+    G168
+    G160  I0 J0 K1  P1 Q0 R0  U0 V1 W0
+    G2808 C(color) I(pi) Z(ya) W(yb)
+    G169
+CASE 2
+    FOR i = 0 TO nSides - 1
+        a = angle * i + phase
+        %gmaPolygons[pi].gmaVertices[i].gma_u = xa + radius * COS(a)
+        %gmaPolygons[pi].gmaVertices[i].gma_v = ya + radius * SIN(a)
+        %gmaPolygons[pi].gmaVertices[i].gma_r = zr
+    ENDFOR
+    G2808 C(color) I(pi) Z(za) W(zb)
+OTHERWISE
+    ERROR(55) ;invalid tube axis
+ENDSWITCH
+
+tubeClass = 3
+
+JSR "realtovirPipe.cfs"
+
+JSR "DynSet_pipe.cfs"
+
+IF( start_track == 0 ) tube_len = ABS(xS-xE)
+
+IF( subpart == 0 ) THEN 
+   
+    ; Not 1000.pgm, Not disable loader, Not tube calibration, Not user function with START
+    IF( (!%gPlc0.29) && (!%PlcOp0.18) && (!%CalPipe.General.3) && (%ServiceMillePGM == 0) && (!%LSRPlcOp0.21) ) JSR "LoadTube.cfs"
+ 
+    ; Gestione LUNETTE
+    IF( %config_machine0.6 ) THEN
+		IF( (%ServiceMillePGM.12) || (%ServiceMillePGM.14) ) THEN  
+	       JSR "ConnectFollower.cfs"  ; Loader 
+		   POP(3)
+		   JMPF .GXXXREQ
+		ELSEIF ( %ServiceMillePGM.13 )
+		   IF( !SetupAidsDone ) JSR "setup_aids_poly.cfs" 
+		   SetupAidsDone = 0
+           SYN
+           ?%SUPPORTS_SYSTEM.boolean.31 = 1
+           G4 F0.05
+           SYN
+           AWAIT( !%SUPPORTS_SYSTEM.boolean.31 )
+           AWAIT( !%LOADER.boolean.31 )
+		   POP(3)
+		   JMPF .GXXXREQ		   
+		ENDIF
+	    JSR "ConnectFollower.cfs"     ; Loader		
+		JSR "EnUnloadFollower.cfs"    ; Unloader		
+	ENDIF	
+	
+	; User functions that require steel shape and follow-up supports
+	
+	; Capacitive test
+	IF( %gPlc13.27 ) THEN
+	    JSR "FollowFunc.cfu"
+	    POP(2)
+		JMPF .GXXXREQ		
+	ENDIF
+	
+	; Tube Head Seeking 
+	IF( %ServiceMillePGM.3 ) THEN
+	    JSR "HeadMes.cfu" (%rLsGui43 / 1000.0)  
+	    POP(2)
+		JMPF .GXXXREQ		
+	ENDIF
+	
+	; Tube Heading Functions
+	IF( %LSRPlcOp0.21 ) THEN
+        RPT .OnePointOrg_s, .OnePointOrg_e, 1
+	    POP(2)
+		JMPF .GXXXREQ		
+	ENDIF
+	
+	; Manual Tube Calibration
+    IF( (isErrorTypeMcs == 0) && (%CalPipe.General.3) ) JMPF .SkipManualTCal
+	
+	IF (start_track == 0) THEN
+        ; Graphic Tube Length Info
+        IF( %PlcOp0.17 ) %funz[%IndexORG].origprgX = tube_len
+	
+		; Auto Calibration On Tube, not 1000.pgm
+        IF( (%rLsGui0.17) && (!%gPlc0.29) ) THEN
+		    ; Disable Loader
+		    IF( %PlcOp0.18 ) THEN
+			    RPT .OnePointOrg_s, .OnePointOrg_e, 1
+			    G1 X-10 F10000
+			ENDIF	
+		    G11000
+		ENDIF	
+			
+        ; APA to Acquire Precisely the tube origin
+        IF( %rLsGui0.10 ) THEN   
+	        JSR "HeadMes.cfu"     	
+		    SYN
+            IF( tube_len < (ABS(%gIso[22]) - 100) ) THEN
+                .FAULT_TUBELEN_2
+                SYN 
+                MSGOUT " Tube APA Result >> 100mm shorter than the program "	   
+                JMP .FAULT_TUBELEN_2	   		   
+            ENDIF  
+        ENDIF
+	
+	    orig_x = %funz[%IndexORG].origprgX
+		; TM MEMORY
+        ?%tmParts.TP_feedOffset = %funz[%IndexORG].origprgX  
+    ENDIF
+	
+.SkipManualTCal
+
+    IF ((start_track == 0) || (((g840executed == 1) && (start_track > 0))) || (%CalPipe.General.3) ) THEN
+    
+        ; auto origin acquire with track 0 || acqu. origin AND tube calibration active
+        IF (((%rLsGui0.16) && (start_track == 0)) || ((%rLsGui0.16) && (%CalPipe.General.3)) ) THEN 
+           RPT .OnePointOrg_s, .OnePointOrg_e, 1
+        ENDIF
+
+        ; Calibration Manual or auto running from part program
+		; -> Manual Calibration 1.3
+		; -> Auto Calibration 1.6
+		
+        IF ( (%CalPipe.General.3) || (%CalPipe.General.6) ) THEN                 
+                 
+            G806 T3 N1 H1 D1 E1 A11
+			gOptimEnableG806 = 0
+			JSR "Sel_Y3Z3_ORIG.cfs"
+			
+			G180 X-10 Y0 Z( ABS( %gIso[24] ) / 2) B0 C0
+            G1000 G0 X(kine_x) Y(kine_y) B(kine_b) C(kine_c) U(0)
+    
+            ; Calibration Cycle tube (from 1000.pgm)  
+            IF ((isErrorTypeMcs == 0) && (%CalPipe.General.3)) THEN
+                RPT .tube_cal_s, .tube_cal_e, 1
+            ; Calibration Cycle spindle (from 1000.pgm)    
+            ELSEIF ((isErrorTypeMcs == 1) && (%CalPipe.General.3)) THEN
+                RPT .spindle_cal_s, .spindle_cal_e, 1           
+            ENDIF
+      
+            ; program execute tube calibration (not 1000.pgm)
+            IF ((%CalPipe.General.6) && (!%CalPipe.General.3)) THEN
+                RPT .spindle_cal_s, .spindle_cal_e, 1
+            ENDIF  
+      
+        ENDIF  
+    ENDIF  
+    gTravT = -1
+ENDIF
+
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+G4099
+  
+.no_pipe
+
+; Jump BTW faces
+G1018
+
+%tmParts.TP_feedOffset = %funz[19].origprgX  ; TM MEMORY
+
+.GXXXREQ
+
+; 2D tube leveling and centering no more in 1000.pgm
+IF( fSimul || fGraph ) JMPF .Mantubecal 
+    IF( (isErrorTypeMcs == 0) && (%CalPipe.General.3) ) RETSKIPF ("M30")	
+	IF( %ServiceMillePGM.3 ) RETSKIPF ("M30")
+	IF( %ServiceMillePGM.12 ) RETSKIPF ("M30")
+	IF( %ServiceMillePGM.13 ) RETSKIPF ("M30")
+	IF( %ServiceMillePGM.14 ) RETSKIPF ("M30")
+	IF( %gPlc13.27 ) RETSKIPF ("M30")
+.Mantubecal
+  
+G(sav_G70)
+RET
+
+;******************************************************************************
+.spindle_cal_s
+
+x_calib = XGET("@X") 
+IF( %CalPipe.General.6 ) x_calib = XGET("@X") - 5
+IF( (start_track == 0) || (%CalPipe.General.3) ) THEN
+    G2310 X(x_calib)
+    G2312 X(x_calib) 
+ENDIF	
+
+.spindle_cal_e
+
+.tube_cal_s
+
+x_calib = XGET("@X") 
+IF( (start_track == 0) || (%CalPipe.General.3) ) THEN
+     G2310 X(x_calib)
+     G2311 X(x_calib) 
+ENDIF
+
+.tube_cal_e
+
+.OnePointOrg_s
+     apa_enable = 1
+     apa_list_enable = 0
+     apa_call_byprog = 0
+            
+     ; Acquisizione fissa per 1 punto
+     apa_mode = 1
+     apa_submode = 0
+     apa_safe_z = 80.0
+               
+     JSR "APA.cfs"
+            
+     apa_enable = 0
+     apa_list_enable = 0
+     apa_mode = 0
+.OnePointOrg_e

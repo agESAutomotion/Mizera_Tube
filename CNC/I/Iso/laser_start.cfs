@@ -1,0 +1,297 @@
+:
+;//1 = tool, 2 = surface, 6 = Z
+DBL vectorSelect = %config_machine32
+DBL pierce_height
+DBL hix = 0
+
+IF( (vectorSelect != 2) && (vectorSelect != 6 ) && (vectorSelect != 1 ) ) ERROR(55)
+IF (rtcp_on == 0) ERROR (55)
+IF (f_G153) ERROR (55)
+
+; Safety condition in case the capacitive sensor is broken OR not working
+IF ((%LSRCostK31/1000) == 10) THEN
+    IF ((%C103 < 800) && ((%rLsGui75 == 0) || (%rLsGui75 == 1))) ERROR (782)    ; C103 is the value of capacitive sensor in cmm.
+    IF ((%C104 < 800) && ((%rLsGui75 == 2) || (%rLsGui75 == 1))) ERROR (782)    ; C103 is the value of capacitive sensor in cmm.
+ENDIF
+
+IF ((%LSRCostK31/1000) == 20) THEN
+    IF ((%C103 < 1000) && ((%rLsGui75 == 0) || (%rLsGui75 == 1))) ERROR (782)    ; C103 is the value of capacitive sensor in cmm.
+    IF ((%C104 < 1000) && ((%rLsGui75 == 2) || (%rLsGui75 == 1))) ERROR (782)    ; C103 is the value of capacitive sensor in cmm.
+ENDIF
+
+; APA
+IF( %C18.7 ) THEN
+    ?%TabLsr[0].L_CutDistance = 2
+    gL_CutDistance = 2
+
+; Pipe Calibration (not scan)
+ELSEIF( %CalPipe[0].General[3] == 1 ) THEN
+    ?%TabLsr[0].L_CutDistance = 1
+    gL_CutDistance = 1
+
+; Pipe Calibration (scan)
+ELSEIF( %CalPipe[0].General[3] == 2 ) THEN
+    ?%TabLsr[0].L_CutDistance = 1
+    gL_CutDistance = 1
+
+; Capacitive test
+ELSEIF( %C18.17 ) THEN
+    IF( (%TabLsr[0].L_CutDistance >= (%LSRCostK31/1000)) || (%TabLsr[0].L_CutDistance <= 0) ) THEN
+        ?%TabLsr[0].L_CutDistance = 2
+        gL_CutDistance = 2
+    ELSE
+        gL_CutDistance = %TabLsr[0].L_CutDistance
+    ENDIF
+ENDIF
+
+; If not APA and not capacitive test
+IF( (!%C18.7) && (!%C18.17) && (%CalPipe[0].General[3] == 0) ) THEN
+    ; Select the probing setpoint
+    IF( (%TabLsr[pbase+0].L_PierceTime == 0) || (%TabLsr[pbase+0].L_PierceHeight == 0) || (piercing_mode == 0) ) THEN
+        ?%TabLsr[0].L_CutDistance = %TabLsr[ind8].L_CutDistance
+        gL_CutDistance = %TabLsr[ind8].L_CutDistance
+    ELSE
+        ?%TabLsr[0].L_CutDistance = %TabLsr[pbase+0].L_PierceHeight
+        gL_CutDistance = %TabLsr[pbase+0].L_PierceHeight
+    ENDIF
+ENDIF
+
+; Control IF the setpoint is out of sensore range
+IF ( touch_enable && (gL_CutDistance > ((%LSRCostK[31]/1000) * PercentOutRng ))) THEN
+    ?%TabLsr[0].L_CutDistance =  PercentOutRng * (%LSRCostK[31]/1000)
+    gL_CutDistance =  PercentOutRng * (%LSRCostK[31]/1000)
+ENDIF
+
+IF ( gL_CutDistance <= 0.3) ERROR(783) ; set point for hieght control is less than 0.3mm
+
+pierce_height = gL_CutDistance
+
+DBL x, y, z
+DBL ni, nj, nk, nijk
+DBL oi, oj, ok
+DBL t1, t2, t3
+DBL projection, h1, h2
+DBL bi, bj, bk, bijk
+DBL cuttingAngle
+
+;//calculate ONLY matrices in the fastest way (D0 P2 instead of D1)
+G180 D0 P2
+;//make the tool vector relative to table/matrix frame (o = mx^T * ef^T * tf.Z)
+t1 = ef_a11 * tf_a13 + ef_a21 * tf_a23 + ef_a31 * tf_a33
+t2 = ef_a12 * tf_a13 + ef_a22 * tf_a23 + ef_a32 * tf_a33
+t3 = ef_a13 * tf_a13 + ef_a23 * tf_a23 + ef_a33 * tf_a33
+oi = mx_a11 * t1 + mx_a21 * t2 + mx_a31 * t3
+oj = mx_a12 * t1 + mx_a22 * t2 + mx_a32 * t3
+ok = mx_a13 * t1 + mx_a23 * t2 + mx_a33 * t3
+
+SWITCH (vectorSelect)
+CASE 1
+    ni = oi
+    nj = oj
+    nk = ok
+CASE 2
+    IF (XGET("@ECLMXM") != 0) THEN
+        ni = ti
+        nj = tj
+        nk = tk
+    ELSE
+        ;//apply inverse user transformation matrix (n = mx^T * tijk)
+        ni = mx_a11 * ti + mx_a21 * tj + mx_a31 * tk
+        nj = mx_a12 * ti + mx_a22 * tj + mx_a32 * tk
+        nk = mx_a13 * ti + mx_a23 * tj + mx_a33 * tk
+    ENDIF
+    ;//convert to unit vector
+    nijk = SQRT(ni*ni + nj*nj + nk*nk)
+    IF (nijk > 0.001) THEN
+        ni = ni / nijk
+        nj = nj / nijk
+        nk = nk / nijk
+    ENDIF
+CASE 6
+    ;//mx^T * ef^T * [0 0 1]^T
+    ni = mx_a11 * ef_a31 + mx_a21 * ef_a32 + mx_a31 * ef_a33
+    nj = mx_a12 * ef_a31 + mx_a22 * ef_a32 + mx_a32 * ef_a33
+    nk = mx_a13 * ef_a31 + mx_a23 * ef_a32 + mx_a33 * ef_a33
+ENDSWITCH
+
+;//calculate T unit vector projection on S
+projection = oi * ni + oj * nj + ok * nk
+;//calculate binormal vector (b = o x n)
+bi = oj * nk - ok * nj
+bj = ok * ni - oi * nk
+bk = oi * nj - oj * ni
+;//calculate cutting angle for process table interpolation
+cuttingAngle = ATANXY(SQRT(bi*bi + bj*bj + bk*bk), projection)
+
+;//TODO: modify here your pierce_height if required.
+; Disable G800 probe with bevel angle [LSRPlcOp0.15]
+; MSGOUT "cuttingAngle = " NPREC(cuttingAngle, 0.001)
+IF( (!%LSRPlcOp0.15) && (ABS(cuttingAngle) > 1) ) THEN
+  MSGOUT "cuttingAngle = " NPREC(cuttingAngle, 0.001) "not allowed"
+  M0
+  ERROR(55)
+ENDIF
+
+;//stand-off range error
+IF (pierce_height > (%vrtc[toolVidx].VrLimM_Q_U/1000)) ERROR(787)
+IF (pierce_height < (%vrtc[toolVidx].VrLimM_Q_L/1000)) ERROR(787)
+
+IF (touch_enable) THEN
+    x = XGET("@X")
+    y = XGET("@Y")
+    z = XGET("@Z")
+ELSE
+    x = tx + oi * pierce_height
+    y = ty + oj * pierce_height
+    z = tz + ok * pierce_height
+    G0 X(x) Y(y) Z(z)
+ENDIF
+
+;//calculate piercing point vector projection on S for setpoint scaling
+;//and de-overlap
+h1 = pierce_height * projection
+;//calculate current position vector projection on S, minus h1, for de-overlap
+h2 = ((x-tx) * ni + (y-ty) * nj + (z-tz) * nk) - h1
+
+;//convert to absolute from now on (P2: must be done outside G153)
+G180 P2 X(x) Y(y) Z(z)
+;//store absolute data and convert n to absolute
+x = kine_x
+y = kine_y
+z = kine_z
+oi = tf_a13
+oj = tf_a23
+ok = tf_a33
+;//make the normal vector absolute (n' = ef * mx * n)
+t1 = mx_a11 * ni + mx_a12 * nj + mx_a13 * nk
+t2 = mx_a21 * ni + mx_a22 * nj + mx_a23 * nk
+t3 = mx_a31 * ni + mx_a32 * nj + mx_a33 * nk
+ni = ef_a11 * t1 + ef_a12 * t2 + ef_a13 * t3
+nj = ef_a21 * t1 + ef_a22 * t2 + ef_a23 * t3
+nk = ef_a31 * t1 + ef_a32 * t2 + ef_a33 * t3
+
+;//wait for not busy state (optimization, see at the end)
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+;//clear T reset, start T de-overlap,
+;//set vector and assign initial setpoint
+;//disable RTCP (optimization)
+?%uvHeads[hix].uvhToolCommand[cr_VectorSelect] = 1
+?%uvHeads[hix].uvhToolCommand[cr_Setpoint] = pierce_height *100
+tcr = tcr & XOR((c_reset | c_error_amp), -1)
+tcr = tcr | c_de_overlap
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+G153
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+
+
+;//perform T de-overlap
+x = x - oi * pierce_height
+y = y - oj * pierce_height
+z = z - ok * pierce_height
+
+    VEL[Z] = %ax2.pa9
+    ACC[Z] = 1000000
+    DEC[Z] = 1000000
+    JRK[Z] = 0
+
+    G0 X(x) Y(y) Z(z)
+
+    VEL[Z] = %ax29.pa9
+    ACC[Z] = %ax29.pa1
+    DEC[Z] = %ax29.pa2
+    JRK[Z] = %ax29.pa25
+
+
+;_deoverlap(0x00, X, Y, Z, x, y, z)
+;G10 G0 X(x) Y(y) Z(z)
+
+;//stop T de-overlap, clear S reset, start S de-overlap,
+;//set vector and assign initial setpoint, DISABLE POSITION LIMIT
+tcr = tcr | c_error_amp
+tcr = tcr & XOR(c_de_overlap, -1)
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+?%uvHeads[hix].uvhSurfaceCommand[cr_VectorSelect] = vectorSelect
+?%uvHeads[hix].uvhSurfaceCommand[cr_Setpoint] = 0 *100
+scr = scr & XOR((c_reset | c_error_amp), -1)
+scr = scr | c_de_overlap ;;;;;;;;;;;; | c_pos_lim_disab !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+
+;//perform S de-overlap
+IF (touch_enable) THEN
+    x = x - ni * h2
+    y = y - nj * h2
+    z = z - nk * h2
+
+        VEL[Z] = %ax2.pa9
+        ACC[Z] = 1000000
+        DEC[Z] = 1000000
+        JRK[Z] = 0
+
+        G0 X(x) Y(y) Z(z)
+
+        VEL[Z] = %ax29.pa9
+        ACC[Z] = %ax29.pa1
+        DEC[Z] = %ax29.pa2
+        JRK[Z] = %ax29.pa25
+
+    ;_deoverlap(0x00, X, Y, Z, x, y, z)
+    ;G10 G0 X(x) Y(y) Z(z)
+ENDIF
+
+; MSGOUT "t=(" NPREC(x,0.001) "," NPREC(y,0.001) "," NPREC(z,0.001) ")"
+; M0
+
+;//disable S de-overlap
+scr = scr | c_error_amp
+scr = scr & XOR(c_de_overlap, -1)
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+
+; Probing in progress
+?%uvHeads[hix].uvhCommand[1] = 1
+
+;//enable PLC vrtc handling
+?%uvHeads[hix].uvhCommand[0].1 = 1
+WAITBIT("%uvHeads[hix].uvhStatus[0].1", 1)
+
+; wait piercing mode for state machine
+WAITBIT("%uvHeads[hix].uvhStatus[1].0", 1)
+
+IF( touch_enable ) THEN
+;Start state machine command
+?%uvHeads[hix].uvhCommand[0].2 = 1
+WAITBIT("%uvHeads[hix].uvhStatus[0].2", 1)  ;  wait for state machine to lock
+ENDIF
+
+;//surface tolerance error
+;///////////////////////////////////////////////////////////////////////
+;// done by PLC while switching tables and removing c_pos_lim_disab ...
+;///////////////////////////////////////////////////////////////////////
+
+; start state machine command
+?%uvHeads[hix].uvhCommand[0].2 = 0
+WAITBIT("%uvHeads[hix].uvhStatus[0].2", 0)  ;  wait for state machine to lock
+
+IF (touch_enable) THEN
+    ;//move aside to piercing point
+    x = x + oi * pierce_height - ni * h1
+    y = y + oj * pierce_height - nj * h1
+    z = z + ok * pierce_height - nk * h1
+    G0 X(x) Y(y) Z(z)
+ENDIF
+
+;//reenable RTCP
+G152
+
+RET
+

@@ -1,0 +1,35 @@
+: Dynamic setting
+
+DBL ind   
+ind = VL22
+
+; Called from G806
+IF( WHO() != 0 ) RET 
+IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+
+    IF( %TabLsr[ind].L_UserInt17 == 0 ) THEN
+        FDCTCA = %cn[0].fdc.tca             ;//max NEG jump [mm/min])
+        FDCTCC = %cn[0].fdc.tcc             ;//max POS jump [mm/min])
+    ENDIF
+
+    IF( %TabLsr[ind].L_UserInt18 == 0 ) THEN
+        FDCFCA = %cn[0].fdc.fca             ;//VRef[mm/min] arc R=1m, a=90°
+        FDCFCB = %cn[0].fdc.fcb             ;//VRef[mm/min] arc R=0.01m, a=90°
+        FDCFCC = %cn[0].fdc.fcc             ;//VRef[mm/min] arc R=1m, a->0°
+        FDCFCD = %cn[0].fdc.fcd             ;//VRef[mm/min] arc R=0.01m, a->0°
+    ENDIF
+
+    IF( %TabLsr[ind].L_UserInt17 != 0 ) THEN
+        FDCTCA = %TabLsr[ind].L_UserInt17       ;//max NEG jump [mm/min])
+        FDCTCC = %TabLsr[ind].L_UserInt17       ;//max POS jump [mm/min])
+    ENDIF
+
+    IF( %TabLsr[ind].L_UserInt18 != 0 ) THEN
+        FDCFCA = %TabLsr[ind].L_UserInt18 * 10  ;//VRef[mm/min] arc R=1m, a=90°
+        FDCFCB = %TabLsr[ind].L_UserInt18       ;//VRef[mm/min] arc R=0.01m, a=90°
+        FDCFCC = %TabLsr[ind].L_UserInt18 * 10  ;//VRef[mm/min] arc R=1m, a->0°
+        FDCFCD = %TabLsr[ind].L_UserInt18		    ;//VRef[mm/min] arc R=0.01m, a->0°
+    ENDIF
+ENDIF
+
+RET

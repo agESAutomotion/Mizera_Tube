@@ -1,0 +1,73 @@
+[STRUCT]
+KEYWORD (par.dat) {
+        KEY_SYS;
+        KEY_ORG,cn,cg0;
+        KEY_TWI,twi,10;
+        KEY_THD,thd,10;
+        KEY_CED,ced,10;
+        KEY_TAB,tab,10;
+        KEY_GORG,gorg,10;
+        KEY_WEAR,wear,5;
+        KEY_UT,nc,10;
+        KEY_MAG;
+        KEY_CZO,czone,6;
+        KEY_VRTC;
+        KEY_LDAC;
+        KEY_USRDLL,UsrDll,16;
+        KEY_PROBE;
+        KEY_TOR,torcia,1;
+        KEY_GANTRY,gantry,2;
+        KEY_IXCFG;
+        KEY_QXCFG;
+}
+
+#include "Userdll.str"
+#include "org.str"
+#include "twi.str";
+#include "thd.str";
+#include "ced.str";
+#include "tab.str";
+#include "gorg.str"
+#include "ut.str";
+#include "wear.str";
+#include "mag.str";
+#include "czo.str";
+#include "vrtc.str";
+#include "probe.str";
+#include "tor.str";
+#include "gantry.str";
+#include "fastinp.str"
+#include "Iocfg.str"
+#include "LinDac.str";
+
+KEY_SYS {
+        KEY_CONFGEN;
+        ?1,KEY_CFGPLC;
+        KEY_CONFCHAN,cn,cg0;
+        KEY_PARCHAN,cn,cg0;
+        KEY_GEOCHAN,cn,cg0;
+        KEY_FDC,cn,cg0;
+        KEY_PARAX,ax,cg1;
+        KEY_CONFAX,ax,cg1;
+        KEY_TRASLO,ax,cg1;
+        KEY_ANTSLT,ax,cg1;
+        KEY_SSISTAT,ax,cg1;
+        KEY_DGT;
+        KEY_CAN;
+        KEY_FASTINP;
+}
+
+#include "cnfge.str";
+#include "CnfPLC.str";
+#include "cnfch.str"
+#include "geoch.str"
+#include "parch.str"
+#include "fdc.str"
+#include "cnfax.str"
+#include "parax.str"
+#include "traslo.str"
+#include "antslt.str"
+#include "ssistat.str"
+#include "dgt.str"
+#include "can.str"
+#include "ecat.str"

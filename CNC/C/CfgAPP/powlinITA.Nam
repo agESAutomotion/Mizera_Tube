@@ -1,0 +1,19 @@
+
+[KEYS]
+TITLE=DATI POTENZA
+
+[PROMPT]
+KEY_NODE=
+POWLIN=Linearizzazione potenza
+Plot2=Funzione linearizzazione potenza
+L_POW_NOMINAL=NOMINALE
+L_POWER2=REALE
+L_TYPE_INTERP2=Modello
+LIST0=Lineare,Segmento,Smussato
+L_TYPE_INTERP1=Punti
+LabelActualPW=Potenza attuale [W]
+
+[STATUS]
+Plot2=REALE(W),NOMINALE(W)
+
+[HELP]

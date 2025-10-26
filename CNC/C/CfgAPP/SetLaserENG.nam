@@ -1,0 +1,143 @@
+[PROMPT]
+KEY_SETLASER = Laser
+KEY_GENLASER = General
+KEY_FLYCUT = FlyCut
+KEY_RESONATOR = Resonator
+KEY_GASES = Gas
+KEY_CAPACITIVE = Capacitive
+KEY_FOCAL = Focal
+KEY_SPLINE = Spline
+
+SL_CAPACITIVE_MNGT = Capacitive management 
+INP_RES_CAPACITIVE = Capacitive analog input resolution
+SL_CAPACITIVE_RANGE = Capacitive sensor range
+SL_CAPACITIVE_SIM = Simulation
+SL_GENERATOR_MNGT = Generator type
+SL_TIPT_FILTER = Tip touch filter [msec]
+SL_FOCAL_TYPE = Focal type
+FOC_TYPE_LIST = manual, analog, analog axis, pwm
+SL_FOC_MODEL = Head Model 
+SL_BIT_OUT_FOCAL = Focal output resolution
+SL_PROP_OXYGEN = Proportional valve management
+SL_VALV_PROP_BUS = Proportional valve management (0=Analog, 1=bus)
+SL_VALV_PROP_TYPE = Proportional valve type
+SL_PROP_TYPE = DIWAL(bus), Hoerbiger, Analog
+SL_BIT_IN_VALV_PROP = Number of bit about the device use to read pressure
+SL_BIT_OUT_VALV_PROP = Number of bit about the device use to write pressure
+SL_NBIT = 12bit, 16bit(half),16bit(full)              
+SL_NBIT_2= 16bit, 12bit, 11bit
+RES_LIST = 12bit, 16bit(half),16bit(full)
+SL_PALLET_LIST = no pallet,esa motors,ext plc,no esa motors,hydr+no pist,hyd+mot+pist 
+SL_PALLET_SYS = Pallet System
+SL_LUB_SYS = Lubrication System
+SL_DOOR_SYS = Door safety system [LSRPlc55]
+LIST_DOOR = no,safety 1,safety 2
+LIST_LUB = No Lub,Lub On/off,Lub Mot
+SL_MAX_PRESS = Max. pressure proporcional valve [bar]
+SL_MAX_PRESS_OXY = Max. Oxygen pressure [bar]
+SL_MAX_PRESS_AZOTO = Max. Nitrogen pressure [bar]
+SL_MAX_PRESS_ARIA = Max. air pressure [bar]
+SL_MAX_PRESS_TEST = Gas test pressure [bar]
+SL_MAX_PRESS_SPURGO = Max. purge pressure [bar]
+SL_TIM_SPURGO = Purge time during program run [sec]
+SL_GAS_LINEARIZ = Enable linearization
+SL_GAS_EXTRA_EV = Enable aux. valve after proporzional valve
+SL_GAS_CLOSE_PROP_STOPGAS = Close gases with only close proportional valve during program running
+SL_GAS_SIM = Gas simulated
+SL_GAS_AIRCUT_PURGE = Gas Purging with AIR Cut (After Laser Off 10s)
+
+L_JUMP_GAS = Open Close gas in func. of distance[LSRPlcOp1.20]
+L_CORN_RADIUS=Enable corner AND radius speed managment[LSRPlcOp1.21]
+L_COOL_PT = Cooling point [LSRPlcOp1.22]
+L_DOOR_UP = Enable Auto Safety Door [rLsGui0.19] 
+L_DIS_PHOTOCELL = Disable Photocell [LSRPlcOp1.28]
+   
+SL_ALARM_TOLL = Alarm tolerance [bar]
+SL_ALARM_TIME = Alarm delay time [s]
+SL_MAX_DIFF_PRESS = Max. diff input pressure [bar]
+SL_DELAY_FDBACK = Delay feedback input gas control [s]
+
+SL_HEAD_FOCALTYPE = Focal type
+L_CLEAN_CALIB = Nozzle brush present, single plate calibration [LSRPlcOp1.5]
+
+SL_CAPACITIVE_TYPE = Precitec,LaserMech, Highyag, ECAT Cap, Precitec Similar (ECAT), Thermacut, Procon
+SL_GENERATOR_TYPE = YLS/Fuji,YLR/Max/Raycus,Raycus,Rofin,Trumpf,NLIGHT
+SL_PROP_OXYGEN_TYPE = Standard,only oxigen,Standard and oxiygen
+FOC_LIST = Precitec,WSX/OpenLaser,HighYag,Raytools,Procon
+LIST_CAP_RANGE = 10mm,20mm
+
+
+CN_ENAB_TIME_ALIGNED_SETIO_EX = Hardware accelerated time-aligned IO (laser)
+CN_ENAB_PWM_COMBINE = Combine emission and PWM (laser)
+K_USER3 = Customer Latency Value for DigitalBeam Activation (Fly_Cut)(m/sec) (Cost_User3)
+K_USER4 = Customer Latency Value for DigitalBeam Deactivation (Fly_Cut)(m/sec) (Cost_User4)
+LSR_COSTK3 = Constructor Latency Value for DigitalBeam Activation (Fly_Cut)(m/sec) [LSRCostK3]
+LSR_COSTK4 = Constructor Latency Value for DigitalBeam Deactivation (Fly_Cut)(m/sec) [LSRCostK4]
+LSR_COSTK15 = Trajectory maximum acc. Fly cut mode[LSRCostK15]
+LSR_COSTK16 = Trajectory maximum dec. Fly cut mode[LSRCostK16]
+
+
+// Capacitive
+L_CALIB_CHECK= Enable capacitive sensor check (debug LsIso90-99) [LSRPlcOp1.8]
+L_CNC_LIN = Enable capacitive sensor linearization from CNC [LSRPlcOp1.9]   
+SL_CAP_ENAB_FAR = Enable FAR input management
+SL_CAP_CALIB_POINT = Calibration type
+CALIB_POINT = 16points,1point
+SL_EMPOWER_CAPFAR = EMPOWER 88C1 Capacitance FAR Value
+SL_EMPOWER_CAPTOUCH = EMPOWER 88C1 Capacitance Tip-touch
+SL_EMPOWER_CAPTOUCH_B15 = EMPOWER 88C1 Capacitance Tip-touch (B = 15 degree)
+SL_EMPOWER_CAPTOUCH_B30 = EMPOWER 88C1 Capacitance Tip-touch (B = 30 degree)
+SL_EMPOWER_CAPTOUCH_B45 = EMPOWER 88C1 Capacitance Tip-touch (B = 45 degree)
+NOZZLE_SIZE = The diameter of the nozzle [mm]
+
+// Resonator
+RES_LAB1 = .
+RES_MAXPOWER = Max power [w]
+RES_INTSPEEDFILTER = Interpolation speed filter (for POWER) [msec]
+RES_INTSPEEDFILTER_DUTY = Interpolation speed filter (for DUTY) [msec]
+RES_INTSPEEDFILTER_FREQ = Interpolation speed filter (for FREQ.) [msec] 
+RES_SYNC_DELAY = Synchronism time for cutting alignment during acceleration/deceleration [msec]
+RES_DELAY_LASER_OFF = Delay laser OFF [msec]
+RES_XREF_FREQ = Freq utilizzata per gestione tempo sincronismo tra vel. e DUTY
+RES_X1_FREQMIN = Freq minima per gestione tempo di risposta generatore al PWM  
+RES_X2_FREQMAX = Freq massima per gestione tempo di risposta generatore al PWM  
+RES_Y1_TIM_FREQMIN = Tempo di risposta generatore al PWM alla frequenza minima [msec]
+RES_Y2_TIM_FREQMAX = Tempo di risposta generatore al PWM alla frequenza massima [msec]
+RES_POWER_ON_BUS = Power managed on digital bus
+RES_USE_POWER_ON_PWM = Use analog output on PWM board for power management
+RES_DAC_RES = DA convertor resolution [points]
+RES_SIM = Resonator in simulation
+RES_LINEAR = Enable Power linearization
+//RES_SHOOT_POWER = SHOOT: power [w]
+//RES_SHOOT_DUTY = SHOOT: duty [%]
+//RES_SHOOT_FREQ = SHOOT: frequency [w]
+//RES_SHOOT_GAS_TYPE = SHOOT: gas type
+//RES_SHOOT_GAS_PRESS = SHOOT: pressure [bar]
+
+// Focal
+SL_FOC_MIN = Minimum value [mm]
+SL_FOC_MAX = Maximum value [mm]
+
+//Spline
+SP_LAB1 = G800 G0...
+SP_DISCR_INT = Discretizzation interval [EBK18]
+SP_MAXINPSIZE =  Max input segment size [EBK19]
+SP_OUTSIZE_ROUND = Output segment size [EBK14]
+SP_ACCTRJ_ROUND = Trajectory acceleration [EBK12]
+SP_DECTRJ_ROUND = Trajectory deceleration [EBK13]
+SP_FDCWEI_C_ROUND =  FDCWEI[C] [EBK10]
+SP_FDCWEI_B_ROUND = FDCWEI[B] [EBK11]
+SP_CURV_MOD_ROUND = Curvature modulation [EBK15] 
+SP_LIM_ANGLE_ROUND = Limit angle [EBK16] 
+SP_DEGREE = Degree [EBK17] 
+SP_MIN_RADIUS = Minimum radius [EBK20] 
+
+SP_LAB2 = Limit C for followers [LSRPlcOp1.29]
+SP_FDCWEI_C_AUX = VEL[C] and Rapid Max Vel (mm/min) [EBK21]
+SP_LAB3 = Limit B for torque [LSRPlcOp1.30]
+SP_FDCWEI_B_AUX = FDCWEI[B] [EBK22]
+SP_LAB4 = Full Spline Interpolation Feed Limit [LSRPlcOp1.31]
+
+TXT6 = 
+TXT7 = 
+

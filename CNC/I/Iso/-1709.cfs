@@ -1,0 +1,642 @@
+ M [B] [E] [P] [Q] [T]1 [R]0 [S]0 [L] X Y [I]0 [J]0 [F] : G709
+
+;// Prosegue con una linea o con un arco
+;//
+;// G709 M<interp_type>
+;//     [B<bevel_iniziale>] [E<bevel_finale>]
+;//     [P<lead_iniziale>] [Q<lead_finale>]
+;//     [T<tipo_raccordo>] [R<par1>] [S<par2>] [L<angolo_limite>]
+;//     X<quota> Y<quota> [I<quota> J<quota>] [F<feed>]
+
+;//Discretizzazione [mm/blk]
+DBL FInterpRate=CFRMM(2)
+
+DBL TargetX=VA23
+DBL TargetY=VA24
+DBL CenterX=VA8
+DBL CenterY=VA9
+DBL Bevel, Lead, FineBevel, FineLead
+DBL ForcedC
+DBL ConnType=VA19
+DBL ConnParR=VA17
+DBL ConnParS=VA18
+DBL LimitAngle=VA11     ;//XXX
+DBL InterpType=VA12
+
+DBL DeX, DeY, LenXY, StartRad, EndRad, DeRad, Rad, PosX, PosY, CenX, CenY
+DBL StartVecX, StartVecY, EndVecX, EndVecY, VecX, VecY
+DBL BnlCosX, BnlCosY, ConnL, ConnDir, ConnCenterX, ConnCenterY
+DBL StartAng, EndAng, DeAng, Ang, PrevAng, IncAng
+DBL PrStep, Pr
+DBL uSteps, u
+
+DBL NutaC = 0, NutaA = 0
+DBL Kerf, rKerf
+
+IF( (gAttachState != 1) && (gAttachState != 2) ) THEN
+    ERROR(3)    ;//Funzione non valida
+ENDIF
+
+IF( XGET("@G90") != 90 ) ERROR(3)   ;//Funzione non valida
+IF( XGET("@G94") != 94 ) ERROR(3)   ;//Funzione non valida
+
+IF( gBevelMode == 0 ) THEN
+    ;//B ed E non ammessi
+    IF( (!ISQNAN(VA1)) || (!ISQNAN(VA4)) ) THEN
+        ERROR(8)    ;//Funzione non disponibile
+    ENDIF
+
+    F(VA5)
+    G(InterpType) X(TargetX) Y(TargetY) I(CenterX) J(CenterY)
+    gCurX = TargetX
+    gCurY = TargetY
+    POP(0)
+    JMP .returnSuccessful
+ENDIF
+
+;//Calcola versori laterali iniziale e finale (sx del verso di avanz.)
+IF( InterpType == 1 ) THEN
+    DeX = TargetX - gCurX
+    DeY = TargetY - gCurY
+    LenXY = SQRT(DeX*DeX + DeY*DeY)
+    StartVecX = -DeY / LenXY
+    StartVecY = DeX / LenXY
+
+    IF( ABS(StartVecY) < ABS(StartVecX) ) THEN
+        StartAng = ASIN( StartVecY )
+        IF(StartVecX<0) StartAng = 180-StartAng
+    ELSE
+        StartAng = ACOS( StartVecX )
+        IF(StartVecY<0) StartAng = -StartAng
+    ENDIF
+
+    IF( StartAng < -0.0001 ) THEN
+        StartAng = StartAng + 360
+    ENDIF
+
+    EndVecX = StartVecX
+    EndVecY = StartVecY
+    EndAng = StartAng
+ELSE
+    ;//InterpType == 2|3
+    DeX = CenterX - gCurX
+    DeY = CenterY - gCurY
+    StartRad = SQRT(DeX*DeX + DeY*DeY)
+    StartVecX = DeX / StartRad
+    StartVecY = DeY / StartRad
+
+    IF( InterpType == 2 ) THEN
+        StartVecX = -StartVecX
+        StartVecY = -StartVecY
+    ENDIF
+
+    IF( ABS(StartVecY) < ABS(StartVecX) ) THEN
+        StartAng = ASIN( StartVecY )
+        IF(StartVecX<0) StartAng = 180-StartAng
+    ELSE
+        StartAng = ACOS( StartVecX )
+        IF(StartVecY<0) StartAng = -StartAng
+    ENDIF
+
+    IF( StartAng < -0.0001 ) THEN
+        StartAng = StartAng + 360
+    ENDIF
+
+    DeX = CenterX - TargetX
+    DeY = CenterY - TargetY
+    EndRad = SQRT(DeX*DeX + DeY*DeY)
+    EndVecX = DeX / EndRad
+    EndVecY = DeY / EndRad
+
+    IF( InterpType == 2 ) THEN
+        EndVecX = -EndVecX
+        EndVecY = -EndVecY
+    ENDIF
+
+    IF( ABS(EndVecY) < ABS(EndVecX) ) THEN
+        EndAng = ASIN( EndVecY )
+        IF(EndVecX<0) EndAng = 180-EndAng
+    ELSE
+        EndAng = ACOS( EndVecX )
+        IF(EndVecY<0) EndAng = -EndAng
+    ENDIF
+
+    IF( EndAng < -0.0001 ) THEN
+        EndAng = EndAng + 360
+    ENDIF
+
+    DeRad = EndRad - StartRad
+
+    DeAng = EndAng - StartAng
+
+    IF( InterpType == 3 ) THEN
+        IF( DeAng < 0.001 ) THEN
+            DeAng = DeAng + 360
+        ENDIF
+    ELSE
+        ;//InterpType == 2
+        IF( DeAng > -0.001 ) THEN
+            DeAng = DeAng - 360
+        ENDIF
+    ENDIF
+    LenXY = ABS( DeAng * (StartRad + DeRad / 2.) * 3.14159265358 / 180. )
+ENDIF
+
+rKerf = 0
+IF( gKerfType7 != 0 ) THEN
+    ;//Funzione non disponibile
+    IF( (gKerfType7 != 1) && (gKerfType7 != 2) ) ERROR(8)
+    rKerf = CFRMM(%ced[CEDIDX(gKerfDescr7)].dRad) + gKerfSvr7
+    IF( gKerfType7 == 2 ) rKerf = -rKerf
+ENDIF
+
+IF( gAttachState == 1 ) THEN
+    ;//Attacco pezzo pendente
+    IF( (kf_HeadIsAB7 == 0) && ISQNAN(QCALCQ(A)) ) THEN
+        ;//In caso di asse A bloccato, si consente la programmazione di G700 B0
+        ;//B viene alterato in funzione del primo blocco motion dopo la G700,
+        ;//che deve contenere B o E.
+        ;//Un'altra soluzione e' programmare G700 B nel CAD con l'angolo
+        ;//definitivo.
+        IF( gCurBevel == 0 ) THEN
+            ;//Leggi E
+            Bevel = VA4
+            IF( !ISQNAN(Bevel) ) gCurBevel = Bevel
+            ;//Leggi B
+            Bevel = VA1
+            IF( !ISQNAN(Bevel) ) gCurBevel = Bevel
+        ENDIF
+
+        ;//$APP #MAG: Show required A
+        IF( %cn[WHO()].pc[14].25 ) THEN
+            IF( !wah_a_inited ) wah_a = ABS(gCurBevel)
+            wah_a_inited = 1
+        ENDIF
+
+        IF (%CostK[48]==1) THEN
+            ;//Force bevel angle by fixed A
+            IF( ABS(gCurBevel) < 0.1 ) THEN
+                gCurBevel = 0
+            ELSE
+                IF( gCurBevel > 0 ) THEN
+                    gCurBevel = ABS(%twi[TWIIDX(0)].htwi.oarh.dEB)
+                    ;//$APP #MAG: Show required A
+                    IF( %cn[WHO()].pc[14].25 ) gCurBevel = ABS(wah_a)
+                ELSE
+                    gCurBevel = -ABS(%twi[TWIIDX(0)].htwi.oarh.dEB)
+                    ;//$APP #MAG: Show required A
+                    IF( %cn[WHO()].pc[14].25 ) gCurBevel = -ABS(wah_a)
+                ENDIF
+            ENDIF
+        ENDIF
+    ENDIF
+
+    Ang = StartAng
+    VecX = StartVecX
+    VecY = StartVecY
+    IF( gCurForce ) THEN
+        Ang = gCurTan
+        VecX = COS(gCurTan)
+        VecY = SIN(gCurTan)
+    ENDIF
+
+    gCurAng = Ang
+    gCurVecX = VecX
+    gCurVecY = VecY
+
+    gKineFlip = 0
+    gKineOffs = 0
+    ForcedC = gForcedInitialC
+    G708 C(gCurAng) L(gCurLead) A(gCurBevel) W(ForcedC)
+    ;//$APP
+    IF (%CostK[45]==0) THEN
+    Kerf = rKerf / COS(gCurBevel)
+    ELSE
+        Kerf = rKerf
+    ENDIF
+    PosX = gCurX + Kerf * gCurVecX
+    PosY = gCurY + Kerf * gCurVecY
+
+    IF( rtcp_on == 0 ) ERROR(63)        ;//Descrittore utensile errato
+
+    ;//Forza G806 S0
+    IF( gTravS != 0 ) THEN
+        G172 T(gTravT) H(gTravH) D(gTravD) S(0) E(gTravE) I(gTravI)
+    ENDIF
+
+    IF( kf_HeadIsAB7 ) THEN
+        G180 X(PosX) Y(PosY) Z(workpiece_safe_dist) A(NutaC) B(NutaA)
+        G153 G0 X(kine_x) Y(kine_y) A(kine_a) B(kine_b)
+        G153 G0 Z(kine_z)
+    ELSE
+        ;//ATTENZIONE! Usare stesso test utilizzato internamente da G800 T1
+        IF (%CostK[49]==1) THEN
+            ;//G800 T1 plate default is surface normal vector
+            G180 X(PosX) Y(PosY) Z(0.0+workpiece_safe_dist) C(NutaC) A(NutaA)
+        ELSE
+            ;//G800 T1 plate default is tool vector
+            ;//Forza G806 S(workpiece_safe_dist)
+            G172 T(gTravT) H(gTravH) D(gTravD) S(workpiece_safe_dist) E(gTravE) I(gTravI)
+            G180 X(PosX) Y(PosY) Z(0.0) C(NutaC) A(NutaA)
+        ENDIF
+
+        G153 G0 X(kine_x) Y(kine_y) C(kine_c) A(kine_a)
+        G153 G0 Z(kine_z)
+    ENDIF
+
+    ;//Si usa K0 in quanto la gestione del Kerf e' esterna a G800 in questo caso
+    G800 K0 D(gKerfDescr7) S(gKerfSvr7) X(PosX) Y(PosY) Z0 F(VA5) T1 P1 R(gRegol) U0 V0 W1
+
+    gAttachState = 2
+ENDIF
+
+F(VA5)
+
+;//INIZIO raccordo
+;//Leggi B
+Bevel = VA1
+IF( ISQNAN(Bevel) ) Bevel = gCurBevel
+Lead = VA15
+IF( ISQNAN(Lead) ) Lead = gCurLead
+ForcedC=QNAN()
+
+IF( (kf_HeadIsAB7 == 0) && ISQNAN(QCALCQ(A)) ) THEN
+    ;//In caso di asse A bloccato, si consente la programmazione di G731
+    ;//G701 B0.  B viene alterato con la quota precedente.
+    ;//Un'altra soluzione e' programmare G701 B nel CAD con l'angolo precedente
+    ;//od ometterlo.
+    IF( gCurForce && (Bevel == 0) ) Bevel = gCurBevel
+
+    IF (%CostK[48]==1) THEN
+        ;//Force bevel angle by fixed A
+        IF( ABS(Bevel) < 0.1 ) THEN
+            Bevel = 0
+        ELSE
+            IF( Bevel > 0 ) THEN
+                Bevel = ABS(%twi[TWIIDX(0)].htwi.oarh.dEB)
+                ;//$APP #MAG: Show required A
+                IF( %cn[WHO()].pc[14].25 ) Bevel = ABS(wah_a)
+            ELSE
+                ;//$APP #MAG: Show required A
+                Bevel = -ABS(%twi[TWIIDX(0)].htwi.oarh.dEB)
+                IF( %cn[WHO()].pc[14].25 ) Bevel = -ABS(wah_a)
+            ENDIF
+        ENDIF
+    ENDIF
+ENDIF
+
+Ang = StartAng
+VecX = StartVecX
+VecY = StartVecY
+IF( gCurForce ) THEN
+    Ang = gCurTan
+    VecX = COS(gCurTan)
+    VecY = SIN(gCurTan)
+ENDIF
+
+;//Calcola incremento
+PrevAng = MOD(gCurAng,360)
+IF( PrevAng < -0.0001 ) THEN
+    PrevAng = PrevAng + 360
+ENDIF
+
+IncAng = Ang - PrevAng
+
+;//Prosegui dal lato piu' breve
+IF( IncAng < 0 ) THEN
+    IncAng = IncAng + 360
+ENDIF
+
+IF( IncAng > 180 ) THEN
+    IncAng = IncAng - 360
+ENDIF
+
+IF( ABS(IncAng) >= 10 ) JMP .DoRounding
+IF( ABS(gCurBevel-Bevel) >= 0.1 ) JMP .DoRounding
+IF( ABS(gCurLead-Lead) >= 0.1 ) JMP .DoRounding
+gCurAng = gCurAng + IncAng
+gCurVecX = VecX
+gCurVecY = VecY
+gCurBevel = Bevel
+gCurLead = Lead
+JMP .SkipRounding
+.DoRounding
+
+;//$APP
+M82 ;Richiesta congelamento regolazione
+
+IF( ConnType == 1 ) THEN
+    ;//Connection: conical rounding
+    gCurAng = gCurAng + IncAng
+    gCurVecX = VecX
+    gCurVecY = VecY
+    gCurBevel = Bevel
+    gCurLead = Lead
+    G708 C(gCurAng) L(gCurLead) A(gCurBevel) W(ForcedC)
+    ;//$APP
+    IF (%CostK[45]==0) THEN
+    Kerf = rKerf / COS(gCurBevel)
+    ELSE
+        Kerf = rKerf
+    ENDIF
+    PosX = gCurX + Kerf * gCurVecX
+    PosY = gCurY + Kerf * gCurVecY
+    IF( kf_HeadIsAB7 ) THEN
+        G1 X(PosX) Y(PosY) A(NutaC) B(NutaA)
+    ELSE
+        G1 X(PosX) Y(PosY) C(NutaC) A(NutaA)
+    ENDIF
+    POP(1)
+    JMP .EndCaseConn
+ENDIF
+IF( ConnType == 5 ) THEN
+    IF( (gCurVecX == 0) && (gCurVecY == 0) ) ERROR(55)  ;//Illegal operation
+    ;//Connection: looping
+    BnlCosX = gCurVecY - VecY;
+    BnlCosY = -gCurVecX + VecX;
+    LenXY = SQRT(BnlCosX*BnlCosX + BnlCosY*BnlCosY)
+    BnlCosX = BnlCosX / LenXY
+    BnlCosY = BnlCosY / LenXY
+    ;//XXX G2 or G3?
+    ConnL = ConnParS * ( BnlCosX * (-VecY) + BnlCosY * (VecX) )
+    ConnDir = 3
+
+    G708 C(gCurAng) L(gCurLead) A(gCurBevel) W(ForcedC)
+    ;//$APP
+    IF (%CostK[45]==0) THEN
+    Kerf = rKerf / COS(gCurBevel)
+    ELSE
+        Kerf = rKerf
+    ENDIF
+    PosX = gCurX+Kerf*gCurVecX+ConnL*(gCurVecY)
+    PosY = gCurY+Kerf*gCurVecY+ConnL*(-gCurVecX)
+    IF( kf_HeadIsAB7 ) THEN
+        G1 X(PosX) Y(PosY) A(NutaC) B(NutaA)
+    ELSE
+        G1 X(PosX) Y(PosY) C(NutaC) A(NutaA)
+    ENDIF
+    gCurAng = gCurAng + IncAng
+    gCurVecX = VecX
+    gCurVecY = VecY
+    gCurBevel = Bevel
+    gCurLead = Lead
+    G708 C(gCurAng) L(gCurLead) A(gCurBevel) W(ForcedC)
+    ;//$APP
+    IF (%CostK[45]==0) THEN
+    Kerf = rKerf / COS(gCurBevel)
+    ELSE
+        Kerf = rKerf
+    ENDIF
+    PosX = gCurX+Kerf*gCurVecX+ConnL*(-gCurVecY)
+    PosY = gCurY+Kerf*gCurVecY+ConnL*(gCurVecX)
+    ConnCenterX = (gCurX+ConnParS*BnlCosX)
+    ConnCenterY = (gCurY+ConnParS*BnlCosY)
+    IF( kf_HeadIsAB7 ) THEN
+        G(ConnDir) X(PosX) Y(PosY) I(ConnCenterX) J(ConnCenterY) A(NutaC) B(NutaA)
+    ELSE
+        G(ConnDir) X(PosX) Y(PosY) I(ConnCenterX) J(ConnCenterY) C(NutaC) A(NutaA)
+    ENDIF
+    PosX = gCurX + Kerf * gCurVecX
+    PosY = gCurY + Kerf * gCurVecY
+    IF( kf_HeadIsAB7 ) THEN
+        G1 X(PosX) Y(PosY) A(NutaC) B(NutaA)
+    ELSE
+        G1 X(PosX) Y(PosY) C(NutaC) A(NutaA)
+    ENDIF
+    POP(1)
+    JMP .EndCaseConn
+ENDIF
+IF( ConnType == 6 ) THEN
+    IF( (gCurVecX == 0) && (gCurVecY == 0) ) ERROR(55)  ;//Illegal operation
+    ;//Connection: triangle
+    G708 C(gCurAng) L(gCurLead) A(gCurBevel) W(ForcedC)
+    ;//$APP
+    IF (%CostK[45]==0) THEN
+    Kerf = rKerf / COS(gCurBevel)
+    ELSE
+        Kerf = rKerf
+    ENDIF
+    PosX = gCurX+Kerf*gCurVecX+ConnParS*(gCurVecY)
+    PosY = gCurY+Kerf*gCurVecY+ConnParS*(-gCurVecX)
+    IF( kf_HeadIsAB7 ) THEN
+        G1 X(PosX) Y(PosY) A(NutaC) B(NutaA)
+    ELSE
+        G1 X(PosX) Y(PosY) C(NutaC) A(NutaA)
+    ENDIF
+
+    gCurAng = gCurAng + IncAng
+    gCurVecX = VecX
+    gCurVecY = VecY
+    gCurBevel = Bevel
+    gCurLead = Lead
+    G708 C(gCurAng) L(gCurLead) A(gCurBevel) W(ForcedC)
+    ;//$APP
+    IF (%CostK[45]==0) THEN
+    Kerf = rKerf / COS(gCurBevel)
+    ELSE
+        Kerf = rKerf
+    ENDIF
+    PosX = gCurX+Kerf*gCurVecX+ConnParS*(-gCurVecY)
+    PosY = gCurY+Kerf*gCurVecY+ConnParS*(gCurVecX)
+    IF( kf_HeadIsAB7 ) THEN
+        G1 X(PosX) Y(PosY) A(NutaC) B(NutaA)
+    ELSE
+        G1 X(PosX) Y(PosY) C(NutaC) A(NutaA)
+    ENDIF
+    PosX = gCurX + Kerf * gCurVecX
+    PosY = gCurY + Kerf * gCurVecY
+    IF( kf_HeadIsAB7 ) THEN
+        G1 X(PosX) Y(PosY) A(NutaC) B(NutaA)
+    ELSE
+        G1 X(PosX) Y(PosY) C(NutaC) A(NutaA)
+    ENDIF
+    POP(1)
+    JMP .EndCaseConn
+ENDIF
+    ;//Bad connection type
+    ERROR(3)    ;//Invalid function
+.EndCaseConn
+
+;//$APP
+M83 ;Annulla richiesta congelamento regolazione
+
+.SkipRounding
+;//FINE raccordo
+
+;//INIZIO interpolazione
+;//Leggi E
+Bevel = VA4
+IF( ISQNAN(Bevel) ) Bevel = gCurBevel
+Lead = VA16
+IF( ISQNAN(Lead) ) Lead = gCurLead
+ForcedC=QNAN()
+
+IF( (kf_HeadIsAB7 == 0) && ISQNAN(QCALCQ(A)) ) THEN
+    ;//In caso di asse A bloccato, si consente la programmazione di G731
+    ;//G701 E0.  E viene alterato con la quota precedente.
+    ;//Un'altra soluzione e' programmare G701 E nel CAD con l'angolo precedente
+    ;//od ometterlo.
+    IF( gCurForce && (Bevel == 0) ) Bevel = gCurBevel
+
+    IF (%CostK[48]==1) THEN
+        ;//Force bevel angle by fixed A
+        IF( ABS(Bevel) < 0.1 ) THEN
+            Bevel = 0
+        ELSE
+            IF( Bevel > 0 ) THEN
+                Bevel = ABS(%twi[TWIIDX(0)].htwi.oarh.dEB)
+                ;//$APP #MAG: Show required A
+                IF( %cn[WHO()].pc[14].25 ) Bevel = ABS(wah_a)
+            ELSE
+                Bevel = -ABS(%twi[TWIIDX(0)].htwi.oarh.dEB)
+                ;//$APP #MAG: Show required A
+                IF( %cn[WHO()].pc[14].25 ) Bevel = -ABS(wah_a)
+            ENDIF
+        ENDIF
+    ENDIF
+ENDIF
+
+;//Prosegui in senso orario od antiorario a seconda del verso di interpolazione
+IF( (InterpType == 1) || gCurForce ) THEN
+    IncAng = 0
+ELSE
+    ;//InterpType == 2|3
+
+    Ang = EndAng
+    IF( gCurForce ) THEN
+        Ang = gCurTan
+    ENDIF
+
+    ;//Calcola incremento
+    PrevAng = MOD(gCurAng,360)
+    IF( PrevAng < -0.0001 ) THEN
+        PrevAng = PrevAng + 360
+    ENDIF
+
+    IncAng = Ang - PrevAng
+
+    IF( InterpType == 2 ) THEN
+        IF( IncAng > -0.001 ) THEN
+            IncAng = IncAng - 360
+        ENDIF
+    ELSE
+        ;//InterpType == 3
+        IF( IncAng < 0.001 ) THEN
+            IncAng = IncAng + 360
+        ENDIF
+    ENDIF
+ENDIF
+
+;//Nota:  il kerf puo' cambiare con il bevel, ma in quella condizione
+;//le spirali di Archimede sono gestite dal fine-interpolator dell'ISO
+;//Nota:  se si vuole che la kerf compensation interpoli assieme all'angolo di
+;//Bevel anche con kf_identity = 1, abilitare la seguente riga:
+;//(necessario per extended_lead_in_out_kerf)
+IF( ABS(Bevel - gCurBevel) > 0.001 ) JMP .InterpFine
+
+IF( kf_identity ) JMP .InterpCoarse
+IF( InterpType != 1 ) JMP .InterpFine
+IF( ABS(IncAng) > 0.001 ) JMP .InterpFine
+IF( ABS(Bevel - gCurBevel) > 0.001 ) JMP .InterpFine
+IF( ABS(Lead - gCurLead) > 0.001 ) JMP .InterpFine
+.InterpCoarse
+    G708 C(gCurAng + IncAng) L(Lead) A(Bevel) W(ForcedC)
+    ;//$APP
+    IF (%CostK[45]==0) THEN
+    Kerf = rKerf / COS(Bevel)
+    ELSE
+        Kerf = rKerf
+    ENDIF
+    VecX = EndVecX
+    VecY = EndVecY
+    CenX = CenterX
+    CenY = CenterY
+    IF( gCurForce ) THEN
+        VecX = gCurVecX
+        VecY = gCurVecY
+        CenX = CenterX + Kerf * VecX
+        CenY = CenterY + Kerf * VecY
+    ENDIF
+    PosX = TargetX + Kerf * VecX
+    PosY = TargetY + Kerf * VecY
+    IF( kf_HeadIsAB7 ) THEN
+        G(InterpType) X(PosX) Y(PosY) A(NutaC) B(NutaA) I(CenX) J(CenY)
+    ELSE
+        G(InterpType) X(PosX) Y(PosY) C(NutaC) A(NutaA) I(CenX) J(CenY)
+    ENDIF
+    JMP .InterpCollect
+.InterpFine
+    ;//kf_identity == 0
+    uSteps = FUP( LenXY / FInterpRate )
+    IF( uSteps < 0.001 ) uSteps = uSteps + 1
+    PrStep = 1 / uSteps
+    FOR u = 1 TO uSteps + 0.5 BY 1
+        Pr = PrStep * u;
+        Ang = gCurAng + Pr * IncAng
+        FineBevel = gCurBevel + Pr * (Bevel - gCurBevel)
+        FineLead = gCurLead + Pr * (Lead - gCurLead)
+        G708 C(Ang) L(FineLead) A(FineBevel) W(ForcedC)
+        ;//$APP
+        IF (%CostK[45]==0) THEN
+        Kerf = rKerf / COS(FineBevel)
+        ELSE
+            Kerf = rKerf
+        ENDIF
+        IF( InterpType == 1 ) THEN
+            ;//StartVec == EndVec
+            VecX = StartVecX
+            VecY = StartVecY
+            IF( gCurForce ) THEN
+                VecX = gCurVecX
+                VecY = gCurVecY
+            ENDIF
+            PosX = gCurX + Pr * DeX + Kerf * VecX
+            PosY = gCurY + Pr * DeY + Kerf * VecY
+        ELSE
+            ;//InterpType == 2|3
+            Ang = StartAng + Pr * DeAng
+            Rad = StartRad + Pr * DeRad
+            VecX = COS(Ang)
+            VecY = SIN(Ang)
+            CenX = CenterX
+            CenY = CenterY
+            IF( gCurForce ) THEN
+                VecX = gCurVecX
+                VecY = gCurVecY
+                CenX = CenterX + Kerf * VecX
+                CenY = CenterY + Kerf * VecY
+            ENDIF
+            IF( InterpType == 3 ) THEN
+                PosX = CenterX - Rad * COS(Ang) + Kerf * VecX
+                PosY = CenterY - Rad * SIN(Ang) + Kerf * VecY
+            ELSE
+                ;//InterpType == 2
+                PosX = CenterX + Rad * COS(Ang) + Kerf * VecX
+                PosY = CenterY + Rad * SIN(Ang) + Kerf * VecY
+            ENDIF
+        ENDIF
+        IF( kf_HeadIsAB7 ) THEN
+            G(InterpType) X(PosX) Y(PosY) A(NutaC) B(NutaA) I(CenX) J(CenY)
+        ELSE
+            G(InterpType) X(PosX) Y(PosY) C(NutaC) A(NutaA) I(CenX) J(CenY)
+        ENDIF
+    ENDFOR
+.InterpCollect
+
+gCurAng = gCurAng + IncAng
+IF( !gCurForce ) THEN
+    gCurVecX = EndVecX
+    gCurVecY = EndVecY
+ENDIF
+gCurBevel = Bevel
+gCurLead = Lead
+gCurX = TargetX
+gCurY = TargetY
+;//FINE interpolazione
+
+IF( !gCurForce ) THEN
+    gCurTan = EndAng
+ENDIF
+
+.returnSuccessful
+RET

@@ -1,0 +1,50 @@
+[PROMPT]
+KEY_FDC =Dati Controllo velocità
+
+FDC_DLE =Abilit. controllo decelerazioni
+FDC_DLM =Modalità controllo decelerazioni (non utilizzare)
+FDC_DLS =Numero passi di look-ahead
+FDC_CON =Limitazione estesa di velocità e transitori
+FDC_FCE =Abilitazione controllo velocità
+FDC_FC0 =VRef[mm/min] arc R=1m, a=90°
+FDC_FC1 =VRef[mm/min] arc R=0.01m, a=90°
+FDC_FC2 =VRef[mm/min] arc R=1m, a->0°
+FDC_FC3 =VRef[mm/min] arc R=0.01m, a->0°
+FDC_TCE =Abilit. controllo discontinuità
+FDC_TC0 =VRef[mm/min] disc. a=90°
+FDC_TC1 =VRef[°/min] disc. arc-lin
+FDC_TC2 =VRef[mm/min] disc. a->0°
+FDC_TC3 =VRef[°/min] disc. lin-arc
+FDC_TC0_VIMO =VIMO: max NEG jump [mm/min]
+FDC_TC1_VIMO =VIMO: max NEG jump [°/min]
+FDC_TC2_VIMO =VIMO: max POS jump [mm/min]
+FDC_TC3_VIMO =VIMO: max POS jump [°/min]
+FDC_ARC =Toller. raggio archi [mm]
+FDC_SAJ =Side Acceleration Jump limit [mm/s²]
+FDC_JRK =Arc jerk [mm/s³]
+FDC_CURV=Curvature-based acceleration limit [mm/s²]
+FDC_ANG =Angular threshold [°]
+FDC_TC_APN =VIMO: max pos/neg jump (A axis) [°/min]
+FDC_TC_BPN =VIMO: max pos/neg jump (B axis) [°/min]
+FDC_TC_CPN =VIMO: max pos/neg jump (C axis) [°/min]
+
+[HELP]
+FDC_DLE =Consente di controllare le velocità dei tratti, tenendo conto della dinamica degli assi, dei cinematismi utilizzati, delle proprietà della lavorazione entro un certo numero di passi. 1=Abilita, 0=Disabilita
+FDC_DLM =Modalità controllo decelerazioni (non utilizzare)
+FDC_DLS =passi di look-ahead
+FDC_FCE =(Non utilizzato)  Abilitazione controllo velocità
+FDC_FC0 =Velocità di riferimento archi con raggio 1 metro e angolo 90 gradi [mm/min]
+FDC_FC1 =Velocità di riferimento archi con raggio 0.01 metri e angolo 90 gradi [mm/min]
+FDC_FC2 =Velocità di riferimento archi con raggio 1 metro e angolo prossimo a 0 gradi [mm/min]
+FDC_FC3 =Velocità di riferimento archi con raggio 0.01 metri e angolo prossimo a 0 gradi [mm/min]
+FDC_TCE =(Non utilizzato)  Abilit. controllo discontinuità
+FDC_TC0 =Velocità di riferimento passaggio discontinuitá con angolo 90 gradi [mm/min].  In modo VIMO, massimo salto negativo di velocità per gli assi cartesiani.
+FDC_TC1 =Velocità angolare riferimento passaggio arco-linea [°/min].  In modo VIMO, massimo salto negativo di velocità per gli assi polari.
+FDC_TC2 =Velocità di riferimento passaggio discontinuitá con angolo prossimo a 0 gradi [mm/min].  In modo VIMO, massimo salto positivo di velocità per gli assi cartesiani.
+FDC_TC3 =Velocità angolare riferimento passaggio linea-arco [°/min].  In modo VIMO, massimo salto positivo di velocità per gli assi polari.
+FDC_ARC =Tolleranza raggio archi [mm] per limitazione automatica della velocità;  la velocità viene limitata in base al raggio ed ai guadagni per contenere l'errore sul raggio entro il limite impostato.  Impostare a 0 per disabilitare la limitazione di velocità.
+FDC_SAJ =Side Acceleration Jump limit [mm/s²]
+FDC_ANG =Angular threshold [°]
+FDC_TC_APN =VIMO: max pos/neg jump (A axis) [°/min]
+FDC_TC_BPN =VIMO: max pos/neg jump (B axis) [°/min]
+FDC_TC_CPN =VIMO: max pos/neg jump (C axis) [°/min]

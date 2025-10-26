@@ -1,0 +1,36 @@
+[PROMPT]
+KEY_THD       =Dat. Porta-herram.
+
+THD_Z0        =Coordenada pivote que se suma a Z
+THD_C         =Rotación alrededor del eje Z
+THD_FLG       =Flag tipo de transformación
+THD_X1        =Coordenada X del pivote
+THD_Y1        =Coordenada Y del pivote
+THD_B         =Rotación alrededor del eje Y
+THD_X2        =Coordenada X de la base herramienta
+THD_Z2        =Coordenada Z de la base herramienta
+THD_DSC       =Descrizione
+
+THD_MAXRPM    =Número máximo de rpm
+THD_REV       =Trasm. c/invers. sentido de rotac.
+
+THD_IDX       =Indice descriptor herramienta
+THD_CONE      =Identif. cono para cambio herram.
+
+
+[HELP]
+THD_Z0        =Coordenada pivote que se suma a Z del punto individualizado por los datos Mandril
+THD_C         =Rotación alrededor del eje Z del sistema de referencia con origen en el punto individualizado por los datos Mandril
+THD_FLG       =Flag tipo de transformación:  (1) Primero rotación alrededor del eje Z, luego translación X Y pivote (2) Primero translación, luego rotación (aconsejado)
+THD_X1        =Coordenada X del pivote respecto al sistema de referencia con origen en el punto Porta-herramienta
+THD_Y1        =Coordenada Y del pivote respecto al sistema de referencia con origen en el punto Porta-herramienta
+THD_B         =Rotación alrededor del eje Y' del sistema de referencia con origen en el PIVOT1
+THD_X2        =Coordenada X de la base herramienta respecto al sistema de referencia centrado en PIVOT1
+THD_Z2        =Coordenada Z de la base herramienta respecto al sistema de referencia centrado en PIVOT1
+
+THD_MAXRPM    =Número máximo de rpm
+THD_REV       =Trasm. con invers. sentido de rotación
+
+THD_IDX       =Indice descriptor herramienta
+THD_CONE      =Identificador cono de enganche para cambio herramienta
+

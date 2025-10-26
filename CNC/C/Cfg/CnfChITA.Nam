@@ -1,0 +1,74 @@
+[PROMPT]
+KEY_CONFCHAN  =Configura Canale
+
+CC_CHNAME     =Nome canale
+CC_NUMBOARD   =Numero Scheda di Elaborazione
+CC_MASKAXES   =Maschera Assi Canale
+CC_NX         =Numero Asse X
+CC_NY         =Numero Asse Y
+CC_NZ         =Numero Asse Z
+CC_NU         =Numero Asse U
+CC_NV         =Numero Asse V
+CC_NW         =Numero Asse W
+CC_NA         =Numero Asse A
+CC_NB         =Numero Asse B
+CC_NC         =Numero Asse C
+CC_NM         =Numero Asse S (mandrino 1)
+CC_S2         =Numero Asse S2 (mandrino 2)
+CC_S3         =Numero Asse S3 (mandrino 3)
+CC_MAINPROC   =Numero processo principale
+CC_AUXPROC    =Numero processo ausiliario
+CC_PRIORITY   =Prioritá canale
+CC_TWIBASE    =Indice base Tabella Mandrini
+CC_TWIAMOUNT  =Numero di Mandrini
+CC_THDBASE    =Indice base Tabella Portautensili
+CC_THDAMOUNT  =Numero di Portautensili
+CC_CEDBASE    =Indice base Tabella Utensili
+CC_CEDAMOUNT  =Numero di Utensili
+CC_VARSPERLEVEL=Var. loc. per livello subroutine
+CC_CHANPTKB   =Memoria per esecuzione passante
+CC_PTMONLINESC=Linee nel buffer di esecuzione passante (client browser)
+CC_PTMONLINESS=Linee nel buffer di esecuzione passante (server browser)
+CC_CHANRETRKB =Memoria per Retrace
+CC_MAG        =Tipo Magazzino Utensile
+CC_RV         =Numero Magazzino
+CC_TABBASE    =Indice base tabella tavole
+CC_TABAMOUNT  =Numero di tavole
+CC_GORGBASE   =Indice base tabella origini globali
+CC_GORGAMOUNT =Numero di origini globali
+CC_SOSID      =Indice estensione slave (0=none)
+CC_SOSQUEUE   =Dimensione coda [elementi]
+
+[HELP]
+
+CC_CHNAME     =Stringa di massimo 8 caratteri indicante la denominazione del canale
+CC_NUMBOARD   =Numero Scheda di Elaborazione: numero della scheda che esegue l'elaborazione della logica canale nei sistemi distribuiti.
+CC_MASKAXES   =Maschera Assi Canale: individua gli assi presenti nel canale
+CC_NX         =Numero Asse X: numero processo asse X
+CC_NY         =Numero Asse Y: numero processo asse Y
+CC_NZ         =Numero Asse Z: numero processo asse Z
+CC_NU         =Numero Asse U: numero processo asse U
+CC_NV         =Numero Asse V: numero processo asse V
+CC_NW         =Numero Asse W: numero processo asse W
+CC_NA         =Numero Asse A: numero processo asse A
+CC_NB         =Numero Asse B: numero processo asse B
+CC_NC         =Numero Asse C: numero processo asse C
+CC_NM         =Numero Asse S (mandrino): numero processo asse mandrino
+CC_MAINPROC   =Numero processo principale: numero del processo a cui viene assegnato il controllo dell'interpolazione del canale
+CC_AUXPROC    =Numero processo ausiliario: utilizzato dai FB del PLC
+CC_PRIORITY   =Stabilisce la priorità di esecuzione di un canale. A valori bassi corrisponde prioritá elevata.Valori gestiti:(0-1-2-3)abilitato (10)disabilitato
+CC_TWIBASE    =Indice del primo Mandrino usato dal canale all'interno della tabella contenente tutti i mandrini
+CC_TWIAMOUNT  =Numero di Mandrini utilizzati dal canale
+CC_THDBASE    =Indice del primo Portautensile usato dal canale all'interno della tabella contenente tutti i portautensili
+CC_THDAMOUNT  =Numero di Portautensili utilizzati dal canale
+CC_CEDBASE    =Indice del primo Utensile usato dal canale all'interno della tabella contenente tutti gli utensili
+CC_CEDAMOUNT  =Numero di Utensili utilizzati dal canale
+CC_VARSPERLEVEL=Variabili locali per ogni livello di subroutine
+CC_CHANPTKB   =Memoria per esecuzione passante in KB.  Vedere anche l'omonimo parametro configurazione CN, che potrebbe dover essere aggiornato in seguito a cambiamenti di questo parametro.
+CC_CHANRETRKB =Memoria per buffer di retrace in KB.  Vedere anche l'omonimo parametro configurazione CN, che potrebbe dover essere aggiornato in seguito a cambiamenti di questo parametro.
+CC_MAG        =Tipo magazzino utensili: 0) nessun magazzino 1) Revolver
+CC_RV         =Indice alla struttura Dati Magazzino Utensili: impostare 1 per associare il Revolver(0)
+CC_TABBASE    =Indice base tabella tavole
+CC_TABAMOUNT  =Numero di tavole
+CC_GORGBASE   =Indice base tabella origini globali
+CC_GORGAMOUNT =Numero di origini globali

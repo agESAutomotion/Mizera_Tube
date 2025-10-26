@@ -1,0 +1,22 @@
+SECTION User
+
+typedef struct {
+	word    PlcMbmEnab;
+	word	PlcMbmAck;	
+	
+	word    PlcMbmNode;	
+	word    PlcMbmFun;	
+	word  	PlcMbmAddr;	
+	word  	PlcMbmLength;
+
+	word    PlcMbmTab[16];	
+	double  PlcMbmTabDouble[16];	
+
+    word  	PlcMbmError;
+} S_PLCMBMCMD;
+
+S_PLCMBMCMD PlcMbmCmds[16];
+
+ENDSECTION User
+
+

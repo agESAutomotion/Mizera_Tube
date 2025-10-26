@@ -1,0 +1,24 @@
+: Accensione Tecnologia
+; M851: Accensione anticipata Testa 1
+DBL combinedMode = %cg3.25      ;// use combined PWM and emission
+DBL ix=0
+
+SPC 30099,1  ;Preprocessor sync
+
+; Se laser e simulazione programma senza Z
+IF( (gTechType == 3) && (%LSRPlcOp0.8 ) ) JMPF .skip
+
+?%TstP[15].3 = 1
+IF ( combinedMode) ?%QW911.0 = 1       ;// Laser I/F board PWM_CFG register: EN
+IF (!combinedMode) ?%QW911.8 = 1       ;// Laser I/F board PWM_CFG register: FC
+
+.skip
+
+;To restore power and duty 0
+G834 W(gLcutId) Y2
+
+IF( %cn[WHO()].rc[0].21 ) CALL phGraphStatusChange( ix, 0 )
+GRAPH 999
+SPC 30099,1  ;Preprocessor sync
+
+RET

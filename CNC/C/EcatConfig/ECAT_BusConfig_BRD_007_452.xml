@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="BRD007452_EtherCAT_V2_0.xml">
+
+    <Device>KUNBUS-IC EtherCAT v2</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+    
+	<Comment><![CDATA[
+	Mappatura fissa 32byte di ingresso e 32byte di uscita, lasciare 
+	le funzioni di upload e download disabilitate
+	
+	0x2100 accesso a byte
+	0x2110 accesso a word
+	0x2120 accesso a dword
+	
+	]]></Comment>
+
+	<RxPdo Index="#x1600">
+		<SMObject>
+		  <Comment><![CDATA[M.OUT.1 D0-D15]]></Comment>
+		  <Address>#x21100110</Address>
+		</SMObject>		
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+		<SMObject>
+		  <Comment><![CDATA[M.IN.1 D0-D15]]></Comment>
+		  <Address>#x20100110</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[M.IN.2 D0-D15]]></Comment>
+		  <Address>#x20100210</Address>
+		</SMObject>
+	</TxPdo>
+
+	<DistribuitedClock>0</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>0</Enabled>
+
+		<Sync0>0</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+</Config>
+
+
+

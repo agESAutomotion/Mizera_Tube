@@ -1,0 +1,130 @@
+// I/O machine configuration
+
+//*********************************************************
+// I/O on CNC Board-1 (BRD.007.461 expansion board)
+//*********************************************************
+MDI,IW0,NONE,NONE,0 
+MDI,IW1,NONE,NONE,1 
+MDQ,QW2,NONE,NONE,0 
+MDQ,QW3,NONE,NONE,1 
+
+
+//*********************************************************
+// I/O on CNC Board-2 (BRD.007.461 expansion board)
+//*********************************************************
+MDI,IW4,NONE,NONE,2 
+MDI,IW5,NONE,NONE,3 
+MDQ,QW6,NONE,NONE,2 
+MDQ,QW7,NONE,NONE,3 
+
+//**********************************************************************************************
+// Node Board + 16 In 16 Out (digital) on RING - Scheda Nodo + 16 In 16 Out digitali su RING
+//**********************************************************************************************
+SI,IW610,1,0,0
+SQ,QW710,1,0,1
+
+//**********************************************************************************************
+// Node Board + 16 In 16 Out (digital) on RING - Scheda Nodo + 16 In 16 Out digitali su RING
+//**********************************************************************************************
+SI,IW611,2,0,0
+SQ,QW711,2,0,1
+
+//*********************************************************
+// FAST INPUTs
+//*********************************************************
+FI,IW10,NONE,NONE,0,SIM 
+
+//*********************************************************
+// Analog I/O on CNC Board (12bit)
+//*********************************************************
+MAI,IW20,NONE,NONE,0         // Should be Gas valve feedback
+MAI,IW21,NONE,NONE,1         // Should be Capacitive
+MAI,IW22,NONE,NONE,2         // Should be external override
+MAI,IW23,NONE,NONE,3         // Should be Laser power feedback
+MAQ,QW24,NONE,NONE,0         // Should be Gas proportional gas
+
+//*********************************************************
+// PWM BOARD FOR LASER (BRD.019.473)
+//*********************************************************
+MAQ,QW913,NONE,NONE,1        // Analog out: Laser power
+MAQ,QW926,NONE,NONE,3        // Analog out: Laser power
+MAQ,QW927,NONE,NONE,5        // Analog out: Laser power
+XBQ,QW908,NONE,4,0           // PWM
+XBQ,QW909,NONE,4,1           // D_FREQ	0xD3 ( 20Khz )
+XBQ,QW910,NONE,4,2           // PWM_RES	0xFF ( 8bit )
+XBQ,QW911,NONE,4,3           // PWM_CFG	0x01  enable
+MAI,IW930,NONE,NONE,4         //
+MAI,IW931,NONE,NONE,5         //
+MAI,IW932,NONE,NONE,6         //
+MAI,IW933,NONE,NONE,7         //
+MAI,IW934,NONE,NONE,8         //
+MAI,IW935,NONE,NONE,9         //
+MAI,IW936,NONE,NONE,10        //
+MAI,IW937,NONE,NONE,11        //
+
+// DEBUG REGISTER
+// XBI,IW950,NONE,6,0       // Comando tensione uscita analogica 
+// XBI,IW951,NONE,6,1       // Valore registro DAC su registro sincronizzato col precedente
+// XBI,IW952,NONE,6,2       // Counter
+// XBI,IW953,NONE,6,3       // Rilettura regstro DAC
+
+//*********************************************************
+// PWM BOARD n.2 FOR LASER (BRD.019.474)
+//*********************************************************
+MAQ,QW923,NONE,NONE,2,SIM       // Analog out: Laser power
+XBQ,QW918,NONE,5,0,SIM          // PWM
+XBQ,QW919,NONE,5,1,SIM          // D_FREQ	0xD3 ( 20Khz )
+XBQ,QW920,NONE,5,2,SIM          // PWM_RES	0xFF ( 8bit )
+XBQ,QW921,NONE,5,3,SIM          // PWM_CFG	0x01  enable
+
+// DEBUG REGISTER
+// XBI,IW954,NONE,7,0       // Comando tensione uscita analogica 
+// XBI,IW955,NONE,7,1       // Valore registro DAC su registro sincronizzato col precedente
+// XBI,IW956,NONE,7,2       // Counter
+// XBI,IW957,NONE,7,3       // Rilettura regstro DAC
+
+//*********************************************************
+// EXTERNAL 8 ANALOG OUTPUTS 16bits (BRD.018.402)
+//  QW900 - Regolazione Potenza IPG
+//  QW901 - Focale
+//  QW902 - Ev Proporzionale Gas
+//*********************************************************
+AQ,QW900,10,0,0,SIM    
+AQ,QW901,10,0,1,SIM    
+AQ,QW902,10,0,2,SIM    
+AQ,QW903,10,0,3,SIM    
+AQ,QW904,10,0,4,SIM    
+AQ,QW905,10,0,5,SIM    
+AQ,QW906,10,0,6,SIM    
+AQ,QW907,10,0,7,SIM    
+
+//*******************************************************************************************
+// 2 Axes remote board encoder 5V (BRD.021.405)
+//*******************************************************************************************                               
+XI,IW310,11,0,0,SIM          // Encoder input 1                                                                
+XQ,QW311,11,0,0,SIM          // Analog output 1                                                                         
+XI,IW312,11,0,1,SIM          // Not used                            
+XQ,QW313,11,0,1,SIM          // Not used                                                              
+XI,IW314,11,0,2,SIM          // Encoder input 2                                                               
+XQ,QW315,11,0,2,SIM          // Analog output 2                                                                        
+XI,IW316,11,0,3,SIM          // Not used                                   
+XQ,QW317,11,0,3,SIM          // Not used    
+
+//*********************************************************
+// EXTERNAL 8 ANALOG INPUTS (BRD.018.401)
+//  IW800 - Ritorno da Proporzionale
+//  IW801 - Ingresso Precitec per regolazione
+//*********************************************************
+AI,IW800,12,1,0,SIM        //SIM BY YANG
+AI,IW801,12,1,1,SIM        //SIM BY YANG
+AI,IW802,12,1,2,SIM        //SIM BY YANG
+AI,IW803,12,1,3,SIM        //SIM BY YANG
+AI,IW804,12,1,4,SIM        //SIM BY YANG
+AI,IW805,12,1,5,SIM        //SIM BY YANG
+AI,IW806,12,1,6,SIM        //SIM BY YANG
+AI,IW807,12,1,7,SIM        //SIM BY YANG
+
+
+// DUMMY 16 Digital Outputs board on RING -  Scheda 16 Uscite digitali su RING VIRTUALE
+// Use ONLY for Drives Enable Outputs with analog Axis types (Axis Configuration parameters)
+DQ,QW700,13,1,0,SIM

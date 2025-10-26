@@ -1,0 +1,148 @@
+ [B] [F] [I] [J] [L] [M] N [R] [T] [W] [X] [Y] [Z] : G227
+;
+; RASTER PRINT ROUTINE (see QUICK GUIDE.TXT)
+;
+; G227 N0 [Tn]                                  ;CONFIGURE BITMAPS
+; G227 N10 Tn Ln                                ;LOAD BITMAP
+; G227 N11 Tn Ln                                ;SAVE BITMAP
+; G227 N12 Tn [Xd] [Yd] [Id] [Jd]               ;DO BITMAP FILTERING
+; G227 N51 [Xd] [Yd] [Id] [Jd] [Bd] [Fm]        ;START RASTER PRINT (1 of 2)
+; G227 N50 Xd Yd Id Jd [Rd] [Zd] [Wd] [Md] Tn   ;START RASTER PRINT (2 of 2)
+; G227 N59                                      ;STOP RASTER PRINT
+; G227 N60 [Xd] [Yd]                            ;SET RASTER SCANLINE
+; G227 N90 Ln                                   ;START LOGGING
+; G227 N99                                      ;STOP LOGGING
+;
+DBL fSimul = %cn[WHO()].rc[0].21
+DBL fGraph = %cn[WHO()].pc[14].25
+DBL rpSvc  = 60         ;// service ID
+DBL aX = AXIDX(X)       ;// debug logger
+DBL aY = AXIDX(Y)       ;// debug logger
+DBL aW = AXIDX(Z)       ;// dummy axis
+DBL ax, ay, bx, by, dx, dy, z, r
+;// $APP
+DBL scanColor = 0   ;//use flycut TRACK0_COLOR (128,128,128)
+DBL boxColor = 7
+
+;//*** OPTIMIZATION ***
+IF (VA13 == 60) THEN
+    ;// SET RASTER SCANLINE
+    ax = CFRMM(XGET("@X"))
+    ay = CFRMM(XGET("@Y"))
+    bx = VEXPQ(VA23, ax)
+    by = VEXPQ(VA24, ay)
+    z  = CFRMM(XGET("@Z"))
+    IF (fGraph) THEN
+        G2806 C(scanColor) X(ax) Y(ay) Z(z) U(bx) V(by) W(z)
+        G0 X(bx) Y(by)
+    ELSEIF (fSimul) THEN
+        G1 X(bx) Y(by)
+    ELSE
+        _ddrive(0x0,aW,rpSvc, CTOMM(ax)*1000, CTOMM(ay)*1000, 600,"%IO0")
+        _ddrive(0x0,aW,rpSvc, CTOMM(bx-ax)*1000, CTOMM(by-ay)*1000, 609,"%IO0")
+        G1 X(bx) Y(by)
+    ENDIF
+
+    RETCONT
+ENDIF
+
+;// $APP
+;// INTERNAL SETTINGS:
+DBL io1 = 0, io2 = 0, iorange
+DBL enBoard1 = 1
+DBL enBoard2 = 0
+IF (1) THEN
+    ;// ANALOG POWER OUT
+    ;// G227 N50: output register
+    IF (enBoard1) io1 = 913   ;//laser board 1
+    IF (enBoard2) io2 = 913   ;//laser board 2
+    ;// G227 N50: output register binary range
+    iorange = 4095
+ELSE
+    ;// PWM DUTY-CYCLE OUT
+    ;// G227 N50: output register
+    IF (enBoard1) io1 = 908   ;//laser board 1
+    IF (enBoard2) io2 = 914   ;//laser board 2
+    ;// G227 N50: output register binary range
+    iorange = 255
+ENDIF
+;// G227 N50: lead-in/out process level [0..100%] normalized
+DBL lead = 0
+
+DBL ioblack, iowhite    ;// [0..iorange] levels
+DBL iolead              ;// [0..iorange] lead level
+
+SWITCH(VA13)
+CASE 0
+    ;// CONFIGURE BITMAPS
+    _ddrive(0x0,aW,rpSvc, VEXPQ(VA19,0), 0, 9,"%IO0")
+CASE 10
+    ;// LOAD BITMAP
+    _ddrive(0x0,aW,rpSvc, VEXPQ(VA12,1.0)*1000, 0, 100,"%IO0")
+    _ddrive(0x0,aW,rpSvc, VEXP(VA19), VEXP(VA11), 109,"%IO0")
+CASE 11
+    ;// SAVE BITMAP
+    _ddrive(0x0,aW,rpSvc, VEXP(VA19), VEXP(VA11), 119,"%IO0")
+CASE 12
+    ;// DO BITMAP FILTERING
+    _ddrive(0x0,aW,rpSvc, VEXPQ(VA23,0)*65536, VEXPQ(VA24,0)*65536, 120,"%IO0")
+    _ddrive(0x0,aW,rpSvc, VEXPQ(VA8,0)*65536, VEXPQ(VA9,0)*65536, 121,"%IO0")
+    _ddrive(0x0,aW,rpSvc, 0, VEXP(VA19), 129,"%IO0")
+CASE 51
+    ;// START RASTER PRINT (1 of 2)
+    ax = VEXPQ(VA23,0.0)
+    ay = VEXPQ(VA24,0.0)
+    dx = VEXPQ(VA8,0)
+    dy = VEXPQ(VA9,0)
+    _ddrive(0x0,aW,rpSvc, CTOMM(ax)*1000, CTOMM(ay)*1000, 510,"%IO0")
+    _ddrive(0x0,aW,rpSvc, CTOMM(dx)*1000, CTOMM(dy)*1000, 511,"%IO0")
+    _ddrive(0x0,aW,rpSvc, VEXPQ(VA1,1.0)*1000, VEXPQ(VA5,0x0), 512,"%IO0")
+CASE 50
+    ;// START RASTER PRINT (2 of 2)
+    ioblack = VEXPQ(VA25,100.0)*iorange*0.01
+    iowhite = VEXPQ(VA22,0.0)*iorange*0.01
+    IF (ioblack > iorange) ioblack = iorange
+    IF (ioblack < 0) ioblack = 0
+    IF (iowhite > iorange) iowhite = iorange
+    IF (iowhite < 0) iowhite = 0
+    iolead = lead*iorange*0.01
+    ax = VEXP(VA23)
+    ay = VEXP(VA24)
+    dx = VEXP(VA8)
+    dy = VEXP(VA9)
+    z  = CFRMM(XGET("@Z"))
+    r  = VEXPQ(VA17,0.0)
+    IF (%cg21 == 0) ERROR(55) ;NEEDS RETRACE
+    IF (%cn[WHO()].cc27 == 0) ERROR(55) ;NEEDS RETRACE
+    _ddrive(0x0,aW,rpSvc, CTOMM(ax)*1000, CTOMM(ay)*1000, 500,"%IOQW[io1]")
+    _ddrive(0x0,aW,rpSvc, CTOMM(dx)*1000, CTOMM(dy)*1000, 501,"%IOQW[io2]")
+    _ddrive(0x0,aW,rpSvc, ioblack, iowhite, 502,"%IO0")
+    _ddrive(0x0,aW,rpSvc, MOD(r,360)*10000, 0, 503,"%IO0")
+    _ddrive(0x0,aW,rpSvc, iolead, VEXP(VA19), 509,"%IO0")
+    IF (fGraph) THEN
+        G168
+        G161 X(ax) Y(ay) Z(z)
+        G186 C(r)
+        G2806 C(boxColor) X0 Y0 Z0 U(dx) V0 W0
+        G2806 C(boxColor) X(dx) Y0 Z0 U(dx) V(dy) W0
+        G2806 C(boxColor) X(dx) Y(dy) Z0 U0 V(dy) W0
+        G2806 C(boxColor) X0 Y(dy) Z0 U0 V0 W0
+        G169
+    ENDIF
+CASE 59
+    ;// STOP RASTER PRINT
+    IF (%cn[WHO()].cc[15] == 0) ERROR(55)
+    G4 F(%ax[%cn[WHO()].cc[15]].ra[119]/1000000.0)
+    _ddrive(0x0,aW,rpSvc, 0, 0, 599,"%IO0")
+CASE 90
+    ;// START LOGGING
+    _ddrive(0x0,aW,rpSvc, aX, aY, 900,"%IO0")
+    _ddrive(0x0,aW,rpSvc, 0, VEXP(VA11), 909,"%IO0")
+CASE 99
+    ;// STOP LOGGING
+    _ddrive(0x0,aW,rpSvc, 0, 0, 999,"%IO0")
+OTHERWISE
+    ERROR(55) ;//bad N parameter
+ENDSWITCH
+
+RET

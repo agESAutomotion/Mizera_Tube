@@ -1,0 +1,22 @@
+: park_aids
+;//laser tube dynamic machining aids parking routine
+
+IF (%cn[WHO()].rc[0].21) RET
+
+;//disengage tube machining aids
+G153
+G4005 S(AXIDX(5,X))                   
+G4005 S(AXIDX(3,Z))  ;la Z alla fine del pgm e' generalmente agganciata                
+G152            
+G4099
+
+;parcheggia asse sostegno dinamico
+G153
+G4010 M(AXIDX(Z)) S(AXIDX(5,X)) I1    
+G152
+G4099
+G153 G0 Z(%ax[AXIDX(5,X)].pa[22] / 1000-5)	;//quota parcheggio
+G4005 S(AXIDX(5,X))                   
+G4099
+
+RET

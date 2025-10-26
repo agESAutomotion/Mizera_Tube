@@ -1,0 +1,224 @@
+
+#include <defcncan.h>
+
+SECTION CanOpen //********** Sezione CanOpen **************************
+
+typedef struct {
+    byte    PdoTy;      // Input(TX)/Output(RX)
+    word    PdoTx;      // Transmit type
+    word    PdoTm;      // Inhibit time
+    word    PdoId;      // Pdo CobID number
+    word    PdoEt;      // Event time
+    word    PdoIw[8];   // IW/QW number
+    dword   PdoMp[8];   // Mapping
+} CAN_IO;
+
+typedef struct {
+    word    QueueStat;
+    dword   QueueQuotePEdge;
+    dword   QueueQuoteNEdge;
+} DRV_FASTINQUEUE;
+
+typedef struct {
+    byte    AxTy;       // Axis/Encoder type
+    word    AxSw;       // Axis/Encoder syswide
+    byte    AxRegTy;    // Regolatore Velocity/Interpolated Position
+    dword   AxFeed;     // Feed constant
+    dword   AxShaft;    // Shaft revolutions
+    dword   AxFeedDelay;// Feedback delay 
+} CAN_AX;
+
+typedef struct {
+            string  CanAName[8];    // Axis name
+            string  CanDName[20];   // Device name
+            string  CanHVers[20];   // HW Version
+            string  CanSVers[20];   // SW Version
+    CHKSUM  string  CanMName[40];   // Motors name
+			string  CanNodeReport[40]; // Report
+    CHKSUM  dword   VendorID;     	// Vendor ID
+    CHKSUM  dword   ProductCode;    // Product Code
+    CHKSUM  dword   RevisionNumber; // Revision Number
+    CHKSUM  dword   CanSNumber;     // Serial Number
+	
+    CHKSUM  byte    ec_nodemskoption;   // ECAT outoforder, alias
+	
+            dword   CanSts[16];     // Node status
+            dword   CanFb[64];      // Interfaccia Function Blocks
+
+            dword   PrimaryErCode;  // Codice EMCY primario per error handler
+            dword   SecondaryErCode; // Codice EMCY secondario per error handler
+    CHKSUM  word    CanNode;        // Node number (dip switch)
+    CHKSUM  word    CanProf;        // Profile (CIA)
+    CHKSUM  word    CanLife;        // LifeTime
+    CHKSUM  word    CanGuard;       // Guarding type
+    CHKSUM  word    CanDevs;        // Number of Pdo
+    CHKSUM  word    CanObjs;        // Loading objects
+            word    CanGUICmd;      // Gui command
+			dword   CanNodeDiag[16];// Diag Vars.
+			dword   CanNodeOutput[64];// Diag Node Output
+    CHKSUM  CAN_AX  CanAx[2];       // Asse / Encoder
+    CHKSUM  CAN_IO  CanIo[8];       // Io pdo
+    CHKSUM  dword   CanIx[NUM_OBJ]; // Objects address (IIIISSLL)
+    CHKSUM  dword   CanVx[NUM_OBJ]; // Objects values
+    CHKSUM  byte    CanNodeParOpt[NUM_OBJ]; // .... opzionale .... per Download Subset
+
+    // Gestione del latch degli I/O veloci del drive
+    word    DrvFastInCtrl;                  // Richiesta probe I/O  
+    word    DrvFastInStat;                  // Stato dell'ultimo campionamento
+    dword   DrvFastInPEdge;            // Quota dell'ultimo campionamento fronte di salita
+    dword   DrvFastInNEdge;            // Quota dell'ultimo campionamento fronte di discesa
+    word    DrvFastInRow;                   // Indice nella coda dell'ultimo campionamento inserito
+    DRV_FASTINQUEUE CanDrvFastInQueue[10];  // Coda di memorizzazione delle quote campionate
+
+	CHKSUM	dword   CanGearBoxEnable;					// GearBox drive enable
+	CHKSUM	dword   CanGearModuleRev;					// GearBox drive module in Revolution unit
+
+} CAN_NODE;
+
+typedef struct {
+            string  CanAName[8];    // Axis name
+            string  CanDName[40];   // Device name
+            string  CanHVers[20];   // HW Version
+            string  CanSVers[20];   // SW Version
+    CHKSUM  string  CanMName[40];   // Motors name
+			string  CanNodeReport[40]; // Report
+    CHKSUM  dword   VendorID;     	// Vendor ID
+    CHKSUM  dword   ProductCode;    // Product Code
+    CHKSUM  dword   RevisionNumber; // Revision Number
+    CHKSUM  dword   CanSNumber;     // Serial Number
+	
+    CHKSUM  byte    ec_nodemskoption;   // ECAT outoforder, alias
+	
+            dword   CoESts[16];     // Node status
+            dword   CoEFb[64];      // Interfaccia Function Blocks
+
+            dword   PrimaryErCode;  // Codice EMCY primario per error handler
+            dword   SecondaryErCode; // Codice EMCY secondario per error handler
+    CHKSUM  word    CoENode;        // Node number (dip switch)
+    CHKSUM  word    CanProf;        // Profile (CIA)
+    CHKSUM  word    CanLife;        // LifeTime
+    CHKSUM  word    CanGuard;       // Guarding type
+    CHKSUM  word    CanDevs;        // Device (MSB) | Slot (LSB) 
+    CHKSUM  word    CanObjs;        // Loading objects
+            word    CanGUICmd;      // Gui command
+			dword   CoENodeDiag[16];// Diag Vars.
+			dword   CanNodeOutput[64];// Diag Node Output
+    CHKSUM  CAN_AX  CanAx[2];       // Asse / Encoder
+    CHKSUM  CAN_IO  CanIo[8];       // Io pdo
+    CHKSUM  dword   CanIx[ECAT_NUM_OBJ]; 	// Objects address (IIIISSLL)
+    CHKSUM  dword   CanVx[ECAT_NUM_OBJ]; 	// Objects values
+    CHKSUM  byte    EcNodeParOpt[ECAT_NUM_OBJ]; // .... opzionale .... per Download Subset
+    
+    CHKSUM  byte    DrvType;        // Compatibilità con SCM, seleziona 
+                                    // single drive o dual-drive (UIPL)
+
+    // Gestione del latch degli I/O veloci del drive
+    word    DrvFastInCtrl;                  // Richiesta probe I/O  
+    word    DrvFastInStat;                  // Stato dell'ultimo campionamento
+    dword   DrvFastInPEdge;            		// Quota dell'ultimo campionamento fronte di salita
+    dword   DrvFastInNEdge;            		// Quota dell'ultimo campionamento fronte di discesa
+    word    DrvFastInRow;                   // Indice nella coda dell'ultimo campionamento inserito
+    DRV_FASTINQUEUE CanDrvFastInQueue[10];  // Coda di memorizzazione delle quote campionate
+
+	dword EcVirtualTouch[4]; 				// Interfaccia per Touch Probe su assi virtuali
+
+	CHKSUM	dword   EcGearBoxEnable;					// GearBox drive enable
+	CHKSUM	dword   EcGearModuleRev;					// GearBox drive module in Revolution unit
+
+	// Touch Probe Function
+	word TouchProbeControl;
+	word TouchProbeStatus;
+	dword TouchProbeAPosEdge;
+	dword TouchProbeANegEdge;
+	dword TouchProbeBPosEdge;
+	dword TouchProbeBNegEdge;
+
+	// Ethercat { 
+        CHKSUM  word    EcAlias;            // Numeric Alias
+
+        CHKSUM	string  xmlDriveConf[80];   // File di configurazione drive
+		CHKSUM  dword   EcEnableCyclicOp;
+		CHKSUM  dword   EcEnableSYNCA;
+		CHKSUM  dword   EcCycleTimeSYNCA;
+		CHKSUM  dword   EcShiftTimeSYNCA;
+		CHKSUM  dword   EcEnableSYNCB;
+		CHKSUM  dword   EcCycleTimeSYNCB;
+		CHKSUM  dword   EcShiftTimeSYNCB;
+
+		dword   EcMDPOut[EC_MODULAR_DEVICE]; 	// ETG.5001 Modular device profile
+		dword   EcMDPIn[EC_MODULAR_DEVICE]; 	// ETG.5001 Modular device profile
+	// }
+
+    dword   EcAlarm;
+	dword   EcAlarmCode;
+
+	RETAIN  dword  EcSaveMeasure;               // Memoria retentiva per funzione TaraAbs
+
+} ECAT_NODE;
+
+
+typedef struct {
+            dword   can_status[8];  // Ring status 0-127 nodi
+    CHKSUM  byte    can_sync;       // Sync object time
+    CHKSUM  byte    can_sync_divider;// Cycle time div
+	
+    CHKSUM  byte    can_drives;     // Nr of devices
+    CHKSUM  byte    can_baud;       // Baudrate index
+    CHKSUM  dword   can_enable;     // Loading dll code
+    CHKSUM  dword   can_ringtype;   // Tipologia del ring
+
+    CHKSUM  byte    ec_mskoption;   // ECAT mask option (config, ...)
+    CHKSUM  byte    ec_dcenab; 		// Distribuited clock enabled
+    CHKSUM  byte    ec_refclock;    // Reference clock master
+    CHKSUM  byte    ec_wrmtime;  	// Write master time to reference device
+    CHKSUM  byte    ec_propdelay;   // ECAT Propagation delay compensation
+    CHKSUM  dword   ec_usrshifttim; // ECAT User Shift Time
+
+    CHKSUM  dword   ec_pll_gain;    // Drift compensation gain
+    CHKSUM  dword   ec_pll_offs;    // Drift compensation offs
+            dword   ec_pll_min;     // Drift compensation min
+            dword   ec_pll_max;     // Drift compensation max
+            dword   can_msync;      // Measured Sync Time
+
+			dword   CanRingDiag[8];	// Diag Vars.
+    CAN_NODE        Node[NUM_CAN_NODES];   // Ring nodes
+} CAN_RING;
+
+
+typedef struct {
+            dword   ec_status[16];   // Ring status 0-255 nodi
+    CHKSUM  byte    can_sync;       // Sync object time
+    CHKSUM  byte    can_drives;     // Nr of devices
+    CHKSUM  byte    can_baud;       // Baudrate index
+    CHKSUM  dword   can_enable;     // Loading dll code
+    CHKSUM  dword   can_ringtype;   // Tipologia del ring
+
+    CHKSUM  dword   ec_maxframesize;// ECAT Massimo size del singolo frame Ethercat
+
+    CHKSUM  byte    ec_mskoption;   // ECAT mask option (config, ...)
+    CHKSUM  byte    ec_dcenab; 		// Distribuited clock enabled
+    CHKSUM  byte    ec_refclock;    // Reference clock master
+    CHKSUM  byte    ec_wrmtime;  	// Write master time to reference device
+    CHKSUM  byte    ec_propdelay;   // ECAT Propagation delay compensation
+    CHKSUM  dword   ec_usrshifttim; // ECAT User Shift Time
+    CHKSUM  dword   ec_mbxcycletime;// ECAT Mailbox Cycle Time
+
+    CHKSUM  dword   ec_pll_gain;    // Drift compensation gain
+    CHKSUM  dword   ec_pll_offs;    // Drift compensation offs
+            dword   ec_pll_min;     // Drift compensation min
+            dword   ec_pll_max;     // Drift compensation max
+            dword   can_msync;      // Measured Sync Time
+
+			dword   CanRingDiag[8];	// Diag Vars.
+    ECAT_NODE       EcatNode[NUM_ECAT_NODES];   	// Ring nodes ethercat
+} ECAT_RING;
+
+
+CAN_RING        can_ring[NUM_CAN_RINGS];   // Dati rings Canopen
+ECAT_RING       ecat_ring[NUM_ECAT_RINGS];   // Dati rings Ethercat
+
+
+
+
+ENDSECTION CanOpen //*************** Sezione CanOpen ******************
+

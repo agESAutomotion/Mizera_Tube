@@ -1,0 +1,20 @@
+
+[KEYS]
+TITLE=Smusso 30°
+
+[PROMPT]
+KEY_NODE=Nodo
+GRAPHNEW3=Aspirazione
+Plot1.3=Smusso 30
+L_TYPE_INTERP2=Punti
+L_Height3=Altezza [mm]
+L_Voltage3=Tensione [DAC]
+L_TYPE_INTERP3=Profilo
+LIST0=Lineare,Segmento,Smussatura
+Button2=<
+Button1=>
+
+[STATUS]
+Plot1.3=Altezza (mm), Tensione (DAC)
+
+[HELP]

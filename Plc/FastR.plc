@@ -1,0 +1,262 @@
+*******************************************************************************
+*   FASTR.PLC (REAL)
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "intgraph.plc"
+#funcdec "DynMng.plc"
+
+VAR
+#include "MainFast.inc"
+#include "Iof.inc"
+
+BEVEL_INT:      InterpGraph;
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+#include "LsrGest.inc"
+
+*******************************************************************************
+FUNCTION FAST_REAL
+
+*******************************************************************************
+*   CAPACITIVE: PROCON, PRECITEC, PRECITEC LIKE (ECAT, CHC1000, EDS-C100 ...)
+*******************************************************************************
+LD   %config_machine26              * Capacitive Sensor (0=Precitec ,1=Lasermech,2= HighYag)
+EQ   0
+OR(
+LD   %config_machine26              * Capacitive Sensor (0=Precitec ,1=Lasermech,2= HighYag)
+EQ   6
+)
+JMPCN ANGFEEDBACK
+     LD   I_PREC_CAPACITIVO
+     ST   IA_A18_19_DIST_LINEAR    
+ANGFEEDBACK:
+
+LD   %config_machine26              * Capacitive Sensor (0=Precitec ,1=Lasermech,2= HighYag)
+EQ   4
+JMPCN ECATFEEDBACK
+     LD   I_ECAT_CAPACITIVO         * 0-10000 -> 0-%LSRCostK31 (20mm 20000)
+	 MULDIV(M=AnalCapFeedback,D=10000)
+     ST   IA_A18_19_DIST_LINEAR     
+ECATFEEDBACK:
+
+LD   %config_machine26              * Capacitive Sensor (0=Precitec ,1=Lasermech,2= HighYag)
+EQ   0
+OR(
+LD   %config_machine26              * Capacitive Sensor (0=Precitec ,1=Lasermech,2= HighYag)
+EQ   4
+)
+OR(
+LD   %config_machine26              * Capacitive Sensor (0=Precitec ,1=Lasermech,2= HighYag)
+EQ   6
+)
+JMPCN NoPrecitec 
+
+LD   IA_A18_19_DIST_LINEAR          ** Capacitive sensor
+ST   TempCapacitiveSensorPoints
+ST   %C120                          * calibration and linearization of capacitive sensor
+
+LD   %LSRCostK31                    ** Capacitive sensor range
+DIV  10
+ST   MaxVolt_x100
+
+LD   AnalCapFeedback                * Capacitive analog resolution
+ST   MaxADCPoints
+
+JMP  HeadCom
+NoPrecitec:
+
+***************************************
+*   EMPOWER 20MM
+*************************************** 
+LD   %config_machine26              * Capacitive Sensor (0=Precitec ,1=Lasermech,2= HighYag)
+EQ   3
+JMPCN no_em_sensor 
+
+LD   IA_Emower_cap
+GE   %EmConfig.mincapval
+JMPCN NORMALRNG
+     LD   IA_Emower_cap
+     SUB  %EmConfig.mincapval
+     ST   TempCapacitiveSensorPoints
+     ST   %C120
+JMP  COM_RNG
+NORMALRNG:
+* To eliminate influence of ECAT with negative value linearization
+     LD   0
+     ST   TempCapacitiveSensorPoints
+     ST   %C120	 
+COM_RNG:
+
+JMP  HeadCom
+no_em_sensor:
+
+ 
+***************************************
+HeadCom:
+
+
+*******************************************************************************
+* Bevel Calibration and capacitive signal 
+*******************************************************************************
+LD   %LSRPlcOp1.9                  ** Capacitive linearization from CNC
+*ANDN CALIBRATION_CHECK             ** (C26.0) Calibration control in run 
+ANDN CAP_LINEAR_RUN                 ** (C26.2) Linearizzazione capacitivo in esecuzione
+JMPCN no_calibration_bevel 
+
+LD   41                               * table 0?
+ST   BEVEL_INT.xIndexFirstTable
+
+LD   42                               * table 15?
+ST   BEVEL_INT.xIndexSecondTable
+
+LD   43                               * table 30?
+ST   BEVEL_INT.xIndexThirdTable
+
+LD   44                               * table 45?
+ST   BEVEL_INT.xIndexFourthTable
+
+LD   47                               * table for the interpolation angle distance
+ST   BEVEL_INT.xIndexOutIntVal 
+
+LD   TempCapacitiveSensorPoints       * input signal
+ST   BEVEL_INT.xInput         
+
+LD   bevAngleHead1_calc1
+ST   BEVEL_INT.xActualAngle         
+
+CAL  BEVEL_INT                    ** for plc in simulation no external encoder head 1          
+
+LD   BEVEL_INT.yOutInterpVal
+ST   TempCapacitiveSensorPoints
+ST   %C120                         * calibration and linearization of capacitive sensor
+
+no_calibration_bevel:
+
+LD   TempCapacitiveSensorPoints
+ST   %C121                         * VRTC VARIABLE
+
+LD   TempCapacitiveSensorPoints
+ST   Capacit_Anal                  ** (C102)Analogica Capacitivo
+
+LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
+MUL  MaxVolt_x100
+DIV  MaxADCPoints
+ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+
+
+***LD   %UnitWork.gTravE 
+***EQ   1
+***JMPCN no_pipe_calib
+
+LD   TempCapacitiveSensorPoints
+LT   (
+LD   %LSRCostK2            * Soglia rilevamento fine materiale per APA %
+MUL  AnalCapFeedback       *Capacitive analog resolution
+DIV  100
+)
+ST   appoggio1
+
+***no_pipe_calib:
+
+LD   appoggio1
+ST   ApaPlateSense                 ** (gPlc2.13)Sensore Rilevamento lamiera per "APA"
+
+***************************************
+*   Sicurezza 
+***************************************
+LD   CUT_DISTANCE
+DIV  10
+ADD  25                            *  RANGE
+ST   StandOff                      ** Valore distanza taglio in centesimi
+
+LD   BlcAvX1_Sens_Capac            ** M74.3 Blocco avanz. asse X1 Sens. Capacitivo in contatto con la lamiera
+OR   BlcAvY1_Sens_Capac            ** M74.6 Blocco avanz. asse Y Sens. Capacitivo in contatto con la lamiera
+OR   Pul_Stop                      ** (gPlc0.2)Stop pushbutton
+S    b_TipTouch                    ** (LsPlc47.7) TipTouch Attivo da MainFast
+
+LDN  PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+AND(
+LD   V_Capacitivo                  ** Lettura tensione capacitivo (in centesimi di V) 
+LE   StandOff                      ** Valore distanza taglio in centesimi
+)
+ORN  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+R    b_TipTouch                    ** (LsPlc47.7) TipTouch Attivo da MainFast
+****************************************************************
+
+
+*******************************************************************************
+* threshold detection for manual cut
+*******************************************************************************
+LD  %PLCFLAGS.0                ** PLCFLAGS.0  ALWAYS 0
+ST  NozzleLosePlate            * (LsPlc47.13) Nozzle is far more then threshold
+
+LD   exeaux_for_mancut         * (LsPlc47.8) manual cut request
+*AND  M4001_REQ                 * (LsPlc47.14) M4001 request to enable height threshold detection 
+JMPCN no_check_threshold
+
+*  value of cutting distance
+LD   CUT_DISTANCE    * Distance height [um]
+ADD  3200                       
+ST   TmpHeightCheck                ** threshold for capacitive sensor
+
+LD   %C121                     * Capacitive linearized signal (0-4095)
+MUL  10                        
+MUL  1000                       * convert in [um]
+*DIV  4095                      * convert in [mm]
+DIV  AnalCapFeedback       *Capacitive analog resolution convert in [mm]
+GT   TmpHeightCheck                ** threshold for capacitive sensor
+ST   NozzleLosePlate           * (LsPlc47.13) Nozzle is far more then threshold
+
+no_check_threshold:
+
+*******************************************************************************
+*   TIP TOUCH condition disable
+*******************************************************************************
+LD   %LSRPlcOp0.12                 ** Disable TIP TOUCH during piercing
+AND  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+AND  (
+LD   PiercingInRun                 ** (LsPlc70) Piercing in run
+EQ   1
+)
+AND (
+LD   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+LT   500                        ** < 5.00 mm
+)
+ST   appoggio3
+
+CAL  TON_TIPTOUCH(IN=appoggio3,PT=500) ** Tip touch ritardato di 500 msec
+
+LD   TON_TIPTOUCH.Q             ** Tip touch ritardato di 500 msec
+ST   TipTouchDisable               ** (LsPlc71.0) TipTouchDisable (ritardato)
+
+*******************************************************************************
+*   No Laser Shooting during cutting if X / V in holding
+*******************************************************************************
+LD    IN_M3_MODE
+OR    IN_M4_MODE
+AND   CMD_HOLDMOVING_CH3.4    * V
+OR(
+LD    IN_M2_MODE
+OR    IN_M3_MODE
+AND   CMD_HOLDMOVING_CH3.0    * X
+)
+AND(
+      LD    %ax21.ra30
+      EQ    0
+)
+AND(  
+      LD    SelectorApp
+      EQ    4
+)
+AND   %cn0.rc8.0  
+AND   iso_LsronCutting
+ST    Duty0WhenHoldSup
+
+*******************************************************************************
+END_FUNCTION

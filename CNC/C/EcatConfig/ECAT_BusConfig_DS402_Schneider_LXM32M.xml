@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="Schneider_Electric_LXM32M_V116.xml">
+
+	<SetUpDrive>
+		<ProgramListing><![CDATA[
+		]]></ProgramListing>
+	</SetUpDrive>
+
+    <Comment><![CDATA[FMMU and Sync Managment tables]]></Comment>
+	<FMMUTable LStart="#x12000" Length="0" LStartBit="0" LEndBit="7" PStart="#x1000">0</FMMUTable>
+	<FMMUTable LStart="#x11000" Length="0" LStartBit="0" LEndBit="7" PStart="#x1600">1</FMMUTable>
+	<FMMUTable LStart="#x0" Length="0" LStartBit="0" LEndBit="0" PStart="#x0">2</FMMUTable>
+	<FMMUTable LStart="#x0" Length="0" LStartBit="0" LEndBit="0" PStart="#x0">3</FMMUTable>
+
+	<SYNCTable Start="#x1C00" Length="32" Type="MBoxOutput" Data="#x26000100">0</SYNCTable>
+	<SYNCTable Start="#x1E00" Length="32" Type="MBoxInput" Data="#x22000100">1</SYNCTable>
+	<SYNCTable Start="#x1000" Length="0" Type="Output" Data="#x64000100">2</SYNCTable>
+	<SYNCTable Start="#x1600" Length="0" Type="Input" Data="#x20000100">3</SYNCTable>
+    <Comment><![CDATA[FMMU and Sync Managment tables]]></Comment>
+
+    <MboxPolling>
+      <Comment><![CDATA[0=Cyclic 1=State Change]]></Comment>
+      <Type>0</Type>
+    </MboxPolling>
+    
+	<DownloadPDOAssignment>1</DownloadPDOAssignment>
+    <DownloadPDOConfiguration>1</DownloadPDOConfiguration>
+
+	<PDOAssignmentSM2 Output="#x1600">
+		<SMObject>
+		  <Comment><![CDATA[Ctrl Word]]></Comment>
+		  <Address>#x60400010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Target Position]]></Comment>
+		  <Address>#x607A0020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[IO_DQ_set]]></Comment>
+		  <Address>#x30081110</Address>
+		</SMObject>
+	</PDOAssignmentSM2>
+	
+	<PDOAssignmentSM3 Input="#x1A03">
+		<SMObject>
+		  <Comment><![CDATA[Status Word]]></Comment>
+		  <Address>#x60410010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Modes of operation display]]></Comment>
+		  <Address>#x60610008</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Position actual value]]></Comment>
+		  <Address>#x60640020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Following error actual value]]></Comment>
+		  <Address>#x60F40020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Torque actual value]]></Comment>
+		  <Address>#x60770010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Drive error number]]></Comment>
+		  <Address>#x603F0010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[_IO_act]]></Comment>
+		  <Address>#x30080110</Address>
+		</SMObject>
+	</PDOAssignmentSM3>
+
+	<DistribuitedClock>1</DistribuitedClock>
+	
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>20</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+	<PublicDictionary>
+		<Objects>
+            <Comment><![CDATA[Formato Addr IIIISSLL]]></Comment>
+            <Object Pos="8">#x30120310</Object>
+            <Object Pos="9">#x30120110</Object>
+            <Object Pos="10">#x30120210</Object>
+            <Object Pos="11">#x30120610</Object>
+            <Object Pos="12">#x30120410</Object>
+            <Object Pos="13">#x30120510</Object>
+            <Object Pos="14">#x30120910</Object>
+            <Object Pos="15">#x30120810</Object>
+            <Object Pos="16">#x30120A10</Object>
+            <Object Pos="17">#x30120E10</Object>
+            <Object Pos="18">#x30120F10</Object>
+            <Object Pos="19">#x30120C10</Object>
+            <Object Pos="20">#x30120B10</Object>
+            <Object Pos="21">#x30120D10</Object>
+            <Object Pos="22">#x30121010</Object>
+
+            <Object Pos="23">#x30070110</Object>
+            <Object Pos="24">#x30070210</Object>
+            <Object Pos="25">#x30070310</Object>
+            <Object Pos="26">#x30070410</Object>
+            <Object Pos="27">#x30070510</Object>
+            <Object Pos="28">#x30070610</Object>
+            <Object Pos="29">#x30082010</Object>
+            <Object Pos="30">#x30082110</Object>
+            <Object Pos="31">#x30082210</Object>
+            <Object Pos="32">#x30082310</Object>
+            <Object Pos="33">#x30082410</Object>
+            <Object Pos="34">#x30082510</Object>
+            <Object Pos="35">#x30062F10</Object>
+            </Objects>
+	</PublicDictionary>
+
+</Config>
+
+

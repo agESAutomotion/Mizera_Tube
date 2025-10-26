@@ -1,0 +1,32 @@
+%6666
+;******************************************************************************
+;   Computational cycle running on channel 6
+;   Started and stopped by PLC
+;******************************************************************************
+
+IF( %cn[WHO()].rc[0].21 == 1 )  END
+IF(!DEFINED("log_included")) INCLUDE "log_inc.cfs"
+
+; Logger initialization
+JSR "LogIni.cfs"
+
+.Loop
+
+ SYN
+ ;ESA Computational
+ JSR "Comp"
+
+ SYN
+ ;USER Computational
+ JSR "CompUsr"
+
+ SYN
+ ; Logger management
+ JSR "Log"
+
+ ; Copy W Function
+ JSR "CypW"
+G4 F0.2
+JMPB.Loop
+
+M30

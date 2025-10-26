@@ -1,0 +1,733 @@
+:CICLO FISSO sequenze eventi accensione LASER
+
+DBL ind
+ind = VL22
+?%LsIso11 = ind                 ; to make sure that this line is used in G840
+ gLcutId = ind
+DBL hix=0 ;laser per ora sempre su testa 0
+DBL fFlyCutMode = 0
+DBL fUseJerkFlyCutMode = 0
+DBL fSolderingJointFind = 0
+DBL TaioEn       = %cg3.23      ;// TAIO flyCut enabled
+DBL TaioAssistEn = %cg3.24      ;// TAIO Hardware assisted flyCut enabled
+DBL phase
+DBL jerk_ist,t_acc,acc_ist
+DBL qtax, qtay, qtaz
+DBL feedcut
+DBL tangvel1, rad1, rad1e, turns1, dir1
+DBL z
+DBL dwell1, dwell2, smootran, tz, ta, tr
+DBL tangvel2, rad2, rad2e, turns2, dir2
+DBL spiralDivs = 100            ;//every 3.6 degs
+DBL i
+DBL piercInd
+DBL nlinepiercing
+DBL t1, t2, t3
+DBL actFocal                    ; variable to enable the pos reached bit
+DBL pbasel = %LsIso39
+
+DBL n1 = XGET("@EI")
+DBL n2 = XGET("@EJ")
+DBL n3 = XGET("@EK")
+
+; If verify exit
+IF( %cn[WHO()].rc[0].21 ) RET
+
+; if block search running exit
+IF( (%cn[0].rc[8].8) && !(%cn[0].rc[8].15) ) RET
+
+IF ((%UnitWork.uxh[hix].uxh_Flags & 0x0010) == 0x0010) fFlyCutMode = 1
+IF ((%UnitWork.uxh[hix].uxh_Flags & 0x0008) == 0x0008) fUseJerkFlyCutMode = 1
+IF ((%UnitWork.uxh[hix].uxh_Flags & 0x0200) == 0x0200) THEN
+    fFlyCutMode = 1
+    fUseJerkFlyCutMode = 1
+    fSolderingJointFind = 1
+ENDIF
+
+?%LsIso9.5 = 1
+?%TstP15 = 0               ; reset word for laser on/off
+?%LsIso10.7 = 0            ; enable speed managment during piercing in reglsr.plc
+?%TstP[15].0 = 1           ; Verifica NOZZLE LOST
+?%TstP[15].1 = 1           ; Abilita Commutazione Valvole
+G4 F0.01
+
+actFocal = %TabLsr[0].L_CutFocal   ; copy the actual value of the focal in variable
+
+?%LsIso10.2 = 0            ; send to plc lead in low speed signal, in G650 only for reset its value is used in G800
+
+?%R74 =0
+;******************************************************************************
+;******************************************************************************
+;                   P I E R C I N G
+;******************************************************************************
+;******************************************************************************
+;//fastCut assume 'selezione gas anticipata' in G800
+IF (ls_stateping==15) JMP .fastCut
+
+IF(!( gTouchMode || gRegolMode )) JMP .cut          ; IF not T1 OR R1 in G800
+
+?%LsPlc37 = 1       ; send to plc piercing in run
+?%LsPlc70 = 1       ; Inizio FASE di peiercing (x disab. tip-touch)
+
+
+IF (piercing_mode == 0) JMP .cut
+
+;?%vpbSelectors0 = 3               ; NEAR
+?%vpbSelectors1 = 3
+
+FOR nlinepiercing = 1 TO 6 BY 1
+    piercInd = nlinepiercing
+    IF((%TabLsr[piercInd].L_PierceTime == 0) || (%TabLsr[piercInd].L_PierceHeight == 0)) BREAK
+
+ IF(nlinepiercing == 1) THEN
+  ; Piercing in progress
+
+
+  ?%uvHeads[hix].uvhCommand[1] = 2
+  WAITBIT("%uvHeads[hix].uvhStatus[1].1", 1)  ; Wait state machine in piercing mode
+
+
+ ENDIF
+
+    IF (((ls_stateping == 0) || (ls_stateping == 10)|| (ls_stateping == 5))  && (%TabLsr[piercInd].L_PierceHeight >= (%LSRCostK31/1000)) ) M1209  ; simulation enable
+
+  IF (!fFlyCutMode) ?%LsIso[31] = 1     ; Select piercing gas or cutting gas (0=cut gas,1=piercing gas)
+
+ ?%TabLsr[0].L_PierceTime     = %TabLsr[piercInd].L_PierceTime
+ ?%TabLsr[0].L_CutPower       = %TabLsr[piercInd].L_PiercePower
+ ?%TabLsr[0].L_CutPressure    = %TabLsr[piercInd].L_PiercePressure
+; Wait no-focal function in progress
+  WAITBIT("%M110.15",0)
+ ?%TabLsr[0].L_CutFocal       = %TabLsr[piercInd].L_PierceFocal
+
+;if precitec with zoom
+IF ((actFocal != %TabLsr[piercInd].L_PierceFocal) && (%config_machine25 == 0) && (%rLsPlc14 == 450)) THEN
+ ;WAITBIT("%M80.18",0)     ; wait position reached from zoom change
+ WAITBIT("%M80.18",1)     ; wait position reached from zoom change
+     actFocal = %TabLsr[piercInd].L_PierceFocal
+ENDIF
+
+ ?%TabLsr[0].L_CutDuty        = %TabLsr[piercInd].L_PierceDuty
+ ?%TabLsr[0].L_CutFreq        = %TabLsr[piercInd].L_PierceFreq
+ ?%TabLsr[0].L_UserInt1       = %TabLsr[piercInd].L_UserInt1
+ ?%TabLsr[0].L_UserInt9       = %TabLsr[piercInd].L_UserInt9
+ ?%TabLsr[0].L_SourceInt13    = (%TabLsr[piercInd].L_SourceInt13)   ; time to blow
+              gLrecordTrumpf  = %LsIso[13]                          ; take the correct value of the record
+
+
+;;;;TRUMPF laser resonator managment AND need change record
+    IF ((%config_machine28 == 4) && ( gLrecordTrumpf != %TabLsr[piercInd].L_UserInt15) ) THEN
+
+     ?%TstP[15] = 0                ; reset word for laser on/off
+     _wait_bit( 0," %LsPlc26.8",1) ; to be sure plc can understand the TstP15 properly
+
+     ?%TstP[15].3 = 0           ; (LASER_ON)
+     ?%TstP15.2 = 1             ;  (LASER_OFF) Turn off laser from Iso
+     _wait_bit( 1," %LsPlc1.25",0) ; wait laser off
+
+        ?%LsIso[13] = %TabLsr[piercInd].L_UserInt15            ; write on output the record number
+     gLrecordTrumpf = %TabLsr[piercInd].L_UserInt15            ; write on output the record number
+
+     _wait_bit(0,"%LsGui33.3",1)
+     ?%TstP[15].3 = 1           ; (LASER_ON)
+     IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+     ?%TstP[15] = 0       ; reset word for laser on/off
+    ENDIF
+;;;
+
+;;; I f focal is an analog axis, execute focal positioning
+;;; with laser off
+   IF (%LSRCostK[60] == 2) THEN
+
+     ?%TstP[15] = 0       ; reset word for laser on/off
+     _wait_bit( 0," %LsPlc26.8",1) ; to be sure plc can understand the TstP15 properly
+
+     ?%TstP[15].3 = 0           ; (LASER_ON)
+     ?%TstP15.2 = 1             ;  (LASER_OFF) Turn off laser from Iso
+     _wait_bit( 1," %LsPlc1.25",0) ; wait laser off
+     SYN
+     %LsIso[86] = 1          ; (Start Focal)
+     SYN
+     AWAIT(!%LsPlc63.0)        ; Wait the focal in correct position
+     SYN
+     AWAIT(%LsPlc63.0)        ; Wait the focal in correct position
+     ?%TstP[15].3 = 1           ; (LASER_ON)
+     IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+     ?%TstP[15] = 0       ; reset word for laser on/off
+   ENDIF
+
+    ;;; Piercing in feed func. enabled in piercing page
+    IF( (piercInd != 1) && (piercInd != 7) && (piercInd != 13) && (%TabLsr[piercInd].L_SourceInt16.1 == 1) && (%TabLsr[piercInd].L_SourceInt0 == 0) ) THEN
+        ?%LsIso10.7 = 1                  ; enable speed managment during piercing in reglsr.plc
+        ?%LsIso12 = %TabLsr[pbase+piercInd].L_UserInt11
+        ?%TabLsr[0].L_CutDistance = %TabLsr[pbase+piercInd].L_PierceHeight
+                   gL_CutDistance = %TabLsr[pbase+piercInd].L_PierceHeight
+        ;M1299
+	    
+	    ?%uvHeads[hix].uvhCommand[0].2 = 1          
+        WAITBIT("%uvHeads[hix].uvhStatus[0].2", 1)  ;  wait for state machine to loc
+
+    ; no dynamic piercing selected
+    ELSEIF ( %TabLsr[piercInd].L_SourceInt0 == 0 )
+        ?%LsIso10.7 = 0                  ; enable speed managment during piercing in reglsr.plc
+        ?%TabLsr[0].L_CutDistance  = %TabLsr[piercInd].L_PierceHeight
+        gL_CutDistance  = %TabLsr[piercInd].L_PierceHeight
+
+        ?%uvHeads[hix].uvhCommand[0].2 = 1
+        WAITBIT("%uvHeads[hix].uvhStatus[0].2", 1)  ;  wait for state machine to loc
+
+
+    ; dynamic piercing selected
+    ELSEIF( %TabLsr[piercInd].L_SourceInt0 > 0 )
+        IF( (!%LsPlc1.25) && (!%PlcOp0.2) && ((piercInd == 1) || (piercInd == 7) || (piercInd == 13)) ) THEN
+            ?%TstP[15].3 = 1           ; (LASER_ON)
+            IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+            ?%TstP[15] = 0       ; reset word for laser on/off
+        ENDIF
+
+        phase = piercInd
+
+        ;;;;?%uvHeads[hix].uvhCommand[0].2 = 1
+        ;;;;WAITBIT("%uvHeads[hix].uvhStatus[0].2", 1)  ;  wait for state machine to loc
+
+        RPT .drilla, .drillz, 1
+
+        ?%uvHeads[hix].uvhCommand[1] = 2
+        WAITBIT("%uvHeads[hix].uvhStatus[1].1", 1)  ; Wait state machine in piercing mode
+        
+    ENDIF
+
+    IF (((ls_stateping == 0) || (ls_stateping == 10) || (ls_stateping == 5))  && (%TabLsr[piercInd].L_PierceHeight < (%LSRCostK31/1000)) ) M1210    ; simulation disable MOD CAPACIT
+
+    ; start state machine command
+    ?%uvHeads[hix].uvhCommand[0].2 = 0
+    WAITBIT("%uvHeads[hix].uvhStatus[0].2", 0)  ;  wait for state machine to lock
+
+
+   M300                              ; Abilita Attuazione Valori Uscite
+
+
+    ;*************************************
+    ;   ZOOM management
+    ;   (PRECITEC head)
+    ;*************************************
+  IF ( (%config_machine25 == 0) && (%rLsPlc14 == 450) && (%TabLsr[piercInd].L_SourceInt11 != gZoomValue )) THEN
+     ?%TstP[15] = 0       ; reset word for laser on/off
+     _wait_bit( 0," %LsPlc26.8",1) ; to be sure plc can understand the TstP15 properly
+
+     ?%TstP[15].3 = 0           ; (LASER_ON)
+     ?%TstP15.2 = 1            ; (LASER_OFF) Turn off laser from Iso
+     _wait_bit( 1," %LsPlc1.25",0) ; wait laser off
+
+	 ; Wait no-focal function in progress
+	 WAITBIT("%M110.15",0)
+
+     ?%LsIso14 = %TabLsr[piercInd].L_SourceInt11
+    gZoomValue = %TabLsr[piercInd].L_SourceInt11
+
+    ; WAITBIT("%M80.18",0)     ; wait position reached from zoom change
+     WAITBIT("%M80.18",1)     ; wait position reached from zoom change
+
+      ?%TstP[15].3 = 1           ; (LASER_ON)
+
+      IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+     ?%TstP[15] = 0       ; reset word for laser on/off
+  ENDIF
+
+    ;*************************************
+    ;   Turn-on Laser
+    ;*************************************
+    IF( !fFlyCutMode ) THEN
+        IF( (piercInd == 1) || (piercInd == 7) || (piercInd == 13) ) THEN
+            ?%TstP[15].3 = 1    ; (LASER_ON)
+            IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+        ENDIF
+    ENDIF
+
+    ; no dynamic piercing selected
+    IF( %TabLsr[piercInd].L_SourceInt0 == 0 ) THEN
+        G4 F(%TabLsr[piercInd].L_PierceTime / 1000)                   ; Waiting for piercing time
+
+        ;; Blowing time during piercing
+        IF(%TabLsr[piercInd].L_SourceInt13 > 0) THEN                ; time to blow
+            ?%TstP[15].3 = 0           ; (LASER_ON)
+            ?%TstP15.2 = 1                   ;  (LASER_OFF) Turn off laser from Iso
+            _wait_bit( 1," %LsPlc1.25",0) ; wait laser off
+            ?%TabLsr[0].L_CutPressure    = %TabLsr[piercInd].L_SourceInt14
+            M300
+            M550                         ; wait gas blow
+            ?%TstP[15].3 = 1             ; (LASER_ON)
+            IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+            ?%TstP[15] = 0       ; reset word for laser on/off
+        ENDIF
+    ENDIF
+ENDFOR
+
+
+
+;******************************************************************************
+;******************************************************************************
+;                   T A G L I O
+;******************************************************************************
+;******************************************************************************
+.cut
+
+?%LsIso[31] = 0     ; Select piercing gas or cutting gas (0=cut gas,1=piercing gas)
+?%LsPlc37 = 0       ; send to plc piercing in run
+?%LsPlc70 = 0       ; Inizio FASE di peiercing (x disab. tip-touch)
+
+IF(piercing_mode == 2) M1299
+IF(piercing_mode == 2) RET
+
+?%TabLsr[0].L_FeedA          = %TabLsr[ind].L_FeedA
+?%TabLsr[0].L_CutPressure  = %TabLsr[ind].L_CutPressure
+
+IF( (gG806FlyCutMode) && (piercing_mode == 0) ) THEN
+    ?%TabLsr[0].L_CutPower     = 0
+	?%TabLsr[0].L_CutDuty      = 0
+	; M851 will restore the cutting power
+ELSE
+    ?%TabLsr[0].L_CutPower     = %TabLsr[ind].L_CutPower    
+    ?%TabLsr[0].L_CutDuty      = %TabLsr[ind].L_CutDuty	
+ENDIF
+
+; Wait no-focal function in progress
+WAITBIT("%M110.15",0)
+?%TabLsr[0].L_CutFocal       = %TabLsr[ind].L_CutFocal
+
+IF ((actFocal != %TabLsr[ind].L_CutFocal) && (%config_machine25 == 0) && (%rLsPlc14 == 450)) THEN
+    WAITBIT("%M80.18",1)     ; wait position reached from zoom change
+    actFocal = %TabLsr[ind].L_CutFocal
+ENDIF
+
+IF ( %TabLsr[ind].L_UserInt15 != 0) THEN
+    ?%TabLsr[0].L_CutDistance    = %TabLsr[ind].L_UserInt15 / 1000
+    gL_CutDistance    = %TabLsr[ind].L_UserInt15 / 1000
+ELSE
+    ?%TabLsr[0].L_CutDistance = %TabLsr[ind].L_CutDistance
+    gL_CutDistance = %TabLsr[ind].L_CutDistance
+ENDIF
+
+; THIS COMMAND IS POSSIBLE TO BE EXECUTED ONLY IF PIERCING HAS BEEN PERFORMED
+IF(((%TabLsr[1].L_PierceTime != 0) && (%TabLsr[1].L_PierceHeight != 0)) && (piercing_mode != 0) ) THEN
+  
+IF (touch_enable) THEN
+  
+  ; Non deve eseguirlo se � gi� in fase di taglio abilitata (caso di piercing dinamico)
+  ;IF( %uvHeads[hix].uvhStatus[1].2 == 0 ) THEN
+    ?%uvHeads[hix].uvhCommand[0].2 = 1
+    WAITBIT("%uvHeads[hix].uvhStatus[0].2", 1)  ;  wait for state machine to loc
+  ;ENDIF 
+  ENDIF 
+ENDIF
+
+?%TabLsr[0].L_CutFreq        = %TabLsr[ind].L_CutFreq
+?%TabLsr[0].L_UserInt1       = 1                                 ; air assistance
+?%TabLsr[0].L_UserInt9       = %TabLsr[ind].L_UserInt9
+?%TabLsr[0].L_SourceInt16.0  = %TabLsr[ind].L_SourceInt16.0      ; enable speed reduction for lead in
+            gL_SourceInt16x0 = %TabLsr[ind].L_SourceInt16.0      ; enable speed reduction for lead in
+?%TabLsr[0].L_SourceInt16.5  = %TabLsr[ind].L_SourceInt16.5      ; send to plc lead in low speed signal, in G650 only for reset its value is used in G800
+            gL_SourceInt16x5 = %TabLsr[ind].L_SourceInt16.5
+             gLrecordTrumpf  = %TabLsr[ind].L_UserInt15	
+
+M300  ; Abilita Attuazione Valori Uscite
+
+;;;;TRUMPF laser resonator managment AND need change record
+    IF ((%config_machine28 == 4) && ( gLrecordTrumpf != %TabLsr[ind].L_UserInt15 )) THEN
+     ?%TstP[15] = 0                ; reset word for laser on/off
+     _wait_bit( 0," %LsPlc26.8",1) ; to be sure plc can understand the TstP15 properly
+
+     ?%TstP[15].3 = 0           ; (LASER_ON)
+     ?%TstP15.2 = 1             ;  (LASER_OFF) Turn off laser from Iso
+     _wait_bit( 1," %LsPlc1.25",0) ; wait laser off
+        ?%LsIso[13] = %TabLsr[ind].L_UserInt15            ; write on output the record number
+     gLrecordTrumpf = %TabLsr[ind].L_UserInt15            ; write on output the record number
+     _wait_bit(0,"%LsGui33.3",1)
+     ?%TstP[15].3 = 1           ; (LASER_ON)
+     IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+     ?%TstP[15] = 0       ; reset word for laser on/off
+    ENDIF
+;;;;
+
+   ; Focal is a real axis need this algorithm
+    IF (%LSRCostK[60] == 2) THEN
+     ?%TstP[15] = 0                ; reset word for laser on/off
+     _wait_bit( 0," %LsPlc26.8",1) ; to be sure plc can understand the TstP15 properly
+     ?%TstP[15].3 = 0           ; (LASER_ON)
+     ?%TstP15.2 = 1                   ;  (LASER_OFF) Turn off laser from Iso
+     _wait_bit( 1," %LsPlc1.25",0) ; wait laser off
+     SYN
+     ?%LsIso[86] = 1          ; (Start Focal)
+     SYN
+     AWAIT(!%LsPlc63.0)        ; Wait the focal in correct position
+     SYN
+     AWAIT(%LsPlc63.0)        ; Wait the focal in correct position
+     ?%TstP[15].3 = 1           ; (LASER_ON)
+     IF (!%PlcOp0.2)_wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+     ?%TstP[15] = 0       ; reset word for laser on/off
+    ENDIF
+
+;*************************************
+;   ZOOM management
+;   (PRECITEC head)
+;*************************************
+    IF ( (%config_machine25 == 0) && (%rLsPlc14 == 450) && (gZoomValue != %TabLsr[ind].L_SourceInt12)) THEN
+     ?%TstP[15] = 0                ; reset word for laser on/off
+     _wait_bit( 0," %LsPlc26.8",1) ; to be sure plc can understand the TstP15 properly
+     ?%TstP[15].3 = 0              ; (LASER_ON)
+     ?%TstP15.2 = 1                ; (LASER_OFF) Turn off laser from Iso
+     _wait_bit( 1," %LsPlc1.25",0) ; wait laser off
+
+  ; Wait no-focal function in progress
+      WAITBIT("%M110.15",0)
+
+     ?%LsIso14 = %TabLsr[ind].L_SourceInt12
+    gZoomValue = %TabLsr[ind].L_SourceInt12
+
+      ; WAITBIT("%M80.18",0)     ; wait position reached from zoom change
+      WAITBIT("%M80.18",1)     ; wait position reached from zoom change
+
+      ?%TstP[15].3 = 1             ; (LASER_ON)
+
+      IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+     ?%TstP[15] = 0       ; reset word for laser on/off
+    ENDIF
+;;;
+
+.fastCut
+
+IF (%PlcOp0.2) THEN
+    feed1 = (%LSRCostK[53])
+ELSE
+    feed1 = %TabLsr[ind].L_FeedA
+ENDIF
+
+Cir_circle = SQRT( %gIso23 * %gIso23 + %gIso24 * %gIso24 )
+IF( (%LSRPlcOp[1].31) && (!%PlcOp0.2) ) THEN		
+    IF( feed1 > (Cir_circle * 200) ) feed1 = Cir_circle * 200
+ENDIF
+
+F(feed1)
+
+IF (touch_enable) THEN
+
+?%uvHeads[hix].uvhCommand[0].2 = 0
+WAITBIT("%uvHeads[hix].uvhStatus[0].2", 0)  ;  wait for state machine to loc
+
+; Cutting in progress
+?%uvHeads[hix].uvhCommand[1] = 4
+WAITBIT("%uvHeads[hix].uvhStatus[1].2", 1)  ; Wait state machine in cutting  mode
+ENDIF
+
+IF( fFlyCutMode ) THEN
+    IF( !fUseJerkFlyCutMode ) THEN
+        JRKTRJ = 0
+        ACCTRJ = %LSRCostK15                       ;Trajectory maximum acc. Fly cut mode
+        DECTRJ = %LSRCostK16                       ;Trajectory maximum decc. Fly cut mode
+    ENDIF
+    ;//M501 Mode FlyCut ON
+
+    ?%C125.0 = 1                ;// application turn flyCut mode ON
+    IF (TaioEn && TaioAssistEn) THEN
+        WAITBIT("%QW911.12",1)  ;// Laser I/F board PWM_CFG register (RD): S_EF
+    ELSE
+        WAITBIT("%C126.0",1)    ;// application flyCut mode is ON
+    ENDIF
+ELSE
+    ; il JERK se tubo tondo viene messo sempre a zero.
+    IF( !roundFlag )  THEN
+        IF ( (%TabLsr[ind].L_UserInt3==0) || (%TabLsr[ind].L_UserInt3 > 100) ) %TabLsr[ind].L_UserInt3=1   ; Sicurezza per non azzerare il Jerk o superare il vam max
+        jerk_ist = (%cn[WHO()].pc16 * %TabLsr[ind].L_UserInt3 / 100 )   ; riduzione percentuale Jerk
+        JRKTRJ = jerk_ist
+    ENDIF
+ENDIF
+
+IF(( !gTouchMode ) || (%TabLsr[pbasel+0].L_PierceTime == 0) || (piercing_mode == 0)) THEN
+    IF(! fFlyCutMode ) THEN
+        ?%TstP[15].3 = 1           ; (LASER_ON)
+        IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+    ENDIF
+ENDIF
+
+IF(!%PlcOp0.2) THEN
+    IF(! fFlyCutMode ) THEN
+        _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+    ENDIF
+ENDIF
+
+?%TstP[15] = 0           ; AZZERO 
+   
+RET
+
+
+
+
+;**********************************************************
+;   TIPI DI PIERCING:
+;   Per ora sono implementati a livello utente 2 tipi
+;   di piercing:
+;   TIPO1 = cerchio o spirale sul piano
+;   TIPO2 = elicoide in Z seguito da un cerchio sul piano
+;
+;   Questi i dati utilizzati a tale scopo:
+;       L_SourceInt0 = (=1 TIPO1, =2 TIPO2)
+;       L_SourceInt1 = P1 raggio iniziale
+;       L_SourceInt4 = P2 giri
+;       L_SourceInt2 = P3 vel
+;       L_SourceInt3 = P4 raggio finale
+;       L_SourceInt7 = P5 raggio iniziale
+;       L_SourceInt10= P6 giri
+;       L_SourceInt8 = P7 vel
+;       L_SourceInt9 = P8 raggio finale
+;
+;   N.B. Se numero giri > 0 rotazione oraria
+;**********************************************************
+
+.drilla
+
+;//disattiva solo eventuale lavorazione in tangenza (commentare sul LASER!!!)
+;//lascia abilitata la tavola
+;;;G172 T(gTravT) H(gTravH) D(gKerfDescr) E(gTravE)
+
+;//SERVE PER LAVORAZIONE 3D CON TESTA 5 ASSI
+;//ottieni tool frame
+G180 D0 P2
+;//ottieni un frame locale che, premoltiplicato per la trasformazione
+;//utente e quella della tavola, fornisca quello assoluto dell'utensile.
+
+;//                                T              T    T
+;// ef * mx * X = tf -> mx * X = ef * tf -> X = mx * ef * tf
+
+t1 = ef_a11 * tf_a11 + ef_a21 * tf_a21 + ef_a31 * tf_a31
+t2 = ef_a12 * tf_a11 + ef_a22 * tf_a21 + ef_a32 * tf_a31
+t3 = ef_a13 * tf_a11 + ef_a23 * tf_a21 + ef_a33 * tf_a31
+tf_a11 = t1
+tf_a21 = t2
+tf_a31 = t3
+t1 = ef_a11 * tf_a12 + ef_a21 * tf_a22 + ef_a31 * tf_a32
+t2 = ef_a12 * tf_a12 + ef_a22 * tf_a22 + ef_a32 * tf_a32
+t3 = ef_a13 * tf_a12 + ef_a23 * tf_a22 + ef_a33 * tf_a32
+tf_a12 = t1
+tf_a22 = t2
+tf_a32 = t3
+t1 = ef_a11 * tf_a13 + ef_a21 * tf_a23 + ef_a31 * tf_a33
+t2 = ef_a12 * tf_a13 + ef_a22 * tf_a23 + ef_a32 * tf_a33
+t3 = ef_a13 * tf_a13 + ef_a23 * tf_a23 + ef_a33 * tf_a33
+tf_a13 = t1
+tf_a23 = t2
+tf_a33 = t3
+t1 = mx_a11 * tf_a11 + mx_a21 * tf_a21 + mx_a31 * tf_a31
+t2 = mx_a12 * tf_a11 + mx_a22 * tf_a21 + mx_a32 * tf_a31
+t3 = mx_a13 * tf_a11 + mx_a23 * tf_a21 + mx_a33 * tf_a31
+tf_a11 = t1
+tf_a21 = t2
+tf_a31 = t3
+t1 = mx_a11 * tf_a12 + mx_a21 * tf_a22 + mx_a31 * tf_a32
+t2 = mx_a12 * tf_a12 + mx_a22 * tf_a22 + mx_a32 * tf_a32
+t3 = mx_a13 * tf_a12 + mx_a23 * tf_a22 + mx_a33 * tf_a32
+tf_a12 = t1
+tf_a22 = t2
+tf_a32 = t3
+t1 = mx_a11 * tf_a13 + mx_a21 * tf_a23 + mx_a31 * tf_a33
+t2 = mx_a12 * tf_a13 + mx_a22 * tf_a23 + mx_a32 * tf_a33
+t3 = mx_a13 * tf_a13 + mx_a23 * tf_a23 + mx_a33 * tf_a33
+tf_a13 = t1
+tf_a23 = t2
+tf_a33 = t3
+
+;//attiva il frame locale
+G168
+
+;//        T
+;// n' = tf  * n
+;// ...so that n referred to the previous frame will remain unchanged
+;//
+EI(tf_a11 * n1 + tf_a21 * n2 + tf_a31 * n3)
+EJ(tf_a12 * n1 + tf_a22 * n2 + tf_a32 * n3)
+EK(tf_a13 * n1 + tf_a23 * n2 + tf_a33 * n3)
+
+G160 I(tf_a11) J(tf_a21) K(tf_a31) P(tf_a12) Q(tf_a22) R(tf_a32) U(tf_a13) V(tf_a23) W(tf_a33)
+;//SERVE PER LAVORAZIONE 3D CON TESTA 5 ASSI
+
+;//SUBROUTINE "DRILL"
+;//Raggiunge la quota di piercing relativa alla fase, in rapido piuttosto che
+;//con una elicoide con raggio iniziale Rad1, finale Rad1e e Turns1 giri alla
+;//velocit� TangVel1.  Se i raggi iniziale e finale non coincidono viene
+;//eseguita una spirale elicoidale.
+;//Segue attesa tempo di piercing (eventualmente 0.0), seguita da eventuale
+;//piercing circolare in XY alla quota corrente di Z con raggio inziale Rad2,
+;//finale Rad2e e Turns2 giri alla velocit� TangVel2.  Se i raggi iniziale e
+;//finale non coincidono viene eseguita una spirale.
+;//Segue seconda attesa tempo di piercing (eventualmente 0.0).
+;//Se il raggio finale dell'elicoide e quello iniziale del circolare sono
+;//equivalenti e non c'� attesa tra i due, la transizione elicoidale ed il
+;//piercing circolare vengono raccordati (se entrambi presenti).
+;//turns1   = %TabLsr[phase].L_Dyn_Turns1___xxx
+;//tangvel1 = %TabLsr[phase].L_Dyn_TangVel1___xxx
+;//rad1     = %TabLsr[phase].L_Dyn_Rad1___xxx
+;//rad1e    = %TabLsr[phase].L_Dyn_Rad1e__xxx
+;//z        = %TabLsr[phase].L_PierceHeight
+;//dwell1   = %TabLsr[phase].L_PierceTime / 1000   * 1.0
+;//turns2   = %TabLsr[phase].L_Dyn_Turns2___xxx
+;//tangvel2 = %TabLsr[phase].L_Dyn_TangVel2___xxx
+;//rad2     = %TabLsr[phase].L_Dyn_Rad2___xxx
+;//rad2e    = %TabLsr[phase].L_Dyn_Rad2e__xxx
+;//dwell2   = %TabLsr[phase].L_PierceTime / 1000   * 0.0
+
+IF( %TabLsr[phase].L_SourceInt0 == 1 ) THEN
+    turns1   = 0
+    dir1     = 0
+    tangvel1 = 0
+    rad1     = 0
+    rad1e    = 0
+    z        = %TabLsr[phase].L_PierceHeight
+    dwell1   = %TabLsr[phase].L_PierceTime / 1000
+    turns2   = %TabLsr[phase].L_SourceInt2
+    dir2     = IFEXP(turns2>0,2,3)                          ; 2 orario / 3 antiorario
+    turns2   = ABS(turns2)
+    tangvel2 = %TabLsr[phase].L_SourceInt3
+    rad2     = %TabLsr[phase].L_SourceInt1 / 1000
+    rad2e    = %TabLsr[phase].L_SourceInt4 / 1000
+    dwell2   = 0
+ENDIF
+
+IF( %TabLsr[phase].L_SourceInt0 == 2 ) THEN
+    z        = %TabLsr[phase].L_PierceHeight
+
+    rad1     = %TabLsr[phase].L_SourceInt7 / 1000           ; 1 Raggio iniziale ELICOIDE
+    rad1e    = %TabLsr[phase].L_SourceInt10 / 1000          ; 1 Raggio finale ELICOIDE
+    turns1   = %TabLsr[phase].L_SourceInt8                  ; 1 Numero giri ELICOIDE
+    dir1     = IFEXP(turns1>0,2,3)                          ; 2 orario / 3 antiorario
+    turns1   = ABS(turns1)
+    tangvel1 = %TabLsr[phase].L_SourceInt9                  ; 1 Vel ELICOIDE
+    dwell1   = 0
+
+    rad2     = %TabLsr[phase].L_SourceInt1 / 1000           ; 2 Raggio iniziale CERCHIO
+    rad2e    = %TabLsr[phase].L_SourceInt4 / 1000           ; 2 Raggio finale CERCHIO
+    ; turns2   = %TabLsr[phase].L_SourceInt2                  ; 2 Numero giri CERCHIO
+    turns2   = 0                                            ; 2 Numero giri CERCHIO
+    dir2     = IFEXP(turns2>0,2,3)                          ; 2 orario / 3 antiorario
+    turns2   = ABS(turns2)
+    tangvel2 = %TabLsr[phase].L_SourceInt3                  ; 2 Vel CERCHIO
+    dwell2   = 0
+ENDIF
+
+IF( %TabLsr[phase].L_SourceInt0 > 2 ) JMP .leaner
+
+
+?%uvHeads[hix].uvhCommand[0].2 = 0
+WAITBIT("%uvHeads[hix].uvhStatus[0].2", 0)  ;  wait for state machine to loc
+
+; Cutting in progress
+?%uvHeads[hix].uvhCommand[1] = 4
+WAITBIT("%uvHeads[hix].uvhStatus[1].2", 1)  ; Wait state machine in cutting  mode
+
+; Se prima linea di piercing di ciascun gruppo (P1, P10, P11)
+IF( (phase == 1) || (phase == 7) || (phase == 13) ) turns1 = 0
+
+smootran = (turns1 > 0) && (turns2 > 0) && (rad1e == rad2) && (dwell1 == 0)
+
+IF ((turns1 == 0) && (turns2 == 0)) THEN
+
+    IF( (phase != 1) && (phase != 7) && (phase != 13) ) THEN
+        ?%TabLsr[0].L_CutDistance = %TabLsr[piercInd].L_PierceHeight
+        gL_CutDistance = %TabLsr[piercInd].L_PierceHeight
+    ENDIF
+
+    IF ((dwell1+dwell2) != 0) G4 F(dwell1+dwell2)
+    POP(1)
+    JMPF .leaner
+ENDIF
+
+qtax = XGET("@X")
+qtay = XGET("@Y")
+;qtaz = XGET("@Z")
+qtaz = gL_CutDistance
+
+feedcut = XGET("@F")
+
+FDCARC = %cn[WHO()].fdc.arc * 4.0   ;//Toller. raggio archi [mm]
+FDCFCA = %cn[WHO()].fdc.fca * 4.0   ;//VRef[mm/min] arc R=1m, a=90�
+FDCFCB = %cn[WHO()].fdc.fcb * 4.0   ;//VRef[mm/min] arc R=0.01m, a=90�
+FDCFCC = %cn[WHO()].fdc.fcc * 4.0   ;//VRef[mm/min] arc R=1m, a->0�
+FDCFCD = %cn[WHO()].fdc.fcd * 4.0   ;//VRef[mm/min] arc R=0.01m, a->0�
+FDCTCA = %cn[WHO()].fdc.tca * 8.0   ;//max NEG jump [mm/min])
+FDCTCB = %cn[WHO()].fdc.tcb * 8.0   ;//max NEG jump [�/min])
+FDCTCC = %cn[WHO()].fdc.tcc * 8.0   ;//max POS jump [mm/min])
+FDCTCD = %cn[WHO()].fdc.tcd * 8.0   ;//max POS jump [�/min])
+ACCTRJ = %cn[WHO()].pc6     * 1.4
+DECTRJ = %cn[WHO()].pc7     * 1.4
+JRKTRJ = %cn[WHO()].pc16    * 2.2
+COMMIT
+SPC 30000,0
+
+IF (phase > 1) THEN
+    IF (turns1 > 0) THEN
+        F(tangvel1)
+        G(dir1) X(qtax+rad1) Y(qtay) I(qtax+rad1/2) J(qtay)
+
+        FOR i = 1 TO (spiralDivs * turns1)
+            tz = qtaz + (z - qtaz) * (i/(spiralDivs * turns1))
+            ta = IFEXP(dir1==2,-1,+1) * 360 * (i / spiralDivs)
+            tr = rad1 + (rad1e - rad1) * (i/(spiralDivs * turns1))
+            G1 X(qtax+tr*COS(ta)) Y(qtay+tr*SIN(ta)) ;Z(tz)
+			MSGOUT " tz=" tz
+            ?%TabLsr[0].L_CutDistance = tz
+            gL_CutDistance = tz
+        ENDFOR
+
+        IF (!smootran) G(dir1) X(qtax) Y(qtay) I(qtax+rad1e/2) J(qtay)
+    ELSE
+        ?%TabLsr[0].L_CutDistance = %TabLsr[piercInd].L_PierceHeight
+        gL_CutDistance = %TabLsr[piercInd].L_PierceHeight
+    ENDIF
+ENDIF
+
+IF (turns2 > 0) THEN
+    F(tangvel2)
+    IF (!smootran) G(dir2) X(qtax+rad2) Y(qtay) I(qtax+rad2/2) J(qtay)
+    IF (rad2 == rad2e) THEN
+        FOR i = 1 TO turns2
+            G(dir2) X(qtax+rad2e) Y(qtay) I(qtax) J(qtay)
+        ENDFOR
+    ELSE
+        FOR i = 1 TO (spiralDivs * turns2)
+            ta = IFEXP(dir2==2,-1,+1) * 360 * (i / spiralDivs)
+            tr = rad2 + (rad2e - rad2) * (i/(spiralDivs * turns2))
+            G1 X(qtax+tr*COS(ta)) Y(qtay+tr*SIN(ta))
+        ENDFOR
+    ENDIF
+    G(dir2) X(qtax) Y(qtay) I(qtax+rad2e/2) J(qtay)
+ENDIF
+
+IF (dwell2 != 0) G4 F(dwell2)
+
+F(feedcut)
+FDCARC = %cn[WHO()].fdc.arc     ;//Toller. raggio archi [mm]
+FDCFCA = %cn[WHO()].fdc.fca     ;//VRef[mm/min] arc R=1m, a=90�
+FDCFCB = %cn[WHO()].fdc.fcb     ;//VRef[mm/min] arc R=0.01m, a=90�
+FDCFCC = %cn[WHO()].fdc.fcc     ;//VRef[mm/min] arc R=1m, a->0�
+FDCFCD = %cn[WHO()].fdc.fcd     ;//VRef[mm/min] arc R=0.01m, a->0�
+FDCTCA = %cn[WHO()].fdc.tca     ;//max NEG jump [mm/min])
+FDCTCB = %cn[WHO()].fdc.tcb     ;//max NEG jump [�/min])
+FDCTCC = %cn[WHO()].fdc.tcc     ;//max POS jump [mm/min])
+FDCTCD = %cn[WHO()].fdc.tcd     ;//max POS jump [�/min])
+ACCTRJ = %cn[WHO()].pc6
+DECTRJ = %cn[WHO()].pc7
+JRKTRJ = %cn[WHO()].pc16
+
+COMMIT  ;//should also insure last G1 has zero exit speed (WAITBIT)
+
+.leaner
+
+;//annulla il frame locale
+EI(n1)
+EJ(n2)
+EK(n3)
+G169
+;//SERVE PER LAVORAZIONE 3D CON TESTA 5 ASSI
+
+;;;//riattiva solo eventuale lavorazione in tangenza (commentare sul LASER!!!)
+;;;G172 T(gTravT) H(gTravH) D(gKerfDescr) E(gTravE) I(gTravI)
+
+.drillz

@@ -1,0 +1,84 @@
+[PROMPT]
+KEY_UT        =Dat. Herram. (ver. 1.5)
+
+UT_TYPE    =Tipo herram.
+DU_DESC    =Descrizione
+
+PT_LUNGZ   =Longitud Z Herram.[mm]
+PT_USLUNGZ =Desgaste Longitud Z[mm]
+PT_PRES    =Preset Herram.
+PT_VITA    =Vida Herram.
+PT_THDLUNGZ   =THD Longitud Z Herram.[mm]
+
+FC_LUNGZ   =Longitud Z Herram.[mm]
+FC_RAD     =Radio Herram.[mm]
+FC_PRES    =Preset Herram.
+FC_VITA    =Vida Herram.
+FC_USLUNGZ =Desgaste Longitud Z[mm]
+FC_USRAD   =Desgaste Radio[mm]
+FC_THDLUNGZ =THD Longitud Z Herram.[mm]
+
+FA_LUNGZ   =Longitud Z Herram.[mm]
+FA_LUNGX   =Longitud X Herram.[mm]
+FA_RAD     =Radio Herram.[mm]
+FA_PRES    =Preset Herram.
+FA_VITA    =Vida Herram.
+FA_USLUNGZ =Desgaste Longitud Z[mm]
+FA_USLUNGX =Desgaste Longitud X[mm]
+FA_USRAD   =Desgaste Radio[mm]
+FA_THDLUNGZ =THD Longitud Z Herram.[mm]
+FA_THDLUNGX =THD Longitud X Herram.[mm]
+
+TN_LUNGZ   =Longitud Z Herram.[mm]
+TN_LUNGX   =Longitud X Herram.[mm]
+TN_RAD     =Radio Herram.[mm]
+TN_ANG_A   =Angolo di spoglia A
+TN_ANG_B   =Angolo di spoglia B
+TN_PRES    =Preset Herram.
+TN_VITA    =Vida Herram.
+TN_USLUNGZ =Desgaste Longitud Z[mm]
+TN_USLUNGX =Desgaste Longitud X[mm]
+TN_USRAD   =Desgaste Radio[mm]
+TN_THDLUNGZ =THD Longitud Z Herram.[mm]
+TN_THDLUNGX =THD Longitud X Herram.[mm]
+TN_THDLUNGY =THD Longitud Y Herram.[mm]
+
+VITA_PREAL = Vita preallarme
+
+[HELP]
+UT_TYPE       =Tipo Herramienta: 1-Fresa de dos ranuras 2-Fresa con cabeza angular 3-Torno 4-Broca
+
+PT_LUNGZ   =Longitud Z Herramienta: Longitud de la herramienta en la dirección ortogonal respecto al plano seleccionado
+PT_USLUNGZ =Desgaste Longitud Z
+PT_PRES    =Preset Herramienta
+PT_VITA    =Vida Herramienta
+
+FC_LUNGZ   =Longitud Z Herramienta: Longitud de la herramienta en la dirección ortogonal respecto al plano seleccionado
+FC_RAD     =Radio Herramienta: Radio de la herramienta permite  tomar en cuenta el espacio ocupado real de la herramienta en fase de trabajo
+FC_PRES    =Preset Herramienta
+FC_VITA    =Vida Herramienta
+FC_USLUNGZ =Desgaste Longitud Z
+FC_USRAD   =Desgaste Radio
+
+FA_LUNGZ   =Longitud Z Herramienta: Longitud de la herramienta en la dirección ortogonal respecto al plano seleccionado
+FA_LUNGX   =Longitud X Herramienta: Offset de la herramienta respecto al plano de trabajo
+FA_RAD     =Radio Herramienta:Radio de la herramienta permite tomar en cuenta el espacio ocupado real de la herramienta en fase de trabajo
+FA_PRES    =Preset Herramienta
+FA_VITA    =Vida Herramienta
+FA_USLUNGZ =Desgaste Longitud Z
+FA_USLUNGX =Desgaste Longitud X
+FA_USRAD   =Desgaste Radio
+
+TN_LUNGZ   =Longitud Z Herramienta: Longitud de la herramienta en la dirección ortogonal respecto al plano seleccionado
+TN_LUNGX   =Longitud X Herramienta: Offset de la herramienta en el plano de trabajo
+TN_RAD     =Radio Herramienta: Radio de la herramienta permite tener en cuenta el espacio ocupado real de la herramienta en fase de trabajo
+TN_ANG_A   =Angolo di spoglia A
+TN_ANG_B   =Angolo di spoglia B
+TN_PRES    =Preset
+TN_VITA    =Vida Herramienta
+TN_USLUNGZ =Desgaste Longitud Z
+TN_USLUNGX =Desgaste Longitud X
+TN_USRAD   =Desgaste Radio
+
+VITA_PREAL = Vita preallarme
+

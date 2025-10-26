@@ -1,0 +1,65 @@
+Foratura su due pareti :88
+    IF ( VA25 == 17 ) JMP 3
+    IF ( VA25 == 18 ) JMP 1
+    IF ( VA25 == 19 ) JMP 2
+N1  DEF[X] = Z
+    DEF[Y] = X
+    DEF[Z] = Y
+    JMP 3
+N2  DEF[X] = Y
+    DEF[Y] = Z
+    DEF[Z] = X
+N3  IF (VA18 == 192) JMP 5
+    IF (VA18 == 193) JMP 30
+N5  VA25 = 1
+    VA26 = 1
+    VA20 = VA0
+    VA21 = VA1
+    VA22 = 1
+N10 G0 XVA20 YVA21
+    G0 ZVA2
+    G1 FVA5 ZVA3
+    G0 ZVA19
+    G1 ZVA23
+    G4 FVA7
+    G1 FVA6 ZVA4
+    VA26 = VA26 + 1
+    IF (VA26 > VA10) JMP 20
+    VA20 = VA20 + VA8*VA22
+    VA21 = VA21 + VA9*VA22
+    JMP 10
+N20 VA25 = VA25 + 1
+    VA22 = -VA22
+    VA26 = 1
+    IF (VA25 > VA13) JMP 100
+    VA20 = VA20 + VA11
+    VA21 = VA21 + VA12
+    JMP 10
+N30 VA20 = VA0
+    VA21 = VA1
+    VA22 = 0
+    VA24 = 1
+    IF (VA14 == 0) VA14 = 360 / VA17
+    VA25 = VA0 - VA15
+    VA26 = VA1 - VA16
+    VA27 = SQRT( VA25 * VA25 + VA26 * VA26)
+    IF (VA26 > 0) VA27 = -VA27
+    VA30 = 270 + ASIN( ( VA0 - VA15 ) / VA27)
+N40 G0 XVA20 YVA21
+    G1 FVA5 ZVA3
+    G0 ZVA19
+    G1 ZVA23
+    G4 FVA7
+    G1 FVA6 ZVA4
+    VA24 = VA24 + 1
+    IF (VA24 > VA17) JMP 100
+    VA22 = VA22 + VA14
+    VA20 = VA15 + (VA27 * COS( VA30 + VA22 ))
+    VA21 = VA16 + (VA27 * SIN( VA30 + VA22 ))
+    JMP 40
+N100 DEF[X] = X
+     DEF[Y] = Y
+     DEF[Z] = Z
+     RET
+
+

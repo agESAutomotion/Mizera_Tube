@@ -1,0 +1,37 @@
+:  Parcheggia teste Y, Y1
+
+DBL parky_a2=%Cost_User[10]/1000       ;Quota parcheggio Y Area 2
+DBL parky1_a2=%Cost_User[11]/1000      ;Quota parcheggio Y1 Area 2
+
+;//Sgancia tutti gli assi
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+G4005 S(AXIDX(4,Y))
+;G4005 S(AXIDX(4,Z))
+G4099
+
+SYN
+
+;//Aggancia assi Y3 acquisendo le quote
+G153
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+G152
+G4099
+;//Parcheggia
+G153 G0 Y(parky_a2)
+;//Sgancia
+G4005 S(AXIDX(3,Y))
+G4099
+
+;//Aggancia assi Y4 acquisendo le quote
+G153
+G4010 M(AXIDX(Y)) S(AXIDX(4,Y)) I1
+G152
+G4099
+;//Parcheggia
+G153 G0 Y(parky1_a2)
+;//Sgancia
+G4005 S(AXIDX(4,Y))
+G4099
+
+RET

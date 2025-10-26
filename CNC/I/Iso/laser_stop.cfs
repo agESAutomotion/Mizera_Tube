@@ -1,0 +1,167 @@
+:
+DBL ti, tj, tk
+DBL x, y, z
+DBL flt_qT, flt_qS
+DBL ni, nj, nk, nijk
+DBL oi, oj, ok
+DBL t1, t2, t3
+DBL vectorSelect = %config_machine32
+DBL hix = 0
+
+IF( (vectorSelect != 2) && (vectorSelect != 6 ) && (vectorSelect != 1 ) ) ERROR(55)
+IF (rtcp_on == 0) ERROR (55)
+IF (f_G153) ERROR (55)
+
+ti = XGET("@EI")
+tj = XGET("@EJ")
+tk = XGET("@EK")
+;//calculate ONLY matrices in the fastest way (D0 P2 instead of D1)
+G180 D0 P2
+
+;//make the tool vector relative to table/matrix frame (o = mx^T * ef^T * tf.Z)
+t1 = ef_a11 * tf_a13 + ef_a21 * tf_a23 + ef_a31 * tf_a33
+t2 = ef_a12 * tf_a13 + ef_a22 * tf_a23 + ef_a32 * tf_a33
+t3 = ef_a13 * tf_a13 + ef_a23 * tf_a23 + ef_a33 * tf_a33
+oi = mx_a11 * t1 + mx_a21 * t2 + mx_a31 * t3
+oj = mx_a12 * t1 + mx_a22 * t2 + mx_a32 * t3
+ok = mx_a13 * t1 + mx_a23 * t2 + mx_a33 * t3
+
+SWITCH (vectorSelect)
+CASE 1
+    ni = oi
+    nj = oj
+    nk = ok
+CASE 2
+    IF (XGET("@ECLMXM") != 0) THEN
+        ni = ti
+        nj = tj
+        nk = tk
+    ELSE
+        ;//apply inverse user transformation matrix (n = mx^T * tijk)
+        ni = mx_a11 * ti + mx_a21 * tj + mx_a31 * tk
+        nj = mx_a12 * ti + mx_a22 * tj + mx_a32 * tk
+        nk = mx_a13 * ti + mx_a23 * tj + mx_a33 * tk
+    ENDIF
+    ;//convert to unit vector
+    nijk = SQRT(ni*ni + nj*nj + nk*nk)
+    IF (nijk > 0.001) THEN
+        ni = ni / nijk
+        nj = nj / nijk
+        nk = nk / nijk
+    ENDIF
+CASE 6
+    ;//mx^T * ef^T * [0 0 1]^T
+    ni = mx_a11 * ef_a31 + mx_a21 * ef_a32 + mx_a31 * ef_a33
+    nj = mx_a12 * ef_a31 + mx_a22 * ef_a32 + mx_a32 * ef_a33
+    nk = mx_a13 * ef_a31 + mx_a23 * ef_a32 + mx_a33 * ef_a33
+ENDSWITCH
+
+
+;//disable PLC vrtc handling
+?%uvHeads[hix].uvhCommand[0].1 = 0
+WAITBIT("%uvHeads[hix].uvhStatus[0].1", 0)
+;//THIS WORKS AS A COMMAND CHANGE AND REQUIRES TO TOGGLE
+
+;//quickly stop and start T de-overlap
+;//disable RTCP (optimization)
+tcr = tcr & XOR(c_error_amp, -1)
+tcr = tcr | c_de_overlap
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+scr = scr & XOR(c_error_amp, -1)
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+;//Get absolute (P2: must be done outside G153)
+G180 D0 P2
+x = kine_x
+y = kine_y
+z = kine_z
+oi = tf_a13
+oj = tf_a23
+ok = tf_a33
+;//make the normal vector absolute (n' = ef * mx * n)
+t1 = mx_a11 * ni + mx_a12 * nj + mx_a13 * nk
+t2 = mx_a21 * ni + mx_a22 * nj + mx_a23 * nk
+t3 = mx_a31 * ni + mx_a32 * nj + mx_a33 * nk
+ni = ef_a11 * t1 + ef_a12 * t2 + ef_a13 * t3
+nj = ef_a21 * t1 + ef_a22 * t2 + ef_a23 * t3
+nk = ef_a31 * t1 + ef_a32 * t2 + ef_a33 * t3
+G153
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+;//wait for signal lock
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].2", 1)
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].2", 1)
+
+SYN
+flt_qT = %uvHeads[hix].uvhToolStatus[sr_FltQ] / 1000
+flt_qS = %uvHeads[hix].uvhSurfaceStatus[sr_FltQ] / 1000
+;//perform T de-overlap
+x = x + oi * flt_qT
+y = y + oj * flt_qT
+z = z + ok * flt_qT
+
+    VEL[Z] = %ax2.pa9
+    ACC[Z] = 1000000
+    DEC[Z] = 1000000
+    JRK[Z] = 0
+
+    G0 X(x) Y(y) Z(z)
+
+    VEL[Z] = %ax29.pa9
+    ACC[Z] = %ax29.pa1
+    DEC[Z] = %ax29.pa2
+    JRK[Z] = %ax29.pa25
+
+;_deoverlap(0x00, X, Y, Z, x, y, z)
+;G10 G0 X(x) Y(y) Z(z)
+
+;//stop T de-overlap and start S de-overlap
+tcr = tcr & XOR(c_de_overlap, -1)
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+scr = scr | c_de_overlap
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+;//wait for not busy state
+WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+
+;//perform S de-overlap
+x = x + ni * flt_qS
+y = y + nj * flt_qS
+z = z + nk * flt_qS
+
+    VEL[Z] = %ax2.pa9
+    ACC[Z] = 1000000
+    DEC[Z] = 1000000
+    JRK[Z] = 0
+	
+    G0 X(x) Y(y) Z(z)
+
+    VEL[Z] = %ax29.pa9
+    ACC[Z] = %ax29.pa1
+    DEC[Z] = %ax29.pa2
+    JRK[Z] = %ax29.pa25
+
+;_deoverlap(0x00, X, Y, Z, x, y, z)
+;G10 G0 X(x) Y(y) Z(z)
+
+;//reset and disable S de-overlap
+;//reset setpoint command registers
+;//reenable RTCP (optimization)
+?%uvHeads[hix].uvhToolCommand[cr_Setpoint] = 0
+?%uvHeads[hix].uvhSurfaceCommand[cr_Setpoint] = 0
+tcr = tcr | c_reset | c_error_amp
+tcr = XOR(tcr, c_toggle)
+?%uvHeads[hix].uvhToolCommand[0] = tcr
+scr = scr | c_reset | c_error_amp
+scr = scr & XOR((c_de_overlap | c_pos_lim_disab), -1)
+scr = XOR(scr, c_toggle)
+?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+G152
+;//wait for not busy state moved to the start of first phase
+;//so that it overlaps with rapid motion to next track (optimization)
+
+RET

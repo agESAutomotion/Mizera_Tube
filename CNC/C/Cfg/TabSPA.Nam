@@ -1,0 +1,57 @@
+[PROMPT]
+KEY_TAB       =Dati Tavole
+
+TAB_T_KINELIST=0-Null, 3=Nutator
+TAB_T_KINE    =Tipo di cinematismo
+TAB_T_DSC     =Descrizione
+
+T_OART_X0       =Coordinata X primo pivot
+T_OART_Y0       =Coordinata Y primo pivot
+T_OART_Z0       =Coordinata Z primo pivot
+T_OART_ORIENT   =Orientamento asse Z tavola
+T_OART_FRAME_C  =Rotazione frame di riferimento Z (Y)
+T_OART_FRAME_B  =Rotazione frame di riferimento Y (P)
+T_OART_FRAME_A  =Rotazione frame di riferimento X (R)
+T_OART_EC       =Rotazione intorno all'asse Z
+T_OART_ECREV    =Inversione  verso attuatore rotazione
+T_OART_ECAX     =Attuatore rotazione intorno all'asse Z
+T_OART_X1       =Coordinata X secondo pivot
+T_OART_Y1       =Coordinata Y secondo pivot
+T_OART_TILT     =Angolo di basculamento
+T_OART_EB       =Rotazione intorno all'asse Y
+T_OART_EBREV    =Inversione  verso attuatore rotazione
+T_OART_EBAX     =Attuatore rotazione intorno all'asse Y
+T_OART_X2       =Coordinata X pezzo
+T_OART_Y2       =Coordinata Y pezzo
+T_OART_Z2       =Coordinata Z pezzo
+T_OART_CAMBER   =Angolo di camber
+T_OART_FRAME2_C =Rotazione frame di riferimento pezzo Z (Y)
+T_OART_FRAME2_B =Rotazione frame di riferimento pezzo Y (P)
+T_OART_FRAME2_A =Rotazione frame di riferimento pezzo X (R)
+
+[HELP]
+TAB_T_KINE    =Tipo di cinematismo
+
+T_OART_X0       =Coordinata X primo pivot
+T_OART_Y0       =Coordinata Y primo pivot
+T_OART_Z0       =Coordinata Z primo pivot
+T_OART_ORIENT   =Orientamento asse Z tavola
+T_OART_FRAME_C  =Rotazione frame di riferimento Z (Y)
+T_OART_FRAME_B  =Rotazione frame di riferimento Y (P)
+T_OART_FRAME_A  =Rotazione frame di riferimento X (R)
+T_OART_EC       =Rotazione intorno all'asse Z
+T_OART_ECREV    =Inversione  verso attuatore rotazione
+T_OART_ECAX     =Attuatore rotazione intorno all'asse Z
+T_OART_X1       =Coordinata X secondo pivot
+T_OART_Y1       =Coordinata Y secondo pivot
+T_OART_TILT     =Angolo di basculamento
+T_OART_EB       =Rotazione intorno all'asse Y
+T_OART_EBREV    =Inversione  verso attuatore rotazione
+T_OART_EBAX     =Attuatore rotazione intorno all'asse Y
+T_OART_X2       =Coordinata X pezzo
+T_OART_Y2       =Coordinata Y pezzo
+T_OART_Z2       =Coordinata Z pezzo
+T_OART_FRAME2_C =Rotazione frame di riferimento pezzo Z (Y)
+T_OART_FRAME2_B =Rotazione frame di riferimento pezzo Y (P)
+T_OART_FRAME2_A =Rotazione frame di riferimento pezzo X (R)
+

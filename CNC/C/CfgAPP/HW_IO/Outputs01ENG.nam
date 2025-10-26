@@ -1,0 +1,56 @@
+
+[KEYS]
+TITLE=Outputs test
+TXT0=IW0-IW1
+TXT1=IW4-IW5
+TXT2=IW510-IW500
+TXT3=Force inputs
+MSG3=Are you sure to force inputs ?
+TXT4=QW2-QW3
+TXT5=QW6-QW7
+TXT6=QW410
+TXT7=Release inputs
+TXT12=IO Help
+MSG14=Are you sure to force inputs ?
+
+[PROMPT]
+KEY_NODE=Node
+OUTPUTS01=Leaf
+lbOut1=Digital outputs (QW2-QW3)
+lb3=QW2.2  IPG laser switch (C1)
+lb1=QW2.0 cal. request 8030
+lb4=QW2.3 IPG laser reset (A4)
+lb5=QW2.4 IPG laser request (A1)
+lb6=QW2.5  IPG laser guide (A5)
+lb7=QW2.6
+lb8=QW2.7 IPG analog control (A6)
+lb9=QW2.8 IPG safety circuit
+lb10=QW2.9 IPG safety circuit reset
+lb11=QW2.10
+lb12=QW2.11
+lb13=QW2.12 Outp select procutter
+lb14=QW2.13 Ref travel procutter
+lb15=QW2.14 Automatic procutter
+lb2=QW2.1 strobe 8030
+lb16=QW2.15 Start aspiratore
+lb33=QW3.2 Blocca pallet 2 in MAC
+lb17=QW3.0 Blocca pallet 1 in MAC
+lb20=QW3.3 Sblocca pallet 2 in MAC
+lb21=QW3.4 Aspiratore zona 1
+lb22=QW3.5 Aspiratore zona 2
+lb23=QW3.6 Aspiratore zona 3
+lb24=QW3.7 Aspiratore zona 4
+lb25=QW3.8 Aspiratore zona 5
+lb26=QW3.9 Aspiratore zona 6
+lb27=QW3.10 Aspiratore zona 7
+lb28=QW3.11 Aspiratore zona 8
+lb29=QW3.12 Aspiratore zona 9
+lb30=QW3.13 Aspiratore zona 10
+lb31=QW3.14 Aspiratore zona 11
+lb18=QW3.1 Sblocca pallet 1 in MAC
+lb32=QW3.15 Aspiratore zona 12
+lbForcedOut=Outputs forced
+
+[STATUS]
+
+[HELP]

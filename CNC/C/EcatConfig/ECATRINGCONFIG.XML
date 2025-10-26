@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--KPA Studio EtherCAT version: 1.9.23.2 licensed to ESA GV_Studio_0-->
+<!--Copyright (c) 2005-2009 KOENIG Prozessautomatisierungs GmbH. All rights reserved.-->
+<EtherCATConfig>
+<Config>
+  <Master>
+    <NIC>NIC Fast Ethernet PCI Realtek RTL8139 Family - Miniport dell'Utilità di pianificazione pacchetti</NIC>
+    <MaxFrameSize>1514</MaxFrameSize>
+    <SeparateIOUpdate>0</SeparateIOUpdate>
+    <Info>
+      <Name><![CDATA[Master 1]]></Name>
+      <Destination>FFFFFFFFFFFF</Destination>
+      <Source>000000000000</Source>
+      <EtherType>a488</EtherType>
+    </Info>
+    <MailboxStates>
+      <StartAddr>4194304</StartAddr>
+        <Count>1</Count>
+    </MailboxStates>
+    <DC>
+      <ReferenceClock>1</ReferenceClock>
+      <Type>1</Type>
+      <MasterTimeAsRef>0</MasterTimeAsRef>
+    </DC>
+    <InitCmds>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <BeforeSlave>1</BeforeSlave>
+      <Comment><![CDATA[read slave count]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>7</Cmd>
+      <Adp>0</Adp>
+      <Ado>304</Ado>
+      <Data>0000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>PI</Transition>
+      <Transition>BI</Transition>
+      <Transition>SI</Transition>
+      <Transition>OI</Transition>
+      <BeforeSlave>1</BeforeSlave>
+      <Comment><![CDATA[clear fmmu]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>8</Cmd>
+      <Adp>0</Adp>
+      <Ado>1536</Ado>
+      <DataLength>256</DataLength>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <BeforeSlave>1</BeforeSlave>
+      <Comment><![CDATA[clear sm]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>8</Cmd>
+      <Adp>0</Adp>
+      <Ado>2048</Ado>
+      <DataLength>256</DataLength>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <BeforeSlave>1</BeforeSlave>
+      <Comment><![CDATA[clear dc system time]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>8</Cmd>
+      <Adp>0</Adp>
+      <Ado>2320</Ado>
+      <DataLength>8</DataLength>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <BeforeSlave>1</BeforeSlave>
+      <Comment><![CDATA[clear dc cycle cfg]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>8</Cmd>
+      <Adp>0</Adp>
+      <Ado>2433</Ado>
+      <Data>00</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <BeforeSlave>1</BeforeSlave>
+      <Comment><![CDATA[reset dc speed]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>8</Cmd>
+      <Adp>0</Adp>
+      <Ado>2352</Ado>
+      <Data>0010</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <BeforeSlave>1</BeforeSlave>
+      <Comment><![CDATA[configure dc filter]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>8</Cmd>
+      <Adp>0</Adp>
+      <Ado>2356</Ado>
+      <Data>000C</Data>
+    </InitCmd>
+    </InitCmds>
+  </Master>
+  <Slave Physics="YY" HotPlug="0" Segment="0" SegmentSubIndex="0">
+    <Info>
+      <Name><![CDATA[Slave 1]]></Name>
+      <PhysAddr>1001</PhysAddr>
+      <AutoIncAddr>0</AutoIncAddr>
+      <Physics>YY</Physics>
+        <VendorId>36</VendorId>
+        <ProductCode>2370564</ProductCode>
+        <RevisionNo>2</RevisionNo>
+        <SerialNo>1</SerialNo>
+        <ProductRevision>0036-0002-0000</ProductRevision>
+    </Info>
+    <ProcessData>
+      <Send>
+        <BitStart>0</BitStart>
+          <BitLength>48</BitLength>
+      </Send>
+      <Recv>
+        <BitStart>0</BitStart>
+          <BitLength>48</BitLength>
+      </Recv>
+    </ProcessData>
+    <Mailbox>
+      <Send>
+          <Start>6144</Start>
+          <Length>234</Length>
+      </Send>
+      <Recv>
+          <Start>6656</Start>
+          <Length>234</Length>
+        <StatusBitAddr>0</StatusBitAddr>
+      </Recv>
+        <Protocol>EoE</Protocol>
+      <Protocol>CoE</Protocol>
+    <CoE>
+      <InitCmds>
+            <InitCmd CompleteAccess="0">
+              <Transition>PS</Transition>
+              <Comment><![CDATA[clear pdo(1a00) entries]]></Comment>
+              <Timeout>6100</Timeout>
+              <Ccs>1</Ccs>
+              <Index>6656</Index>
+              <SubIndex>0</SubIndex>
+              <Data>00</Data>
+            </InitCmd>
+            <InitCmd CompleteAccess="0">
+              <Transition>PS</Transition>
+              <Comment><![CDATA[download pdo (0x1a00) entry 0x6041]]></Comment>
+              <Timeout>6100</Timeout>
+              <Ccs>1</Ccs>
+              <Index>6656</Index>
+              <SubIndex>1</SubIndex>
+              <Data>10004160</Data>
+            </InitCmd>
+            <InitCmd CompleteAccess="0">
+              <Transition>PS</Transition>
+              <Comment><![CDATA[download pdo (0x1a00) entry 0x6064]]></Comment>
+              <Timeout>6100</Timeout>
+              <Ccs>1</Ccs>
+              <Index>6656</Index>
+              <SubIndex>2</SubIndex>
+              <Data>20006460</Data>
+            </InitCmd>
+            <InitCmd CompleteAccess="0">
+              <Transition>PS</Transition>
+              <Comment><![CDATA[download pdo(1a00) entries count]]></Comment>
+              <Timeout>6100</Timeout>
+              <Ccs>1</Ccs>
+              <Index>6656</Index>
+              <SubIndex>0</SubIndex>
+              <Data>02</Data>
+            </InitCmd>
+            <InitCmd CompleteAccess="0">
+              <Transition>PS</Transition>
+              <Comment><![CDATA[clear pdo(1600) entries]]></Comment>
+              <Timeout>6100</Timeout>
+              <Ccs>1</Ccs>
+              <Index>5632</Index>
+              <SubIndex>0</SubIndex>
+              <Data>00</Data>
+            </InitCmd>
+            <InitCmd CompleteAccess="0">
+              <Transition>PS</Transition>
+              <Comment><![CDATA[download pdo (0x1600) entry 0x6040]]></Comment>
+              <Timeout>6100</Timeout>
+              <Ccs>1</Ccs>
+              <Index>5632</Index>
+              <SubIndex>1</SubIndex>
+              <Data>10004060</Data>
+            </InitCmd>
+            <InitCmd CompleteAccess="0">
+              <Transition>PS</Transition>
+              <Comment><![CDATA[download pdo (0x1600) entry 0x607a]]></Comment>
+              <Timeout>6100</Timeout>
+              <Ccs>1</Ccs>
+              <Index>5632</Index>
+              <SubIndex>2</SubIndex>
+              <Data>20007A60</Data>
+            </InitCmd>
+            <InitCmd CompleteAccess="0">
+              <Transition>PS</Transition>
+              <Comment><![CDATA[download pdo(1600) entries count]]></Comment>
+              <Timeout>6100</Timeout>
+              <Ccs>1</Ccs>
+              <Index>5632</Index>
+              <SubIndex>0</SubIndex>
+              <Data>02</Data>
+            </InitCmd>
+      </InitCmds>
+    </CoE>
+    </Mailbox>
+    <InitCmds>
+    <InitCmd>
+      <Transition>PI</Transition>
+      <Transition>BI</Transition>
+      <Transition>SI</Transition>
+      <Transition>OI</Transition>
+      <Transition>IP</Transition>
+      <Transition>IB</Transition>
+      <Comment><![CDATA[set device state to INIT]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>2</Cmd>
+      <Adp>0</Adp>
+      <Ado>288</Ado>
+	   <Data>1100</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>SI</Transition>
+      <Transition>OI</Transition>
+      <Comment><![CDATA[clear dc activation]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>2</Cmd>
+      <Adp>0</Adp>
+      <Ado>2432</Ado>
+      <Data>0000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>IB</Transition>
+      <Comment><![CDATA[check device state for INIT]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>1</Cmd>
+      <Adp>0</Adp>
+      <Ado>304</Ado>
+      <Data>0000</Data>
+      <Validate>
+        <Data>0100</Data>
+        <DataMask>0F00</DataMask>
+            <Timeout>5000</Timeout>
+      </Validate>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Comment><![CDATA[assign EEPROM to ECAT]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>2</Cmd>
+      <Adp>0</Adp>
+      <Ado>1280</Ado>
+      <Data>00</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Comment><![CDATA[check vendor id request]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>2</Cmd>
+      <Adp>0</Adp>
+      <Ado>1282</Ado>
+      <Data>000108000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Comment><![CDATA[check vendor id]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>1</Cmd>
+      <Adp>0</Adp>
+      <Ado>1288</Ado>
+      <Data>00000000</Data>
+      <Validate>
+            <Data>24000000</Data>
+        <Timeout>100</Timeout>
+      </Validate>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Comment><![CDATA[check product code request]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>2</Cmd>
+      <Adp>0</Adp>
+      <Ado>1282</Ado>
+      <Data>00010A000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Comment><![CDATA[check product code ]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>1</Cmd>
+      <Adp>0</Adp>
+      <Ado>1288</Ado>
+      <Data>00000000</Data>
+      <Validate>
+            <Data>042C2400</Data>
+        <Timeout>100</Timeout>
+      </Validate>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>IB</Transition>
+      <Comment><![CDATA[set physical address]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>2</Cmd>
+      <Adp>0</Adp>
+      <Ado>16</Ado>
+      <Data>E903</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>SP</Transition>
+      <Transition>OP</Transition>
+      <Comment><![CDATA[set device state to PREOP]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>288</Ado>
+          <Data>0200</Data>
+    </InitCmd>
+    <InitCmd>
+          <Transition>IP</Transition>
+          <Comment><![CDATA[set watchdog divider]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+          <Ado>1024</Ado>
+          <Data>C209</Data>
+    </InitCmd>
+    <InitCmd>
+          <Transition>IP</Transition>
+          <Comment><![CDATA[set PDI watchdog]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+          <Ado>1040</Ado>
+          <Data>0000</Data>
+    </InitCmd>
+    <InitCmd>
+          <Transition>IP</Transition>
+          <Comment><![CDATA[set SM watchdog]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+          <Ado>1056</Ado>
+          <Data>E803</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>IB</Transition>
+      <Transition>PI</Transition>
+      <Transition>SI</Transition>
+      <Transition>OI</Transition>
+      <BeforeSlave>0</BeforeSlave>
+      <Comment><![CDATA[clear sm 0 (mailbox out)]]></Comment>
+      <Requires>frame</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>2048</Ado>
+      <Data>0000000000000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>IB</Transition>
+      <Comment><![CDATA[set sm 0 (mailbox out)]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>2048</Ado>
+          <Data>0018EA0026000100</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>IB</Transition>
+      <Transition>PI</Transition>
+      <Transition>SI</Transition>
+      <Transition>OI</Transition>
+      <BeforeSlave>0</BeforeSlave>
+      <Comment><![CDATA[clear sm 1 (mailbox in)]]></Comment>
+      <Requires>frame</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>2056</Ado>
+      <Data>0000000000000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>IB</Transition>
+      <Comment><![CDATA[set sm 1 (mailbox in)]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>2056</Ado>
+          <Data>001AEA0022000100</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>SP</Transition>
+      <Transition>SI</Transition>
+      <Transition>OP</Transition>
+      <Transition>OI</Transition>
+      <Comment><![CDATA[clear sm 2 (output)]]></Comment>
+      <Requires>frame</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>2064</Ado>
+      <Data>0000000000000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>PS</Transition>
+      <Comment><![CDATA[set sm 2 (output)]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>2064</Ado>
+          <Data>0010060064000100</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>SP</Transition>
+      <Transition>SI</Transition>
+      <Transition>OP</Transition>
+      <Transition>OI</Transition>
+      <Comment><![CDATA[clear sm 3 (input)]]></Comment>
+      <Requires>frame</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>2072</Ado>
+      <Data>0000000000000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>PS</Transition>
+      <Comment><![CDATA[set sm 3 (input)]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>2072</Ado>
+          <Data>0011060020000100</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>SI</Transition>
+      <Transition>OI</Transition>
+          <Transition>PI</Transition>
+          <Transition>BI</Transition>
+          <Comment><![CDATA[clear fmmu 0 (mailbox state)]]></Comment>
+      <Requires>frame</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>1536</Ado>
+      <Data>00000000000000000000000000000000</Data>
+    </InitCmd>
+    <InitCmd>
+          <Transition>IP</Transition>
+          <Transition>IB</Transition>
+          <Comment><![CDATA[set fmmu 0 (mailbox state)]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>1536</Ado>
+          <Data>00004000010000000D08000101000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>SI</Transition>
+      <Transition>OI</Transition>
+      <Transition>SP</Transition>
+      <Transition>OP</Transition>
+          <Comment><![CDATA[clear fmmu 1 (output)]]></Comment>
+      <Requires>frame</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>1552</Ado>
+      <Data>00000000000000000000000000000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>PS</Transition>
+          <Comment><![CDATA[set fmmu 1 (output)]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>1552</Ado>
+          <Data>00200100060000070010000201000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>SI</Transition>
+      <Transition>OI</Transition>
+          <Transition>SP</Transition>
+          <Transition>OP</Transition>
+          <Comment><![CDATA[clear fmmu 2 (input)]]></Comment>
+      <Requires>frame</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>1568</Ado>
+      <Data>00000000000000000000000000000000</Data>
+    </InitCmd>
+    <InitCmd>
+          <Transition>PS</Transition>
+          <Comment><![CDATA[set fmmu 2 (input)]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>1568</Ado>
+          <Data>00100100060000070011000101000000</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>SP</Transition>
+      <Transition>OP</Transition>
+      <Comment><![CDATA[check device state for PREOP]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>4</Cmd>
+      <Adp>1001</Adp>
+      <Ado>304</Ado>
+      <Data>0000</Data>
+      <Validate>
+        <Data>0200</Data>
+        <DataMask>0F00</DataMask>
+            <Timeout>5000</Timeout>
+      </Validate>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>IB</Transition>
+      <Comment><![CDATA[assign EEPROM to PDI]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>1280</Ado>
+      <Data>01</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>II</Transition>
+      <Comment><![CDATA[assign EEPROM back to ECAT]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>2</Cmd>
+      <Adp>0</Adp>
+      <Ado>1280</Ado>
+      <Data>00</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Comment><![CDATA[set device state to PREOP]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>288</Ado>
+      <Data>0200</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Comment><![CDATA[check device state for PREOP]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>4</Cmd>
+      <Adp>1001</Adp>
+      <Ado>304</Ado>
+      <Data>0000</Data>
+      <Validate>
+        <Data>0200</Data>
+        <DataMask>1F00</DataMask>
+            <Timeout>5000</Timeout>
+      </Validate>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IP</Transition>
+      <Transition>BI</Transition>
+      <Comment><![CDATA[assign EEPROM back to ECAT]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>2</Cmd>
+      <Adp>0</Adp>
+      <Ado>1280</Ado>
+      <Data>00</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IB</Transition>
+      <Comment><![CDATA[set device state to BOOT]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+     <Ado>288</Ado>
+     <Data>0300</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>IB</Transition>
+      <Comment><![CDATA[check device state for BOOT]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>4</Cmd>
+      <Adp>1001</Adp>
+      <Ado>304</Ado>
+      <Data>0000</Data>
+      <Validate>
+        <Data>0300</Data>
+        <DataMask>0F00</DataMask>
+        <Timeout>1000</Timeout>
+      </Validate>
+    </InitCmd>
+    <InitCmd>
+      <Transition>SO</Transition>
+      <Comment><![CDATA[set device state to OP]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>288</Ado>
+      <Data>0800</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>SO</Transition>
+      <Comment><![CDATA[check device state for OP]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>4</Cmd>
+      <Adp>1001</Adp>
+      <Ado>304</Ado>
+      <Data>0000</Data>
+      <Validate>
+        <Data>0800</Data>
+        <DataMask>0F00</DataMask>
+            <Timeout>25000</Timeout>
+      </Validate>
+    </InitCmd>
+    <InitCmd>
+      <Transition>PS</Transition>
+      <Transition>OS</Transition>
+      <Comment><![CDATA[set device state to SAFEOP]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>5</Cmd>
+      <Adp>1001</Adp>
+      <Ado>288</Ado>
+      <Data>0400</Data>
+    </InitCmd>
+    <InitCmd>
+      <Transition>PS</Transition>
+      <Transition>OS</Transition>
+      <Comment><![CDATA[check device state for SAFEOP]]></Comment>
+      <Requires>cycle</Requires>
+      <Cmd>4</Cmd>
+      <Adp>1001</Adp>
+      <Ado>304</Ado>
+      <Data>0000</Data>
+      <Validate>
+        <Data>0400</Data>
+        <DataMask>1F00</DataMask>
+            <Timeout>500</Timeout>
+      </Validate>
+    </InitCmd>
+    </InitCmds>
+  </Slave>
+  <Cyclic>
+      <Frame CycleTimeFactor="0"><Cmd  >
+      <State>OP</State>
+      <State>SAFEOP</State>
+      <Comment><![CDATA[ LRD cyclic cmd ]]></Comment><Cmd>10</Cmd>
+<Addr>69632</Addr><MaxErrors>5</MaxErrors><InputDefaultData>000000000000</InputDefaultData>
+<InputDefaultDataMask>000000000000</InputDefaultDataMask>
+      <InputOffs>0</InputOffs>
+<DataLength>6</DataLength>
+<Cnt>1</Cnt>
+      <OwnerPhysAddr>1001</OwnerPhysAddr>
+    </Cmd>
+    <Cmd  >
+      <State>OP</State>
+      <State>SAFEOP</State>
+      <State>PREOP</State>
+      <Comment><![CDATA[ cyclic cmd (read Mailbox states) ]]></Comment><Cmd>10</Cmd>
+<Addr>4194304</Addr><InputOffs>6</InputOffs>
+      <DataLength>1</DataLength>
+<Cnt>1</Cnt>
+      <OwnerPhysAddr>1001</OwnerPhysAddr>
+    </Cmd>
+    <Cmd  >
+      <State>OP</State>
+      <State>SAFEOP</State>
+      <Comment><![CDATA[ LWR cyclic cmd ]]></Comment><Cmd>11</Cmd>
+<Addr>73728</Addr><MaxErrors>5</MaxErrors><OutputDefaultData>000000000000</OutputDefaultData>
+<OutputDefaultDataMask>000000000000</OutputDefaultDataMask>
+      <OutputOffs>0</OutputOffs>
+<DataLength>6</DataLength>
+<Cnt>1</Cnt>
+      <OwnerPhysAddr>1001</OwnerPhysAddr>
+    </Cmd>
+    </Frame>
+    </Cyclic>
+    <ProcessImage>
+      <Inputs>
+        <ByteSize>7</ByteSize>
+        <Variable slave_name="Slave 1">
+          <Name><![CDATA[Slave 1.Transmit PDO Mapping Parameter.CiA402: Statusword]]></Name>
+          <DataType>UINT</DataType>
+          <BitSize>16</BitSize>
+          <BitOffs>0</BitOffs>
+        </Variable>
+        <Variable slave_name="Slave 1">
+          <Name><![CDATA[Slave 1.Transmit PDO Mapping Parameter.CiA402: Position actual value]]></Name>
+          <DataType>DINT</DataType>
+          <BitSize>32</BitSize>
+          <BitOffs>16</BitOffs>
+        </Variable>
+      </Inputs>
+      <Outputs>
+        <ByteSize>6</ByteSize>
+        <Variable slave_name="Slave 1">
+          <Name><![CDATA[Slave 1.Receive PDO Mapping Parameter.CiA402: Controlword]]></Name>
+          <DataType>UINT</DataType>
+          <BitSize>16</BitSize>
+          <BitOffs>0</BitOffs>
+        </Variable>
+        <Variable slave_name="Slave 1">
+          <Name><![CDATA[Slave 1.Receive PDO Mapping Parameter.CiA402: Target position]]></Name>
+          <DataType>DINT</DataType>
+          <BitSize>32</BitSize>
+          <BitOffs>16</BitOffs>
+        </Variable>
+      </Outputs>
+    </ProcessImage>
+  <ExternalDrivers />
+</Config>
+</EtherCATConfig>

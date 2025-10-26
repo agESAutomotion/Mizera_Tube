@@ -1,0 +1,55 @@
+ [O] :G254
+;//Machine origin selection inside a part-program
+DBL orig_sel=VA14
+
+IF( ISQNAN(orig_sel) ) orig_sel=%IndexORG
+
+DBL sav_G70=XGET("@G70")
+G271
+
+IF( %cn[WHO()].rc[0].21 ) THEN
+    ;modo test: Verify o grafica
+    IF( %cn[WHO()].pc[14].25 == 0 ) THEN
+          ;Verify
+          orig_x=%funz[orig_sel].origprgX
+          orig_y=%funz[orig_sel].origprgY
+          orig_c=%funz[orig_sel].rotEA
+    ELSE
+          ;Grafica
+          ;//visualizza come una figura all'interno della stessa lastra
+          ;//(bisognerebbe inviare un'altra shape senza cancellare la prima...)
+          orig_x=%funz[orig_sel].origprgX-%funz[base_orig].origprgX
+          orig_y=%funz[orig_sel].origprgY-%funz[base_orig].origprgY
+          orig_c=%funz[orig_sel].rotEA-%funz[base_orig].rotEA
+    ENDIF
+ELSE
+    ;Esecuzione
+    orig_x=%funz[orig_sel].origprgX
+    orig_y=%funz[orig_sel].origprgY
+    orig_c=%funz[orig_sel].rotEA
+ENDIF
+
+IF( gTravE != 0 ) THEN
+    ;tubo
+    IF( tube_y ) THEN
+        G161 L(ml_usr_origin)     
+        G178 V(orig_y)    
+        G186 L(ml_usr_origin) B(-orig_c)   ;XXX verificare segni!!!
+    ELSE
+        G161 L(ml_usr_origin) X(orig_x)
+        ;G178 U(orig_x)
+        ;G178 X(orig_x)
+        G186 L(ml_usr_origin) A(-orig_c) 
+    ENDIF
+    G179 C(orig_c)
+ELSE
+    ;piano
+	G161 L(ml_usr_origin) X(orig_x) Y(orig_y) Z(orig_z)
+    ERROR(55) ;non consistente con tubo (G254)
+	G186 L(ml_usr_origin) C(orig_c)
+	G179 C(orig_c)
+ENDIF
+
+G(200+sav_G70)
+
+RET

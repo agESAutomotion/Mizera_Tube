@@ -1,0 +1,50 @@
+[STRUCT]
+KEYWORD {
+    if( @M99 == 1 ) {
+        KEY_CZO,czone,1,1;
+    }
+    if( @M99 == 2 ) {
+        KEY_CZO,czone,2,1;
+    }
+    if( @M99 == 3 ) {
+        KEY_CZO,czone,3,1;
+    }
+    if( @M99 == 4 ) {
+        KEY_CZO,czone,4,1;
+    }
+    if( @M99 == 5 ) {
+        KEY_CZO,czone,5,1;
+    }
+    if( @M99 == 6 ) {
+        KEY_CZO,czone,6,1;
+    }
+    if( @M99 == 7 ) {
+        KEY_CZO,czone,7,1;
+    }
+    if( @M99 == 8 ) {
+        KEY_CZO,czone,8,1;
+    }
+    if( @M99 == 8 ) {
+        KEY_CZO,czone,9,1;
+    }
+    if( @M99 == 10 ) {
+        KEY_CZO,czone,10,1;
+    }
+}
+
+
+
+#include "czo.str";
+
+
+[KEYS]
+CMD0  = DEFAULT
+CMD1  = DEFAULT
+CMD2  = DEFAULT
+CMD3  = DEFAULT
+CMD4  = DEFAULT
+CMD5  = DEFAULT
+
+CMD8=EXTCMD
+CODE8=LOAD_DATA_COMP_ZONE
+

@@ -1,0 +1,131 @@
+% Gestione liste (9999.PGM)
+;******************************************************************************
+; DATI GESTORE LISTA  (WlistMngt)
+;   %WlistMngt.wl_mngdwpar0 = numero linea attuale (vis o in esecuzione)
+;   %WlistMngt.wl_flag.1 = Refresh pagina WORLIST
+;   wl_dwpar8 = Repetition
+;
+; DATI LISTA (wlist)
+;   wl_endl   = Se=1 linea lista esclusa o gi� eseguita
+;******************************************************************************
+DBL dimX, dimY, origX, origY, origROT
+DBL i
+
+COPYRTOV(^%LSRPlcOp0)
+
+; Se lista non abilitata esci
+IF( %LSRPlcOp0.5 == 0 ) END
+
+cp_from_cststart = 0    ; cambio pallet se traccia iniziale diversa da zero
+cl_done = 1             ; Calibrazione capacitivo fatto
+cl_last_th = 0          ; Ultimo spessore utilizzato per la calibrazione
+wlist_skipm30 = 1       ; Non emettere M30
+wlist_stop_piece = 0    ; Per gestione STOP su FINE PEZZO
+
+; Disegna piano X/Y di lavoro
+;G2292 S0 X(CFRMM(%ax27.pa21/1000)) Y(CFRMM(MinQta_Y)) Z0 U(CFRMM(%ax27.pa22/1000)) V(CFRMM(%ax28.pa22/1000)) W10
+
+; Gestore lista
+FOR i=0 TO 19
+
+.begin
+    SYN
+    %WlistMngt.wl_Index = i
+	GRPQ[V] = 1
+    gOptimEnableG806 = 0
+    COPYRTOV(^%Wlist[i].wl_endl)
+    ;;;;COPYRTOV(^%Wlist[i].wl_parA) Fatto in MONITOR.INI !!!!!!!!!
+    COPYRTOV(^%WlistMngt.wl_mngdwpar0)
+
+    ; Se programma non terminato/non selezionato e programma esistente (nome valido)
+    IF( (%Wlist[i].wl_endl == 0) && (%Wlist[i].wl_parA[0] != 0) && (%Wlist[i].wl_dwpar9 > 0) ) THEN
+
+        ;**********************************************
+        ; Gestione stop a fine pezzo nel caso in cui
+        ; ho due lastre con 1 pezzo ciascuna, quindi
+        ; passo da pezzo1 geometria1 della prima allo
+        ; stesso pezzo1 e geometria1 della seconda
+        ;**********************************************
+        IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+            SYN
+            ; Se opzione abilitata (fine geometria o fine pezzo) forza una pausa
+            IF( (%PlcOp0.31) && (%LSRPlcOp0.19) && (wlist_stop_piece) ) THEN
+                G153 G0 Z((MaxQta_Z) - 10)      ;Posizione "Z" al finecorsa Software - 10 mm
+                $ FINE PEZZO: premi START per continuare...
+                M0
+                $
+            ENDIF
+
+            ; in RUN visualizza il pallet corrente
+            %WlistMngt.wl_mngdwpar0 = i
+
+        ENDIF
+        
+        IF( (%cn[WHO()].rc[0].21 == 0) || ((%cn[WHO()].rc[0].21 == 1) && ((i) == %WlistMngt.wl_mngdwpar0))  ) THEN
+
+            ; Richiamo programma
+            ; ====================
+            IF( i == 0 ) JSR %Wlist[i].wl_parA
+            IF( i == 1 ) JSR %Wlist[i].wl_parA
+            IF( i == 2 ) JSR %Wlist[i].wl_parA
+            IF( i == 3 ) JSR %Wlist[i].wl_parA
+            IF( i == 4 ) JSR %Wlist[i].wl_parA
+            IF( i == 5 ) JSR %Wlist[i].wl_parA
+            IF( i == 6 ) JSR %Wlist[i].wl_parA
+            IF( i == 7 ) JSR %Wlist[i].wl_parA
+            IF( i == 8 ) JSR %Wlist[i].wl_parA
+            IF( i == 9 ) JSR %Wlist[i].wl_parA
+            IF( i == 10 ) JSR %Wlist[i].wl_parA
+            IF( i == 11 ) JSR %Wlist[i].wl_parA
+            IF( i == 12 ) JSR %Wlist[i].wl_parA
+            IF( i == 13 ) JSR %Wlist[i].wl_parA
+            IF( i == 14 ) JSR %Wlist[i].wl_parA
+            IF( i == 15 ) JSR %Wlist[i].wl_parA
+            IF( i == 16 ) JSR %Wlist[i].wl_parA
+            IF( i == 17 ) JSR %Wlist[i].wl_parA
+            IF( i == 18 ) JSR %Wlist[i].wl_parA
+            IF( i == 19 ) JSR %Wlist[i].wl_parA
+            ; ====================
+        ENDIF
+       
+        IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+			
+            start_track = 0
+            ?%PEZZO = 0
+            ?%GEOMETRIA = 0
+            ?%R18=start_track
+        
+			G153 G0 Z((MaxQta_Z) - 10)      ;Posizione "Z" al finecorsa Software - 10 mm YANG
+			M720
+			M722
+			M981
+			M702 ; aidDisengage 
+            $ tube cut done: press START to continue...
+            M0
+            $
+			
+            SYN
+            ; Repetition of program
+            IF( %Wlist[i].wl_dwpar9 >= 1 ) %Wlist[i].wl_dwpar9 = %Wlist[i].wl_dwpar9 - 1  
+            SYN
+            IF( %Wlist[i].wl_dwpar9 >= 1 ) THEN
+                POP(3)
+                JMP .begin
+            ENDIF
+        
+            wlist_stop_piece = 1
+
+            ; x gestione calibrazione
+            SYN
+            cl_last_th = %TabLsr1.L_Tickness
+            cl_done = 0
+
+            ?%Wlist[i].wl_endl = 1
+        ENDIF
+    ENDIF
+ENDFOR
+
+wlist_skipm30 = 0
+M2                ; It is important to unlock the gearing NO REMOVE
+
+END

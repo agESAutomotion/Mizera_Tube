@@ -1,0 +1,85 @@
+[PROMPT]
+KEY_UT        =Tool Data (ver. 1.5)
+
+UT_TYPE    =Type of Tool
+DU_DESC    =Description
+
+PT_LUNGZ   =Tool Z Length[mm]
+PT_USLUNGZ =Z Length Wear[mm]
+PT_PRES    =Tool Preset
+PT_VITA    =Tool Life
+PT_THDLUNGZ =THD Tool Z Length[mm]
+
+FC_LUNGZ   =Tool Z Length[mm]
+FC_RAD     =Tool Radius[mm]
+FC_PRES    =Tool Preset
+FC_VITA    =Tool Life
+FC_USLUNGZ =Z Length Wear[mm]
+FC_USRAD   =Radius Wear[mm]
+FC_THDLUNGZ =THD Tool Z Length[mm]
+
+FA_LUNGZ   =Tool Z Length[mm]
+FA_LUNGX   =Tool X Length[mm]
+FA_RAD     =Tool Radius[mm]
+FA_PRES    =Tool Preset
+FA_VITA    =Tool Life
+FA_USLUNGZ =Z Length Wear[mm]
+FA_USLUNGX =X Length Wear[mm]
+FA_USRAD   =Radius Wear[mm]
+FA_THDLUNGZ =THD Tool Z Length[mm]
+FA_THDLUNGX =THD Tool X Length[mm]
+
+TN_LUNGZ   =Tool Z Length[mm]
+TN_LUNGX   =Tool X Length[mm]
+TN_RAD     =Tool Radius[mm]
+TN_ANG_A   =Clearance angle A
+TN_ANG_B   =Clearance angle B
+TN_PRES    =Tool Preset
+TN_VITA    =Tool Life
+TN_USLUNGZ =Z Length Wear[mm]
+TN_USLUNGX =X Length Wear[mm]
+TN_USRAD   =Radius Wear[mm]
+TN_THDLUNGZ =THD Tool Z Length[mm]
+TN_THDLUNGX =THD Tool X Length[mm]
+TN_THDLUNGY =THD Tool Y Length[mm]
+
+VITA_PREAL =Tool wearing out warning
+
+[HELP]
+UT_TYPE       =Type of Tool: 1-Fluted Mill 2-Angular Mill 3-Lathe 4-Boring bit
+
+PT_LUNGZ   =Tool Z length: Tool length in the direction square to the selected plane
+PT_USLUNGZ =Z length wear
+PT_PRES    =Tool Preset
+PT_VITA    =Tool Life
+
+FC_LUNGZ   =Tool Z length: Tool length in the direction square to the selected plane
+FC_RAD     =Tool radius: The tool radius allows the real dimensions of the tool to be considered during the machining phase
+FC_PRES    =Tool Preset
+FC_VITA    =Tool Life
+FC_USLUNGZ =Z length wear
+FC_USRAD   =Radius wear
+
+FA_LUNGZ   =Tool Z length: Tool length in the direction square to the selected plane
+FA_LUNGX   =Tool X length: Tool offset on machining plane
+FA_RAD     =Tool radius:The tool radius allows the real dimension of the tool to be considered during the machining phase
+FA_PRES    =Tool Preset
+FA_VITA    =Tool Life
+FA_USLUNGZ =Z length wear
+FA_USLUNGX =X length wear
+FA_USRAD   =Radius wear
+
+TN_LUNGZ   =Tool Z length: Tool length in the direction square to the selected plane
+TN_LUNGX   =Tool X length: Tool offset on the machining plane
+TN_RAD     =Tool radius: The tool radius allows the real dimension of the tool to be considered during the machining phase
+TN_ANG_A   =Clearance angle A
+TN_ANG_B   =Clearance angle B
+TN_PRES    =Preset
+TN_VITA    =Tool life
+TN_USLUNGZ =Z length wear
+TN_USLUNGX =X length wear
+TN_USRAD   =Radius wear
+
+VITA_PREAL =Tool wearing out warning
+
+

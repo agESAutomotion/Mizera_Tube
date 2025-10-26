@@ -1,0 +1,91 @@
+[STRUCT]
+KEYWORD (par.dat) {
+        KEY_APPLPAR;
+        KEY_SYS;
+        KEY_ORG,cn,cg0;
+        KEY_TWI,twi,1,16;
+        KEY_THD,thd,1,10;
+        KEY_CED,ced,1,50;
+        KEY_TAB,tab,1,10;
+        KEY_GORG,gorg,1,10;
+        KEY_CZO,czone,1,10;
+        KEY_VRTC;
+        KEY_USRDLL,UsrDll,8;
+///     KEY_GANTRY,gantry,2;
+        KEY_PLC_TBI;
+        KEY_PLCOPT1;
+        KEY_COSTK;
+        KEY_LSROPT;
+        KEY_LSRCOSTK;
+//        KEY_LSROPTUSR;
+//        KEY_LSRCOSTKUSR;
+        KEY_SAVE_PAR;
+        KEY_USR;
+
+}
+
+#include "Userdll.str"
+#include "org.str"
+#include "twi.str";
+#include "thd.str";
+#include "ced.str";
+#include "tab.str";
+#include "gorg.str"
+#include "czo.str";
+#include "vrtc.str";
+#include "gantry.str";
+#include "PlcTabInterp.str";
+#include "aCFGpar.str"
+#include "lsrCFGpar.str"
+#include "lsrKuser.str"
+#include "Quick_apa.str";
+#include "Applpar.str";
+#include "Ecat.str"
+#include "SavePar.str"
+#include "ParUsr.str"
+
+
+
+KEY_SYS {
+        KEY_CONFGEN;
+        KEY_CONFCHAN,cn,cg0;
+        KEY_PARCHAN,cn,cg0;
+        KEY_FDC,cn,cg0;
+        KEY_PARAX,ax,cg1;
+        KEY_CONFAX,ax,cg1;
+        KEY_ECAT;
+        KEY_CAN;
+}
+
+#include "cnfge.str";
+#include "CnfPLC.str";
+#include "cnfch.str"
+#include "parch.str"
+#include "fdc.str"
+#include "cnfax.str"
+#include "parax.str"
+#include "dgt.str"
+#include "can.str"
+
+
+[KEYS]
+CMD0  = DEFAULT
+CMD1  = DEFAULT
+CMD2  = DEFAULT
+CMD3  = DEFAULT
+CMD4  = DEFAULT
+CMD5  = DEFAULT
+CMD6  = DEFAULT
+CMD7  = DEFAULT
+
+CMD8=EXTCMD
+CODE8=LOAD_DATA_COMP_ZONE
+
+// Seleziona il file MAP (XML) per drive 
+// Ethercat
+CMD40=LOADPGM
+FILE40=
+EXT40=xml
+ADR40=xmlDriveConf
+PATH40=
+NUM40=0

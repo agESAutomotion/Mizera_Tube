@@ -1,0 +1,189 @@
+*******************************************************************************
+*   SpindFB.plc
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "DynMng.plc"
+
+VAR
+#include "Cnc.inc"
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+*******************************************************************************
+*  FB chuck open close management
+*  ---> The function block for pressure holding chuck
+*******************************************************************************
+FUNCTION_BLOCK SPINDLE
+
+VAR_INPUT
+xEmerg:             BOOL;
+xProgRun:           BOOL;
+xAutoClose:         BOOL;
+xAutoOpen:          BOOL;
+xManualClose:       BOOL;
+xManualOpen:        BOOL;
+xSpOpen:            BOOL;            * Sensor open
+xSpClose:           BOOL;            * Sensor close
+xCmdTime:           DWORD;           * Pressure holding time    
+xTimeout:           DWORD;    
+     
+xThickness:         DWORD;
+xResOut:            DWORD;
+xIndGraphPress:     DWORD;
+xFeedbkPress:       DWORD;
+END_VAR
+
+
+VAR_OUTPUT
+yOpen:              BOOL;
+yClose:             BOOL;            * NOT USED
+yBrake:             BOOL;
+yTimeout:           BOOL;
+yPressAlm:          BOOL;
+
+yAnOutPress:        DWORD;           * analog 
+yOutPressBar:       DWORD;           * [mbar]
+yActualPressFeedbk: DWORD;           * [bar]
+END_VAR
+
+VAR
+Appoggio:           BOOL;
+req_open:           BOOL; 
+req_close:          BOOL;
+
+InitOpen:           BOOL;
+InitClosed:         BOOL;
+Open:               BOOL;
+Close:              BOOL;
+
+R_TRIG_REQ_OP:      R_TRIG;
+R_TRIG_REQ_CL:      R_TRIG;
+R_TRIG_REQ_OP_AUT:  R_TRIG;
+R_TRIG_REQ_CL_AUT:  R_TRIG;
+
+TON_ALARM_TIMEOUT:  TON;
+TON_ALARM_TIMEOUT1: TON;
+TON_OPEN:           TON;
+TON_CLOSE:          TON;
+
+FindPress:    LINEAR_CALC;
+END_VAR
+
+* Init Condition
+
+LD   ON_ONE_SCAN
+AND  xSpOpen 
+S    InitOpen
+
+LD   ON_ONE_SCAN
+ANDN xSpOpen 
+S    InitClosed
+
+*  Command 
+
+CAL  R_TRIG_REQ_OP (CLK:=xManualOpen)
+CAL  R_TRIG_REQ_OP_AUT (CLK:=xAutoOpen)
+
+LD   R_TRIG_REQ_OP.Q
+OR   InitOpen
+ANDN xProgRun
+OR   xAutoOpen
+*ANDN xEmerg 
+S    req_open
+
+CAL  R_TRIG_REQ_CL (CLK:=xManualClose)
+CAL  R_TRIG_REQ_CL_AUT (CLK:=xAutoClose)
+
+LD   R_TRIG_REQ_CL.Q
+OR   InitClosed
+ANDN xProgRun
+OR   xAutoClose
+*ANDN xEmerg 
+R    req_open
+
+**********************************************
+* Output
+
+LDN  xEmerg
+ST   yBrake
+
+LD   req_open 
+JMPCN no_open_req
+     LD   ALWAYS_ONE
+     S    Open
+     R    Close
+     R    InitOpen
+     JMP  no_close_req
+no_open_req:
+     LD   ALWAYS_ONE
+     S    Close
+     R    InitClosed
+     R    Open
+no_close_req: 
+
+LD   Open
+ANDN R_TRIG_REQ_OP.Q
+ANDN R_TRIG_REQ_OP_AUT.Q
+ST   yOpen 
+CAL  TON_ALARM_TIMEOUT (IN:=yOpen,PT:=xTimeout)
+
+LD   Close
+ANDN R_TRIG_REQ_CL.Q
+ANDN R_TRIG_REQ_CL_AUT.Q
+ST   yClose
+CAL  TON_ALARM_TIMEOUT1 (IN:=yClose,PT:=xTimeout)
+
+LD   TON_ALARM_TIMEOUT.Q
+ANDN xSpOpen
+OR(   
+LD   TON_ALARM_TIMEOUT1.Q
+ANDN xSpClose
+)
+ST   yTimeout
+
+* Close Pressure set
+
+LD   xThickness
+ST   FindPress.xInput
+
+LD   xIndGraphPress
+ST   FindPress.xIndex
+
+CAL  FindPress
+
+LD   FindPress.yResult
+MUL  xResOut
+DIV  10000          *10V
+ST   yAnOutPress
+
+LD   FindPress.yResult
+ST   yOutPressBar   * [mbar]
+
+************************************************************
+* Pressure control
+
+LD   xFeedbkPress
+MUL  10000
+DIV  4095
+ST   yActualPressFeedbk    
+
+
+LD   FindPress.yResult
+GT   (
+LD   yActualPressFeedbk
+ADD  500
+)
+OR  (
+LD   FindPress.yResult
+LT   (
+LD   yActualPressFeedbk
+SUB  500
+)
+)
+ST   yPressAlm
+
+END_FUNCTION_BLOCK

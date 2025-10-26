@@ -1,0 +1,36 @@
+[PROMPT]
+KEY_THD       =刀套数据
+
+THD_Z0        =把坐标增加到  Z
+THD_C         =以 Z 轴旋转
+THD_FLG       =转换类型
+THD_X1        =X 支点坐标
+THD_Y1        =Y 支点坐标
+THD_B         =以 Y 轴旋转
+THD_X2        =刀具 X 坐标
+THD_Z2        =刀具 Z 坐标
+THD_DSC       =Description
+
+THD_MAXRPM    =最大旋转速率
+THD_REV       =反向
+
+THD_IDX       =刀具号索引
+THD_CONE      =Cone identif. for tool change
+
+
+[HELP]
+THD_Z0        =Coordinate of the pivot which adds to the Z coordinate of the spindle center point
+THD_C         =Rotation around Z axis belonging to the reference system which has its origin in the spindle center point
+THD_FLG       =Conversion type flag:  (1) Rotation around Z axis comes first, then pivot XY translation is accomplished -or- (2) Pivot XY translation comes first, then rotation around Z axis is accomplished (suggested).
+THD_X1        =X coordinate of the pivot measured on a reference system which has its origin in the tool holder center point
+THD_Y1        =Y coordinate of the pivot measured on a reference system which has its origin in the tool holder center point
+THD_B         =Rotation around Y' axis belonging to the reference system which has its origin in PIVOT1
+THD_X2        =X coordinate of tool base measured on a reference system which has its origin in PIVOT1
+THD_Z2        =Z coordinate of tool base measured on a reference system which has its origin in PIVOT1
+
+THD_MAXRPM    =Maximum rpm rate
+THD_REV       =Transf. with rot. direction reversal
+
+THD_IDX       =Tool descriptor index
+THD_CONE      =Tool change coupling cone identifier
+

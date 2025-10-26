@@ -1,0 +1,55 @@
+: 
+;============================================================================
+; M701 - BlendSwitch (Unloader Side), predispone asse per inseguire tubo
+;============================================================================
+IF( %cn[WHO()].rc[0].21 ) RET           
+DBL Z_Geared = 0 
+
+;============================================================================
+; Bring the lifter kinematics in contact with the tube (Virtual X CN5)
+; ---> SetupAidsDone in "setup_aids_poly.cfs" AND "setup_aids.cfs" 
+;============================================================================
+IF( !SetupAidsDone ) JSR "setup_aids_poly.cfs" 
+
+;============================================================================
+; Initialization G4011 T36 with proper supports positions
+; Se asse Z agganciato lo sgancio e poi in seguito lo riaggancio
+; ---> CouplingFollowEn in "aidEngageUnload.cfs"
+;============================================================================
+IF( !CouplingFollowEn ) THEN
+    SYN
+	Z_Geared = %ax[AXIDX(3,Z)].ra8.14
+    IF( Z_Geared ) THEN
+        G4005 S(AXIDX(3,Z))
+        G4099
+    ENDIF
+	
+	; Parking Both Horizontal and Vertical Unloading Side Supports
+	?%UNLOADER.boolean.6 = 1 
+    SYN
+    IF (AEXISTS(8,Z)) AWAIT(ABS(L_COM_PrkPos) - (%ax[AXIDX(8,Z)].ra24 / 1000) < 0.1)
+    IF (AEXISTS(8,Y)) AWAIT(ABS(L_COM_PrkPos) - (%ax[AXIDX(8,Y)].ra24 / 1000) < 0.1)
+    IF (AEXISTS(8,U)) AWAIT(ABS(L_COM_PrkPos) - (%ax[AXIDX(8,U)].ra24 / 1000) < 0.1)
+    IF (AEXISTS(8,V)) AWAIT(ABS(L_COM_PrkPos) - (%ax[AXIDX(8,V)].ra24 / 1000) < 0.1)
+    IF (AEXISTS(8,W)) AWAIT(ABS(L_COM_PrkPos) - (%ax[AXIDX(8,W)].ra24 / 1000) < 0.1)
+    
+    IF (AEXISTS(7,Z)) AWAIT(%ax[AXIDX(7,Z)].pa22 / 1000 - (%ax[AXIDX(7,Z)].ra24 / 1000) < 0.1)
+    IF (AEXISTS(7,U)) AWAIT(%ax[AXIDX(7,U)].pa22 / 1000 - (%ax[AXIDX(7,U)].ra24 / 1000) < 0.1)
+    IF (AEXISTS(7,V)) AWAIT(%ax[AXIDX(7,V)].pa22 / 1000 - (%ax[AXIDX(7,V)].ra24 / 1000) < 0.1)
+    IF (AEXISTS(7,W)) AWAIT(%ax[AXIDX(7,W)].pa22 / 1000 - (%ax[AXIDX(7,W)].ra24 / 1000) < 0.1)
+    SYN
+    ?%UNLOADER.boolean.6 = 0
+	
+	IF (AEXISTS(7,Z)) JSR "aidEngageUnHor.cfs"
+    JSR "aidEngageUnload.cfs" 
+
+    SYN
+    IF( Z_Geared ) THEN
+        G153
+        G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+        G152
+        G4099
+    ENDIF
+ENDIF
+
+RET

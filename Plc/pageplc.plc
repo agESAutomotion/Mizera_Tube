@@ -1,0 +1,54 @@
+#include "iol.inc"
+
+VAR
+appoggio:        BOOL;
+TP_Tab_Note:     TP;
+END_VAR
+
+*/ pop out page to select mode after reset */ 
+
+FUNCTION PAGE_PLC
+
+LD     HMI_PagePop
+ANDN   %PLCFLAGS.8
+ANDN(
+LD     %Uipl.Page
+EQ     171501    
+)
+JMPCN  POP_WIND_STATE
+LD     171501
+ST     %PlcPage
+
+LD     1
+S      %ChangePlcPageFlags.3
+
+LD     1400
+ST     %WidthUiplDlg
+
+LD     400
+ST     %HeightUiplDlg
+
+LD     1
+ST     %ChangePlcPage
+JMPC   COM_WIND_STATE
+POP_WIND_STATE:
+LD     0
+ST     %ChangePlcPage
+COM_WIND_STATE:
+
+LDN    %cn0.rc8.0
+JMPCN  PGMNORUNNING
+LD     %PLCFLAGS.0
+ST     Gui_btn_NoGear
+ST     Gui_btn_Gear 
+ST     HMI_PagePop
+PGMNORUNNING:
+
+LD     %Uipl.Page
+EQ     171501
+JMPCN  CLRPAGEREQ
+LD     %PLCFLAGS.0     
+ST     HMI_PagePop
+CLRPAGEREQ:
+   
+END_FUNCTION

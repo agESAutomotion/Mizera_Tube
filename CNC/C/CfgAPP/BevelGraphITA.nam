@@ -1,0 +1,22 @@
+
+[KEYS]
+TITLE=Grafico Smusso
+
+[PROMPT]
+KEY_NODE=Nodo  
+GRAPH3=Aspirazione  
+GroupBox=Grafico di Calibrazione Angolo 1  
+graph1=Smusso 0  
+graph2=Smusso 15  
+graph3=Smusso 30  
+graph4=Smusso 45  
+GroupBox1=Grafico di Calibrazione Angolo 2  
+graph5=Smusso 0  
+graph6=Smusso 15  
+graph7=Smusso 30  
+graph8=Smusso 45  
+
+[STATUS]
+
+[HELP]
+

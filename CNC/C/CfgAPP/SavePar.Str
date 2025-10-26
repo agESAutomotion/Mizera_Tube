@@ -1,0 +1,38 @@
+[STRUCT]
+
+KEY_SAVE_PAR {
+    VRTCTAB;
+//    RASTER_PRINT;
+    REG_CHECK2;
+    PWMLIN;
+    POWLIN;
+    GASLIN;
+    GASLIN2;
+    FOCLIN;
+    TABPIPEWEIGHT;
+    CALIB_CHECKB;
+    CALIB_CHECK;
+    GRAPHSIDEPOT;
+    GRAPHPRESSMOBILE;
+    GRAPHPRESSFIX;
+    PIPECALIBRATION;
+}
+
+#include "VrtcTab.str"
+#include "Reg_check2_new.str"
+//#include "Raster.str"
+#include "Calib_checkB.str"
+#include "Calib_check.str"
+#include "PWMlin.str"
+#include "POWlin.str"
+#include "GASlin.str"
+#include "GASlin2.str"
+#include "FOClin.str"
+#include "TabPipeWeight.str"
+#include "GraphMobPotDiamYZ.str"
+#include "GraphFixPotDiamYZ.str"
+#include "GraphPressMobile.str"
+#include "GraphPressFix.str"
+#include "PipeCalibration.str"
+
+[KEYS]

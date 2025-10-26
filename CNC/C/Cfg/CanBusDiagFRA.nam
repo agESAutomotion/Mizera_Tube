@@ -1,0 +1,15 @@
+
+
+[PROMPT]
+KEY_CANDIAG=Bus Diag.
+LBL_BD_COBID=Node address
+LBL_BD_DEVNAME=Device name
+LBL_BD_HWVER=HW Version
+LBL_BD_SWVER=SW Version
+LBL_BD_SERNUM=Serial Number
+LBL_BD_CTRLWORD=Ctrl Word
+LBL_BD_STATUSWORD=Status Word
+
+[STATUS]
+
+[HELP]

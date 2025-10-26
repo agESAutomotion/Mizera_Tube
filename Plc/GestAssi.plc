@@ -1,0 +1,148 @@
+*******************************************************************************
+*   GESTASSI.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+
+TOF_AxStop: TOF;    *Ritardo diseccitazione Assi Fermi
+
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+*******************************************************************************
+*   * Gestione Segnali assi
+*******************************************************************************
+FUNCTION Gest_Assi 
+
+
+*******************************************************************************
+*   Gestione segnali asse X1
+*******************************************************************************
+* Richiesta ordine di moto asse X1
+LD   %ax27.ra3.10           * Anello di regolazione attivo
+AND  %ax27.ra3.13           * Ordine di moto
+ST   Ordine_Moto_X1                ** M71.0 Ordine di moto asse X1
+
+* Moto asse X+
+LD   Ordine_Moto_X1                ** M71.0 Ordine di moto asse X1
+ANDN %ax27.ra3.0            * Asse fermo teorico
+AND  %ax27.ra3.2            * Direzione moto asse+
+ANDN AsseX1_Moto_neg               ** M71.2 Asse X1 in moto -
+ST   AsseX1_Moto_pos               ** M71.1 Asse X1 in moto +
+
+* Moto asse X-
+LD   Ordine_Moto_X1                ** M71.0 Ordine di moto asse X1
+ANDN %ax27.ra3.0            * Asse fermo teorico
+ANDN %ax27.ra3.2            * Direzione moto asse+
+ANDN AsseX1_Moto_pos               ** M71.1 Asse X1 in moto +
+ST   AsseX1_Moto_neg               ** M71.2 Asse X1 in moto -
+
+
+*******************************************************************************
+*   Gestione segnali asse Y1
+*******************************************************************************
+* Richiesta ordine di moto asse Y1
+LD   %ax28.ra3.10           * Anello di regolazione attivo
+AND  %ax28.ra3.13           * Ordine di moto
+ST   Ordine_Moto_Y1                ** M71.8 Ordine di moto asse Y1
+
+* Moto asse Y+
+LD   Ordine_Moto_Y1                ** M71.8 Ordine di moto asse Y1
+ANDN %ax28.ra3.0            * Asse fermo teorico
+AND  %ax28.ra3.2            * Direzione moto asse+
+ANDN AsseY1_Moto_neg               ** M71.10 Asse Y1 in moto -
+ST   AsseY1_Moto_pos               ** M71.9 Asse Y1 in moto +
+
+* Moto asse Y-
+LD   Ordine_Moto_Y1                ** M71.8 Ordine di moto asse Y1
+ANDN %ax28.ra3.0            * Asse fermo teorico
+ANDN %ax28.ra3.2            * Direzione moto asse+
+ANDN AsseY1_Moto_pos               ** M71.9 Asse Y1 in moto +
+ST   AsseY1_Moto_neg               ** M71.10 Asse Y1 in moto -
+
+
+*******************************************************************************
+*   Gestione segnali asse Z1
+*******************************************************************************
+* Richiesta ordine di moto asse Z1
+LD   %ax29.ra3.10           * Anello di regolazione attivo
+AND  %ax29.ra3.13           * Ordine di moto
+ST   Ordine_Moto_Z1                ** M71.16 Ordine di moto asse Z1
+
+* Moto asse Z+
+LD   Ordine_Moto_Z1                ** M71.16 Ordine di moto asse Z1
+ANDN %ax29.ra3.0            * Asse fermo teorico
+AND  %ax29.ra3.2            * Direzione moto asse+
+ANDN AsseZ1_Moto_neg               ** M71.18 Asse Z1 in moto -
+ST   AsseZ1_Moto_pos               ** M71.17 Asse Z1 in moto +
+
+* Moto asse Z-
+LD   Ordine_Moto_Z1                ** M71.16 Ordine di moto asse Z1
+ANDN %ax29.ra3.0            * Asse fermo teorico
+ANDN %ax29.ra3.2            * Direzione moto asse+
+ANDN AsseZ1_Moto_pos               ** M71.17 Asse Z1 in moto +
+ST   AsseZ1_Moto_neg               ** M71.18 Asse Z1 in moto -
+
+
+*******************************************************************************
+*   Posizione sicura Asse Z per moto assi
+*******************************************************************************
+LD   %ax29.ra4              ** Quota asse Z
+GT   %LSRCostK48            ** Valore quota sicurezza asse Z in pagina video
+AND  %ax29.ra3.14           * ra3.14  Asse Z tarato
+ST   Ax_Z1_posiz_OK                ** M74.7 Asse Z1 in posizione di sicurezza
+
+LD   MACCH_IN_AUTO                 ** M100.25 SELEZIONE MACCHINA IN AUTOMATICO
+ANDN PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+OR   MACCH_IN_MANUALE              ** M100.24 SELEZIONE MACCHINA IN MANUALE
+ANDN PLC_SEL_REF                   ** ui16.1 Selezione Modo REF da Plc
+ANDN Ax_Z1_posiz_OK                ** M74.7 Asse Z1 in posizione di sicurezza
+ST   BlcAvX1_Z1_no_OK              ** M74.2 Blocco avanz. asse X1 per Asse Z1 non posiz. OK
+ST   BlcAvY1_Z1_no_OK              ** M74.5 Blocco avanz. asse Y per Asse Z non posiz. OK
+
+LD   BlcAvX1_Z1_no_OK              ** M74.2 Blocco avanz. asse X1 per Asse Z1 non posiz. OK
+AND  %ax27.ra3.13           ** X1 Ordine di moto +\-
+ST   %PLCmsg4.12            ** Plc Msg 140 Blocco Asse X1:Asse Z1 non in posizione di sicurezza
+
+LD   BlcAvY1_Z1_no_OK              ** M74.5 Blocco avanz. asse Y per Asse Z non posiz. OK
+AND  %ax28.ra3.13           * Y1 Ordine di moto +\-
+ST   %PLCmsg4.16            ** Plc Msg 144 Blocco Asse Y1:Asse Z1 non in posizione di sicurezza
+
+
+*******************************************************************************
+*   Blocco Avanzamento X1/Y1: Sensore capacitivo in contatto con la lamiera
+*******************************************************************************
+LD   %PLCerr5.4             **PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
+OR   %PLCerr5.5             **PLC Err 165 Body touch (A11=1, A14=1, A15=0 in normal operation)
+ANDN GEN_REF_RUN                   ** M100.16 Ciclo di Reference GENERALE in corso
+ST   BlcAvX1_Sens_Capac            ** M74.3 Blocco avanz. asse X1 Sens. Capacitivo in contatto con la lamiera
+ST   BlcAvY1_Sens_Capac            ** M74.6 Blocco avanz. asse Y Sens. Capacitivo in contatto con la lamiera
+
+*******************************************************************************
+*   Blocco avanzamento X1/Y1
+*******************************************************************************
+LD   BL_AV_ASSI_X_OVR              ** M74.8 Blocco avanzamento assi dopo Override=0 o NC_STOP
+ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+OR   BlcAvX1_Z1_no_OK              ** M74.2 Blocco avanz. asse X1 per Asse Z1 non posiz. OK
+OR   BlcAvX1_Sens_Capac            ** M74.3 Blocco avanz. asse X1 Sens. Capacitivo in contatto con la lamiera
+OR   BlcAvY1_Sens_Capac            ** M74.6 Blocco avanz. asse Y Sens. Capacitivo in contatto con la lamiera
+ST   BlcAvX1_user                  ** M74.0 Blocco avanzamento asse X1 da user.plc
+ST   BlcAvY1_user                  ** M74.4 Blocco avanzamento asse Y da user.plc
+
+
+****************************************************************************************************
+*   Segnale Assi Fermi
+****************************************************************************************************
+CAL  TOF_AxStop(IN=AxStopSincGRP,PT=50) ** Ritardo diseccitazione Assi Fermi
+
+LD   TOF_AxStop.Q
+ST   AxStop_ForUser                ** (gPlc13.14) Info Assi fermi a User
+
+END_FUNCTION

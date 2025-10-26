@@ -1,0 +1,238 @@
+%
+;// =======================
+;// rasterscansimple test program
+;// =======================
+
+;// PARAMETERS
+;// %ax5.ra119                      latency timer (0=disable taio)
+
+;// LOGICAL INTERFACES
+;// %C124.2                         application turn raster mode ON
+;// %C125.2                         application raster mode is ON
+
+COPYRTOV(^%Raster_Param.dwWidthImage)
+COPYRTOV(^%Raster_Param.dwHeightImage)
+
+G650 T3 W8 
+G806 T3 N1 D1 H1 
+
+DBL feed = feed1
+DBL isAntiAliasing = 1
+DBL isDebugSaving = 0
+DBL isLogEnabled = 0
+DBL isVerticalScan = %RasterParam0
+DBL isRotated = %Raster_Param.dwRasterFlags.0
+
+IF (!%PLCFLAGS.16) isDebugSaving = 0
+IF (!%PLCFLAGS.16) isLogEnabled = 0
+
+DBL r
+DBL x, y
+DBL i
+
+;// RASTER SUBROUTINE
+;// input parameters
+DBL scanX, scanY, scanI, scanJ
+;// configuration
+DBL lead = %RasterParam2 / 1000
+DBL pitch = %RasterParam3 / 1000
+;// variables
+DBL nRuns
+DBL bal
+
+;// DEMO SELECT AND CONFIGURATION
+DBL gamma = %Raster_Param.dwGamma / 10
+DBL black = %RasterParam5  / 10
+DBL white = %RasterParam6  / 10
+DBL edge = %RasterParam7 / 1000
+DBL height =  %RasterParam8 / 1000
+DBL width
+DBL tileH = 0, tileW = 0
+DBL demo = 0
+
+r = %Raster_Param.dwWidthImage/%Raster_Param.dwHeightImage    ;//bitmap aspect ratio
+width = height * r
+
+G64
+F(feed)
+
+IF (isRotated) THEN
+    IF (isVerticalScan) THEN
+        G2292 X-lead-2 Y-2 Z0 U(height+lead+2) V(width+2) W(-5) S1
+    ELSE
+        G2292 X-2 Y-lead-2 Z0 U(height+2) V(width+lead+2) W(-5) S1
+    ENDIF
+ELSE
+    IF (isVerticalScan) THEN
+        G2292 X-2 Y-lead-2 Z0 U(width+2) V(height+lead+2) W(-5) S1
+    ELSE
+        G2292 X-lead-2 Y-2 Z0 U(width+lead+2) V(height+2) W(-5) S1
+    ENDIF
+ENDIF
+
+;//Configure Bitmaps
+G227 N0
+
+$ Loading map...
+;//Load Bitmap
+
+G227 N10 T1 L(10000+demo) M(gamma)
+
+IF (isAntiAliasing) THEN
+    $ Filtering...
+    ;//Do Bitmap Filtering
+    IF (tileH != 0) THEN
+        IF (isVerticalScan) THEN
+            G227 N12 T1 X(pitch/tileH) J(feed/tileW)
+        ELSE
+            G227 N12 T1 Y(pitch/tileH) I(feed/tileW)
+        ENDIF
+    ELSE
+        IF (isVerticalScan) THEN
+            G227 N12 T1 X(pitch/height) J(feed/width)
+        ELSE
+            G227 N12 T1 Y(pitch/height) I(feed/width)
+        ENDIF
+    ENDIF
+ENDIF
+
+IF (isDebugSaving) THEN
+    $ Saving debug...
+    ;//Save Bitmap
+    G227 N11 T1 L(20000+demo)
+ENDIF
+
+$
+
+G168
+;//Start Logging (PC only!)
+;IF (isLogEnabled) G227 N90 L30000
+
+IF (isRotated) THEN
+    G161 X(height)
+    G186 C90
+ENDIF
+
+;//Start Raster Print
+IF (tileH != 0) THEN
+    G227 N51 X0 Y0 I(tileW) J(tileH) F0x0001
+ELSE
+    G227 N51
+ENDIF
+G227 N50 X0 Y0 I(width) J(height) Z(black) W(white) T1
+
+;// FIELD TEST
+
+?%C124.2 = 1                ;// application turn raster mode ON
+WAITBIT("%C125.2",1)        ;// application raster mode is ON
+;// MUST match "iolead" and "io1" value in G227
+?%QW913 = 0
+;//?%QW908 = 100
+;// FIELD TEST
+
+scanX = 0
+scanY = 0
+scanI = width
+scanJ = height
+
+IF (isVerticalScan) THEN
+    RPT .scanv_a, .scanv_z, 1
+ELSE
+    RPT .scanh_a, .scanh_z, 1
+ENDIF
+
+;// FIELD TEST
+?%C124.2 = 0                ;// application turn raster mode ON
+WAITBIT("%C125.2",0)        ;// application raster mode is ON
+;// FIELD TEST
+
+;//Stop Raster Print
+G227 N59
+
+;//Stop Logging
+G227 N99
+
+; TESTING NO CUT
+G650 T3 W1 
+G806 T3 N1 D1 H1 
+
+G180 X(-edge-2) Y(-edge) Z(workpiece_safe_dist) 
+G153 G0 X(kine_x) Y(kine_y)
+G800 K0 D1 X(-edge-2) Y(-edge) Z0.000 T1 F(feed1) P0 R1 U0 V0 W1  Q0
+
+G1 X(width+edge)
+G1 Y(height+edge)
+G1 X(-edge)
+G1 Y(-edge+0.5)
+
+G840 L0
+G153 G0 Z(trav_safe_z) 
+
+G169
+
+M30
+M2
+
+;//
+;// RASTER SUBROUTINES
+;//
+
+;// horizontal scan
+.scanh_a
+
+
+nRuns = FLOOR(scanJ / pitch - 0.001)
+bal = (scanJ - nRuns * pitch) / 2
+
+G180 X(scanX-lead) Y(scanY+bal) Z(workpiece_safe_dist) 
+G153 G0 X(kine_x) Y(kine_y)
+G800 K0 D1 X(scanX-lead) Y(scanY+bal) Z0.000 T1 F(feed1) P0 R1 U0 V0 W1 Q0 
+
+FOR i = 0 TO nRuns
+    ;//Set Raster Scanline
+    IF (MOD(i, 2) == 0) G227 N60 X(scanX+scanI+lead)
+    IF (MOD(i, 2) == 1) G227 N60 X(scanX-lead)
+;// FIELD TEST
+;    SYN
+;    ?%QW24 = 4095
+;// FIELD TEST
+    IF (i != nRuns) G1 Y(scanY+bal+(i+1)*pitch)
+;// FIELD TEST
+;    ?%QW24 = 0
+;// FIELD TEST
+ENDFOR
+
+G840 L0
+G153 G0 Z(trav_safe_z) 
+
+.scanh_z
+
+;// vertical scan
+.scanv_a
+
+nRuns = FLOOR(scanI / pitch - 0.001)
+bal = (scanI - nRuns * pitch) / 2
+
+G180 X(scanX+bal) Y(scanY-lead) Z(workpiece_safe_dist) 
+G153 G0 X(kine_x) Y(kine_y)
+G800 K0 D1 X(scanX+bal) Y(scanY-lead) Z0.000 T1 F(feed1) P0 R1 U0 V0 W1  Q0 
+
+FOR i = 0 TO nRuns
+    ;//Set Raster Scanline
+    IF (MOD(i, 2) == 0) G227 N60 Y(scanY+scanJ+lead)
+    IF (MOD(i, 2) == 1) G227 N60 Y(scanY-lead)
+;// FIELD TEST
+;    SYN
+;    ?%QW24 = 4095
+;// FIELD TEST
+    IF (i != nRuns) G1 X(scanX+bal+(i+1)*pitch)
+;// FIELD TEST
+;    ?%QW24 = 0
+;// FIELD TEST
+ENDFOR
+
+G840 L0
+G153 G0 Z(trav_safe_z) 
+
+.scanv_z
+

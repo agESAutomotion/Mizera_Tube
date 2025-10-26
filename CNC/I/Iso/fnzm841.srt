@@ -1,0 +1,23 @@
+: Spegnimento Tecnologia
+; M841: Spegnimento anticipato Testa 1
+DBL combinedMode = %cg3.25      ;// use combined PWM and emission
+DBL ix=0
+
+SPC 30099,1  ;Preprocessor sync
+
+; Se laser e simulazione programma senza Z
+IF( (gTechType == 3) && (%LSRPlcOp0.8 ) ) JMPF .skip
+
+IF ( combinedMode) ?%QW911.0 = 0       ;// Laser I/F board PWM_CFG register: EN
+IF (!combinedMode) ?%QW911.8 = 0       ;// Laser I/F board PWM_CFG register: FC
+
+.skip
+
+;To set power and duty 0
+G834 W(gLcutId) Y1
+
+IF( %cn[WHO()].rc[0].21 ) CALL phGraphStatusChange( ix, 1 )
+GRAPH 999
+SPC 30099,1  ;Preprocessor sync
+
+RET

@@ -1,0 +1,15 @@
+[KEYS]
+TITLE=Manuale APA
+
+[PROMPT]
+KEY_NODE=Nodo
+FASTCOMMANDS=Leaf
+Label7=Avanzamento tubo prima (mm)
+Label8=Ritorno tubo dopo (mm)
+Label9=Altezza per rilevamento (mm)
+Label10=Soglia fine tubo %
+P_REF1=Cerca Testa
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,21 @@
+[PROMPT]
+
+KEY_FASTINP         =Fast Inputs
+FI_CONF             =Конфигурация быстрых вводов
+FI_NUMBER           =Количество быстрых вводов [0-36]
+FI_DATA             =Данные быстрых вводов
+FI_EDGE             =Активная кромка [0-3]
+FI_AXIS             =Связанные оси
+FI_INPNUM           =internal drive input number
+FI_NOVER            =Запрет перезаписи [0/1/2]
+FI_DELAY            =Задержка [µs]
+
+[HELP]
+FI_CONF             =Конфигурация быстрых вводов
+FI_NUMBER           =Количество быстрых вводов [0-36]
+FI_DATA             =Данные быстрых вводов
+FI_EDGE             =Активная кромка: 0-отключено,1-подъем,2-спуск,3-оба
+FI_AXIS             =Связанные оси (по всей системе)
+FI_INPNUM           =on digital drives, internal drive input number (0-disab,1-3)
+FI_NOVER            =Выбор 0-перезаписи 1-запрета перезаписи цели 2-queued
+FI_DELAY            =Задержка передачи ввода [µs]

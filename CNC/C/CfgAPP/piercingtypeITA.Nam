@@ -1,0 +1,17 @@
+[KEYS]
+TITLE=HELP
+[PROMPT]
+PIERCINGTYPE=Leaf
+LabelP1=P1
+LabelP2=P2
+LabelP1e2=P1=P2
+LabelType1=(P1 <> P2)
+LabelType2=(P1 = P2)
+LabelType3=(P5 <> P6)
+LabelType4=(P5 = P6)
+LabelType5=PIANO
+LabelCilindrica=CILINDRICA
+LabelP3=P3 = numero giri (>0 senso orario)
+LabelP4=P4 = Velocità (mm/min)
+LabelP5=P7 = numero giri (>0 senso orario)
+LabelP6=P8 = Velocità (mm/min)

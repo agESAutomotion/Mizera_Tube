@@ -1,0 +1,52 @@
+
+[KEYS]
+TITLE=TP6022-6 Unloader
+
+[PROMPT]
+KEY_NODE=Node
+ULOADER=TP6022-6 Unloader
+Label5=Flap Inclined (L1)
+Label6=Flap Home (L1)
+Label42=Unloader Parameters
+Label41=Unloader Outputs
+Label43=Unloader Commands
+Label44=Unloader Inputs
+P_REF1=Feed +
+Label51=%
+P_REF2=Feed -
+Label58=Disable 2nd Flap Following Target
+Label59=V Feed Reduction Support Parking
+Button21=Flap Home L1
+Button20=Flap Incline L1
+Label1=Unloading Clamp offset [mm]
+Label2=Dustbin Flap FLAT
+Button1=Flap Home L2
+Button2=Flap Incline L2
+Button3=Flap Home L3
+Button4=Flap Incline L3
+Button5=Flap Home L4
+Button6=Flap Incline L4
+Button7=Flap Home L5
+Button8=Flap Incline L5
+Label3=Flap Inclined (L2)
+Label4=Flap Home (L2)
+Label7=Flap Inclined (L3)
+Label8=Flap Home (L3)
+Label9=Flap Inclined (L4)
+Label10=Flap Home (L4)
+Label11=Flap Inclined (L5)
+Label12=Flap Home (L5)
+Label13=Flap Width [mm]
+GroupBox4=Tube In Machine
+LabelActualOrigin2=Tube In machine [mm]
+LabelActualOrigin1=Last Heading [mm] :
+Button9=Set Heading X Qta
+Label14=Unload Supports Quote
+Label15=Minimum Piece to Unload [mm]
+Label16=Flap Home / Incline Timer [s]
+Label17=Enable Final Scarp Unloading (Only 2 Spindles)
+Label18=Maximum Piece to Unload [mm]
+
+[STATUS]
+
+[HELP]

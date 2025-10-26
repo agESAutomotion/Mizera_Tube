@@ -1,0 +1,43 @@
+[PROMPT]
+KEY_ORG       =Origini Canale
+
+G54X =Origine1: quota asse X (G54/G54.0)
+G54Y =Origine1: quota asse Y (G54/G54.0)
+G54Z =Origine1: quota asse Z (G54/G54.0)
+G55X =Origine2: quota asse X (G55)
+G55Y =Origine2: quota asse Y (G55)
+G55Z =Origine2: quota asse Z (G55)
+G56X =Origine3: quota asse X (G56)
+G56Y =Origine3: quota asse Y (G56)
+G56Z =Origine3: quota asse Z (G56)
+G57X =Origine4: quota asse X (G57)
+G57Y =Origine4: quota asse Y (G57)
+G57Z =Origine4: quota asse Z (G57)
+
+G54_1X =Origine5: quota asse X (G54.1)
+G54_1Y =Origine5: quota asse Y (G54.1)
+G54_1Z =Origine5: quota asse Z (G54.1)
+G54_2X =Origine6: quota asse X (G54.2)
+G54_2Y =Origine6: quota asse Y (G54.2)
+G54_2Z =Origine6: quota asse Z (G54.2)
+G54_3X =Origine7: quota asse X (G54.3)
+G54_3Y =Origine7: quota asse Y (G54.3)
+G54_3Z =Origine7: quota asse Z (G54.3)
+G54_4X =Origine8: quota asse X (G54.4)
+G54_4Y =Origine8: quota asse Y (G54.4)
+G54_4Z =Origine8: quota asse Z (G54.4)
+
+[HELP]
+
+G54X =Origine1: quota asse X -> Imposta la quota X dell'origine pezzo n.1 selezionabile dal comando G54
+G54Y =Origine1: quota asse Y -> Imposta la quota Y dell'origine pezzo n.1 selezionabile dal comando G54
+G54Z =Origine1: quota asse Z -> Imposta la quota Z dell'origine pezzo n.1 selezionabile dal comando G54
+G55X =Origine2: quota asse X -> Imposta la quota X dell'origine pezzo n.2 selezionabile dal comando G55
+G55Y =Origine2: quota asse Y -> Imposta la quota Y dell'origine pezzo n.2 selezionabile dal comando G55
+G55Z =Origine2: quota asse Z -> Imposta la quota Z dell'origine pezzo n.2 selezionabile dal comando G55
+G56X =Origine3: quota asse X -> Imposta la quota X dell'origine pezzo n.3 selezionabile dal comando G56
+G56Y =Origine3: quota asse Y -> Imposta la quota Y dell'origine pezzo n.3 selezionabile dal comando G56
+G56Z =Origine3: quota asse Z -> Imposta la quota Z dell'origine pezzo n.3 selezionabile dal comando G56
+G57X =Origine4: quota asse X -> Imposta la quota X dell'origine pezzo n.4 selezionabile dal comando G57
+G57Y =Origine4: quota asse Y -> Imposta la quota Y dell'origine pezzo n.4 selezionabile dal comando G57
+G57Z =Origine4: quota asse Z -> Imposta la quota Z dell'origine pezzo n.4 selezionabile dal comando G57

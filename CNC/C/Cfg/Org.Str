@@ -1,0 +1,144 @@
+[STRUCT]
+KEY_ORG {
+        G54X;
+        G54Y;
+        G54Z;
+        G55X;
+        G55Y;
+        G55Z;
+        G56X;
+        G56Y;
+        G56Z;
+        G57X;
+        G57Y;
+        G57Z;
+
+        G54_1X;
+        G54_1Y;
+        G54_1Z;
+        G54_2X;
+        G54_2Y;
+        G54_2Z;
+        G54_3X;
+        G54_3Y;
+        G54_3Z;
+        G54_4X;
+        G54_4Y;
+        G54_4Z;
+}
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+
+[KEY_ORG]
+ADR = nm0
+
+[G54X]
+ADR = sr0.do0
+FRM = QTA, 3
+HLP = G54X
+[G54Y]
+ADR = sr0.do1
+FRM = QTA, 3
+HLP = G54Y
+[G54Z]
+ADR = sr0.do2
+FRM = QTA, 3
+HLP = G54Z
+[G55X]
+ADR = sr1.do0
+FRM = QTA, 3
+HLP = G55X
+[G55Y]
+ADR = sr1.do1
+FRM = QTA, 3
+HLP = G55Y
+[G55Z]
+ADR = sr1.do2
+FRM = QTA, 3
+HLP = G55Z
+[G56X]
+ADR = sr2.do0
+FRM = QTA, 3
+HLP = G56X
+[G56Y]
+ADR = sr2.do1
+FRM = QTA, 3
+HLP = G56Y
+[G56Z]
+ADR = sr2.do2
+FRM = QTA, 3
+HLP = G56Z
+[G57X]
+ADR = sr3.do0
+FRM = QTA, 3
+HLP = G57X
+[G57Y]
+ADR = sr3.do1
+FRM = QTA, 3
+HLP = G57Y
+[G57Z]
+ADR = sr3.do2
+FRM = QTA, 3
+HLP = G57Z
+
+[G54_1X]
+ADR = sr4.do0
+FRM = QTA, 3
+HLP = G54_1X
+[G54_1Y]
+ADR = sr4.do1
+FRM = QTA, 3
+HLP = G54_1Y
+[G54_1Z]
+ADR = sr4.do2
+FRM = QTA, 3
+HLP = G54_1Z
+
+[G54_2X]
+ADR = sr5.do0
+FRM = QTA, 3
+HLP = G54_2X
+[G54_2Y]
+ADR = sr5.do1
+FRM = QTA, 3
+HLP = G54_2Y
+[G54_2Z]
+ADR = sr5.do2
+FRM = QTA, 3
+HLP = G54_2Z
+
+[G54_3X]
+ADR = sr6.do0
+FRM = QTA, 3
+HLP = G54_3X
+[G54_3Y]
+ADR = sr6.do1
+FRM = QTA, 3
+HLP = G54_3Y
+[G54_3Z]
+ADR = sr6.do2
+FRM = QTA, 3
+HLP = G54_3Z
+
+[G54_4X]
+ADR = sr7.do0
+FRM = QTA, 3
+HLP = G54_4X
+[G54_4Y]
+ADR = sr7.do1
+FRM = QTA, 3
+HLP = G54_4Y
+[G54_4Z]
+ADR = sr7.do2
+FRM = QTA, 3
+HLP = G54_4Z
+
+
+
+
+
+
+

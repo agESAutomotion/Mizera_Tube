@@ -1,0 +1,36 @@
+
+[KEYS]
+TITLE=S500 描述
+
+[PROMPT]
+KEY_NODE=Node
+INPUT_AND_OUTPUT=Leaf
+CAN1 Interface=CAN1 接口
+CAN2 Interface10=CAN2 接口
+24 VDC terminal input=24 VDC 输入端口
+LAN 1 EtherCAT=LAN 1 EtherCAT
+PS2 Keyboard interface=PS2 键盘接口
+PS2 Mouse interface=PS2 鼠标接口
+USB Interfaces=USB 接口
+LAN 2 interface=LAN 2 接口
+VGA Interface=VGA 接口
+Link I/O Tx connector=连接 I/O Tx 的连接器
+Link I/O Rx connector=连接 I/O Rx 的连接器
+QW1=QW6
+0-10 VDC output=0-10 VDC 输出
+PWM=PWM
+Fly Cut output=飞行切割输出
+QW3=QW3
+QW7=QW7
+IW0=IW0
+IW4=IW4
+IW1=IW1
+IW5=IW5
+QW2=QW2
+12 bit resolution analog inputs=12位分辨率模拟量输入
+12 bit resolution analog output=12位分辨率模拟量输出
+24 VDC output=24 VDC 输出
+
+[STATUS]
+
+[HELP]

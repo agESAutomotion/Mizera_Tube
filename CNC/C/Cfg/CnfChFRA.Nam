@@ -1,0 +1,74 @@
+[PROMPT]
+KEY_CONFCHAN  =Configurer Canal
+
+CC_CHNAME     =Nom canal
+CC_NUMBOARD   =Numéro Carte de Traitement
+CC_MASKAXES   =Masque Axes Canale
+CC_NX         =Numéro Axe X
+CC_NY         =Numéro Axe Y
+CC_NZ         =Numéro Axe Z
+CC_NU         =Numéro Axe U
+CC_NV         =Numéro Axe V
+CC_NW         =Numéro Axe W
+CC_NA         =Numéro Axe A
+CC_NB         =Numéro Axe B
+CC_NC         =Numéro Axe C
+CC_NM         =Numéro Axe S (mandrin 1)
+CC_S2         =Numéro Axe S2 (mandrin 2)
+CC_S3         =Numéro Axe S3 (mandrin 3)
+CC_MAINPROC   =Numéro processus principal
+CC_AUXPROC    =Numero processo ausiliario
+CC_PRIORITY   =Priorité canal
+CC_TWIBASE    =Indice base Table Mandrins
+CC_TWIAMOUNT  =Nombre de Mandrins
+CC_THDBASE    =Index base Table Porte-outils
+CC_THDAMOUNT  =Nombre de Porte-outils
+CC_CEDBASE    =Indice base Table Outils
+CC_CEDAMOUNT  =Nombre d'Outils
+CC_VARSPERLEVEL=Var. loc. pour niveau sous-prog.
+CC_CHANPTKB   =Mémoire pour exécution passante
+CC_PTMONLINESC=Linee nel buffer di esecuzione passante (client browser)
+CC_PTMONLINESS=Linee nel buffer di esecuzione passante (server browser)
+CC_CHANRETRKB =Mémoire pour Retrace
+CC_MAG        =Type Magasin Outil
+CC_RV         =Numéro Magasin
+CC_TABBASE    =Indice base tabella tavole
+CC_TABAMOUNT  =Numero di tavole
+CC_GORGBASE   =Indice base tabella origini globali
+CC_GORGAMOUNT =Numero di origini globali
+CC_SOSID      =Indice estensione slave (0=none)
+CC_SOSQUEUE   =Dimensione coda [elementi]
+
+[HELP]
+
+CC_CHNAME     =Chaîne de 8 caractères maximum indiquant la dénomination du canal
+CC_NUMBOARD   =Numéro Carte de Traitement: numéro de la carte qui effectue le traitement de la logique du canal dans les systèmes distribués.
+CC_MASKAXES   =Masque Axes Canal: identifie les axes contenus dans le canal
+CC_NX         =Numéro Axe X: numéro de processus axe X
+CC_NY         =Numéro Axe Y: numéro de processus axe Y
+CC_NZ         =Numéro Axe Z: numéro de processus axe Z
+CC_NU         =Numéro Axe U: numéro de processus axe U
+CC_NV         =Numéro Axe V: numéro de processus axe V
+CC_NW         =Numéro Axe W: numéro de processus axe W
+CC_NA         =Numéro Axe A: numéro de processus axe A
+CC_NB         =Numéro Axe B: numéro de processus axe B
+CC_NC         =Numéro Axe C: numéro de processus axe C
+CC_NM         =Numéro Axe S (broche): numéro de processus axe mandrin
+CC_MAINPROC   =Numéro procédé principal : numéro du processus auquel est attribué le contrôle de l'interpolation du canal
+CC_AUXPROC    =Numero processo ausiliario: utilizzato dai FB del PLC
+CC_PRIORITY   =Etablit la priorité d'exécution d'un canal. Une priorité élevée correspond à des valeurs basses. Valeurs gérées:(0-1-2-3)activé (10)désactivé
+CC_TWIBASE    =Indice du premier Mandrin utilisé par le canal à l'intérieur de la table contenant tous les mandrins
+CC_TWIAMOUNT  =Nombre de Mandrins utilisés par le canal
+CC_THDBASE    =Indice du premier Porte-outils utilisé par le canal à l'intérieur de la table contenant tous les porte-outils
+CC_THDAMOUNT  =Nombre de Porte-outils utilisés par le canal
+CC_CEDBASE    =Indice du premier Outil utilisé par le canal à l'intérieur de la table contenant tous les outils
+CC_CEDAMOUNT  =Nombre d'Outils utilisés par le canal
+CC_VARSPERLEVEL=Variables locales pour chaque niveau de sous-programme
+CC_CHANPTKB   =Memoria per esecuzione passante in KB.  Vedere anche l'omonimo parametro configurazione CN, che potrebbe dover essere aggiornato in seguito a cambiamenti di questo parametro.
+CC_CHANRETRKB =Memoria per buffer di retrace in KB.  Vedere anche l'omonimo parametro configurazione CN, che potrebbe dover essere aggiornato in seguito a cambiamenti di questo parametro.
+CC_MAG        =Type magasin outils: 0) aucun magasin 1) Revolver
+CC_RV         =Index à la structure Données Magasin Outils: mettre à 1 pour associer le Revolver(0)
+CC_TABBASE    =Indice base tabella tavole
+CC_TABAMOUNT  =Numero di tavole
+CC_GORGBASE   =Indice base tabella origini globali
+CC_GORGAMOUNT =Numero di origini globali

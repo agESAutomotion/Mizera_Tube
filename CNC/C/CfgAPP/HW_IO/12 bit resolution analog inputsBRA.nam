@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=Entrada Analógica
+
+[PROMPT]
+KEY_NODE=NODE
+12_BIT_RESOLUTION_ANALOG_INPUTS=Leaf
+PIN1=PIN1: Sinal Entrada IW20
+PIN2=PIN2: Sinal Entrada IW21
+PIN3=PIN3: Sinal Entrada IW22
+PIN4=PIN4: Sinal Entrada IW23
+PIN5=PIN5: +5V Fonte Alimentação saída
+PIN6=PIN6: Aterramento saída da Fonte
+PIN7=PIN7: Terra Referência
+
+[STATUS]
+
+[HELP]

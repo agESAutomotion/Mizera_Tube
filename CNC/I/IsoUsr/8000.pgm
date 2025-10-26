@@ -1,0 +1,17 @@
+% 8000
+
+
+RET
+IF( %cn[WHO()].rc[0].21 ) M2           ;Canale in test
+
+;Vengono utilizzate le funzioni G600 e G601 nel canale principale
+
+
+.LOOP
+;Ciclo
+;--------------------------------------
+SYN
+
+G4 F6000
+JMP .LOOP
+M30

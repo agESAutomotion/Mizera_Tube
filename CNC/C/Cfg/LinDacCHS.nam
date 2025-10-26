@@ -1,0 +1,56 @@
+[PROMPT]
+KEY_LDAC            =Linearization
+
+KEY_TRANS_LDAC      =Analog output
+
+PTX_HDR_DATA        =Analog output trans-characteristics table
+
+PTX_HDR_TABLE_CMD   =Update command/ack registers
+
+PTX_DESCRIPTION     =Table description
+PTXI_AXIS           =Axis number (-1 = Disable)
+PTXI_INMIN          =Minimum input value [mm/min]
+PTXI_INMAX          =Maximum input value [mm/min]
+PTXI_POINTS         =Number of characteristics curve points (N)
+
+PTXI_CMD            =Command register
+PTXI_ACK            =Acknowledge/status register
+
+PTX_HDR_TABLE_ENTRIES=Curve points (0 to N-1)
+
+PTXI_OUT_0          =Point #0  output value [V]
+PTXI_OUT_1          =Point #1  output value [V]
+PTXI_OUT_2          =Point #2  output value [V]
+PTXI_OUT_3          =Point #3  output value [V]
+PTXI_OUT_4          =Point #4  output value [V]
+PTXI_OUT_5          =Point #5  output value [V]
+PTXI_OUT_6          =Point #6  output value [V]
+PTXI_OUT_7          =Point #7  output value [V]
+PTXI_OUT_8          =Point #8  output value [V]
+PTXI_OUT_9          =Point #9  output value [V]
+PTXI_OUT_10         =Point #10 output value [V]
+PTXI_OUT_11         =Point #11 output value [V]
+PTXI_OUT_12         =Point #12 output value [V]
+PTXI_OUT_13         =Point #13 output value [V]
+PTXI_OUT_14         =Point #14 output value [V]
+PTXI_OUT_15         =Point #15 output value [V]
+PTXI_OUT_16         =Point #16 output value [V]
+PTXI_OUT_17         =Point #17 output value [V]
+PTXI_OUT_18         =Point #18 output value [V]
+PTXI_OUT_19         =Point #19 output value [V]
+PTXI_OUT_20         =Point #20 output value [V]
+PTXI_OUT_21         =Point #21 output value [V]
+PTXI_OUT_22         =Point #22 output value [V]
+PTXI_OUT_23         =Point #23 output value [V]
+PTXI_OUT_24         =Point #24 output value [V]
+PTXI_OUT_25         =Point #25 output value [V]
+PTXI_OUT_26         =Point #26 output value [V]
+PTXI_OUT_27         =Point #27 output value [V]
+PTXI_OUT_28         =Point #28 output value [V]
+PTXI_OUT_29         =Point #29 output value [V]
+PTXI_OUT_30         =Point #30 output value [V]
+PTXI_OUT_31         =Point #31 output value [V]
+
+[HELP]
+PTXI_CMD    =Bit0=1: Update request\nBits1-6: Reserved\nBit7=1: Enable
+PTXI_ACK    =Bit0=1: Update acknowledge\nBits1-6: Reserved\nBit7=1: Active status

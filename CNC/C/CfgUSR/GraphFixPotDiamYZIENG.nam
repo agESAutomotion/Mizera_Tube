@@ -1,0 +1,27 @@
+
+[KEYS]
+TITLE=Pressure - Diameter(Fixed)
+
+[PROMPT]
+KEY_NODE=node
+GRAPHFIXPOTDIAM=Fixed Spindle S-P
+GroupBox2=Y Side Measure
+GroupBox1=Z Side Measure
+Plot2=Potentiometer - Side Z
+L_TYPE_INTERP62=Pattern
+LIST0=Linear,Segment,Smoothing
+L_TYPE_INTERP61=Points
+Plot3=Potentiometer -  Side Y
+L_TYPE_INTERP63=Pattern
+LIST0=Linear,Segment,Smoothing
+L_TYPE_INTERP64=Points
+L_SPEED62=Pot [ADC]
+L_POWER61=Z Side [mm]
+L_SPEED61=Pot [ADC]
+L_POWER62=Y Side [mm]
+
+[STATUS]
+Plot2=Side [mm],Potentiometer[ADC]
+Plot3=Side [mm],Potentiometer[ADC]
+
+[HELP]

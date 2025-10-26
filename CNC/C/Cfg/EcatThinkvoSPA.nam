@@ -1,0 +1,27 @@
+[PROMPT]
+
+TH_VXOBJ8  = Pn000 Basic Function Selection Switch 1
+TH_VXOBJ9  = Pn001 Basic Function Selection Switch 2
+TH_VXOBJ10 = Pn003 Basic Function Selection Switch 3
+TH_VXOBJ11 = Pn004 Basic Function Selection Switch 4
+TH_VXOBJ12 = Pn100 Speed Loop Gain
+TH_VXOBJ13 = Pn101 Speed Loop Integral Time Constant
+TH_VXOBJ14 = Pn102 Position Loop Gain
+TH_VXOBJ15 = Pn103 Moment of Inertia Ratio
+TH_VXOBJ16 = Pn127 Automatic Gain Tuning Switch
+TH_VXOBJ17 = Pn401 Torque Reference Filter Time
+TH_VXOBJ18 = Pn502 Rotation Detection Level
+TH_VXOBJ19 = Pn503 Speed Coincidence Signal Output Width
+TH_VXOBJ20 = Pn504 Zero Clamp Level
+TH_VXOBJ21 = Pn505 Servo ON Delay Time
+TH_VXOBJ22 = Pn506 Brake Reference-ServoOFF Delay Time
+TH_VXOBJ23 = Pn507 Brake Reference Output Speed Level
+TH_VXOBJ24 = Pn508 Waiting Time for Brake When Motor Run
+TH_VXOBJ25 = Pn509 Input Signal Selection 1
+TH_VXOBJ26 = Pn513 Output Signal Selection 1
+TH_VXOBJ27 = Pn514 Output Signal Selection 2
+TH_VXOBJ28 = Pn519 Input Signal Logic Selection 1
+TH_VXOBJ29 = Pn520 Input Signal Logic Selection 2
+TH_VXOBJ30 = Pn521 Output Signal Inverse Selection 1
+TH_VXOBJ31 = Pn522 Output Signal Inverse Selection 2
+TH_VXOBJ32 = Pn523 Excessive Position Error Alarm Level

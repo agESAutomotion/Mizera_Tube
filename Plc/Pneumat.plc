@@ -1,0 +1,112 @@
+*******************************************************************************
+*   PNEUMAT.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+
+appoggio:                       BOOL;       * Appoggio
+TON_NOARIA:                     TON;        * Manca aria compressa
+Strobe_Funz_M493:               BOOL;
+Strobe_Funz_M494:               BOOL;
+Memo_Aria_ass_taglio_da_Funz_M: BOOL;       * Memoria Aria assistenza al taglio da Funzione M
+Aria_ass_taglio_in_Piercing:    BOOL;       * Aria assistenza al taglio in Piercing
+R_TRIG493:                      R_TRIG;     * Fronte di salita M493 Attivazione Aria assistenza al taglio
+R_TRIG494:                      R_TRIG;     * Fronte di salita M494 Disattivazione Aria assistenza al taglio
+Test_Aria_ass_taglio_da_GUI     AT  %LsGui18.1;     *Test Aria assistenza al taglio da GUI
+Test_Aria_ugello_da_GUI         AT  %LsGui18.2;     * Test Aria ugello da GUI
+END_VAR
+
+#include "Iol.inc"
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+*******************************************************************************
+*   Gestione Impianto Pneumatico
+*******************************************************************************
+FUNCTION Pneumatico 
+
+*******************************************************************************
+* Allarme: bassa pressione aria impianto
+*******************************************************************************
+LDN  I_I_PRESSIONE_ARIA_IMPIANTO   ** Pressione aria Impianto OK
+ST   appoggio                      ** Appoggio
+
+CAL  TON_NOARIA(IN=appoggio, PT=1000) ** Manca aria compressa
+
+LD   TON_NOARIA.Q
+S    %PLCerr6.1
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+R    %PLCerr6.1                            ** PLC Err 193 Bassa pressione aria impianto
+
+*******************************************************************************
+* Allarme: bassa pressione aria banco
+*******************************************************************************
+LDN  I_I_PRESSIONE_ARIA_BANCO      ** Pressione aria Banco OK
+S    %PLCerr6.2                            ** PLC Err 194 Bassa pressione aria banco
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+R    %PLCerr6.2                            ** PLC Err 194 Bassa pressione aria banco
+
+*******************************************************************************
+* Aria ugello : M498\M497 : Dis\Attivazione (IN Gas.plc)
+*******************************************************************************
+LD   GAS_prun                      ** M107.1 Cutting gas active from part program
+ANDN %PlcOp0.2                     ** DryRun
+ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+OR   Test_Aria_ugello_da_GUI       ** Test Aria ugello da GUI
+ST   O_O_EV_ARIA_UGELLO            ** Elettrovalvola aria ugello
+
+*******************************************************************************
+* Aria assistenza al taglio : M494\M493 : Dis\Attivazione
+*******************************************************************************
+LD   %cn0.rc9                               ** Channel 0 M-Functions register
+EQ   493
+AND  %cn0.rc8.4                             ** Channel 0 M-Functions Strobe
+ST   Strobe_Funz_M493
+
+CAL R_TRIG493(CLK=Strobe_Funz_M493) ** Fronte di salita M493 Attivazione Aria assistenza al taglio
+
+LD   %cn0.rc9                               ** Channel 0 M-Functions register
+EQ   494
+AND  %cn0.rc8.4                             ** Channel 0 M-Functions Strobe
+ST   Strobe_Funz_M494
+
+CAL  R_TRIG494(CLK=Strobe_Funz_M494) ** Fronte di salita M494 Disattivazione Aria assistenza al taglio
+
+LD   R_TRIG493.Q
+S    Memo_Aria_ass_taglio_da_Funz_M ** Memoria Aria assistenza al taglio da Funzione M
+LD   R_TRIG494.Q
+ORN  MACCHINA_OK                   ** M100.1  Macchina OK
+OR   RESET_MACCHINA                ** M100.2  Reset macchina
+R    Memo_Aria_ass_taglio_da_Funz_M ** Memoria Aria assistenza al taglio da Funzione M
+
+LD   %TabLsr0.L_UserInt1
+EQ   0
+ST   Aria_ass_taglio_in_Piercing   ** Aria assistenza al taglio in Piercing
+
+LD   Memo_Aria_ass_taglio_da_Funz_M ** Memoria Aria assistenza al taglio da Funzione M
+OR   Aria_ass_taglio_in_Piercing   ** Aria assistenza al taglio in Piercing
+AND(
+LD   PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+ANDN %PlcOp0.2                     ** DryRun
+ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+ANDN ExeAuxMode                    ** (gPlc0.29)Esecuzione ausiliaria 1000.PGM
+)
+OR   Test_Aria_ass_taglio_da_GUI   ** Test Aria assistenza al taglio da GUI
+ST   O_O_EV_ASSISTENZA_TAGLIO      ** Elettrovalvola assistenza taglio
+
+*******************************************************************************
+*Segnalazioni per Aggiornamento pagina video
+*******************************************************************************
+LD   O_O_EV_ARIA_UGELLO            ** Elettrovalvola aria ugello
+ST   GasYV23LED                    ** (LsPlc11.12) LED nozzle air
+
+LD   O_O_EV_ASSISTENZA_TAGLIO      ** Elettrovalvola assistenza taglio
+ST   GasYV24LED                    ** (LsPlc11.13) LED cut air assistance
+
+END_FUNCTION

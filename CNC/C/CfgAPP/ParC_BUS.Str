@@ -1,0 +1,23 @@
+[STRUCT]
+KEYWORD {
+    KEY_ECAT;           // Ecat
+    KEY_CAN;            // Can
+    CALC_KP_DRIVE;      // Kp drive calculation
+    
+    //KEY_DGT;          // Mechatrolink
+}
+
+#include "Ecat.str"
+#include "can.str"
+#include "Calc_Kp_Drive.str"
+//#include "dgt.str"
+
+[KEYS]
+CMD0  = DEFAULT
+CMD1  = DEFAULT
+CMD2  = DEFAULT
+CMD3  = DEFAULT
+CMD4  = DEFAULT
+CMD5  = DEFAULT
+
+

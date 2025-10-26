@@ -1,0 +1,475 @@
+#include "iol.inc"
+#include "usrMem.inc"
+ 
+VAR
+TON36:                TON;
+appoggio:             BOOL;
+State_AutOrg:         BOOL;
+CurrState:            DWORD;
+DangerThresld:        DWORD;
+YZatParking:          DWORD;
+emercaseA:            DWORD;
+emercaseB:            DWORD;
+R_TRIG_M3:            R_TRIG;
+R_TRIG_Heading:       R_TRIG;
+F_TRIG_Heading:       F_TRIG;
+END_VAR 
+  
+VAR_IN_OUT
+#include "usrIol.inc"
+END_VAR
+
+FUNCTION M_WAIT
+
+LD   FS_WaitM
+OR   MS_WaitM
+OR   (
+LD   Fun_M730_Ch0
+ANDN I_I_Loader_Reach_Pos
+)
+OR   (
+LD   Fun_M731_Ch0
+ANDN I_I_Loader_Back_Pos
+)
+*OR   WaitLoadM
+*LD   WaitServiceCH7
+*OR   WaitServiceCH8
+*OR   WaitServiceCH9
+ST   WaitMfunc0Usr                 ** wait m function on ch0
+   
+*//============================================================================
+*// Heading Function Origin Acquiring Management
+*// - HMI Heading Require Enable Management
+*//============================================================================
+CAL  R_TRIG_Heading(CLK=%LSRPlcOp0.21)
+LD   R_TRIG_Heading.Q
+ANDN %cn0.rc8.0
+JMPCN REC_STATUS
+LD   OriginAtStar
+ST   State_AutOrg
+REC_STATUS:
+
+LD   %LSRPlcOp0.21
+JMPCN FORCE_EN_ORG
+LD   %PLCFLAGS.1
+ST   OriginAtStar
+FORCE_EN_ORG:
+
+LD   R_TRIG_Heading.Q
+ANDN %cn0.rc8.0
+ANDN State_AutOrg
+S    OriginAtStar
+
+CAL  F_TRIG_Heading(CLK=%LSRPlcOp0.21)
+LD   F_TRIG_Heading.Q
+ANDN %cn0.rc8.0
+ANDN State_AutOrg  
+R    OriginAtStar
+
+*//============================================================================
+*// Startup Machine with 3D viewer
+*//============================================================================
+LD   %PLCFLAGS.8
+R    guiShowISO
+
+*//============================================================================
+*// WeldSeam Detection
+*//============================================================================
+LD   visCameraPiston
+AND  %cn0.rc8.0
+OR   Btn_Weld_Piston           * Toggle
+ST   O_O_Detec_Weld_Piston
+
+LD   %cn0.rc8.0
+AND  Btn_Weld_Piston
+R    Btn_Weld_Piston
+
+LD   IsoCameraToDetec
+AND  %cn0.rc8.0
+OR   Btn_Weld_En               * Pulses  
+ST   O_O_Detec_Weld
+
+LDN  %cn0.rc8.0
+JMPCN CLRSTATUS
+     LD   0
+	 ST   O_O_WeldDetec_En
+     ST   IsoCameraToDetec
+	 ST   visCameraPiston
+	 ST   CN3_REQ_VYZ_ISO
+CLRSTATUS:
+
+*//============================================================================
+*// Following supports quote monitoring
+*//============================================================================
+LD   %ax50.ra4
+SUB  2000           *2mm
+ST   DangerThresld
+
+LD   EnWriteBlendSwitch 
+OR   EnWriteBlendSwitch1 
+AND  %cn0.rc8.0
+JMPCN INSIDETUB
+     LD   %ax51.ra4
+     LT   DangerThresld
+     AND  %cn5.cc1.1
+     OR(
+	 LD   %ax52.ra4
+     LT   DangerThresld
+     AND  %cn5.cc1.2
+	 )	
+     OR(
+	 LD   %ax53.ra4
+     LT   DangerThresld
+     AND  %cn5.cc1.3
+	 )		
+     OR(
+	 LD   %ax54.ra4
+     LT   DangerThresld
+     AND  %cn5.cc1.4
+	 )		 
+	 * Unloader
+	 OR(
+	 LD   %ax72.ra4
+	 LT   DangerThresld
+	 AND  %cn8.cc1.2 
+	 )
+	 OR(
+	 LD   %ax71.ra4
+	 LT   DangerThresld
+	 AND  %cn8.cc1.1 
+	 )
+     OR(
+	 LD   %ax73.ra4
+	 LT   DangerThresld
+	 AND  %cn8.cc1.3 
+	 ) 
+	 OR(
+	 LD   %ax74.ra4
+	 LT   DangerThresld
+	 AND  %cn8.cc1.4 
+	 ) 
+	 OR(
+	 LD   %ax75.ra4
+	 LT   DangerThresld
+	 AND  %cn8.cc1.5 
+	 )
+	 ST   Emer_Sup_QtaErr
+	 
+	 LD   Emer_Sup_QtaErr
+	 S    %PLCerr20.24
+	 
+INSIDETUB:
+
+LDN  %cn0.rc8.0
+OR   Pul_Reset
+R    %PLCerr20.24
+R    iso_G510_StartDM4
+R    %PLCmsg0.8
+
+*//============================================================================
+*// Spindle Quote monitoring (gearing software limit protection) - 3mm
+*// - to ensure safety in case of cad-cam mistake
+*//============================================================================
+LD   GESTAX36_xHoldMoving
+ANDN %ax36.ra3.0
+AND  %cn3.cc1.5
+ST   appoggio
+CAL  TON36(IN=appoggio,PT=1000)
+
+LD   %ax30.ra4
+SUB  3000
+GT   %ax30.pa22
+OR(
+LD   %ax30.ra4
+ADD  3000
+LT   %ax30.pa21
+)
+OR(
+LD   %ax36.ra4
+SUB  3000
+GT   %ax36.pa22
+AND  %cn3.cc1.5
+)
+OR(
+LD   %ax36.ra4
+ADD  3000
+LT   %ax36.pa21
+AND  %cn3.cc1.5
+)
+OR(
+LD   %ax31.ra4
+SUB  3000
+GT   %ax31.pa22
+AND  %cn3.cc1.4
+)
+OR(
+LD   %ax31.ra4
+ADD  3000
+LT   %ax31.pa21
+AND  %cn3.cc1.4
+)
+OR   TON36.Q
+AND  %cn0.rc8.0
+ANDN ch0_in_ref
+ANDN ch0_in_jog
+S    %PLCerr20.25
+
+LD   Pul_Reset
+R    %PLCerr20.25
+
+*//============================================================================
+*// B Bevel and W Middle Spindle Management
+*// - when W not at limit not able to move B manaully 
+*// - W anticolision condition to check with B angle 
+*//============================================================================
+LD   %ax29.pa22
+SUB  %ax29.ra4
+ABS 
+LT   20000
+AND   (
+LD   %ax28.pa21
+SUB  %ax28.ra4
+ABS 
+LT   20000
+)
+ST   YZatParking   
+
+LD   45000
+SIN 
+MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+ADD  10000
+ST   tmp_lim_holder
+
+LD   %ax36.pa22
+SUB  tmp_lim_holder
+ST   safedisPosQta
+
+LD   %ax36.pa21
+ADD  tmp_lim_holder
+ST   safedisNegQta
+
+*LD   Gest5Ax
+*AND  %cn3.cc1.5 
+*JMPCN STATUSONLYBVL
+
+* Jog Mode to hold ****************************************** //
+
+	 LD   %ax36.ra92
+	 SUB (
+	 LD   %ax33.ra92
+	 SIN
+	 MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+     )
+	 LT   safedisPosQta
+	 AND(
+	 LD   %ax33.ra4
+	 GE   0
+	 )
+	 OR(
+	      LD   %ax36.ra92
+		  LT   safedisPosQta  
+	 )
+	 AND(
+	 LD   %ax36.ra4
+	 GE   0
+	 )
+	 ANDN YZatParking
+	 ANDN ch0_in_ref
+	 ANDN %cn0.rc8.0
+	 ST   %PLCmsg8.9   * Stop W-, B+ 
+	 
+	 LD   %ax36.ra92
+	 SUB (
+	 LD   %ax33.ra92
+	 SIN
+	 MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+     )
+	 GT   safedisNegQta
+	 AND(
+	 LD   %ax33.ra4
+	 LT   0
+	 )
+	 OR(
+	      LD   %ax36.ra92
+		  GT   safedisNegQta  
+	 )
+	 AND(
+	 LD   %ax36.ra4
+	 LT   0
+	 )
+	 ANDN YZatParking
+	 ANDN ch0_in_ref
+	 ANDN %cn0.rc8.0
+	 ST   %PLCmsg8.10  * Stop W+, B- 
+	 
+* Aut Mode to Emer (3mm more) ******************************* //	 
+	 
+	 LD   %ax36.ra4
+	 SUB (
+	 LD   %ax33.ra4
+	 SIN
+	 MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+     )
+	 ST   dynamicBsafe
+	 
+	 LD   dynamicBsafe
+	 ADD  3000
+	 LT   safedisPosQta
+	 AND(
+	 LD   %ax33.ra4
+	 GE   0
+	 )
+	 OR(
+	      LD   %ax36.ra4
+		  ADD  3000
+		  LT   safedisPosQta  
+	 )
+	 AND(
+	 LD   %ax36.ra4
+	 GE   0
+	 )
+	 ANDN YZatParking
+	 ANDN ch0_in_ref
+	 ST   emercaseA   
+	 
+	 LD   dynamicBsafe
+	 SUB  3000
+	 GT   safedisNegQta
+	 AND(
+	 LD   %ax33.ra4
+	 LT   0
+	 )
+	 OR(
+	      LD   %ax36.ra4
+		  SUB  3000
+		  GT   safedisNegQta  
+	 )
+	 AND(
+	 LD   %ax36.ra4
+	 LT   0
+	 )
+	 ANDN YZatParking
+	 ANDN ch0_in_ref
+	 ST   emercaseB  
+	 
+	 LD   emercaseA
+	 OR   emercaseB
+     AND  %cn0.rc8.0
+	 S    %PLCerr20.26  * Anticolision between B and W
+	 
+     LD   %ax29.ra0.9   * Z-
+     OR   %ax28.ra0.8   * Y+
+     OR   %ax36.ra0.9   * W-
+     AND( 
+     LD   safedisPosQta
+     SUB  %ax36.ra4 
+     GT   5000
+     ) 
+	 AND(
+	 LD   %ax36.ra4
+	 GE   0
+	 )
+     OR  (
+          LD   %ax29.ra0.9  * Z-
+          OR   %ax28.ra0.8  * Y+
+          OR   %ax36.ra0.8  * W+
+          AND(
+          LD   %ax36.ra4
+          SUB  safedisNegQta
+          GT   5000
+          )
+		  AND(
+	      LD   %ax36.ra4
+	      LT   0
+	      )
+     )      
+     ANDN YZatParking
+     ANDN ch0_in_ref
+     S    %PLCerr20.22  * Anticolision between Z and W
+	 
+	 LD   Pul_Reset
+     R    %PLCerr20.22
+     R    %PLCerr20.26
+
+STATUSONLYBVL:
+
+*//============================================================================
+*// Real Tube Position Update
+*//============================================================================
+PATH %funz[19]
+
+LD   iso_G510_StartDM4
+OR(
+LDN  O_O_Mobile_Spindle_Slave_Close
+AND  iso_G520_Running
+)
+JMPC FREEZEUPDATE
+
+LD   O_O_Mobile_Spindle_Close
+ANDN O_O_Mobile_Spindle_Slave_Close
+JMPCN STATEM2
+     LD  2
+	 ST  CurrState
+STATEM2:
+
+LD   O_O_Mobile_Spindle_Close
+AND  O_O_Mobile_Spindle_Slave_Close
+JMPCN STATEM3
+     LD  3
+	 ST  CurrState
+STATEM3:
+
+LDN  O_O_Mobile_Spindle_Close
+AND  O_O_Mobile_Spindle_Slave_Close
+JMPCN STATEM3M4
+     LD  4
+	 ST  CurrState
+STATEM3M4:
+
+LD   CurrState
+EQ   3
+ST   appoggio
+CAL  R_TRIG_M3(CLK=appoggio)
+LD   R_TRIG_M3.Q
+JMPCN RECORDLEN	
+     LD   %ax31.ra24
+     SUB  %ax30.ra24
+	 ABS
+     ST   OFFSETM4		  
+RECORDLEN:
+ 
+LD   CurrState
+EQ   4  
+JMPCN MASTERM4P
+	 LD   %ax0.ra24
+	 SUB  %ax31.ra24
+	 SUB  OFFSETM4
+	 ADD  ORIGPRGX
+     ST   tmpartOffset
+MASTERM4P:
+
+LD   CurrState
+EQ   2
+OR(
+LD   CurrState
+EQ   3
+)
+JMPCN MASTERM2P 
+     LD   CurrState
+     EQ   2  
+	 JMPCN CLRM2ZERO
+          LD   0
+	      ST   OFFSETM4
+     CLRM2ZERO:
+     
+	 LD   %ax0.ra24
+	 SUB  %ax30.ra24
+     ADD  ORIGPRGX
+     ST   tmpartOffset
+MASTERM2P:
+
+FREEZEUPDATE:
+
+*//============================================================================   
+
+END_FUNCTION

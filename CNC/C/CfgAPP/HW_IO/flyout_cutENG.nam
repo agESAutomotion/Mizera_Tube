@@ -1,0 +1,14 @@
+
+[KEYS]
+TITLE=Fly Cut Output
+
+[PROMPT]
+KEY_NODE=Node
+FLYOUT_CUT=Leaf
+PIN1=PIN3: NC
+PIN2=PIN2: Power supply reference
+PIN3=PIN1: FLYCUT OUT PUSH PULL output signal
+
+[STATUS]
+
+[HELP]

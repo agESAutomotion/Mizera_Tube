@@ -1,0 +1,28 @@
+[PROMPT]
+KEY_GEOCHAN   =Channel Geometry
+
+GC_GEOTYPE    = Geometry type
+GC_MODE       = Mode (0=Disab 1=Enab)
+GC_X_ANG_SGN  = Reversal Ang(B)
+GC_X_ANG      = Angle (B) axis X
+GC_X_DST_SGN  = Reversal Axis(X)
+GC_X_DST      = Distance X from CC
+GC_Y_ANG_SGN  = Reversal Ang(A)
+GC_Y_ANG      = Angle (A) axis Y
+GC_Y_DST_SGN  = Reversal Axis(Y)
+GC_Y_DST      = Distance Y from CC
+GC_Z_ANG_SGN  = Reversal Ang(xx)
+GC_Z_ANG      = Angle axis Z
+GC_Z_DST_SGN  = Reversal Axis(Z)
+GC_Z_DST      = Distance Z from CC
+GC_EA_DEF_SGN = Reversal Ang(EA)
+GC_EA_DEF     = Tool Angle (EA)
+GC_EB_DEF_SGN = Reversal Ang(EB)
+GC_EB_DEF     = Tool Angle (EB)
+GC_EC_DEF_SGN = Reversal Ang(EC)
+GC_EC_DEF     = Tool Angle (EC)
+
+
+[HELP]
+
+

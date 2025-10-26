@@ -1,0 +1,192 @@
+**********************************************
+****** TUBE SUPPORTS MANAGEMENT **************
+**********************************************
+
+#include "usrMem.inc"
+#include "Iol.inc"
+
+VAR
+#include "Cnc.inc"
+END_VAR
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"
+END_VAR
+
+FUNCTION_BLOCK TUBE_SUPPORT
+
+VAR_INPUT
+xEmerg:	                     BOOL;
+xAuto:	                     BOOL;
+xUaxDir:                     BOOL;               * 1 - if spindle move towards the 0 of the machine decreasing its quota  
+                                                 * 0 - if spindle move towards the 0 of the machine increasing its quota         
+xSensorDwn:                  BOOL;               *Support is Down
+xSensorOpen:	             BOOL;               *Support is Up
+xManualUp: 	                 BOOL;               *Support Manual Up
+xManualDwn:	                 BOOL;               *Support Manual Dwn
+xManualOpen:                 BOOL;               *Clamps on Support Manual Open 
+xManualClose:                BOOL;               *Clamps on Support Manual Close 
+xAutoOpen:                   BOOL;               *Clamps on Support Auto Open 
+xAutoClose:                  BOOL;               *Clamps on Support Auto Close 
+xAutoUp:                     BOOL;               *Support Auto Up
+xAutoDwn:                    BOOL;               *Support Auto Dwn
+xAirPressure:                BOOL;               *For Both Support and Clamps Pressure Chk
+xReset:                      BOOL;               *To Reset Allarm
+xEnable:                     BOOL;
+ 
+xPosU:	                     DWORD;              *U Axis Quota(ra4)
+xSuperviseOft:               DWORD;              *Offset of position U to be closer to the support
+xLimitQuota:	             DWORD;              *The Limit Forcing SupportS Dwn
+xTimeOut:	                 DWORD;
+END_VAR
+
+VAR_OUTPUT
+yAlarmDwn:                   BOOL; 
+yEvUp:	                     BOOL;
+yEvDwn:	                     BOOL;
+yHoldMovSuperv:              BOOL;
+END_VAR		            
+
+VAR                        
+St_Up:	                     BOOL;
+St_Down:	                 BOOL;
+Ini_Down:	                 BOOL;
+Ini_Up:                      BOOL;
+AllowPosition:	             BOOL;
+
+HoldSuperviAxis:            BOOL;   
+Supervise_Oft:              DWORD;
+
+Ton_Down:                     TON;
+RTRIG_ENAB:                R_TRIG;
+END_VAR
+
+* Added offset within safely down distance
+LD   xSuperviseOft
+ABS
+ST   Supervise_Oft
+
+LD   xSuperviseOft
+ABS
+GT   200000
+JMPCN OUTRNGOFT
+     LD   xSuperviseOft
+	 ABS
+     ST   Supervise_Oft
+OUTRNGOFT: 
+
+LD   xUaxDir
+JMPCN  no_check
+     LD   xPosU
+     SUB  200000                     * safety
+     ADD  Supervise_Oft
+     GT   xLimitQuota
+     OR   ON_ONE_SCAN                ** PLCFLAGS.8  Flag on alla prima scansione PLC
+     ST   AllowPosition
+     
+     LD   xPosU
+     LT   xLimitQuota
+     ANDN xSensorDwn
+     ST   HoldSuperviAxis
+no_check:
+
+LDN  xUaxDir
+JMPCN  no_check1
+     LD   xPosU
+     ADD  200000                     * safety
+     SUB  Supervise_Oft
+     LT   xLimitQuota
+     OR   ON_ONE_SCAN                ** PLCFLAGS.8  Flag on alla prima scansione PLC
+     ST   AllowPosition
+     
+     LD   xPosU
+     GT   xLimitQuota
+     ANDN xSensorDwn
+     ST   HoldSuperviAxis
+no_check1:
+	 
+CAL  RTRIG_ENAB (CLK:=xEnable)
+LD   ON_ONE_SCAN                     ** PLCFLAGS.8  Flag on alla prima scansione PLC
+OR   RTRIG_ENAB.Q
+AND  xSensorDwn
+ST   Ini_Down
+
+LD   ON_ONE_SCAN                     ** PLCFLAGS.8  Flag on alla prima scansione PLC
+OR   RTRIG_ENAB.Q
+ANDN xSensorDwn
+ST   Ini_Up
+
+***************************************
+**** STATE VARIABLES ******************
+***************************************
+
+** UP STATE
+LD  St_Down
+AND(
+LD  xAutoUp
+OR(
+LDN xAuto
+AND xManualUp
+)
+)
+AND xEmerg
+OR(
+LD   St_Up
+ANDN St_Down
+)
+OR  Ini_Up
+AND xEnable
+ST  St_Up
+
+** DWN STATE
+LD  St_Up
+AND(
+LD  xAutoDwn
+OR(
+LDN xAuto
+AND xManualDwn
+)
+)
+ORN AllowPosition
+AND xEmerg
+OR(
+LD   St_Down
+ANDN St_Up
+)
+OR  Ini_Down
+ST  St_Down
+
+*******************************************
+
+** OUTPUTS
+
+LD  St_Up
+AND AllowPosition
+*AND xAirPressure
+AND xEmerg
+ST  yEvUp
+
+LD  St_Down
+ORN AllowPosition
+*AND xAirPressure
+AND xEmerg
+ST  yEvDwn
+
+** ALARMS
+
+CAL Ton_Down(IN:=yEvDwn, PT=xTimeOut)
+LD   Ton_Down.Q
+ANDN xSensorDwn
+S    yAlarmDwn
+
+LD   xReset
+OR   xSensorDwn
+R    yAlarmDwn
+
+** Hold the Supervisor
+
+LD   HoldSuperviAxis   
+ST   yHoldMovSuperv
+
+END_FUNCTION_BLOCK

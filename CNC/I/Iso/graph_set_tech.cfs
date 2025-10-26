@@ -1,0 +1,12 @@
+:
+;//
+;// Predisposizione grafica run-time
+;//
+
+?%ChanMon[WHO()].CmGraphCmd = 0x0;           Attivazione Ut in Graph
+
+IF( gTechType == 0 ) ?%ChanMon[WHO()].CmGraphRefSvl = 0
+IF( gTechType == 3 ) ?%ChanMon[WHO()].CmGraphRefSvl = 0
+?%ChanMon[WHO()].CmGraphCmd = 0x101;           Attivazione Ut in Graph
+
+RET

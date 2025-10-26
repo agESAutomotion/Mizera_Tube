@@ -1,0 +1,81 @@
+
+[KEYS]
+TITLE=Cut parameters
+
+[PROMPT]
+KEY_NODE=Node
+LINE_1_PARAM=Leaf
+Label7=Updating...
+Label12=-
+Label11=-
+Label8=-
+GroupBox4=Cut Parameters
+GroupBox1=Layer 10
+GroupBox3=Cut Options
+LBL_VELOCITA1=Cut Speed [mm/min]
+LBL_VELOCITA2=Cut Power [W]
+LBL_VELOCITA3=Cut Pressure [Bar]
+LBL_VELOCITA4=Cut Focal -mm-
+LBL_VELOCITA5=Cut Height [mm]
+LBL_VELOCITA6=Duty [%]
+LBL_VELOCITA8=Frequency [Hz]
+LBL_VELOCITA9=Dynamic [%]
+LBL_VELOCITA10=Kerf  [mm]
+LBL_VELOCITA11=H. Contr. Gain  [%]
+LBL_VELOCITA12=GAS
+LBL_VELOCITA14=Laser Off Delay [ms]
+TabDuty1=Duty
+TabPower1=Power
+TabFreq1=Frequency
+Label9=Frequency
+Label10=Power
+Label13=Duty
+L_TYPE_INTERP1=Pattern
+L_TYPE_INTERP2=Points
+L_POWER1=Duty [%]
+L_SPEED1=Speed [%]
+Label2=Slow Lead
+Label1=Lengh [mm]
+Label4=Speed [mm/min]
+Label3=Dyn Duty Adj
+Label5=Dyn Power Adj
+Label6=Dyn Frequency Adj
+L_TYPE_INTERP3=Points
+L_POWER2=Freq [%]
+L_SPEED2=Speed [%]
+L_TYPE_INTERP4=Pattern
+L_TYPE_INTERP5=Points
+L_POWER3=Power [%]
+L_SPEED3=Speed [%]
+L_TYPE_INTERP6=Pattern
+LIST0=Linear,Segment,Smoothing
+LIST1=Linear,Segment,Smoothing
+LIST2=Linear,Segment,Smoothing
+Plot2=Duty Curve
+Plot3=Power Curve
+Plot4=Frequency Curve
+Cut_Line_1=1
+Cut_Line_2=2
+Cut_Line_3=4
+Cut_Line_4=3
+Cut_Line_5=5
+Cut_Line_6=6
+Cut_Line_7=7
+Cut_Line_8=8
+Cut_Line_9=9
+Cut_Line_10=10
+GroupBox5=Trumpf Record
+GroupBox6=Zoom
+Button1=Copy To W:
+Cut_Line_11=11
+Cut_Line_12=12
+Cut_Line_13=13
+Cut_Line_14=14
+Cut_Line_15=15
+
+[STATUS]
+Plot2=Duty(%),Speed(%)
+Plot3=Power(%),Speed(%)
+Plot4=Frequency(%),Speed(%)
+
+[HELP]

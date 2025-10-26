@@ -1,0 +1,26 @@
+
+[KEYS]
+TITLE=Impostazioni Controllo Funzione Distanza
+
+[PROMPT]
+KEY_NODE=Nodo
+PROCUTFUNCTIONCONTRSETTINGS=Foglia
+LabelPerr1=Seleziona Curva Caratteristica (predefinito 0)
+LabelPerr2=Dimensione Finestra Filtro Distanza (valore predefinito: 6)
+LabelPerr3=Parametro D (predefinito: 0)
+LabelPerr4=Parametro P (predefinito: 150)
+LabelPerr5=Tempo Filtro Spruzzi [ms]
+LabelPerr6=Livello di Contatto Punta [mm]
+LabelPerr7=Limite Intervallo di Misura [mm] (predefinito: 30)
+LabelPerr8=Banda Setpoint [mm]
+LabelPerr9=Ritardo Collisione [ms] (predefinito: 20ms)
+LabelPerr10=Banda Dinamica Controllo [mV/ms]
+LabelPerr11=Temperatura Max Unita' Sensore PLC [NON USATO]
+LabelPerr12=Parametro I (predefinito: 0)
+LabelPerr13=Valore Standoff Distanza [mm]
+LabelPerr14=Rapporto Immagine
+LabelPerr15=Posizione Focale
+
+[STATUS]
+
+[HELP]

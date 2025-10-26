@@ -1,0 +1,28 @@
+
+[KEYS]
+TITLE=IW5
+
+[PROMPT]
+KEY_NODE=Node
+IW5=Leaf
+PIN1=PIN1: Digital Input IW5.0
+PIN2=PIN2: Digital Input IW5.1
+PIN3=PIN3: Digital Input IW5.2
+PIN4=PIN4: Digital Input IW5.3
+PIN5=PIN5: Digital Input IW5.4
+PIN6=PIN6: Digital Input IW5.5
+PIN7=PIN7: Digital Input IW5.6
+PIN8=PIN8: Digital Input IW5.7
+PIN9=PIN9: Digital Input IW5.8
+PIN10=PIN10: Digital Input IW5.9
+PIN11=PIN11: Digital Input IW5.10
+PIN12=PIN12: Digital Input IW5.11
+PIN13=PIN13: Digital Input IW5.12
+PIN14=PIN14: Digital Input IW5.13
+PIN15=PIN15: Digital Input IW5.14
+PIN16=PIN16: Digital Input IW5.15
+PIN17=PIN17: Ground signal reference
+
+[STATUS]
+
+[HELP]

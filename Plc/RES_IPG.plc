@@ -1,0 +1,300 @@
+*******************************************************************************
+*   RES_IPG.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+#include "RemContr.inc"
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"              
+END_VAR
+
+#include "Iol.inc"
+#include "res_ipg.inc"
+
+*******************************************************************************
+*   RESONATOR: IPG (YLR / YLS type)
+*******************************************************************************
+FUNCTION_BLOCK IPG
+VAR_INPUT
+xSIM:       BOOL;           * Laser in simulation (become from LSR_GEST)
+xType:      DWORD;          * 0=YLS, 1=YLR
+xReset:     BOOL;           * reset
+xEmer:      BOOL;           * emerg
+xEmission:  BOOL;           * Emission command
+END_VAR
+
+VAR_OUTPUT
+yError:     DWORD;          * error
+yWarning:   DWORD;          * warning
+yState:     BOOL;           * 1=EMISSION ON, 0=EMISSION OFF
+END_VAR
+
+VAR
+Appoggio:               BOOL;
+YLSseries:              BOOL;
+YLRseries:              BOOL;
+AutoSwitchOn:           BOOL;
+Aux_Allarme:            BOOL;
+Feedback_Emission_ON:   BOOL;
+TON_LASER_REQ:          TON;        * autostart: Laser request OUT
+TON_LASER_SWITCH:       TON;        * autostart: Laser switch on OUT
+TON_ANALOG_CONTROL:     TON;        * autostart: analog control OUT
+TON1:                   TON;        * timeout 1
+TON2:                   TON;        * timeout 1
+TON3:                   TON;        * timeout 1
+RTRIG_RESET:            R_TRIG;     * trigger on reset button
+Guide_Las:              BOOL;
+CTU_PULS_Guide_Las:     CTU;
+RTRIG_REM_GUIDE_LAS:    R_TRIG;
+R_TRIG_RemLaserOn:      R_TRIG; 
+END_VAR
+
+*******************************************************************************
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   YLSseries
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   YLRseries
+
+LD   xType                         ** 0=YLS, 1=YLR
+EQ   0
+JMPCN IsYLR
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   YLSseries
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   YLRseries
+
+IsYLR:
+
+LD   %Par0.0
+ANDN (
+LD   xReset                        ** reset
+ANDN  I_B8_POWER_SUPPLY            ** IPG power supply status
+)
+ANDN xEmer                         ** emerg
+ST   AutoSwitchOn
+
+CAL  TON_LASER_REQ(IN=AutoSwitchOn, PT=0) ** autostart: Laser request OUT
+
+LD   AutoSwitchOn
+AND  O_A1_LASER_REQ                ** IPG Richiesta Laser
+ST   Appoggio
+
+CAL  TON_LASER_SWITCH(IN=Appoggio, PT=1000) ** autostart: Laser switch on OUT
+
+LD   AutoSwitchOn
+AND  O_C1_LASER_SWITCH             ** IPG Laser Switch ON
+ST   Appoggio
+
+CAL  TON_ANALOG_CONTROL(IN=Appoggio, PT=1000) ** autostart: analog control OUT
+
+CAL  RTRIG_RESET(CLK=xReset)       ** trigger on reset button
+
+LD   RTRIG_RESET.Q
+JMPCN NoReset
+
+LD   0
+ST   yError                        ** error
+ST   yWarning                      ** warning
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   yState                        ** 1=EMISSION ON, 0=EMISSION OFF
+
+NoReset:
+
+*******************************************************************************
+*   A01 Laser request (wait Laser_ASSIGNED)
+*******************************************************************************
+CAL  R_TRIG_RemLaserOn(CLK=RemContrLaserOn)
+LD   R_TRIG_RemLaserOn.Q
+AND  O_A1_LASER_REQ
+R    BTN_LASER_REQUEST
+
+LD   R_TRIG_RemLaserOn.Q
+ANDN O_A1_LASER_REQ
+S    BTN_LASER_REQUEST
+
+LD   BTN_LASER_REQUEST 
+ANDN AutoSwitchOn
+AND  YLSseries
+OR (
+LD   BTN_LASER_REQUEST
+ANDN AutoSwitchOn
+AND  YLRseries
+AND  I_B8_POWER_SUPPLY             ** IPG power supply status (IW1.6)
+)
+OR   TON_LASER_REQ.Q
+ANDN xSIM                          ** Laser in simulation (become from LSR_GEST)
+ST   O_A1_LASER_REQ                ** IPG Richiesta Laser (QW3.11)
+
+*******************************************************************************
+*   C01 POWER SUPPLY ON (wait B8 power supply status)
+*******************************************************************************
+LD   BTN_POWER_ON
+ANDN AutoSwitchOn
+OR   TON_LASER_SWITCH.Q
+AND  O_A1_LASER_REQ                ** IPG Richiesta Laser
+AND  I_B7_LASER_ASSIGNED           ** IPG Laser ASSIGNED
+ANDN xSIM                          ** Laser in simulation (become from LSR_GEST)
+AND  YLSseries
+ST   O_C1_LASER_SWITCH             ** IPG Laser Switch ON
+
+*******************************************************************************
+*   A05 Guide laser ON
+*******************************************************************************
+CAL  RTRIG_REM_GUIDE_LAS(CLK:=RemContrGuideLas)        * Xhc_Puls.17 Laser shut 
+
+CAL  CTU_PULS_Guide_Las(CU:=RTRIG_REM_GUIDE_LAS.Q,R=CTU_PULS_Guide_Las.Q,PV=2)
+
+LD   CTU_PULS_Guide_Las.CV
+EQ   1
+ST   Guide_Las
+
+LD   BTN_GUIDE_ON
+OR   Guide_Las
+ANDN xSIM                          ** Laser in simulation (become from LSR_GEST)
+ST   O_A5_GUIDE_LASER              ** IPG Laser spot guide ON
+
+*******************************************************************************
+*   A06 Analog control ON
+*******************************************************************************
+LD   BTN_ANALOG_ON
+OR   TON_ANALOG_CONTROL.Q
+ANDN xSIM                          ** Laser in simulation (become from LSR_GEST)
+ST   O_A6_ANALOG_CONTROL           ** IPG Controllo analogico ON
+
+*******************************************************************************
+*   A03 Enable internal control
+*******************************************************************************
+LD   BTN_INT_ON
+ANDN xSIM                          ** Laser in simulation (become from LSR_GEST)
+ST   O_A3_INT_CONTROL              ** IPG Abilitazione Controllo interno
+
+*******************************************************************************
+*   A04 Reset
+*******************************************************************************
+LD   BTN_RESET
+*OR   xReset                        ** reset
+ANDN xSIM                          ** Laser in simulation (become from LSR_GEST)
+ST   O_A4_LASER_RESET              ** IPG Resetta errori
+
+*******************************************************************************
+*   START PROGRAM
+*******************************************************************************
+*LD   xEmission                     ** Emission command
+*ANDN xSIM                          ** Laser in simulation (become from LSR_GEST)
+*ST   O_A2_LASER_PROG_RUN           ** IPG (START PROGRAM)
+
+*******************************************************************************
+*   ERROR
+*******************************************************************************
+*** Allarme errore laser (B4)
+LD   I_B4_LASER_ERROR              ** IPG YLS YLR Laser in Alarm status
+ST   yError.0
+
+*** Allarme laser non attivo (A2 senza B1)
+LD   O_A2_LASER_PROG_RUN           ** IPG (START PROGRAM)
+ANDN I_B1_LASER_READY              ** IPG Laser internal main power supply ON (Aux Power ON)
+ST   yError.1
+
+*** Allarme laser non assegnato (A1 senza B7)
+LD   O_A1_LASER_REQ                ** IPG Richiesta Laser
+ANDN I_B7_LASER_ASSIGNED           ** IPG Laser ASSIGNED
+ST    Aux_Allarme
+
+CAL  TON1(IN=Aux_Allarme,PT=3000)  ** timeout 1
+LD   TON1.Q
+ST   yError.2
+
+*** Allarme laser non attivo (C1 senza B8)
+LD   O_C1_LASER_SWITCH             ** IPG Laser Switch ON
+ANDN I_B8_POWER_SUPPLY             ** IPG power supply status
+ST   Aux_Allarme
+
+CAL  TON2(IN=Aux_Allarme,PT=5000)  ** timeout 1
+LD   TON2.Q
+ST   yError.3
+
+*** Allarme Trascorso tempo massimo attesa segnale emission on dal laser
+LD   O_A2_LASER_PROG_RUN           ** IPG (START PROGRAM)
+ANDN I_B2_EMISSION_ON              ** IPG Emission ON
+ST   Feedback_Emission_ON
+
+CAL  TON3(IN=Feedback_Emission_ON,PT=3000) ** timeout 1
+
+LD   TON3.Q
+ST   yError.4
+
+
+*******************************************************************************
+*   WARNING
+*******************************************************************************
+*** Messaggio laser in stato di pre-allarme (B13)
+
+LD   I_B13_AVVERTENZA              ** IPG WARNING OUT
+ST   yWarning.0
+
+LD   O_A2_LASER_PROG_RUN           ** IPG (START PROGRAM)
+***AND  I_B2_EMISSION_ON              ** IPG Emission ON
+ST   yState                        ** 1=EMISSION ON, 0=EMISSION OFF
+
+
+*******************************************************************************
+*   HMI
+*******************************************************************************
+
+*** Buttons
+
+LD   O_A1_LASER_REQ                ** IPG Richiesta Laser
+ST   %Leds0.0
+LD   O_C1_LASER_SWITCH             ** IPG Laser Switch ON
+ST   %Leds0.1
+LD   O_A4_LASER_RESET              ** IPG Resetta errori
+ST   %Leds0.2
+LD   O_A3_INT_CONTROL              ** IPG Abilitazione Controllo interno
+ST   %Leds0.3
+LD   O_A6_ANALOG_CONTROL           ** IPG Controllo analogico ON
+ST   %Leds0.4
+LD   O_A5_GUIDE_LASER              ** IPG Laser spot guide ON
+ST   %Leds0.5
+LD   O_A2_LASER_PROG_RUN           ** IPG (START PROGRAM)
+ST   %Leds0.6
+
+*** Feedback
+
+LD   I_B7_LASER_ASSIGNED           ** IPG Laser ASSIGNED
+ST   %Leds1.0
+LD   I_B8_POWER_SUPPLY             ** IPG power supply status
+ST   %Leds1.1
+LD   I_B3_INT_CONTROL              ** IPG Controllo interno abilitato
+ST   %Leds1.2
+LD   I_B6_ANALOG_CONTROL           ** IPG Controllo analogico ON
+ST   %Leds1.3
+LD   I_B5_LASER_GUIDE              ** IPG Laser guida ON
+ST   %Leds1.4
+LD   I_B1_LASER_READY              ** IPG Laser internal main power supply ON (Aux Power ON)
+ST   %Leds1.5
+LD   I_B2_EMISSION_ON              ** IPG Emission ON
+ST   %Leds1.6
+LD   I_B13_AVVERTENZA              ** IPG WARNING OUT
+ST   %Leds1.7
+LD   I_B4_LASER_ERROR              ** IPG YLS YLR Laser in Alarm status
+ST   %Leds1.8
+
+*** If laser in simulation
+
+LD   xSIM                          ** Laser in simulation (become from LSR_GEST)
+JMPCN NoLaserInSIM
+LD   0
+ST   yError                        ** error
+ST   yWarning                      ** warning
+
+LD   xEmission                     ** Emission command
+ST   yState                        ** 1=EMISSION ON, 0=EMISSION OFF
+NoLaserInSIM:
+
+END_FUNCTION_BLOCK

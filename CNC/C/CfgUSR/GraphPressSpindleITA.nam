@@ -1,0 +1,17 @@
+[KEYS]
+TITLE=Pressione - Diametro
+
+[PROMPT]
+KEY_NODE=Nodo
+GRAPHPRESSSPINDLE=Leaf
+Plot1=Pressione - Diametro
+L_TYPE_INTERP1=Schema
+LIST0=Lineare,Segmento,Smussatura
+L_TYPE_INTERP2=Punti
+L_SPEED1=D [mm]
+L_POWER2=P [bar]
+
+[STATUS]
+Plot1=Pressione (bar), Diametro (mm)
+
+[HELP]

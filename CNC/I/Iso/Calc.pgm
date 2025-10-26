@@ -1,0 +1,10 @@
+%Calc
+
+.Loop
+SYN
+JSR "Comp"
+G4F0.2
+JMPB.Loop
+
+M30
+

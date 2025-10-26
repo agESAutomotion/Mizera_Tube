@@ -1,0 +1,14 @@
+ [C]0 [B]0 [A]0 :G182
+;//
+;// G182    [C<rot_z>] [B<rot_y>] [A<rot_x>]
+;//
+;//tool vector RPY rotation in G172 I2 mode
+
+SPC 30160, VA2
+SPC 30162, VA1
+SPC 30164, VA0
+pl_tool_c = VA2
+pl_tool_b = VA1
+pl_tool_a = VA0
+G152
+RET

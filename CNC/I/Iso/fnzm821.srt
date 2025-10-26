@@ -1,0 +1,13 @@
+: 
+; Freeze regulation on
+DBL hix = 0   ; for one head ok
+
+SPC 30099,1  ;Preprocessor sync
+
+?%uvHeads0.uvhCommand[0].3 = gFreeze    ; per retrace !
+gFreeze = 1
+?%uvHeads0.uvhCommand[0].3 = gFreeze
+
+SPC 30099,1  ;Preprocessor sync
+
+RET

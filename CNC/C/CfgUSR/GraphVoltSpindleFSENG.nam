@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=Pressure - Volt
+
+[PROMPT]
+KEY_NODE=Node
+GRAPHPRESSSPINDLE=Leaf
+Plot1=Pressure - Volt
+L_TYPE_INTERP1=Pattern
+LIST0=Linear,Segment,Smoothing
+L_TYPE_INTERP2=Points
+L_SPEED1=P [bar]
+L_POWER2=V [Volt]
+
+[STATUS]
+Plot1=Voltage(V),Pressure(bar)
+
+[HELP]

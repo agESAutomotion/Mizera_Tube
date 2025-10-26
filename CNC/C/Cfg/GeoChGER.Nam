@@ -1,0 +1,28 @@
+[PROMPT]
+KEY_GEOCHAN   =Geometrie Kanal
+
+GC_GEOTYPE    = Typ Geometrie
+GC_MODE       = Mode (0=gesper.1=freig.)
+GC_X_ANG_SGN  = Inversion Wkl(B)
+GC_X_ANG      = Winkel (B) Achse X
+GC_X_DST_SGN  = Inversion Achse(X)
+GC_X_DST      = Abstand X von CM
+GC_Y_ANG_SGN  = Inversion Wkl(A)
+GC_Y_ANG      = Winkel (A) Achse Y
+GC_Y_DST_SGN  = Inversion Achse(Y)
+GC_Y_DST      = Abstand Y von CM
+GC_Z_ANG_SGN  = Inversion Wkl(xx)
+GC_Z_ANG      = Winkel Achse Z
+GC_Z_DST_SGN  = Inversion Achse(Z)
+GC_Z_DST      = Abstand Z von CM
+GC_EA_DEF_SGN = Inversion Wkl(EA)
+GC_EA_DEF     = Winkel Tool (EA)
+GC_EB_DEF_SGN = Inversion Wkl(EB)
+GC_EB_DEF     = Winkel Tool (EB)
+GC_EC_DEF_SGN = Inversion Wkl(EC)
+GC_EC_DEF     = Winkel Tool (EC)
+
+
+[HELP]
+
+

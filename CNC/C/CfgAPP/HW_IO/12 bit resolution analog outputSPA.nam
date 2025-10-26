@@ -1,0 +1,13 @@
+
+[KEYS]
+TITLE=Analog Output
+
+[PROMPT]
+KEY_NODE=Node
+12_BIT_RESOLUTION_ANALOG_OUTPUT=Leaf
+PIN=PIN1: Output signal QW24
+PIN3=PIN2: Ground signal reference
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,31 @@
+ [D]0 L R [E]0 :G310
+;//
+;// Helper macro
+;// Imposta alcuni dati dimensionali nel correttore utensile specificato.
+;//
+;// Sintassi
+;//
+;// G310    [D<tool_descr>] L<length> R<radius> [E<torical_radius>]
+;//
+;// Se tool_descr e' 0 viene modificato il correttore correntemente selezionato
+;// con G172 D:  se G172 D e' 0 si ha un errore.
+;//
+
+DBL index = CEDIDX(VA3)
+IF( index == 0 ) ERROR(63) ;//Descrittore Utensile Errato
+
+LSYN
+%ced[index].dRad = CTOMM(VA17)
+%ced[index].dTRad = CTOMM(VA4)
+%ced[index].dLenZ = CTOMM(VA11)
+%ced[index].dThick = 0
+%ced[index].dLenX = 0
+%ced[index].dLenY = 0
+
+;//ISO: su alcune versioni richiesto cambiamento di D
+IF( CEDIDX(0) == index ) THEN
+    G153
+    G152
+ENDIF
+
+RET

@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=Bevel 0°
+
+[PROMPT]
+KEY_NODE=Node
+GRAPH1=Leaf
+Plot1.1=Linearization
+L_TYPE_INTERP2=Points
+L_Height=Height [mm]
+L_Voltage=Voltage [ADC]
+L_TYPE_INTERP1=Pattern
+LIST0=Linear,Segment,Smoothing
+
+[STATUS]
+Plot1.1=Height(mm),Voltage(DAC)
+
+[HELP]

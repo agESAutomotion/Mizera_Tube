@@ -1,0 +1,62 @@
+[C]-1 M :601
+
+
+RET
+;G601 PLC Func M
+;---------------------------------------
+;(VA2)  C ID canale
+;(VA12) M FunzM
+DBL Cn=VA2
+DBL Mfunc=VA12
+STR msg
+
+SYN
+msg=%cn0.ms0
+IF ((%Uipl.CurPsw<4) && (%Uipl.CurPsw>=0)) MSGOUT "FuncM-601: Ch." VA2 " M." VA12
+
+SYN
+;Verifica parametri
+IF (VA2<0) Cn=WHO()                         ;Canale richiamo G601
+IF ((Mfunc>127) || (Mfunc<0)) JMP .ERR1     ;M non gestita
+IF ((Cn>9) || (Cn<0)) JMP .ERR2             ;Ch non gestito
+
+SYN
+;Verifica se in attesa di un'altra M
+AWAIT((%cn[Cn].rc9>127) || (!%cn[Cn].rc8.4))
+AWAIT(%zCh[Cn].CodeFunzM<0)
+AWAIT(!%zCh[Cn].WaitMFun.0)
+AWAIT(!%zCh[Cn].AckMFun.0)
+AWAIT(!%zCh[Cn].StrobeMFun.0)
+
+SYN
+?%zCh[Cn].CodeFunzM=Mfunc       ;Invio numero M
+;G4F0.1
+?%zCh[Cn].StrobeMFun.0=1        ;Attiva Strobe M
+
+SYN
+;Attendi finito M
+AWAIT(!%zCh[Cn].WaitMFun.0)
+AWAIT(!%zCh[Cn].AckMFun.0)
+AWAIT(!%zCh[Cn].StrobeMFun.0)
+AWAIT(%zCh[Cn].CodeFunzM<0)
+
+;END
+SYN
+%cn0.ms0=msg
+RET
+
+
+
+;Gestione Errori
+;------------------------------------------------
+.ERR1
+SYN
+MSGOUT "G601 ERROR FuncM OUT-RANGE (0..127)"
+M0
+JMP .ERR1
+
+.ERR2
+SYN
+MSGOUT "G601 ERROR Chanel OUT-RANGE (0..9)"
+M0
+JMP .ERR2

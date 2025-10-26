@@ -1,0 +1,16 @@
+
+[KEYS]
+TITLE=Info
+
+[PROMPT]
+KEY_NODE=
+INFOMACHINE=Leaf
+Application2=Applicazione
+AmbienteKvara2=Ambiente Kvara
+DataRilascio2=Data della versione
+Versione PLC2=Versione PLC
+Versione ISO2=Versione ISO
+
+[STATUS]
+
+[HELP]

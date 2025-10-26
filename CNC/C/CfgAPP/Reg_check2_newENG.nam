@@ -1,0 +1,29 @@
+
+[KEYS]
+TITLE=Jumping data
+
+[PROMPT]
+KEY_NODE=Node
+REG_CHECK2=Jumping data
+LabelDist1=P1 - Max. limit zone 1 for checking jump distance [mm]
+LabelK=K1-K2-K3   % Height distance for jump, with respect to the range
+LabelDist2=P2 - Max. limit zone 2 for checking jump distance [mm]
+LabelJumpingDistance=JUMPING DISTANCE
+LabelJumpingDistance1=JUMPING DISTANCE
+LabelP1=P1
+LabelP2=P2
+LabelD1=D1
+LabelD2=D2
+LabelD3=D3
+LabelK1=K1
+LabelK2=K2
+LabelK3=K3
+LabelK4=D1-D2-D3   Distance to enable the regulation [mm]
+LabelK5=Distance to enable the regulation
+LabelStartPoint=START
+LabelEndPoint=END
+LabelMax=MAX
+
+[STATUS]
+
+[HELP]

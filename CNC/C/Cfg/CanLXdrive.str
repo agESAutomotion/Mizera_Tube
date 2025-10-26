@@ -1,0 +1,162 @@
+[STRUCT]
+
+[LX_NUMOBJS]
+ADR = CanObjs   
+FRM = CBX,3      
+RNG = {0,4111,12303}
+LST = LX_NUMOBJSLIST
+RST = 1
+LEN = 20    
+HLP = ERL_NUMOBJS
+
+[PAR_LXRECORD1]
+CLR = 7
+
+[PAR_LXDGTIN]
+CLR = 7
+
+[LX_VXOBJ8]
+ADR = CanVx8
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ9]
+ADR = CanVx9
+LEN = 9
+FRM = DEC, 4
+
+[LX_VXOBJ10]
+ADR = CanVx10
+LEN = 9
+FRM = DEC, 2
+
+[LX_VXOBJ11]
+ADR = CanVx11
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ12]
+ADR = CanVx12
+LEN = 9
+FRM = DEC, 2
+
+[LX_VXOBJ13]
+ADR = CanVx13
+LEN = 9
+FRM = DEC, 2
+
+[LX_VXOBJ14]
+ADR = CanVx14
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ15]
+ADR = CanVx15
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ16]
+ADR = CanVx16
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ17]
+ADR = CanVx17
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ18]
+ADR = CanVx18
+LEN = 9
+FRM = DEC, 2
+
+[LX_VXOBJ19]
+ADR = CanVx19
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ20]
+ADR = CanVx20
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ21]
+ADR = CanVx21
+LEN = 9
+FRM = DEC, 1
+
+[LX_VXOBJ22]
+ADR = CanVx22
+LEN = 9
+FRM = DEC, 2
+
+[LX_VXOBJ23]
+ADR = CanVx23
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ24]
+ADR = CanVx24
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ25]
+ADR = CanVx25
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ26]
+ADR = CanVx26
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ27]
+ADR = CanVx27
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ28]
+ADR = CanVx28
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ29]
+ADR = CanVx29
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ30]
+ADR = CanVx30
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ31]
+ADR = CanVx31
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ32]
+ADR = CanVx32
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ33]
+ADR = CanVx33
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ34]
+ADR = CanVx34
+LEN = 9
+FRM = DEC, 0
+
+[LX_VXOBJ35]
+ADR = CanVx35
+LEN = 9
+FRM = DEC, 0
+
+
+
+
+
+

@@ -1,0 +1,196 @@
+ T W :@@FAST@@ ; 650
+;-----------------------------------------------------------------------------
+;Working table selection, Plasma/Oxy technology
+;(see Macro Instructions G650 G651 and G659.pdf for details)
+
+;T (VA19) = Type of technology: 0=Generic, 1=Plasma, 2=Oxyfuel, 3=Laser, 4=Waterjet
+;W (VA22) = Table index
+;-----------------------------------------------------------------------------
+
+DBL ind = VA22
+DBL TechType = VA19
+
+DBL sav_G70=XGET("@G70")
+G271
+
+DBL xe = %gIso[20]/1000
+DBL ye = %gIso[21]/1000
+
+IF( %cn[WHO()].pc[14].25 ) %HMI_ONE.value[ind] = ind
+
+?%LsIso11 = ind                 ; to make sure that this line is used in G840
+  gLcutId = ind
+
+; Allow film burning color change IF decided from interface
+IF (%LsGui26.0) THEN
+    VA22 = 5
+    VL22 = 5
+    ind = 5
+ENDIF
+
+;$APPLICATION
+IF (TechType == 3) THEN
+    SWITCH (ind)
+    CASE 1
+        tabColor = 1
+    CASE 2
+        tabColor = 4
+    CASE 3
+        tabColor = 11
+    CASE 4
+        tabColor = 3
+    CASE 5
+        tabColor = 5
+    CASE 6
+        tabColor = 2
+     CASE 7
+        tabColor = 6
+    CASE 9
+        tabColor = 13
+    CASE 10
+        tabColor = 15
+    OTHERWISE
+        tabColor = 0   ;same as flycut disable
+    ENDSWITCH
+;    tabColor = -1
+ENDIF
+
+VL22=VA22  ;Per passare il valore della finitura taglio della ricetta al ciclo fisso (LsrOn)
+VG22=VA22
+
+;//Ottimizzazione nel caso la tabella non cambi.
+;//Nota che se l'indice é uguale a 0 la tabella puo' essere stata cambiata con
+;//G651 senza che cambi l'indice e l'ottimizzazione non avviene.
+;//Allo stato attuale %Tab___[0].W_Tickness non viene reinizializzato se
+;//non cambiano T o W o W==0.
+
+g650executed = 1      ; for G153 to understand the cycle is working on program run 
+g1000executed = 0
+
+IF( (ind != 0) && (gTechType == TechType) && (gTechLastIndex == ind) ) G(200+sav_G70)
+IF( (ind != 0) && (gTechType == TechType) && (gTechLastIndex == ind) ) RET
+
+IF( ( ind <= 0 ) || ( ind > 15 ) ) ERROR(777) ;Wrong work table number
+;//XXX attualmente la G650 non scrive in shared in grafica.
+
+IF( %cn[WHO()].rc[0].21 ) G(200+sav_G70)
+IF( %cn[WHO()].rc[0].21 ) RET          ;Canale in test
+
+;$APP
+;//Non accettare: 0=Tecnologia generica
+IF( TechType == 0 ) ERROR(778) ;Wrong technology selected (G650)
+
+;//Le tabelle di taglio sono utilizzate sia dall'interprete che dal PLC
+IF (TechType != 3) SYN      ;//Using passthru writes
+
+;//Metti questi dati a valori di sicurezza o che causino errore nel caso sia
+;//selezionata una tecnologia che non le usa
+cut_speed = 0
+lead_in_speed = 0
+feed1 = 0
+feed2 = 0
+feed3 = 0
+feed4 = 0
+feed5 = 0
+;G310 D1 L0 R(0)
+;G310 D2 L0 R(0)
+;G310 D3 L0 R(0)
+workpiece_safe_dist = 10000
+workpiece_safe_dist_leave = 10000
+F(0)
+
+;Laser
+IF( TechType == 3 ) THEN
+    IF( ind > 0 ) THEN
+        IF( !%PlcOp[0].4 ) THEN             ;Disable G65X
+            ?%TabLsr[0].L_WorkType         = %TabLsr[ind].L_WorkType          
+            
+            ?%TabLsr[0].L_BevelAngle     = %TabLsr[ind].L_BevelAngle
+            ?%TabLsr[0].L_PierceHeight   = %TabLsr[ind].L_PierceHeight
+            ?%TabLsr[0].L_PierceTime     = %TabLsr[ind].L_PierceTime
+          ; ?%TabLsr[0].L_CutDistance    = %TabLsr[ind].L_CutDistance
+          ; gL_CutDistance    = %TabLsr[ind].L_CutDistance
+            ?%TabLsr[0].L_FeedA          = %TabLsr[ind].L_FeedA
+            ?%TabLsr[0].L_FeedB          = %TabLsr[ind].L_FeedB
+            ?%TabLsr[0].L_FeedC          = %TabLsr[ind].L_FeedC
+            ?%TabLsr[0].L_FeedMarking    = %TabLsr[ind].L_FeedMarking
+            ?%TabLsr[0].L_FeedDecoating  = %TabLsr[ind].L_FeedDecoating
+            ?%TabLsr[0].L_KerfA          = %TabLsr[ind].L_KerfA                 ; senza ?
+            ?%TabLsr[0].L_KerfB          = %TabLsr[ind].L_KerfB
+            ?%TabLsr[0].L_KerfC          = %TabLsr[ind].L_KerfC
+         ;   ?%TabLsr[0].L_SafeDistance   = %TabLsr[ind].L_SafeDistance
+            ?%TabLsr[0].L_PiercePower    = %TabLsr[ind].L_PiercePower
+            ?%TabLsr[0].L_PierceFreq     = %TabLsr[ind].L_PierceFreq
+            ?%TabLsr[0].L_PierceDuty     = %TabLsr[ind].L_PierceDuty
+            ?%TabLsr[0].L_PierceGas      = %TabLsr[ind].L_PierceGas
+            ?%TabLsr[0].L_PiercePressure = %TabLsr[ind].L_PiercePressure
+          ; ?%TabLsr[0].L_PierceFocal    = %TabLsr[ind].L_PierceFocal
+            ?%TabLsr[0].L_CutPower       = %TabLsr[ind].L_CutPower
+            ?%TabLsr[0].L_CutFreq        = %TabLsr[ind].L_CutFreq
+            ?%TabLsr[0].L_CutDuty        = %TabLsr[ind].L_CutDuty              ; duty
+          ; ?%TabLsr[0].L_UserInt8        = %TabLsr[ind].L_UserInt8            ; DutyMin [NOT USED]
+            ?%TabLsr[0].L_UserInt9        = %TabLsr[ind].L_UserInt9            ; Kp lavorazione
+            ?%TabLsr[0].L_SourceInt17     = %TabLsr[ind].L_SourceInt17         ; speed for lead in
+            ?%TabLsr[0].L_SourceInt18     = %TabLsr[ind].L_SourceInt18         ; distance for lead-in
+            
+           ?%LsIso[83] = %TabLsr[ind].L_SourceInt16.2               ; Enable Duty management by speed
+           ?%LsIso[84] = %TabLsr[ind].L_SourceInt16.3               ; Enable Power management by speed 
+           ?%LsIso[85] = %TabLsr[ind].L_SourceInt16.4               ; Enable Frequency management by speed
+       
+            ?%TabLsr[0].L_CutGas         = %TabLsr[ind].L_CutGas
+            ?%TabLsr[0].L_CutPressure    = %TabLsr[ind].L_CutPressure
+          ; ?%TabLsr[0].L_CutFocal       = %TabLsr[ind].L_CutFocal
+            ?%TabLsr[0].L_PiercingMode   = %TabLsr[ind].L_PiercingMode
+        ENDIF
+    ENDIF
+
+    ;//(G650 passthru): initialCutDist = %TabLsr[0].L_CutDistance
+    initialCutDist = gL_CutDistance
+    rtCutDist = initialCutDist
+    cutDistRtChg = 0
+
+    ;//(G650 passthru): orig_z= %TabLsr[0].L_Tickness / 1000
+    orig_z= gL_Tickness
+    feed1 = %TabLsr[ind].L_FeedA
+    feed2 = %TabLsr[ind].L_FeedB
+    feed3 = %TabLsr[ind].L_FeedC
+    feed4 = %TabLsr[ind].L_FeedMarking
+    feed5 = %TabLsr[ind].L_FeedDecoating
+    ;G310 D1 L0 R(%TabLsr[ind].L_KerfA)
+    ;G310 D2 L0 R(%TabLsr[ind].L_KerfB)
+    ;G310 D3 L0 R(%TabLsr[ind].L_KerfC)
+    LSYN
+    %ced[1].dRad = CTOMM(%TabLsr[ind].L_KerfA)
+    %ced[2].dRad = CTOMM(%TabLsr[ind].L_KerfB)
+    %ced[3].dRad = CTOMM(%TabLsr[ind].L_KerfC)
+    workpiece_safe_dist = %TabLsr[ind].L_SafeDistance
+    IF(workpiece_safe_dist < 10 )THEN
+        workpiece_safe_dist = 30
+    ENDIF
+    workpiece_safe_dist_leave = %TabLsr[ind].L_SafeDistance
+    IF(workpiece_safe_dist_leave < 10 )THEN
+        workpiece_safe_dist_leave = 30
+    ENDIF
+    F(feed1)
+ENDIF
+
+;Gestione origini
+;XXX Laser does not handle thickness (as an origin)
+IF (TechType != 3) THEN
+    IF( gTravE != 0 ) THEN
+        ;tubo
+        G161 L(ml_usr_origin) X(orig_x)
+    ELSE
+        ;piano
+        G161 L(ml_usr_origin) X(orig_x) Y(orig_y) Z(orig_z)
+    ENDIF
+ENDIF
+
+gTechType = TechType
+gTechLastIndex = ind
+
+?%gIso[0] = gTechType;
+?%C19 = gTechLastIndex               ;Tabella di lavoro selezionata
+G(200+sav_G70)
+
+RET

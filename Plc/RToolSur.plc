@@ -1,0 +1,776 @@
+*=========================================================================
+* VRTC GATEWAY VARIABLES SECTION
+*=========================================================================
+#funcdec "ASSI.plc"
+#funcdec "CNC.plc"
+#funcdec "StatMReg.plc"
+
+VAR
+REG_MAC:  REG_STATE_MACHINE;
+vrtcExTool:         VRTC_EX;
+vrtcExSurface:      VRTC_EX;
+
+plcVrtcHandling:       BOOL;
+firstCallToPlcHandler:  BOOL;
+
+toolCommandToggle:      BOOL;
+surfaceCommandToggle:   BOOL;
+appoggio:               BOOL;
+
+TR_ToolVrtcToggle:      TRIG;
+TR_SurfaceVrtcToggle:   TRIG;
+RTR_PlcVrtcHandling:    R_TRIG;
+cosAngle:               DWORD;
+ActVPBSelect:           DWORD;
+TP_reset:               TP;
+
+SensorGain:             DWORD;
+
+END_VAR
+
+VAR_IN_OUT
+UVH_COMMAND_0                          AT %uvhCommand0;
+UVH_COMMAND_MACHINE_MODE               AT %uvhCommand1;
+UVH_COMMAND_PLC_VRTC_HANDLING          AT %uvhCommand0.1;
+UVH_COMMAND_START_COMMAND              AT %uvhCommand0.2;
+UVH_COMMAND_FREEZE_REGOL               AT %uvhCommand0.3;
+UVH_COMMAND_JUMP                       AT %uvhCommand0.4;
+UVH_COMMAND_L10                        AT %uvhCommand0.5;  
+UVH_COMMAND_L3                         AT %uvhCommand0.6;
+UVH_STATUS_PLC_VRTC_HANDLING           AT %uvhStatus0.1;
+UVH_STATUS_MACHINE_MODE                AT %uvhStatus1;
+UVH_STATUS_COMMAND_RUNNING             AT %uvhStatus0.2;
+                                       
+UVH_TOOL_COMMAND_RESET                 AT %uvhToolCommand0.0;
+UVH_TOOL_COMMAND_SIMUL                 AT %uvhToolCommand0.1;
+UVH_TOOL_COMMAND_MOVE_TO_TARGET        AT %uvhToolCommand0.2;
+UVH_TOOL_COMMAND_RES_POS_INT           AT %uvhToolCommand0.3;
+UVH_TOOL_COMMAND_POS_LIM_DISAB         AT %uvhToolCommand0.4;
+UVH_TOOL_COMMAND_DE_OVERLAP_ENAB       AT %uvhToolCommand0.5;
+UVH_TOOL_COMMAND_ERROR_AMP_ENAB        AT %uvhToolCommand0.6;
+UVH_TOOL_COMMAND_TOGGLE                AT %uvhToolCommand0.31;
+UVH_TOOL_COMMAND_SIM_OFFSET_SET        AT %uvhToolCommand1;
+UVH_TOOL_COMMAND_SETPOINT              AT %uvhToolCommand2;
+UVH_TOOL_COMMAND_VECTOR_SELECT         AT %uvhToolCommand3;
+                                       
+UVH_TOOL_STATUS_SIGNAL_LOCK            AT %uvhToolStatus0.2;
+UVH_TOOL_STATUS_TOGGLE_ACK             AT %uvhToolStatus0.31;
+UVH_TOOL_STATUS_SIM_OFFSET_CUR         AT %uvhToolStatus1;
+UVH_TOOL_STATUS_FLT_Q                  AT %uvhToolStatus2;
+
+UVH_SURFACE_COMMAND_RESET              AT %uvhSurfaceCommand0.0;
+UVH_SURFACE_COMMAND_SIMUL              AT %uvhSurfaceCommand0.1;
+UVH_SURFACE_COMMAND_MOVE_TO_TARGET     AT %uvhSurfaceCommand0.2;
+UVH_SURFACE_COMMAND_RES_POS_INT        AT %uvhSurfaceCommand0.3;
+UVH_SURFACE_COMMAND_POS_LIM_DISAB      AT %uvhSurfaceCommand0.4;
+UVH_SURFACE_COMMAND_DE_OVERLAP_ENAB    AT %uvhSurfaceCommand0.5;
+UVH_SURFACE_COMMAND_ERROR_AMP_ENAB     AT %uvhSurfaceCommand0.6;
+UVH_SURFACE_COMMAND_TOGGLE             AT %uvhSurfaceCommand0.31;
+UVH_SURFACE_COMMAND_SIM_OFFSET_SET     AT %uvhSurfaceCommand1;
+UVH_SURFACE_COMMAND_SETPOINT           AT %uvhSurfaceCommand2;
+UVH_SURFACE_COMMAND_VECTOR_SELECT      AT %uvhSurfaceCommand3;
+
+UVH_SURFACE_STATUS_SIGNAL_LOCK         AT %uvhSurfaceStatus0.2;
+UVH_SURFACE_STATUS_TOGGLE_ACK          AT %uvhSurfaceStatus0.31;
+UVH_SURFACE_STATUS_SIM_OFFSET_CUR      AT %uvhSurfaceStatus1;
+UVH_SURFACE_STATUS_FLT_Q               AT %uvhSurfaceStatus2;
+
+
+VRMON_Q_FLT_Q                          AT %VrMon_Q_Flt_Q;
+VrSensorGain                          AT %VrSensorGain;
+END_VAR
+
+FUNCTION_BLOCK REG_T_S
+
+VAR_INPUT
+
+* Tool VRTC Input
+
+xToolVrtcSetPoint:       DWORD;
+xToolVrtcId:            DWORD;
+xToolSim:                BOOL; 
+
+xLimDownSpeed:            BOOL;                         
+                         
+xSensorRes:              DWORD;         * Capacitive sensor resolution (4095,32767,65535)
+xNextPos_X_Jump_VRTC:    DWORD;         * X setpoint coordinate for jump 
+xNextPos_Y_Jump_VRTC:    DWORD;         * Y setpoint coordinate for jump
+xNextPos_C_Jump_VRTC:    DWORD;         * C setpoint coordinate for jump
+xNextPos_Z_Jump_VRTC:    DWORD;         * Z setpoint coordinate for jump
+
+xInit_X_Posit_VRTC:      DWORD;         * X init jump position
+xInit_Y_Posit_VRTC:      DWORD;         * Y init jump position
+xInit_C_Posit_VRTC:      DWORD;         * C init jump position
+xInit_Z_Posit_VRTC:      DWORD;         * C init jump position
+
+xNextSetpVRTC:           DWORD;         * Setpoint after jump    
+xPrevSetpVRTC:           DWORD;         * last setpoint before jump  
+xDistEnabRegulVRTC:      DWORD;         * Distance from target to enab regulation during jump   
+xZDistStopProbeJVRTC:    DWORD;         * distance along Z to disable the probe vpbselector during jump
+
+xActual_X_Posit_VRTC:    DWORD;         * X Actual position 
+xActual_Y_Posit_VRTC:    DWORD;         * Y Actual position   
+xActual_C_Posit_VRTC:    DWORD;         * C Actual position   
+xActual_Z_Posit_VRTC:    DWORD;         * Z Actual position   
+
+* Surface VRTC Input
+
+xSurfVrtcId:            DWORD;
+xSurfaceSim:            BOOL;
+xLimSpeedPierc:           BOOL;
+xAngleBev:              DWORD;
+xSpeedForPiercing:        DWORD;                 * Speed for Z axi during piercing
+                    
+xHead:                  DWORD;
+xChannel:               DWORD;
+xZtcp:                  DWORD;
+xProbThreshold:         DWORD;
+xSensorRange:           DWORD;
+xFirstFirCost_VRTC:     DWORD;         * ms
+xSecondFirCost_VRTC:    DWORD;         * ms  
+xDelayCost_VRTC:        DWORD;         * ms
+xMove_Z_SetP_VRTC:        DWORD;
+
+xMove_Z_VRTC:           BOOL;
+xHold_VRTC:             BOOL;
+xRealTimeFreeze:         BOOL; 
+
+END_VAR
+
+VAR_OUTPUT
+yWaitVRTC:               BOOL;  
+yIncSetPReachedVRTC:     BOOL;
+yL3SetpointReachedVRTC:   BOOL;
+END_VAR
+*=========================================================================
+* VRTC GATEWAY SECTION
+*=========================================================================
+***
+* Vrtc Sensor gain settings
+
+LD   xSensorRes
+MUL  10000
+DIV  xSensorRange
+MUL  100
+ST   SensorGain
+
+PATH    %vrtc[xToolVrtcId]
+LD   SensorGain
+ST   VrSensorGain
+
+PATH    %vrtc[xSurfVrtcId]
+LD   SensorGain
+ST   VrSensorGain
+
+**
+
+
+*** COMMON ***
+
+LDN     %rc8.21                     * M_IDLE
+JMPC    skip_vrtc_idle
+
+    LD      0
+    ST      UVH_COMMAND_0
+
+skip_vrtc_idle:
+
+LD      UVH_COMMAND_PLC_VRTC_HANDLING
+ST      plcVrtcHandling
+
+*** TOOL VRTC ***
+
+* in cima
+LD      UVH_TOOL_COMMAND_TOGGLE
+ST      toolCommandToggle
+
+CAL     TR_ToolVrtcToggle(CLK=toolCommandToggle)
+LDN     TR_ToolVrtcToggle.Q
+JMPC    skip_tool_vrtc_uvh_control
+
+LD      UVH_TOOL_COMMAND_VECTOR_SELECT
+ST      vrtcExTool.xVectorSelect
+
+LD      UVH_TOOL_COMMAND_RESET
+ST      vrtcExTool.xReset
+
+LD      UVH_TOOL_COMMAND_SIMUL
+ST      vrtcExTool.xSimul
+
+LD      UVH_TOOL_COMMAND_MOVE_TO_TARGET
+ST      vrtcExTool.xMoveToTarget
+
+LD      UVH_TOOL_COMMAND_RES_POS_INT
+ST      vrtcExTool.xResPosInt
+
+LD      UVH_TOOL_COMMAND_POS_LIM_DISAB
+ST      vrtcExTool.xPosLimDisab
+
+LD      UVH_TOOL_COMMAND_DE_OVERLAP_ENAB
+ST      vrtcExTool.xDeOverlapEnab
+
+LD      UVH_TOOL_COMMAND_ERROR_AMP_ENAB
+ST      vrtcExTool.xErrorAmpEnab
+
+LD      UVH_TOOL_COMMAND_SIM_OFFSET_SET
+ST      vrtcExTool.xSimOffsetSet
+
+LD      UVH_TOOL_COMMAND_SETPOINT
+ST      vrtcExTool.xSetPoint
+
+skip_tool_vrtc_uvh_control:
+
+*** SURFACE VRTC ***
+
+* in cima
+LD      UVH_SURFACE_COMMAND_TOGGLE
+ST      surfaceCommandToggle
+
+CAL     TR_SurfaceVrtcToggle(CLK=surfaceCommandToggle)
+LDN     TR_SurfaceVrtcToggle.Q
+JMPC    skip_surface_vrtc_uvh_control
+
+LD      UVH_SURFACE_COMMAND_VECTOR_SELECT
+ST      vrtcExSurface.xVectorSelect
+
+LD      UVH_SURFACE_COMMAND_RESET
+ST      vrtcExSurface.xReset
+
+LD      UVH_SURFACE_COMMAND_SIMUL
+ST      vrtcExSurface.xSimul
+
+LD      UVH_SURFACE_COMMAND_MOVE_TO_TARGET
+ST      vrtcExSurface.xMoveToTarget
+
+LD      UVH_SURFACE_COMMAND_RES_POS_INT
+ST      vrtcExSurface.xResPosInt
+
+LD      UVH_SURFACE_COMMAND_POS_LIM_DISAB
+ST      vrtcExSurface.xPosLimDisab
+
+LD      UVH_SURFACE_COMMAND_DE_OVERLAP_ENAB
+ST      vrtcExSurface.xDeOverlapEnab
+
+LD      UVH_SURFACE_COMMAND_ERROR_AMP_ENAB
+ST      vrtcExSurface.xErrorAmpEnab
+
+LD      UVH_SURFACE_COMMAND_SIM_OFFSET_SET
+ST      vrtcExSurface.xSimOffsetSet
+
+LD      UVH_SURFACE_COMMAND_SETPOINT
+ST      vrtcExSurface.xSetPoint
+
+skip_surface_vrtc_uvh_control:
+
+LDN     plcVrtcHandling
+JMPCN   reset_vbselect
+
+LD      0
+ST      %vpbSelectors0 
+
+reset_vbselect:
+
+*** COMMON ***
+
+CAL     RTR_PlcVrtcHandling(CLK=plcVrtcHandling)
+LD      RTR_PlcVrtcHandling.Q
+ST      firstCallToPlcHandler
+
+LDN     plcVrtcHandling
+JMPC    skip_plc_handling
+*XXX DO YOUR OWN PLC HANDLING cambio setpoint etc
+
+ LD      xAngleBev                   * Bevel angle ofthe head
+ COS 
+ ST      cosAngle
+
+* State Machine FB
+
+ LD      vrtcExSurface.xSimul
+ ST      REG_MAC.xISO_S_SimEnab
+ 
+ LD      vrtcExSurface.xErrorAmpEnab
+ ST      REG_MAC.xISO_S_ErrAmp
+         
+ LD      vrtcExTool.xSimul
+ ST      REG_MAC.xISO_T_SimEnab
+         
+ LD      vrtcExTool.xSetPoint
+ ST      REG_MAC.xISO_T_SetPoint
+ 
+ LD      vrtcExTool.xErrorAmpEnab
+ ST      REG_MAC.xISO_T_ErrAmp
+ 
+ LD      xFirstFirCost_VRTC
+ ST      REG_MAC.xFirstFirCost         * ms
+ 
+ LD      xSecondFirCost_VRTC
+ ST      REG_MAC.xSecondFirCost        * ms  
+ 
+ LD      xDelayCost_VRTC
+ ST      REG_MAC.xDelayCost         * ms
+         
+ LD      firstCallToPlcHandler
+ ST      REG_MAC.xFirstPlcHandling  
+         
+ LD      xProbThreshold         
+ ST      REG_MAC.xProbThres
+         
+ LD      xZtcp
+ ST      REG_MAC.xZ_TCP
+         
+ LD      UVH_COMMAND_MACHINE_MODE
+ ST      REG_MAC.xIsoPhase
+         
+ LD      vrtcExTool.yBusy
+ ST      REG_MAC.xToolBusy
+         
+ LD      vrtcExSurface.yBusy
+ ST      REG_MAC.xSurfaceBusy
+         
+ LD      vrtcExTool.ySignalLock
+ ST      REG_MAC.xToolSignalLock
+         
+ LD      vrtcExSurface.ySignalLock
+ ST      REG_MAC.xSurfSignalLock
+         
+ LD      xToolVrtcSetPoint         * [um]
+ DIV     10
+ ST      REG_MAC.xSetpoint
+         
+ LD      UVH_COMMAND_START_COMMAND
+ ST      REG_MAC.xStartEx
+ 
+ LD      xSensorRange
+ ST      REG_MAC.xSensorRange   
+ 
+ LD      UVH_COMMAND_FREEZE_REGOL  
+ OR      xRealTimeFreeze
+ ST      REG_MAC.xFreezeRegol
+ 
+ LD      xNextPos_Y_Jump_VRTC          * Y setpoint coordinate for jump
+ ST      REG_MAC.xNextPos_Y_Jump 
+ 
+ LD      xNextPos_X_Jump_VRTC          * X setpoint coordinate for jump 
+ ST      REG_MAC.xNextPos_X_Jump
+
+ LD      xNextPos_C_Jump_VRTC          * C setpoint coordinate for jump 
+ ST      REG_MAC.xNextPos_C_Jump
+
+ LD      xNextPos_Z_Jump_VRTC          * Z setpoint coordinate for jump 
+ ST      REG_MAC.xNextPos_Z_Jump
+ 
+ LD      xInit_Y_Posit_VRTC            * Y init jump position
+ ST      REG_MAC.xInit_Y_Posit
+ 
+ LD      xInit_X_Posit_VRTC            * X init jump position
+ ST      REG_MAC.xInit_X_Posit
+
+ LD      xInit_C_Posit_VRTC            * C init jump position
+ ST      REG_MAC.xInit_C_Posit
+ 
+ LD      xInit_Z_Posit_VRTC            * Z init jump position
+ ST      REG_MAC.xInit_Z_Posit
+
+ LD      xActual_X_Posit_VRTC          * X Actual position 
+ ST      REG_MAC.xActual_X_Posit 
+
+ LD      xActual_C_Posit_VRTC          * C Actual position 
+ ST      REG_MAC.xActual_C_Posit 
+ 
+ LD      xActual_Z_Posit_VRTC          * C Actual position 
+ ST      REG_MAC.xActual_Z_Posit
+
+ LD      xActual_Y_Posit_VRTC          * Y Actual position  
+ ST      REG_MAC.xActual_Y_Posit
+ 
+ LD      UVH_COMMAND_JUMP
+ ST      REG_MAC.xJumpReq
+
+ LD      UVH_COMMAND_L3
+ ST      REG_MAC.xJumpL3Req
+ 
+ LD      xNextSetpVRTC
+ ST      REG_MAC.xNextSetp
+ 
+ LD      xPrevSetpVRTC
+ ST      REG_MAC.xPrevSetp 
+ 
+ LD      xDistEnabRegulVRTC
+ ST      REG_MAC.xDistEnabRegul
+ 
+ LD      UVH_COMMAND_L10
+ ST      REG_MAC.xL10Req
+
+*  
+ LD      xZDistStopProbeJVRTC
+ ST      REG_MAC.xZDistStopProbeJ
+      
+ LD      cosAngle     
+ ST      REG_MAC.xCosBevelAngle     
+ 
+PATH    %vrtc[xToolVrtcId]
+
+ LD      VRMON_Q_FLT_Q
+ ST      REG_MAC.xToolFlt_Q
+ 
+* Hold and move head up during cutting
+
+ LD      xMove_Z_VRTC 
+ ST      REG_MAC.xMove_Z
+ 
+ LD      xMove_Z_SetP_VRTC 
+ DIV     10
+ ST      REG_MAC.xMove_Z_SetP
+ 
+* Hold
+
+ LD      xHold_VRTC 
+ ST      REG_MAC.xHold
+ 
+ CAL     REG_MAC
+         
+ * Hand-shake signals
+ 
+ LD      REG_MAC.yStateMachinePhase
+ ST      UVH_STATUS_MACHINE_MODE
+ 
+ LD      REG_MAC.yComRunning
+ ST      UVH_STATUS_COMMAND_RUNNING
+ 
+ LD      REG_MAC.yVPBSelect
+ ST      ActVPBSelect
+ ST      %vpbSelectors0  
+ 
+ LD      REG_MAC.yWait
+ ST      yWaitVRTC
+ 
+ LD      REG_MAC.yIncSetPReached
+ ST      yIncSetPReachedVRTC
+ 
+ LD      REG_MAC.yL3SetpointReached
+ ST      yL3SetpointReachedVRTC
+ 
+ * Tool Vrtc plc handling
+ 
+ LD      REG_MAC.y_T_SimEnab
+ ST      vrtcExTool.xSimul
+  
+ LD      REG_MAC.y_T_SetPoint
+ ST      vrtcExTool.xSetPoint
+ 
+ LD      REG_MAC.y_T_ErrAmp
+ ST      vrtcExTool.xErrorAmpEnab
+ 
+ * Surface Vrtc plc handling
+ 
+ LD      REG_MAC.y_S_SimEnab  
+ ST      vrtcExSurface.xSimul
+     
+ LD      REG_MAC.y_S_SetPoint
+ ST      vrtcExSurface.xSetPoint
+  
+ LD      REG_MAC.y_S_ErrAmp
+ ST      vrtcExSurface.xErrorAmpEnab
+ 
+skip_plc_handling:
+
+*XXX DO YOUR OWN PLC RESET LOGIC
+
+LDN     %rc8.0
+JMPCN no_reset
+
+LD      0
+ST      vrtcExTool.xErrorAmpEnab
+ST      vrtcExSurface.xErrorAmpEnab
+ST      UVH_STATUS_MACHINE_MODE
+ST      ActVPBSelect
+ST      UVH_STATUS_MACHINE_MODE
+ST      UVH_STATUS_COMMAND_RUNNING
+ST      UVH_COMMAND_FREEZE_REGOL
+ST      UVH_COMMAND_JUMP
+ST      UVH_COMMAND_L3
+ST      UVH_COMMAND_L10
+ST      yWaitVRTC
+ST      yIncSetPReachedVRTC
+
+LD      1
+ST      vrtcExTool.xReset           * Reset
+ST      vrtcExSurface.xReset        * Reset
+ST      vrtcExTool.xSimul
+ST      vrtcExSurface.xSimul   
+
+no_reset:
+
+
+LD      ActVPBSelect
+EQ      0
+JMPCN   end_selector0
+*// 0) INITIAL PROBING
+PATH    %vpbs0
+end_selector0:
+
+LD      ActVPBSelect
+EQ      1
+JMPCN   end_selector1
+*// 1) JUMP parameters
+PATH    %vpbs1
+end_selector1:
+
+LD      ActVPBSelect
+EQ      2
+JMPCN   end_selector2
+*// 2) FAR parameters (jump to pierce/probing point, etc)
+PATH    %vpbs2
+end_selector2:
+
+LD      ActVPBSelect
+EQ      3
+JMPCN   end_selector3
+*// 3) NEAR parameters (probing to piercing, piercing to cutting point, etc)
+PATH    %vpbs3
+end_selector3:
+
+LD      ActVPBSelect
+EQ      4
+JMPCN   end_selector4
+*// 4) CUT parameters
+PATH    %vpbs4
+end_selector4:
+
+LD      ActVPBSelect
+EQ      5
+JMPCN   end_selector5
+*// 5) Hold parameters
+PATH    %vpbs5
+end_selector5:
+
+LD      ActVPBSelect
+EQ      6
+JMPCN   end_selector6
+*// 6) Simulation parameters
+PATH    %vpbs6
+end_selector6:
+
+
+*** TOOL VRTC ***
+
+LD      %PLCFLAGS.1
+ST      vrtcExTool.xMLonlyClampFilterIn
+ST      vrtcExTool.xMLonlyClampFilterInDot
+
+*//XXX replace with table parameters
+LD      %vpbp0
+ST      vrtcExTool.xUpPosLimit
+
+LD      %vpbp1
+ST      vrtcExTool.xLwPosLimit
+
+* Capacitive test in progress
+LD      %C18.17
+JMPCN   NOLWPOSLIMT      
+LD      -9999999  
+ST      vrtcExTool.xLwPosLimit
+NOLWPOSLIMT:
+
+LD      %vpbp2
+ST      vrtcExTool.xVelLimitUp
+
+LD      %vpbp3
+ST      vrtcExTool.xVelLimitDown
+
+LD      %vpbp4
+ST      vrtcExTool.xAccLimitUp
+
+LD      %vpbp5
+ST      vrtcExTool.xAccLimitDown
+
+LD      %vpbp6
+ST      vrtcExTool.xKpGain
+
+LD      %vpbp7
+ST      vrtcExTool.xKpTransPtr
+
+LD      %vpbp8
+ST      vrtcExTool.xKpTransMul
+
+LD      %vpbp9
+ST      vrtcExTool.xDbPos
+
+LD      %vpbp10
+ST      vrtcExTool.xDbNeg
+
+LD      %vpbp11
+ST      vrtcExTool.xFilterCutOff
+
+LD      %vpbp12
+ST      vrtcExTool.xFilterDamping
+
+LD      %vpbp13
+ST      vrtcExTool.xSimFadingTime
+
+LD      %vpbp14
+ST      vrtcExTool.xLockVelLimitUp
+
+LD      %vpbp15
+ST      vrtcExTool.xLockVelLimitDown
+
+LD      xLimSpeedPierc
+JMPCN   no_lim_speed1
+ LD      xSpeedForPiercing                  * Speed for Z axi during piercing
+ ST      vrtcExTool.xVelLimitDown
+ ST      vrtcExTool.xVelLimitUp
+ 
+LD      5
+ST      vrtcExTool.xLockVelLimitUp
+ST      vrtcExTool.xLockVelLimitDown
+ 
+no_lim_speed1:
+
+LD      %vpbp17
+ST      vrtcExTool.xSlidingDecel
+
+LD      %vpbp16
+ST      vrtcExTool.xLockAccLimit
+*//XXX replace with table parameters
+PATH    %vrtc[xToolVrtcId]
+CAL     vrtcExTool
+
+LD      vrtcExTool.ySignalLock
+ST      UVH_TOOL_STATUS_SIGNAL_LOCK
+
+LD      vrtcExTool.ySimOffsetCur
+ST      UVH_TOOL_STATUS_SIM_OFFSET_CUR
+
+LD      vrtcExTool.yFltQ
+ST      UVH_TOOL_STATUS_FLT_Q
+
+* in fondo
+LD      vrtcExTool.yBusy
+JMPC    skip_tool_toggle_update
+
+    LD      toolCommandToggle
+    ST      UVH_TOOL_STATUS_TOGGLE_ACK
+
+skip_tool_toggle_update:
+
+*** SURFACE VRTC ***
+
+LD      %PLCFLAGS.1
+ST      vrtcExSurface.xMLonlyClampFilterIn
+ST      vrtcExSurface.xMLonlyClampFilterInDot
+
+*//XXX replace with table parameters
+LD      %vpbp0
+ST      vrtcExSurface.xUpPosLimit
+
+LD      %vpbp1
+ST      vrtcExSurface.xLwPosLimit
+
+* Capacitive test in progress
+LD      %C18.17
+JMPCN   NOLWPOSLIMS      
+LD      -9999999  
+ST      vrtcExSurface.xLwPosLimit
+NOLWPOSLIMS:
+
+LD      %vpbp2
+ST      vrtcExSurface.xVelLimitUp
+
+LD      xLimDownSpeed
+JMPCN   no_0_speed
+        LD      1
+        ST      vrtcExSurface.xVelLimitDown
+JMP no_0_com		
+no_0_speed:
+        LD      %vpbp3
+        ST      vrtcExSurface.xVelLimitDown
+no_0_com:
+
+LD      %vpbp4
+ST      vrtcExSurface.xAccLimitUp
+
+LD      %vpbp5
+ST      vrtcExSurface.xAccLimitDown
+
+LD      %vpbp6
+ST      vrtcExSurface.xKpGain
+
+LD      %vpbp7
+ST      vrtcExSurface.xKpTransPtr
+
+LD      %vpbp8
+ST      vrtcExSurface.xKpTransMul
+
+LD      %vpbp9
+ST      vrtcExSurface.xDbPos
+
+LD      %vpbp10
+ST      vrtcExSurface.xDbNeg
+
+LD      %vpbp11
+ST      vrtcExSurface.xFilterCutOff
+
+LD      %vpbp12
+ST      vrtcExSurface.xFilterDamping
+
+LD      %vpbp13
+ST      vrtcExSurface.xSimFadingTime
+
+LD      %vpbp14
+ST      vrtcExSurface.xLockVelLimitUp
+
+LD      %vpbp15
+ST      vrtcExSurface.xLockVelLimitDown
+
+LD      xLimSpeedPierc
+JMPCN   no_lim_speed
+ LD      xSpeedForPiercing                  * Speed for Z axi during piercing
+ ST      vrtcExSurface.xVelLimitDown
+ ST      vrtcExSurface.xVelLimitUp
+ 
+ LD      5
+ ST      vrtcExSurface.xLockVelLimitUp
+ ST      vrtcExSurface.xLockVelLimitDown
+ 
+no_lim_speed:
+
+LD      %vpbp16
+ST      vrtcExSurface.xLockAccLimit
+
+LD      %vpbp17
+ST      vrtcExSurface.xSlidingDecel
+
+*//XXX replace with table parameters
+PATH    %vrtc[xSurfVrtcId]
+CAL     vrtcExSurface
+
+LD      vrtcExSurface.ySignalLock
+ST      UVH_SURFACE_STATUS_SIGNAL_LOCK
+
+LD      vrtcExSurface.ySimOffsetCur
+ST      UVH_SURFACE_STATUS_SIM_OFFSET_CUR
+
+LD      vrtcExSurface.yFltQ
+ST      UVH_SURFACE_STATUS_FLT_Q
+
+* in fondo
+LD      vrtcExSurface.yBusy
+JMPC    skip_surface_toggle_update
+
+    LD      surfaceCommandToggle
+    ST      UVH_SURFACE_STATUS_TOGGLE_ACK
+
+skip_surface_toggle_update:
+
+*** COMMON ***
+
+LD      vrtcExTool.yBusy
+OR      vrtcExSurface.yBusy
+JMPC    skip_vrtc_handling_state_update
+
+    LD      plcVrtcHandling
+    ST      UVH_STATUS_PLC_VRTC_HANDLING
+skip_vrtc_handling_state_update: 
+
+END_FUNCTION_BLOCK

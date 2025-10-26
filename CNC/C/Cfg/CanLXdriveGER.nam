@@ -1,0 +1,46 @@
+[PROMPT]
+
+LX_NUMOBJS =Boot Options
+
+LX_NUMOBJSLIST =DISABLED, UPLOAD, DOWNLOAD
+
+LX_ENABLE2 =ENAB
+
+PAR_LXRECORD1=Record parametri regolatore 1
+PAR_LXDGTIN=Ingressi digitali
+
+LX_VXOBJ8 = Coefficiente P del regolatore di posizione (1/s) CTRL1_KPp
+LX_VXOBJ9 = Coefficiente di proporzionalità (P) del regolatore di velocità (A/min-1) CTRL1_KPn
+LX_VXOBJ10 = Tempo di integrazione regolatore di velocità (ms) CTRL1_TNn
+LX_VXOBJ11 = Controllo ad anello aperto velocità (%) CTRL1_KFPp
+LX_VXOBJ12 = Costante tempo filtrazione per il filtro del valore di consegna della velocità (ms) CTRL1_TAUnref
+LX_VXOBJ13 = Costante tempo filtrazione per il filtro del valore di corrente nominale (ms) CTRL1_TAUiref
+LX_VXOBJ14 = Filtro Notch 1: frequenza (Hz) CTRL1_Nf1freq
+LX_VXOBJ15 = Filtro Notch 1: smorzamento (%) CTRL1_Nf1damp
+LX_VXOBJ16 = Filtro Notch 1: larghezza di banda (%) CTRL1_Nf1bandw
+LX_VXOBJ17 = Filtro di sovramodulazione: smorzamento (%) CTRL1_Osupdamp
+LX_VXOBJ18 = Filtro di sovramodulazione (ms) CTRL1_Osupdelay
+LX_VXOBJ19 = Filtro Notch 2: frequenza (Hz) CTRL1_Nf2freq
+LX_VXOBJ20 = Filtro Notch 2: smorzamento (%) CTRL1_Nf2damp
+LX_VXOBJ21 = Filtro Notch 2: larghezza di banda (%) CTRL1_Nf2bandw
+LX_VXOBJ22 = Compensazione attrito: amplificazione (A) CTRL1_Kfric
+
+LX_VXOBJ23 = Funzione ingresso DI0
+LX_VXOBJ24 = Funzione ingresso DI1
+LX_VXOBJ25 = Funzione ingresso DI2
+LX_VXOBJ26 = Funzione ingresso DI3
+LX_VXOBJ27 = Funzione ingresso DI4
+LX_VXOBJ28 = Funzione ingresso DI5
+LX_VXOBJ29 = Tempo di antirimbalzo DI0
+LX_VXOBJ30 = Tempo di antirimbalzo DI1 
+LX_VXOBJ31 = Tempo di antirimbalzo DI2
+LX_VXOBJ32 = Tempo di antirimbalzo DI3
+LX_VXOBJ33 = Tempo di antirimbalzo DI4
+LX_VXOBJ34 = Tempo di antirimbalzo DI5
+LX_VXOBJ35 = Modo operativo per la funzione di ingresso segnale commutazione modo operativo
+
+
+[HELP]
+
+
+

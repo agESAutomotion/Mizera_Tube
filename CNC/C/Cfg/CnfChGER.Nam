@@ -1,0 +1,74 @@
+[PROMPT]
+KEY_CONFCHAN  =Kanal konfigurieren
+
+CC_CHNAME     =Kanalname
+CC_NUMBOARD   =Nummer Bearbeitungskarte
+CC_MASKAXES   =Maske Achsen Kanal
+CC_NX         =Nummer X-Achse
+CC_NY         =Nummer Y-Achse
+CC_NZ         =Nummer Z-Achse
+CC_NU         =Nummer U-Achse
+CC_NV         =Nummer V-Achse
+CC_NW         =Nummer W-Achse
+CC_NA         =Nummer A-Achse
+CC_NB         =Nummer B-Achse
+CC_NC         =Nummer C-Achse
+CC_NM         =Nummer S-Achse (Spindel 1)
+CC_S2         =Nummer S2-Achse (Spindel 2)
+CC_S3         =Nummer S3-Achse (Spindel 3)
+CC_MAINPROC   =Nummer Hauptprozeﬂ
+CC_AUXPROC    =Auxiliary process number
+CC_PRIORITY   =Priorit‰t Kanal
+CC_TWIBASE    =Basiskennung Spannfutter-Tabelle
+CC_TWIAMOUNT  =Zahl Spannfutter
+CC_THDBASE    =Basiskennung WZ-Tr‰ger-Tabelle
+CC_THDAMOUNT  =Zahl Werkzeugtr‰ger
+CC_CEDBASE    =Basiskennung Werkzeug-Tabelle
+CC_CEDAMOUNT  =Zahl Werkzeuge
+CC_VARSPERLEVEL=Lok. Var. Niveau Unterprogramm
+CC_CHANPTKB   =Speicher f.durchgehende Ausf¸hrung
+CC_PTMONLINESC=Pass-thru buffered lines (client browser)
+CC_PTMONLINESS=Pass-thru buffered lines (server browser)
+CC_CHANRETRKB =Speicher f¸r Retrace
+CC_MAG        =Typ Werkzeugmagazin
+CC_RV         =Magazinnummer
+CC_TABBASE    =Tables table base index
+CC_TABAMOUNT  =Number of tables
+CC_GORGBASE   =Global origins table base index
+CC_GORGAMOUNT =Number of global origins
+CC_SOSID      =Slave extension index (0=none)
+CC_SOSQUEUE   =Queue size [elements]
+
+[HELP]
+
+CC_CHNAME     =Zeichensatz mit max. 8 Zeichen zur Bezeichnung des Kanals
+CC_NUMBOARD   =Nummer Bearbeitungskarte: Nummer der Karte, welche die Verarbeitung der Kanallogik in den verteilten Systemen ausf¸hrt.
+CC_MASKAXES   =Maske Kanalachsen: Kennzeichnet die Achsen, die im Kanal vorhanden sind
+CC_NX         =Nummer X-Achse: Prozeﬂnummer der X-Achse
+CC_NY         =Nummer Y-Achse: Prozeﬂnummer der Y-Achse
+CC_NZ         =Nummer Z-Achse: Prozeﬂnummer der Z-Achse
+CC_NU         =Nummer U-Achse: Prozeﬂnummer der U-Achse
+CC_NV         =Nummer V-Achse: Prozeﬂnummer der V-Achse
+CC_NW         =Nummer W-Achse: Prozeﬂnummer der W-Achse
+CC_NA         =Nummer A-Achse: Prozeﬂnummer der A-Achse
+CC_NB         =Nummer B-Achse: Prozeﬂnummer der B-Achse
+CC_NC         =Nummer C-Achse: Prozeﬂnummer der C-Achse
+CC_NM         =Nummer S-Achse (Spindel): Prozeﬂnummer der Spindelachse
+CC_MAINPROC   =Nummer Hauptprozeﬂ: Prozeﬂnummer, der die Kontrolle der Interpolierung des Kanals zugeordnet wird
+CC_AUXPROC    =Auxiliary process number:  used by the PLC Function Blocks
+CC_PRIORITY   =Legt die Priorit‰t der Ausf¸hrung eines Kanals fest. Niedrigen Werten entspricht eine hohe Priorit‰t. Verwaltete Werte:(0-1-2-3)freigegeben (10)gesperrt
+CC_TWIBASE    =Kennung des ersten Spannfutters, der vom Kanal innerhalb der Tabelle benutzt wird, die alle Spannfutter enth‰lt
+CC_TWIAMOUNT  =Zahl der Spannfutter, die vom Kanal benutzt werden
+CC_THDBASE    =Kennung des ersten Werkzeugtr‰gers, der vom Kanal innerhalb der Tabelle benutzt wird, die alle Werkzeugtr‰ger enth‰lt
+CC_THDAMOUNT  =Zahl der Werkzeugtr‰ger, die vom Kanal benutzt werden
+CC_CEDBASE    =Kennung des ersten Werkzeugs, das vom Kanal innerhalb der Tabelle benutzt wird, die alle Werkzeuge enth‰lt
+CC_CEDAMOUNT  =Zahl der Werkzeuge, die vom Kanal benutzt werden
+CC_VARSPERLEVEL=Lokale Variable f¸r jedes Unterprogrammniveau
+CC_CHANPTKB   =Pass-thru execution memory size (KB).  See also the similar CN configuration parameter, which could need to be updated after changes to this one.
+CC_CHANRETRKB =Retrace buffer size (KB).  See also the similar CN configuration parameter, which could need to be updated after changes to this one.
+CC_MAG        =Typ Werkzeugmagazin: 0) kein Magazin 1) Revolver
+CC_RV         =Index auf Struktur Daten Werkzeugmagazin: 1 einstellen, um den Revolver(0) zuzuordnen
+CC_TABBASE    =Tables table base index
+CC_TABAMOUNT  =Number of tables
+CC_GORGBASE   =Global origins table base index
+CC_GORGAMOUNT =Number of global origins

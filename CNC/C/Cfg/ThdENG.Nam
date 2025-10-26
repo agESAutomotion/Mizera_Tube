@@ -1,0 +1,36 @@
+[PROMPT]
+KEY_THD       =Toolholders Data
+
+THD_Z0        =Pivot coordinate added to Z
+THD_C         =Rotation around Z axis
+THD_FLG       =Conversion type flag
+THD_X1        =X coordinate of pivot
+THD_Y1        =Y coordinate of pivot
+THD_B         =Rotation around Y axis
+THD_X2        =X coordinate of tool base
+THD_Z2        =Z coordinate of tool base
+THD_DSC       =Description
+
+THD_MAXRPM    =Maximum rpm rate
+THD_REV       =Transf. with rot. direction reversal
+
+THD_IDX       =Tool descriptor index
+THD_CONE      =Cone identif. for tool change
+
+
+[HELP]
+THD_Z0        =Coordinate of the pivot which adds to the Z coordinate of the spindle center point
+THD_C         =Rotation around Z axis belonging to the reference system which has its origin in the spindle center point
+THD_FLG       =Conversion type flag:  (1) Rotation around Z axis comes first, then pivot XY translation is accomplished -or- (2) Pivot XY translation comes first, then rotation around Z axis is accomplished (suggested).
+THD_X1        =X coordinate of the pivot measured on a reference system which has its origin in the tool holder center point
+THD_Y1        =Y coordinate of the pivot measured on a reference system which has its origin in the tool holder center point
+THD_B         =Rotation around Y' axis belonging to the reference system which has its origin in PIVOT1
+THD_X2        =X coordinate of tool base measured on a reference system which has its origin in PIVOT1
+THD_Z2        =Z coordinate of tool base measured on a reference system which has its origin in PIVOT1
+
+THD_MAXRPM    =Maximum rpm rate
+THD_REV       =Transf. with rot. direction reversal
+
+THD_IDX       =Tool descriptor index
+THD_CONE      =Tool change coupling cone identifier
+

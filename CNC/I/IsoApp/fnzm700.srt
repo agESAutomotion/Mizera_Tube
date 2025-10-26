@@ -1,0 +1,84 @@
+: 
+;============================================================================================
+; M700 - BlendSwitch (PARK), posiziona asse a quota di parcheggio 
+; ---> CouplingFollowEn in "aidEngageUnload.cfs"
+; ---> Always CmdBlendSwitch, switching between M and N only 
+;============================================================================================
+IF( %cn[WHO()].rc[0].21 ) RET     
+;IN_M4_MODE AT %M91.6;
+IF( %M91.6 ) RET
+IF( !CouplingFollowEn ) ERROR(55)
+
+; Do not resotre the %cn0.rc9 end of the file
+; Following G1010 will use it as well 
+?%gIso38 = 700
+
+;============================================================================================
+; Init Engage Condition from PLC Support Status
+; Ensure each support either FOLLOW or PARKING position
+;============================================================================================
+;// Ensure Blend Switch Complete Status
+;// Loader
+
+iter=1
+SYN
+WHILE(iter<=5)
+     IF( ists_5cn[iter] ) AWAIT( (%ax[50+iter].rgau2 == 1000) || (%ax[50+iter].rgau2 == 0) )
+	 IF( ists_8cn[iter] ) AWAIT( (%ax[70+iter].rgau2 == 1000) || (%ax[70+iter].rgau2 == 0) )
+	 IF( ists_9cn[iter] ) AWAIT( (%ax[80+iter].rgau2 == 1000) || (%ax[80+iter].rgau2 == 0) )
+	 iter = iter + 1
+ENDW
+      
+;============================================================================================
+; Park all supports to common parking position in case of engaged
+;============================================================================================ 
+
+;// G4011 T36 O managements for Sec Parking Offsets	
+RPT .Set_SecPrk_Start, .Set_SecPrk_End, 1 
+
+;// Park Axes in following	 
+
+;ParkUn51Sup_ISO AT %gIso29.11;
+;ParkUn52Sup_ISO AT %gIso29.12;
+;ParkUn53Sup_ISO AT %gIso29.13;
+;ParkUn54Sup_ISO AT %gIso29.14;
+;ParkUn55Sup_ISO AT %gIso29.15;
+
+;ParkUn71Sup_ISO AT %gIso29.1;
+;ParkUn72Sup_ISO AT %gIso29.2;
+;ParkUn73Sup_ISO AT %gIso29.3;
+;ParkUn74Sup_ISO AT %gIso29.4;
+;ParkUn75Sup_ISO AT %gIso29.5;
+
+iter=1
+SYN
+WHILE(iter<=5)
+     IF( ists_5cn[iter] && (%ax[50+iter].rgau2 == 1000) ) %gIso29 = (%gIso29) | SHL(1,10+iter) 
+	 IF( ists_8cn[iter] && (%ax[70+iter].rgau2 == 1000) ) %gIso29 = (%gIso29) | SHL(1,iter) 
+	 iter = iter + 1
+ENDW
+		
+iter=1
+SYN
+WHILE(iter<=5)
+     IF( (%gIso29) & SHL(1,10+iter) ) AWAIT( (%ax[50+iter].rgau2 == 0) || ((%ax[50+iter].ra24 - lifter[iter]) > (%gIso[30] - 300)) ) 
+	 IF( ists_9cn[iter] && ((%gIso29) & SHL(1,10+iter)) ) AWAIT( (%ax[80+iter].rgau2 == 0) || (%ax[80+iter].ra24 > (%gIso[30] - 300)) )
+	 IF( (%gIso29) & SHL(1,iter) ) AWAIT( (%ax[70+iter].rgau2 == 0) || ((%ax[70+iter].ra24 - ulifter[iter]) > (%gIso[30] - 300)) ) 
+	 iter = iter + 1
+ENDW	
+			
+RET
+
+.Set_SecPrk_Start
+     iter=1
+     SYN
+     WHILE(iter<6)
+          IF( ists_5cn[iter] && (%ax[50+iter].rgau2 == 1000) ) %ax[50+iter].rgau3 = (optimized_lift - 19) * 1000 + lifter[iter]
+	      IF( ists_8cn[iter] && (%ax[70+iter].rgau2 == 1000) ) %ax[70+iter].rgau3 = (optimized_lift - 19) * 1000 + ulifter[iter]
+	   	  IF( ists_9cn[iter] && (%ax[50+iter].rgau2 == 1000) ) %ax[80+iter].rgau3 = (optimized_lift - 19) * 1000
+     	  iter = iter +1
+     ENDW
+.Set_SecPrk_End
+
+
+

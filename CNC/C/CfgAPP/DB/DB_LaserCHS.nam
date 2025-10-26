@@ -1,0 +1,300 @@
+Plasma[KEYS]
+TITLE =激光数据库
+TXT0=新建工艺参数		
+TXT1=读取工艺参数
+TXT2=按材料排序
+TXT3=按代码排序代码
+TXT4=删除工艺参数
+TXT5=修改当前参数
+TXT6=搜索
+TXT7=保存
+
+[PROMPT]
+KEY_DB = 工艺数据库
+// -----------------------------------------------
+CODE = 序号
+MATERIAL = 材料
+MATERIAL_LIST =碳钢, 不锈钢, 铝, 镀锌, 碳钢氮气切割, 碳钢空气切割, 不锈钢空气切割, 铜, 黄铜, 铝空气切割
+UGELLO_LIST = 1, 1.2, 1.4, 1.5, 1.7, 2, 2.5, 3, 3.5, 4, DC1.5, DC2, DC2.5, DC3
+TH = 厚度
+// -----------------------------------------------
+A_GAS=               气体
+TYPE_GAS=氧气, 氮气, 空气
+A_TIP =              TIP.
+A_UGELLO =           喷嘴
+A_PIERCE_TIME =      1 穿孔时间
+A_PIERCE_PW =        1 穿孔功率
+A_PIERCE_PRESSURE =  1 穿孔压力
+A_PIERCE_FOCAL =     1 穿孔焦距
+A_PIERCE_STDOFF =    1 穿孔高度
+A_PIERCE_DUTYCYCLE = 1 穿孔占空比
+A_PIERCE_FREQ =      1 穿孔频率
+A_ARIA_ASSIST =      1 辅助空气
+A_PIERCE_P_T =       1 穿孔类型
+A_PIERCE_P_A =       1 P1
+A_PIERCE_P_B =       1 P2
+A_PIERCE_P_C =       1 P3
+A_PIERCE_P_D =       1 P4
+A_PIERCE_P_E =       1 P5
+A_PIERCE_P_F =       1 P6
+A_PIERCE_P_G =       1 P7
+A_PIERCE_P_H =       1 P8
+
+
+B_PIERCE_TIME =      2 穿孔时间
+B_PIERCE_PW =        2 穿孔功率
+B_PIERCE_PRESSURE =  2 穿孔压力
+B_PIERCE_FOCAL =     2 穿孔焦距
+B_PIERCE_STDOFF =    2 穿孔高度
+B_PIERCE_DUTYCYCLE = 2 穿孔占空比
+B_PIERCE_FREQ =      2 穿孔频率
+B_ARIA_ASSIST =      2 辅助空气
+B_PIERCE_P_T =       2 穿孔类型
+B_PIERCE_P_A =       2 P1
+B_PIERCE_P_B =       2 P2
+B_PIERCE_P_C =       2 P3
+B_PIERCE_P_D =       2 P4
+B_PIERCE_P_E =       2 P5
+B_PIERCE_P_F =       2 P6
+B_PIERCE_P_G =       2 P7
+B_PIERCE_P_H =       2 P8
+
+
+C_PIERCE_TIME =      3 穿孔时间
+C_PIERCE_PW =        3 穿孔功率
+C_PIERCE_PRESSURE =  3 穿孔压力
+C_PIERCE_FOCAL =     3 穿孔焦距
+C_PIERCE_STDOFF =    3 穿孔高度
+C_PIERCE_DUTYCYCLE = 3 穿孔占空比
+C_PIERCE_FREQ =      3 穿孔频率
+C_ARIA_ASSIST =      3 辅助空气
+C_PIERCE_P_T =       3 穿孔类型
+C_PIERCE_P_A =       3 P1
+C_PIERCE_P_B =       3 P2
+C_PIERCE_P_C =       3 P3
+C_PIERCE_P_D =       3 P4
+C_PIERCE_P_E =       3 P5
+C_PIERCE_P_F =       3 P6
+C_PIERCE_P_G =       3 P7
+C_PIERCE_P_H =       3 P8
+
+
+D_PIERCE_TIME =      4 穿孔时间
+D_PIERCE_PW =        4 穿孔功率
+D_PIERCE_PRESSURE =  4 穿孔压力
+D_PIERCE_FOCAL =     4 穿孔焦距
+D_PIERCE_STDOFF =    4 穿孔高度
+D_PIERCE_DUTYCYCLE = 4 穿孔占空比
+D_PIERCE_FREQ =      4 穿孔频率
+D_ARIA_ASSIST =      4 辅助空气
+D_PIERCE_P_T =       4 穿孔类型
+D_PIERCE_P_A =       4 P1
+D_PIERCE_P_B =       4 P2
+D_PIERCE_P_C =       4 P3
+D_PIERCE_P_D =       4 P4
+D_PIERCE_P_E =       4 P5
+D_PIERCE_P_F =       4 P6
+D_PIERCE_P_G =       4 P7
+D_PIERCE_P_H =       4 P8
+
+
+E_PIERCE_TIME =      5 穿孔时间
+E_PIERCE_PW =        5 穿孔功率
+E_PIERCE_PRESSURE =  5 穿孔压力
+E_PIERCE_FOCAL =     5 穿孔焦距
+E_PIERCE_STDOFF =    5 穿孔高度
+E_PIERCE_DUTYCYCLE = 5 穿孔占空比
+E_PIERCE_FREQ =      5 穿孔频率
+E_ARIA_ASSIST =      5 辅助空气
+E_PIERCE_P_T =       5 穿孔类型
+E_PIERCE_P_A =       5 P1
+E_PIERCE_P_B =       5 P2
+E_PIERCE_P_C =       5 P3
+E_PIERCE_P_D =       5 P4
+E_PIERCE_P_E =       5 P5
+E_PIERCE_P_F =       5 P6
+E_PIERCE_P_G =       5 P7
+E_PIERCE_P_H =       5 P8
+
+
+F_PIERCE_TIME =      6 穿孔时间
+F_PIERCE_PW =        6 穿孔功率
+F_PIERCE_PRESSURE =  6 穿孔压力
+F_PIERCE_FOCAL =     6 穿孔焦距
+F_PIERCE_STDOFF =    6 穿孔高度
+F_PIERCE_DUTYCYCLE = 6 穿孔占空比
+F_PIERCE_FREQ =      6 穿孔频率
+F_ARIA_ASSIST =      6 辅助空气
+F_PIERCE_P_T =       6 穿孔类型
+F_PIERCE_P_A =       6 P1
+F_PIERCE_P_B =       6 P2
+F_PIERCE_P_C =       6 P3
+F_PIERCE_P_D =       6 P4
+F_PIERCE_P_E =       6 P5
+F_PIERCE_P_F =       6 P6
+F_PIERCE_P_G =       6 P7
+F_PIERCE_P_H =       6 P8
+
+
+// -----------------------------------------------
+
+A_CUT_FEED=   1 切割速度
+A_CUT_POWER=  1 切割功率
+A_CUT_POWER_MIN= 1 最小功率
+A_CUT_PRESS=  1 切割压力
+A_CUT_FOCAL=  1 切割焦距
+A_CUT_STDOFF= 1 切割高度
+A_CUT_DUTY=   1 切割占空比
+A_CUT_DUTYMIN= 1 空占比最小值
+A_CUT_FREQ=   1 切割频率
+A_CUT_JRK=    1 加速度
+A_KERF= 1 割缝
+A_GAIN= 1 切割增益
+A_CUT_P_ZERO= 1 原点切割功率
+A_CUT_V_ZERO= 1 原点切割速度
+A_CUT_V_UNO=  1 空闲切割速度
+
+B_CUT_FEED=   2 切割速度
+B_CUT_POWER=  2 切割功率
+B_CUT_POWER_MIN= 2 最小功率
+B_CUT_PRESS=  2 切割压力
+B_CUT_FOCAL=  2 切割焦距
+B_CUT_STDOFF= 2 切割高度
+B_CUT_DUTY=   2 切割占空比
+B_CUT_DUTYMIN= 2 空占比最小值
+B_CUT_FREQ=   2 切割频率
+B_CUT_JRK=    2 加速度
+B_Kerf= 2 割缝
+B_GAIN= 2 切割增益
+B_CUT_P_ZERO= 2 原点切割功率
+B_CUT_V_ZERO= 2 原点切割速度
+B_CUT_V_UNO=  2 空闲切割速度
+
+C_CUT_FEED=   3 切割速度
+C_CUT_POWER=  3 切割功率
+C_CUT_POWER_MIN= 3 最小功率
+C_CUT_PRESS=  3 切割压力
+C_CUT_FOCAL=  3 切割焦距
+C_CUT_STDOFF= 3 切割高度
+C_CUT_DUTY=   3 切割占空比
+C_CUT_DUTYMIN= 3 空占比最小值
+C_CUT_FREQ=   3 切割频率
+C_CUT_JRK=    3 加速度
+C_Kerf= 3 割缝
+C_GAIN= 3 切割增益
+C_CUT_P_ZERO= 3 原点切割功率
+C_CUT_V_ZERO= 3 原点切割速度
+C_CUT_V_UNO=  3 空闲切割速度
+
+D_CUT_FEED=   4 切割速度
+D_CUT_POWER=  4 切割功率
+D_CUT_POWER_MIN= 4 最小功率
+D_CUT_PRESS=  4 切割压力
+D_CUT_FOCAL=  4 切割焦距
+D_CUT_STDOFF= 4 切割高度
+D_CUT_DUTY=   4 切割占空比
+D_CUT_DUTYMIN= 4 空占比最小值
+D_CUT_FREQ=   4 切割频率
+D_CUT_JRK=    4 加速度
+D_Kerf= 4 割缝
+D_GAIN= 4 切割增益
+D_CUT_P_ZERO= 4 原点切割功率
+D_CUT_V_ZERO= 4 原点切割速度
+D_CUT_V_UNO=  4 空闲切割速度
+
+E_CUT_FEED=   5 切割速度
+E_CUT_POWER=  5 切割功率
+E_CUT_POWER_MIN= 5 最小功率
+E_CUT_PRESS=  5 切割压力
+E_CUT_FOCAL=  5 切割焦距
+E_CUT_STDOFF= 5 切割高度
+E_CUT_DUTY=   5 切割占空比
+E_CUT_DUTYMIN= 5 空占比最小值
+E_CUT_FREQ=   5 切割频率
+E_CUT_JRK=    5 加速度
+E_KERF= 5 割缝
+E_GAIN= 5 切割增益
+E_CUT_P_ZERO= 5 原点切割功率
+E_CUT_V_ZERO= 5 原点切割速度
+E_CUT_V_UNO=  5 空闲切割速度
+
+F_CUT_FEED=   6 切割速度
+F_CUT_POWER=  6 切割功率
+F_CUT_POWER_MIN= 6 最小功率
+F_CUT_PRESS=  6 切割压力
+F_CUT_FOCAL=  6 切割焦距
+F_CUT_STDOFF= 6 切割高度
+F_CUT_DUTY=   6 切割占空比
+F_CUT_DUTYMIN= 6 空占比最小值
+F_CUT_FREQ=   6 切割频率
+F_CUT_JRK=    6 加速度
+F_KERF= 6 割缝
+F_GAIN= 6 切割增益
+F_CUT_P_ZERO= 6 原点切割功率
+
+F_CUT_V_ZERO= 6 原点切割速度
+F_CUT_V_UNO=  6 空闲切割速度
+
+G_CUT_FEED=   7 切割速度
+G_CUT_POWER=  7 切割功率
+G_CUT_POWER_MIN= 7 最小功率
+G_CUT_PRESS=  7 切割压力
+G_CUT_FOCAL=  7 切割焦距
+G_CUT_STDOFF= 7 切割高度
+G_CUT_DUTY=   7 切割占空比
+G_CUT_DUTYMIN= 7 空占比最小值
+G_CUT_FREQ=   7 切割频率
+G_CUT_JRK=    7 加速度
+G_KERF= 7 割缝
+G_GAIN= 7 切割增益
+G_CUT_P_ZERO= 7 原点切割功率
+G_CUT_V_ZERO= 7 原点切割速度
+G_CUT_V_UNO=  7 空闲切割速度
+
+H_CUT_FEED=   8 切割速度
+H_CUT_POWER=  8 切割功率
+H_CUT_POWER_MIN= 8 最小功率
+H_CUT_PRESS=  8 切割压力
+H_CUT_FOCAL=  8 切割焦距
+H_CUT_STDOFF= 8 切割高度
+H_CUT_DUTY=   8 切割占空比
+H_CUT_DUTYMIN= 8 空占比最小值
+H_CUT_FREQ=   8 切割频率
+H_CUT_JRK=    8 加速度
+H_KERF= 8 割缝
+H_GAIN= 8 切割增益
+H_CUT_P_ZERO= 8 原点切割功率
+H_CUT_V_ZERO= 8 原点切割速度
+H_CUT_V_UNO=  8 空闲切割速度
+
+I_CUT_FEED=   9 切割速度
+I_CUT_POWER=  9 切割功率
+I_CUT_POWER_MIN= 9 最小功率
+I_CUT_PRESS=  9 切割压力
+I_CUT_FOCAL=  9 切割焦距
+I_CUT_STDOFF= 9 切割高度
+I_CUT_DUTY=   9 切割占空比
+I_CUT_DUTYMIN= 9 空占比最小值
+I_CUT_FREQ=   9 切割频率
+I_CUT_JRK=    9 加速度
+I_KERF= 9 割缝
+I_GAIN= 9 切割增益
+I_CUT_P_ZERO= 9 原点切割功率
+I_CUT_V_ZERO= 9 原点切割速度
+I_CUT_V_UNO=  9 空闲切割速度
+
+L_CUT_FEED=   10 切割速度
+L_CUT_POWER=  10 切割功率
+L_CUT_POWER_MIN= 10 最小功率
+L_CUT_PRESS=  10 切割压力
+L_CUT_FOCAL=  10 切割焦距
+L_CUT_STDOFF= 10 切割高度
+L_CUT_DUTY=   10 切割占空比
+A_CUT_DUTYMIN= 10 空占比最小值
+L_CUT_FREQ=   10 切割频率
+L_CUT_JRK=    10 加速度
+L_KERF= 10 割缝
+L_GAIN= 10 切割增益
+L_CUT_P_ZERO= 10 原点切割功率
+L_CUT_V_ZERO= 10 原点切割速度
+L_CUT_V_UNO=  10 空闲切割速度

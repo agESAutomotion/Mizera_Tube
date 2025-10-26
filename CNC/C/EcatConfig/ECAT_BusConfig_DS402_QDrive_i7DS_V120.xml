@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="QDRIVE_AC_SERVO_DRIVE_i7DS_V120.xml">
+
+    <Device>i7DS-**A30</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+
+	<RxPdo Index="#x1600">
+		<SMObject>
+		  <Comment><![CDATA[Ctrl Word]]></Comment>
+		  <Address>#x60400010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Target Position]]></Comment>
+		  <Address>#x607A0020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Touch Probe Function]]></Comment>
+		  <Address>#x60B80010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[MaxTorque]]></Comment>
+		  <Address>#x60730010</Address>
+		</SMObject>
+	</RxPdo>
+
+	<TxPdo Index="#x1A00">
+		<SMObject>
+		  <Comment><![CDATA[Status Word]]></Comment>
+		  <Address>#x60410010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Position actual value]]></Comment>
+		  <Address>#x60640020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Torque Actual Value]]></Comment>
+		  <Address>#x60770010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Digital Input]]></Comment>
+		  <Address>#x60FD0020</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Touch Probe Status]]></Comment>
+		  <Address>#x60B90010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Touch Probe Qta]]></Comment>
+		  <Address>#x60BA0020</Address>
+		</SMObject>
+	</TxPdo>
+
+	<DistribuitedClock>1</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+	<DictionaryExceptions>
+		<Emcy>
+		</Emcy>
+		
+		<Objects>
+			<Object exclude="true" include="false" default="0">#x60920000</Object>
+			<Object exclude="true" include="false" default="0">#x60920100</Object>
+			<Object exclude="true" include="false" default="0">#x60920200</Object>
+        </Objects>
+	</DictionaryExceptions>
+
+	<PublicDictionary>
+	<Objects>
+		  <Object Pos="8">#x30000010</Object>
+		  <Object Pos="9">#x30010010</Object>
+		  <Object Pos="10">#x30020010</Object>
+		  <Object Pos="13">#x30080010</Object>
+		  <Object Pos="14">#x30090010</Object>
+		  <Object Pos="15">#x300A0010</Object>
+		  <Object Pos="16">#x300B0010</Object>
+		  <Object Pos="18">#x300D0010</Object>
+		  <Object Pos="21">#x30100010</Object>
+		  <Object Pos="25">#x30800010</Object>
+		  <Object Pos="26">#x31000010</Object>
+		  <Object Pos="27">#x31010010</Object>
+		  <Object Pos="28">#x31020010</Object>
+		  <Object Pos="29">#x31030010</Object>
+		  <Object Pos="30">#x31040010</Object>
+		  <Object Pos="31">#x31050010</Object>
+		  <Object Pos="32">#x31060010</Object>
+		  <Object Pos="33">#x31090010</Object>
+		  <Object Pos="34">#x310A0010</Object>
+		  <Object Pos="35">#x310B0010</Object>
+		  <Object Pos="36">#x310C0010</Object>
+		  <Object Pos="37">#x310D0010</Object>
+		  <Object Pos="38">#x310E0010</Object>
+		  <Object Pos="39">#x310F0010</Object>
+		  <Object Pos="40">#x311F0010</Object>
+		  <Object Pos="41">#x31210010</Object>
+		  <Object Pos="42">#x31220010</Object>
+		  <Object Pos="43">#x31230010</Object>
+		  <Object Pos="44">#x31240010</Object>
+		  <Object Pos="45">#x31250010</Object>
+		  <Object Pos="46">#x31310010</Object>
+		  <Object Pos="47">#x31320010</Object>
+		  <Object Pos="48">#x31350010</Object>
+		  <Object Pos="49">#x31360010</Object>
+		  <Object Pos="50">#x31390010</Object>
+		  <Object Pos="51">#x313D0010</Object>
+		  <Object Pos="52">#x31400010</Object>
+		  <Object Pos="53">#x31410010</Object>
+		  <Object Pos="54">#x31420010</Object>
+		  <Object Pos="55">#x31430010</Object>
+		  <Object Pos="56">#x31440010</Object>
+		  <Object Pos="57">#x31450010</Object>
+		  <Object Pos="58">#x31460010</Object>
+		  <Object Pos="59">#x31470010</Object>
+		  <Object Pos="60">#x31480010</Object>
+		  <Object Pos="61">#x31490010</Object>
+		  <Object Pos="62">#x314A0010</Object>
+		  <Object Pos="63">#x314B0010</Object>
+		  <Object Pos="64">#x314F0010</Object>
+		  <Object Pos="65">#x31600010</Object>
+		  <Object Pos="66">#x31610010</Object>
+		  <Object Pos="67">#x31620010</Object>
+		  <Object Pos="68">#x31630010</Object>
+		  <Object Pos="69">#x31640010</Object>
+		  <Object Pos="70">#x31650010</Object>
+		  <Object Pos="71">#x31660010</Object>
+		  <Object Pos="72">#x31700010</Object>
+		  <Object Pos="76">#x32070010</Object>
+		  <Object Pos="79">#x32120020</Object>
+		  <Object Pos="81">#x32300010</Object>
+		  <Object Pos="82">#x32310020</Object>
+		  <Object Pos="83">#x32330010</Object>
+		  <Object Pos="87">#x33040010</Object>
+		  <Object Pos="88">#x33050010</Object>
+		  <Object Pos="89">#x33060010</Object>
+		  <Object Pos="90">#x33080010</Object>
+		  <Object Pos="91">#x330A0010</Object>
+		  <Object Pos="92">#x330C0010</Object>
+		  <Object Pos="93">#x33100010</Object>
+		  <Object Pos="94">#x33110010</Object>
+		  <Object Pos="95">#x33120010</Object>
+		  <Object Pos="96">#x33160010</Object>
+		  <Object Pos="97">#x33240010</Object>
+		  <Object Pos="101">#x34010010</Object>
+		  <Object Pos="102">#x34020010</Object>
+		  <Object Pos="103">#x34030010</Object>
+		  <Object Pos="104">#x34040010</Object>
+		  <Object Pos="105">#x34050010</Object>
+		  <Object Pos="106">#x34060010</Object>
+		  <Object Pos="107">#x34070010</Object>
+		  <Object Pos="108">#x34080010</Object>
+		  <Object Pos="109">#x34090010</Object>
+		  <Object Pos="110">#x340A0010</Object>
+		  <Object Pos="111">#x340B0010</Object>
+		  <Object Pos="112">#x340C0010</Object>
+		  <Object Pos="113">#x340D0010</Object>
+		  <Object Pos="114">#x340E0010</Object>
+		  <Object Pos="115">#x340F0010</Object>
+		  <Object Pos="116">#x34100010</Object>
+		  <Object Pos="117">#x34120010</Object>
+		  <Object Pos="118">#x34160010</Object>
+		  <Object Pos="119">#x34170010</Object>
+		  <Object Pos="120">#x34180010</Object>
+		  <Object Pos="121">#x34190010</Object>
+		  <Object Pos="122">#x341A0010</Object>
+		  <Object Pos="123">#x341B0010</Object>
+		  <Object Pos="124">#x341C0010</Object>
+		  <Object Pos="125">#x341D0010</Object>
+		  <Object Pos="126">#x341E0010</Object>
+		  <Object Pos="127">#x341F0010</Object>
+		  <Object Pos="128">#x34230010</Object>
+		  <Object Pos="129">#x34240010</Object>
+		  <Object Pos="130">#x34250010</Object>
+		  <Object Pos="131">#x34260010</Object>
+		  <Object Pos="132">#x34270010</Object>
+		  <Object Pos="133">#x34560010</Object>
+		  <Object Pos="134">#x34600010</Object>
+		  <Object Pos="152">#x349F0010</Object>
+		  <Object Pos="153">#x35020010</Object>
+		  <Object Pos="154">#x35030010</Object>
+		  <Object Pos="155">#x35060010</Object>
+		  <Object Pos="156">#x35070010</Object>
+		  <Object Pos="157">#x35080010</Object>
+		  <Object Pos="158">#x35090010</Object>
+		  <Object Pos="159">#x350A0010</Object>
+		  <Object Pos="160">#x350B0010</Object>
+		  <Object Pos="162">#x350E0010</Object>
+		  <Object Pos="163">#x350F0010</Object>
+		  <Object Pos="164">#x35100010</Object>
+		  <Object Pos="165">#x35110010</Object>
+		  <Object Pos="166">#x35120010</Object>
+		  <Object Pos="167">#x35130010</Object>
+		  <Object Pos="169">#x35160010</Object>
+		  <Object Pos="170">#x35180010</Object>
+		  <Object Pos="171">#x351E0010</Object>
+		  <Object Pos="172">#x35200020</Object>
+		  <Object Pos="173">#x35220020</Object>
+		  <Object Pos="174">#x35240020</Object>
+		  <Object Pos="175">#x35260020</Object>
+		  <Object Pos="176">#x35280010</Object>
+		  <Object Pos="177">#x35290010</Object>
+		  <Object Pos="178">#x352B0010</Object>
+		  <Object Pos="179">#x352C0010</Object>
+		  <Object Pos="180">#x35300010</Object>
+		  <Object Pos="181">#x35310020</Object>
+		  <Object Pos="182">#x35330010</Object>
+		  <Object Pos="183">#x35340010</Object>
+		  <Object Pos="184">#x35350010</Object>
+		  <Object Pos="185">#x35360010</Object>
+		  <Object Pos="191">#x35600010</Object>
+		  <Object Pos="192">#x35610010</Object>
+		  <Object Pos="219">#x36000010</Object>
+		  <Object Pos="220">#x36010010</Object>
+		  <Object Pos="221">#x36030010</Object>
+		  <Object Pos="222">#x36040010</Object>
+	</Objects>
+    </PublicDictionary>
+</Config>

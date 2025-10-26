@@ -1,0 +1,753 @@
+*******************************************************************************
+*   GASPROP.PLC
+*   ESAutomotion
+*   LASER machine - Proportional valve for cutting gas managment
+*******************************************************************************
+#funcdec "DynMng.plc"
+
+VAR
+#include "cnc.inc"
+
+Appoggio:           BOOL;
+KeepPropTest:       BOOL; * Prop. valve test keep
+PropOutRange:       BOOL; * Gas pressure out of range
+HbOutPress:         BOOL; * Hoerbiger feedback pressure out of range
+
+PressCalcLinear:    DWORD; * Pressure calculated from linearization
+
+AppPressCorrente:   DWORD; * Appoggio Pressione Corrente
+MaxCurrPress:       DWORD; * Maximum pressure for current selected gas (mbar)
+OutValvProp:        DWORD; * Prop valve setpoint pressure (mbar)
+PressTol:           DWORD; * Pressure tolerance (mbar)
+MinAllPressMbar:    DWORD; * Pressure min limit for alarm (mbar)
+MaxAllPressMbar:    DWORD; * Pressure max limit for alarm (mbar)
+TimeAlPress:        DWORD; * Delay for pressure alarm enable (ms)
+ScaleBitIN:         DWORD; * Pressure input full scale in count
+ScaleBitOUT:        DWORD; * Pressure output full scale in count
+IA_Feedback_GAS_IN_BAR: DWORD; * Hoerbiger feedback pressure (bar)
+PressMaxEvProp_APP: DWORD;
+
+RTRIG_EnVal1:       TRIG;
+RTRIG_EnVal1_G834:  TRIG;
+
+HOERRB_CAL_REQ1     AT %SoftBtn2.10; * ANALOG HOERB CALIBRATION REQUEST BUTTON
+HOERB_RESET_REQ   	AT %SoftBtn2.20; *(SoftBtn2.20) Hoerbiger reset button
+TOF_RESET_HOERB:			TOF;			 * ANALOG HOERB RESET
+RTRIG_RESET_HOERB:			R_TRIG;			 * ANALOG HOERB RESET REQUEST
+
+RT_PVTST:           R_TRIG;
+#defcom RT_PVTST.Q Imp. prop. valve test button
+TRIG_CAL_HOERB:     TRIG; * Hoerbiger calibration request
+#defcom TRIG_CAL_HOERB.Q Imp. Hoerbiger calibration request
+
+TON_All_prop:       TON;
+#defcom TON_All_prop.Q End of pressure alarm delay
+TP_HOERB_CALIB:     TP;
+#defcom TP_HOERB_CALIB.Q Time for Hoerbiger calibration request
+TON_HOERB_CALIB2:   TON;
+#defcom TON_HOERB_CALIB2.Q End delay for Hoerbiger calibration alarm
+TON_FEEDBACK_GAS_IN: TON;
+#defcom TON_FEEDBACK_GAS_IN.Q End of delay pressure check for Hoerbiger valve
+
+GasCalc:           POINTS_INT_CALC;
+GasCalc2:          POINTS_INT_CALC;
+
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "iol.inc"
+
+*******************************************************************************
+FUNCTION GasProp
+*******************************************************************************
+
+*******************************************************************************
+*   Enable data writing
+*   M300 or TstP14.14 (from TabLaser)
+*******************************************************************************
+CAL  RTRIG_EnVal1(CLK=EnValOut1)   ** (TstP14.14) Abilita Attuazione Valori Uscite
+CAL  RTRIG_EnVal1_G834(CLK=EnValOut1_G834)   ** (TstP11.14) Abilita Attuazione Valori Uscite
+
+LD   RTRIG_EnVal1.Q
+OR   RTRIG_EnVal1_G834.Q
+AND  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+ST   Appoggio
+
+LD   %cn0.rc9                * Registro funzioni M canale 0
+EQ   300
+AND  %cn0.rc8.4              * Strobe funzioni M canale 0
+OR   Appoggio
+JMPCN COPYVAL
+
+LD   %TabLsr0.L_CutPressure
+ST   GasPressPgmSet                ** (LsPlc31) Gas pressure setpoint by program (mbar)
+
+COPYVAL:
+
+* Proportional valve type selection
+
+LD   %config_machine4              ** LASER - Tipo gestione valv. prop. sul bus ECAT (0=DIWAL,1=HOERBIGER...)
+EQ   0
+AND  %config_machine2.0            ** LASER - Gestione valvola proporzionale sul bus ECAT
+ST   GasPVDiwal                    ** M107.21 Cutting gas prop. valve type lanny diwal
+
+LD   %config_machine4              ** LASER - Tipo gestione valv. prop. sul bus ECAT (0=DIWAL,1=HOERBIGER...)
+EQ   1
+AND  %config_machine2.0            ** LASER - Gestione valvola proporzionale sul bus ECAT
+ST   GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+
+* Proportional valve test command
+
+CAL  RT_PVTST(CLK=P_ValTestProp)   ** (LsGui18.9) Proportional valve test from setting page
+
+LD   RT_PVTST.Q                    ** Imp. prop. valve test button
+ANDN KeepPropTest                  ** Prop. valve test keep
+S    KeepPropTest                  ** Prop. valve test keep
+ST   Appoggio
+
+LD   RT_PVTST.Q                    ** Imp. prop. valve test button
+ANDN Appoggio
+OR   PropTestRes                   ** M107.13 Proportional valve test reset from gas commands
+OR   ProgRunForGas                 ** M107.10 Program running for gas managment
+ORN  MACCHINA_OK                   ** M100.1  Macchina OK
+OR   RESET_MACCHINA                ** M100.2  Reset macchina
+R    KeepPropTest                  ** Prop. valve test keep
+
+* Proportional valve enable conditions
+
+LD   %config_machine29             ** Proportional valve manage only with OXYGEN
+EQ   0
+AND  O_O_EV_OR_ALLGAS              ** M90.15 Elettrovalvola apertura di almeno un gas
+OR   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+* La proporzionale viene disabilitata senza il ritardo alla disattivazione del program run
+AND  (
+LD   PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+*ORN  ProgRunForGas                 ** M107.10 Program running for gas managment
+)
+OR   KeepPropTest                  ** Prop. valve test keep
+OR   (
+ LD   GAS_test                      ** M107.0 Test gas in progress for prop. valve
+ AND  (
+  LD   %config_machine29             ** Proportional valve manage only with OXYGEN
+  EQ   0
+      )
+    )
+OR  (
+LD   GAS_test                      ** M107.0 Test gas in progress for prop. valve
+ AND  (
+   LD   %config_machine29             ** Proportional valve manage only with OXYGEN
+   EQ   1
+   AND  O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+   )
+  )
+OR   (
+ LD   GAS_test
+ OR   (
+  LD   O_O_EV_OPEN_O2
+  OR   O_O_EV_OPEN_N2
+  OR   O_O_EV_OPEN_ARIA
+  )
+  AND  (
+  LD   %config_machine29             ** Proportional valve manage only with OXYGEN
+  EQ   2
+ )
+)
+ANDN GAS_prun_close_propv
+ST   GasPropEnabFromV              ** M107.23 Gas prop. valve enable from valve configuration
+
+*******************************************************************************
+* Pressure limit for selected gas
+*******************************************************************************
+
+* Pressure limit for oxygen
+
+LD   0
+ST   MaxCurrPress                  ** Maximum pressure for current selected gas (mbar)
+
+LD   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+JMPCN MP_OXIGEN
+
+LD   PressMaxOssigeno              ** (rLsGui12)Pressione massima Ossigeno
+ST   PressMaxEvProp_APP
+ST   MaxCurrPress                  ** Maximum pressure for current selected gas (mbar)
+
+MP_OXIGEN:
+
+* Pressure limit for nitrogen
+
+LD   O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+JMPCN MP_NITROGEN
+
+LD   PressMaxAzoto                 ** (rLsGui13)Pressione massima Azoto
+ST   MaxCurrPress                  ** Maximum pressure for current selected gas (mbar)
+
+LD   PressMaxEvProp                ** (rLsGui11)Pressione massima valvola proporzionale
+ST   PressMaxEvProp_APP
+
+MP_NITROGEN:
+
+* Pressure limit for cutting air
+
+LD   O_O_EV_OPEN_ARIA              ** Elettrovalvola apertura Aria taglio
+JMPCN MP_AIR
+
+LD   PressMaxAria                  ** (rLsGui14)Pressione massima Aria
+ST   MaxCurrPress                  ** Maximum pressure for current selected gas (mbar)
+
+LD   PressMaxEvProp                ** (rLsGui11)Pressione massima valvola proporzionale
+ST   PressMaxEvProp_APP
+
+MP_AIR:
+
+*******************************************************************************
+* SETPOINT GAS PRESSURE SELECTION
+*******************************************************************************
+LD   0
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+LD   GasPropEnabFromV              ** M107.23 Gas prop. valve enable from valve configuration
+ANDN RETRACERUN                    ** M0.11 Ciclo di retrace in Run
+JMPCN END_PRESS_UPD
+
+* Gas pressure for Z up simulation
+
+LD   GasEnabOnZUp                  ** M107.11 Gas enable conditions on Z up simulation
+JMPCN Z_up_test
+
+LD   %TabLsr0.L_CutPressure
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+JMP  END_PRESS_UPD
+
+Z_up_test:
+LD   %LaserShootOn
+JMPCN Z_up_test2
+
+LD   %LsrGest0.ShootGasPress
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+JMP  CHK_PROP_LIM
+
+Z_up_test2:
+* Gas pressure for PURGE or GAS test
+
+LD   SPURGOrun                     ** M107.2 Gas purge in progress
+JMPCN END_PURGE
+
+LD   PressSpurgoGas                ** (rLsGui16)Pressione spurgo Gas
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+JMP  CHK_PROP_LIM
+
+END_PURGE:
+
+LD   GAS_test                      ** M107.0 Test gas in progress for prop. valve
+OR   KeepPropTest                  ** Prop. valve test keep
+JMPCN END_PRGTST
+
+LD   PressTestGas                  ** (rLsGui15)Pressione test Gas
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+* Pressure limits for test/purge
+
+CHK_PROP_LIM:
+
+LD   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+GT   30000
+JMPCN LIM_SUP
+
+LD   30000
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+JMP  LIM_INF
+
+LIM_SUP:
+
+LD   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+LT   50
+JMPCN LIM_INF
+
+LD   50
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+LIM_INF:
+
+* With gas valve ON, check the pressure limits for selected gas
+LD   O_O_EV_OR_ALLGAS              ** M90.15 Elettrovalvola apertura di almeno un gas
+JMPC CHK_PRESS_LIM
+
+JMP  END_PRESS_UPD
+
+END_PRGTST:
+
+* Air pressure for APA
+
+LD   AirEnabForAPA                 ** M107.12 Cutting air enable for APA cycle
+JMPCN NoApaRun
+
+LD   %config_machine23             ** Pressione ARIA per gestione APA
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+JMP  END_PRESS_UPD
+
+NoApaRun:
+
+* Gas pressure for program execution
+
+LD   GasPressPgmSet                ** (LsPlc31) Gas pressure setpoint by program (mbar)
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+* Pressure limit for selected gas
+
+CHK_PRESS_LIM:
+
+LD   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+GT   MaxCurrPress                  ** Maximum pressure for current selected gas (mbar)
+JMPCN END_PRESS_UPD
+
+LD   MaxCurrPress                  ** Maximum pressure for current selected gas (mbar)
+ST   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+
+END_PRESS_UPD:
+
+LD   OutValvProp                   ** Prop valve setpoint pressure (mbar)
+ST   SetOutPress                   ** (LsPlc38) Setpoint output pressure (mbar)
+
+LD   SetOutPress                   ** (LsPlc38) Setpoint output pressure (mbar)
+MUL  145                           * 14.5 PSI = 1 bar
+DIV  1000
+ST   SetPressPSI                   ** (LsPlc39) Setpoint output pressure (PSI*10)
+
+********************************************************************************
+* OUTPUT GAS PRESSURE COMMAND                                                  *
+********************************************************************************
+LD   GasPVDiwal                    ** M107.21 Cutting gas prop. valve type lanny diwal
+JMPCN no_diwal_valve
+
+LD   GAS_test                      ** M107.0 Test gas in progress for prop. valve
+OR (
+LD   GAS_prun                      ** M107.1 Cutting gas active from part program
+ANDN GAS_prun_close_propv
+)
+OR   KeepPropTest                  ** Prop. valve test keep
+ST   O_O_GAS_ECAT_TYPE0_ENAB       ** Enable proportional valve on bus ecat
+
+no_diwal_valve:
+LD   GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+OR   GasPVDiwal                    ** M107.21 Cutting gas prop. valve type lanny diwal
+JMPC NoAnalogV
+
+***************************************
+*   ANALOG valve
+***************************************
+* Selection 12 or 16 bits output resolution
+
+LD   BitOutValvProp                ** (rLsPlc42) Numero bit x uscita valvola prop.
+EQ   0
+JMPCN l11bitOut
+
+LD   4095
+ST   ScaleBitOUT                   ** Pressure output full scale in count
+
+JMP  ComBitOut
+
+l11bitOut:
+LD   BitOutValvProp                ** (rLsPlc42) Numero bit x uscita valvola prop.
+EQ   2
+JMPCN l16bitOut
+
+LD   2047
+ST   ScaleBitOUT                   ** Pressure output full scale in count
+
+JMP  ComBitOut
+
+l16bitOut:
+LD   32767
+ST   ScaleBitOUT                   ** Pressure output full scale in count
+
+ComBitOut:
+
+NoAnalogV:
+***********************************************************
+* Gases Linearization 
+***********************************************************
+LD   EnabGasOutByGraph	     			     **(rLsGui25.0) PLC option for enabling the graph (Pressure-voltage)
+JMPCN NO_LINEAR
+
+        LD   O_O_EV_OPEN_ARIA
+        OR   O_O_EV_OPEN_N2
+        JMPCN NO_HP_VALVE
+             LD   SetOutPress                   ** (LsPlc38) Setpoint output pressure (mbar)
+             ST   GasCalc2.xPercSpeed            * Speed percentual value
+             
+             LD   1           
+             ST   GasCalc2.xCutLineInd           * cut line index (initial value 1 to 10)
+             
+             LD   45
+             ST   GasCalc2.xCodTec               * Tecnology 0=duty 1=power 2=frequency
+             
+             CAL  GasCalc2
+             
+             LD   GasCalc2.yResult               * Result
+             ST   PressCalcLinear   
+        NO_HP_VALVE:
+        
+        LD   O_O_EV_OPEN_O2
+        JMPCN ONLY_O2_VALVE
+             LD   SetOutPress                   ** (LsPlc38) Setpoint output pressure (mbar)
+             ST   GasCalc.xPercSpeed            * Speed percentual value
+             
+             LD   1           
+             ST   GasCalc.xCutLineInd           * cut line index (initial value 1 to 10)
+             
+             LD   40
+             ST   GasCalc.xCodTec               * Tecnology 0=duty 1=power 2=frequency
+             
+             CAL  GasCalc
+             
+             LD   GasCalc.yResult               * Result
+             ST   PressCalcLinear
+        ONLY_O2_VALVE:
+		
+		 ***************************************
+         *   Gas=funz(angle)
+         *   #CDL
+         ***************************************
+         LD   PRGRUN_CN0
+         ANDN PRGSTOP_CN0
+         AND (
+         LD   %uvHeads0.uvhCommand1
+         EQ   4                              * Cutting phase
+         )
+         AND  %LSRPlcOp0.3
+         JMPCN no_corr_gas_linear
+               LD   PressCalcLinear
+               ADD (
+               LD   PressCalcLinear
+               MULDIV(M=%TsCutDataLinear.CDL_Pressure,D=100000) * 100 %             
+               )
+               ST   PressCalcLinear
+         no_corr_gas_linear:
+        
+        *---------------------
+        *   DIWAL
+        *---------------------
+        LD   GasPVDiwal                         ** M107.21 Cutting gas prop. valve type lanny diwal
+        JMPCN NoLin1    
+             LD   PressCalcLinear               ** (LsPlc38) Setpoint output pressure (mbar)
+             ***DIV  10000
+             ST   OA_GAS_ECAT_TYPE0             ** Gas valve on bus ecat 
+        NoLin1:
+		
+        *---------------------
+        *   HOERBIGER
+        *---------------------
+        LD   GasPVHoerbiger                     ** M107.22 Cutting gas prop. valve type hoerbiger
+        JMPCN NoLin2
+             LD   PressCalcLinear               ** (LsPlc38) Setpoint output pressure (mbar)
+             ***DIV  10000
+             ST   O_OA_GAS_HOERB     
+        NoLin2:
+		
+        *---------------------
+        *   ANALOG
+        *---------------------        
+        LD   PressCalcLinear                   ** (LsPlc38) Setpoint output pressure (mbar)
+        MUL  ScaleBitOUT                   ** Pressure output full scale in count
+        DIV  PressMaxEvProp_APP
+        ST   OA_GAS                        ** Gas analog valve
+        
+JMP ComValv_
+
+NO_LINEAR:
+
+         ***************************************
+         *   Gas=funz(angle)
+         *   #CDL
+         ***************************************
+         LD   PRGRUN_CN0
+         ANDN PRGSTOP_CN0
+         AND (
+         LD   %uvHeads0.uvhCommand1
+         EQ   4                              * Cutting phase
+         )
+         AND  %LSRPlcOp0.3
+         JMPCN no_corr_gas
+              LD   PressCalcLinear
+              ADD (
+              LD   PressCalcLinear
+              MULDIV(M=%TsCutDataLinear.CDL_Pressure,D=100000) * 100 %             
+              )
+              ST   PressCalcLinear
+         no_corr_gas:
+         
+         *---------------------
+         *   DIWAL
+         *---------------------
+         LD   GasPVDiwal                    ** M107.21 Cutting gas prop. valve type lanny diwal
+         JMPCN NoLin10
+              LD   SetOutPress              ** (LsPlc38) Setpoint output pressure (mbar)
+              ST   OA_GAS_ECAT_TYPE0        ** Gas valve on bus ecat 
+         NoLin10:
+         *---------------------
+         *   HOERBIGER
+         *---------------------
+         LD   GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+         JMPCN NoLin20
+              LD   SetOutPress              ** (LsPlc38) Setpoint output pressure (mbar)
+              ST   O_OA_GAS_HOERB
+         NoLin20:
+		 
+         *---------------------
+         *   ANALOG
+         *---------------------
+         LD   SetOutPress                   ** (LsPlc38) Setpoint output pressure (mbar)
+         MUL  ScaleBitOUT                   ** Pressure output full scale in count
+         DIV  PressMaxEvProp_APP
+         ST   OA_GAS                        ** Gas analog valve
+
+ComValv_:
+
+**********************************************************************
+* HOERBIGER valve calibration
+**********************************************************************
+LD   GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+JMPCN NoHber
+
+CAL  TRIG_CAL_HOERB(CLK=HOERRB_CAL_REQ) ** Hoerbiger calibration request
+
+CAL  TP_HOERB_CALIB(IN:=TRIG_CAL_HOERB.Q, PT=7000) ** Imp. Hoerbiger calibration request
+
+LD   TP_HOERB_CALIB.Q              ** Time for Hoerbiger calibration request
+ST   O_O_CALIB_REQ_HOERB           ** Hoerbiger: calibration request
+
+LDN  I_I_HOERBIGER_READY           ** Hoerbiger ready on bus ecat
+ST   Appoggio
+
+CAL  TON_HOERB_CALIB2(IN:=Appoggio,PT:=15000)
+
+LD   TON_HOERB_CALIB2.Q            ** End delay for Hoerbiger calibration alarm
+ST   %PLCerr7.8                   * hoerbiger calibration error
+
+NoHber:
+
+*------------------------------------------------------------------------------*
+* CURRENT GAS PRESSURE READING
+*------------------------------------------------------------------------------*
+
+LD   GasPVDiwal                    ** M107.21 Cutting gas prop. valve type lanny diwal
+JMPCN no_lanny_diwal
+
+* Diwal valve pressure reading
+
+LD   IA_FBACK_ECAT_TYPE0           ** Gas proportional valve feedback on bus ecat
+ST   AppPressCorrente              ** Appoggio Pressione Corrente
+
+JMP  ComValv
+
+no_lanny_diwal:
+
+LD   GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+JMPCN no_hoerbiger
+
+* Hoerbiger valve pressure reading
+
+LD   IA_Feedb_HOERB_GAS_OUT        ** Hoerbiger gas proportional valve feedback (OUTPUT)
+ST   AppPressCorrente              ** Appoggio Pressione Corrente
+JMP  ComValv
+
+no_hoerbiger:
+
+* Selection 12 or 16 bits input resolution
+
+LD   BitInValvProp                 ** (rLsPlc39) Numero bit x feedback valvola prop.
+EQ   0
+JMPCN l16bitIn
+
+LD   4095
+ST   ScaleBitIN                    ** Pressure input full scale in count
+JMP  ComBitIn
+
+l16bitIn:
+
+LD   BitInValvProp                 ** (rLsPlc39) Numero bit x feedback valvola prop.
+EQ   1
+JMPCN l16bitInFull
+
+LD   32767
+ST   ScaleBitIN                    ** Pressure input full scale in count
+JMP  ComBitIn
+
+l16bitInFull:
+
+LD   65535
+ST   ScaleBitIN                    ** Pressure input full scale in count
+
+ComBitIn:
+
+* Analog valve pressure reading
+
+LD   IA_Feedback_GAS_OUT           ** Gas proportional valve feedback (OUTPUT)
+MUL  PressMaxEvProp_APP
+DIV  ScaleBitIN                    ** Pressure input full scale in count
+ST   AppPressCorrente              ** Appoggio Pressione Corrente
+
+LD   %config_machine29             ** Proportional valve manage only with OXYGEN
+EQ   2
+JMPCN AIRO2_O2_SMCS
+     LD   IA_Feedback_GAS_OUT      ** (IW20)Feedback valvola proporzionale gas di taglio Output
+     SUB  819
+	 MUL  PressMaxEvProp_APP         
+     DIV  (
+     LD   ScaleBitIN
+     SUB  819                      
+     )
+     ST   AppPressCorrente         ** Appoggio Pressione Corrente   
+
+     * Avoid negative value visualizzation 
+     LD   AppPressCorrente        
+     LT   0
+     JMPCN no_force_zero
+     LD   0            
+     ST   AppPressCorrente      
+     no_force_zero:
+AIRO2_O2_SMCS:
+
+
+ComValv:
+
+LD   AppPressCorrente              ** Appoggio Pressione Corrente
+ST   PressCorrente                 ** (LsPlc35) Pressione Corrente (mbar)
+
+LD   PressCorrente                 ** (LsPlc35) Pressione Corrente (mbar)
+MUL  145                           * 14.5 PSI = 1 bar
+DIV  1000
+ST   CurPressPSI                   ** (LsPlc34) Current gas pressure (PSI*10)
+
+****************************************************************************************************
+* GAS PRESSURE OUT OF RANGE ALARM
+****************************************************************************************************
+LD   SetOutPress                   ** (LsPlc38) Setpoint output pressure (mbar)
+MUL  FinestraAllPress              ** (rLsGui18)Finestra allarme pressione da pagina "Gas" in %
+DIV  100
+ST   PressTol                      ** Pressure tolerance (mbar)
+
+LD   SetOutPress                   ** (LsPlc38) Setpoint output pressure (mbar)
+ADD  PressTol                      ** Pressure tolerance (mbar)
+ST   MaxAllPressMbar               ** Pressure max limit for alarm (mbar)
+
+LD   SetOutPress                   ** (LsPlc38) Setpoint output pressure (mbar)
+SUB  PressTol                      ** Pressure tolerance (mbar)
+ST   MinAllPressMbar               ** Pressure min limit for alarm (mbar)
+
+LD   MinAllPressMbar               ** Pressure min limit for alarm (mbar)
+LT   0
+JMPCN NoZeroMin
+
+LD   0
+ST   MinAllPressMbar               ** Pressure min limit for alarm (mbar)
+
+NoZeroMin:
+
+LD   PressCorrente                 ** (LsPlc35) Pressione Corrente (mbar)
+GE   MinAllPressMbar               ** Pressure min limit for alarm (mbar)
+AND (
+LD   PressCorrente                 ** (LsPlc35) Pressione Corrente (mbar)
+LE   MaxAllPressMbar               ** Pressure max limit for alarm (mbar)
+)
+OR   (
+LD   FinestraAllPress              ** (rLsGui18)Finestra allarme pressione da pagina "Gas" in %
+EQ   0
+)
+AND  GasPropEnabFromV              ** M107.23 Gas prop. valve enable from valve configuration
+ST   PressGasOk                    ** M107.20 Gas pressure in range
+
+LD   GasPropEnabFromV              ** M107.23 Gas prop. valve enable from valve configuration
+ANDN PressGasOk                    ** M107.20 Gas pressure in range
+ANDN SPURGOrun                     ** M107.2 Gas purge in progress
+ST   PropOutRange                  ** Gas pressure out of range
+
+LD   TimeMaxAllPress               ** (rLsGui19)Tempo Ritardo allarme pressione da pagina "Gas"
+MUL  1000
+ST   TimeAlPress                   ** Delay for pressure alarm enable (ms)
+
+CAL  TON_All_prop(IN=PropOutRange,PT=TimeAlPress) ** Gas pressure out of range
+
+LD   TON_All_prop.Q                ** End of pressure alarm delay
+S    %PLCerr5.14                  ** PLC Err 174 Pressione valvola proporzionale fuori range
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+OR   Pul_Start                     ** (gPlc0.1)Start pushbutton
+R    %PLCerr5.14                  ** PLC Err 174 Pressione valvola proporzionale fuori range
+
+**********************************************************************
+* Control of input gasses (AIR / O2 / N2) with Hoerbiger input valve
+**********************************************************************
+
+LD   IA_Feedback_GAS_IN_DIG        ** Hoerbiger gas proportional valve feedback (INPUT)
+ST   IA_Feedback_GAS_IN_BAR        ** Hoerbiger feedback pressure (bar)
+
+LD   O_O_EV_OR_ALLGAS              ** M90.15 Elettrovalvola apertura di almeno un gas
+AND  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+AND  GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+ST   Appoggio
+
+CAL  TON_FEEDBACK_GAS_IN(IN:=Appoggio,PT:=Delay_Press_Check) ** (rLsGui21) Delay_Press_Check
+
+LD   MaxCurrPress                  ** Maximum pressure for current selected gas (mbar)
+SUB  IA_Feedback_GAS_IN_BAR        ** Hoerbiger feedback pressure (bar)
+GT   Diff_Limit_Pres               ** (rLsGui22) Input limit difference pressure
+AND  TON_FEEDBACK_GAS_IN.Q         ** End of delay pressure check for Hoerbiger valve
+ANDN SPURGOrun                     ** M107.2 Gas purge in progress
+ST   HbOutPress                    ** Hoerbiger feedback pressure out of range
+
+LD   HbOutPress                    ** Hoerbiger feedback pressure out of range
+AND  O_O_EV_OPEN_ARIA              ** Elettrovalvola apertura Aria taglio
+S    %PLCerr7.12                    ** Hoerbiger low air pressure
+
+LD   HbOutPress                    ** Hoerbiger feedback pressure out of range
+AND  O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+S    %PLCerr7.13                    ** Hoerbiger low nitrogen pressure
+
+LD   HbOutPress                    ** Hoerbiger feedback pressure out of range
+AND  O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+S    %PLCerr7.14                    ** Hoerbiger low oxigen pressure
+
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+OR   EMERGENZA_PLC_CN              ** M100.0  Emergenza da PLC o da CN
+OR   Pul_Start                     ** (gPlc0.1)Start pushbutton
+R    %PLCerr7.12                    ** Hoerbiger low air pressure
+R    %PLCerr7.13                    ** Hoerbiger low nitrogen pressure
+R    %PLCerr7.14                    ** Hoerbiger low oxigen pressure
+
+LD   %PLCerr7.12                   ** Hoerbiger low air pressure
+OR   %PLCerr7.13                   ** Hoerbiger low nitrogen pressure
+OR   %PLCerr7.14                   ** Hoerbiger low oxigen pressure
+ST   Hold_gas_refill               ** M107.24 Hoerbiger insufficient gas pressure
+
+****************************************************************************************************
+* Segnalazioni su pagina video
+****************************************************************************************************
+
+LD   GAS_test                      ** M107.0 Test gas in progress for prop. valve
+OR   KeepPropTest                  ** Prop. valve test keep
+AND  GasPropEnabFromV              ** M107.23 Gas prop. valve enable from valve configuration
+ST   GasTestLED                    ** (LsPlc11.10) LED Comando TEST Valvola prop.
+
+**********************************************************************
+* HOERBIGER RESET
+**********************************************************************
+
+LD   HOERB_RESET_REQ			*(SoftBtn2.20) Hoerbiger reset button
+ANDN %PLCmsg7.1					*Hoerbiger calibration not running
+ST   Appoggio
+
+CAL  RTRIG_RESET_HOERB(CLK=Appoggio)
+CAL  TOF_RESET_HOERB(IN:=RTRIG_RESET_HOERB.Q, PT=3000)
+
+LD   TOF_RESET_HOERB.Q
+ST   O_O_HOER_RESET
+
+END_FUNCTION

@@ -1,0 +1,98 @@
+:G152
+DBL bfc_x, bfc_y, bfc_z, bfc_u, bfc_v, bfc_w, bfc_a, bfc_b, bfc_c
+DBL shf_x, shf_y, shf_z, shf_u, shf_v, shf_w, shf_a, shf_b, shf_c
+DBL dmy
+DBL sav_G70=XGET("@G70")
+G71
+IF( XGET("@G90") != 90 ) ERROR(3)
+G17
+f_G153=0
+shf_x = mx_o1 +ori_x+add1_x+add2_x
+shf_y = mx_o2 +ori_y+add1_y+add2_y
+shf_z = mx_o3 +ori_z+add1_z+add2_z
+IF(f_ortho) JMPF .Ortho
+    MLV=0
+    MAT[X] = [mx_a11 mx_a12 mx_a13 shf_x]
+    MAT[Y] = [mx_a21 mx_a22 mx_a23 shf_y]
+    MAT[Z] = [mx_a31 mx_a32 mx_a33 shf_z]
+    DYNMOD = 1
+JMPF .OrthoClct
+.Ortho
+    DYNMOD = 0
+    MLV=1
+    SHF[X] = shf_x
+    SHF[Y] = shf_y
+    SHF[Z] = shf_z
+.OrthoClct
+shf_u = QEXPQ(U,pl_orig_u)
+shf_v = QEXPQ(V,pl_orig_v)
+shf_w = QEXPQ(W,pl_orig_w)
+shf_a = QEXPQ(A,pl_orig_a)
+shf_b = QEXPQ(B,pl_orig_b)
+shf_c = QEXPQ(C,pl_orig_c)
+G58 U(shf_u) V(shf_v) W(shf_w) A(shf_a) B(shf_b) C(shf_c)
+IF(!rtcp_on) JMPF .NoRtcp
+    SVL (rtcp_cut_edge_svl)
+    COMMIT ;Richiesto per SVL seguita da TWI
+    TWI(twist_head_no)
+    THD(tool_holder_no)
+    D(rtcp_cut_edge_no)
+    TAB(twist_table_no)
+    ICLNUT = rtcp_iclnut
+    PADSID = 0
+    EP(0) EQ(0) ER(0)
+    LSYN
+    dmy=EGbiabfc(1,pl_orig_a,pl_orig_b,pl_orig_c,pl_tool_a,pl_tool_b,pl_tool_c,pl_add2_a,pl_add2_b,pl_add2_c)
+    bfc_u = QPREFQ(U)
+    bfc_v = QPREFQ(V)
+    bfc_w = QPREFQ(W)
+    IF(!ISQNAN(bfc_u)) bfc_u=bfc_u-shf_u
+    IF(!ISQNAN(bfc_v)) bfc_v=bfc_v-shf_v
+    IF(!ISQNAN(bfc_w)) bfc_w=bfc_w-shf_w
+    G10 G0 X(bfc_x) Y(bfc_y) Z(bfc_z) U(bfc_u) V(bfc_v) W(bfc_w) A(bfc_a) B(bfc_b) C(bfc_c)
+    IF (rtcp_padsid) PADSID = rtcp_padsid
+    IF (rtcp_padsid) COMMIT ;Richiesto dopo blocchi di classe TWI
+    G(sav_G70)
+    RET
+    ;//cycle ends
+.NoRtcp
+DBL tmp_x, tmp_y, tmp_z
+DBL mxi_a11, mxi_a12, mxi_a13
+DBL mxi_a21, mxi_a22, mxi_a23
+DBL mxi_a31, mxi_a32, mxi_a33
+DBL det
+SVL (cut_edge_svl)
+COMMIT ;Richiesto per SVL seguita da TWI
+TWI(0)
+THD(0)
+D(cut_edge_no)
+TAB(0)
+ICLNUT = 0
+PADSID = 0
+det=mx_a11*mx_a22*mx_a33+mx_a12*mx_a23*mx_a31+mx_a13*mx_a21*mx_a32
+det=det-(mx_a13*mx_a22*mx_a31)-(mx_a11*mx_a23*mx_a32)-(mx_a12*mx_a21*mx_a33)
+IF( ABS(det) < 0.001 ) ERROR(38)    ;//Divide by zero
+mxi_a11 =  (mx_a22*mx_a33-mx_a23*mx_a32) / det
+mxi_a21 = -(mx_a21*mx_a33-mx_a23*mx_a31) / det
+mxi_a31 =  (mx_a21*mx_a32-mx_a22*mx_a31) / det
+mxi_a12 = -(mx_a12*mx_a33-mx_a13*mx_a32) / det
+mxi_a22 =  (mx_a11*mx_a33-mx_a13*mx_a31) / det
+mxi_a32 =  (-mx_a11*mx_a32+mx_a12*mx_a31) / det
+mxi_a13 = -(-mx_a12*mx_a23+mx_a13*mx_a22) / det
+mxi_a23 =  (-mx_a11*mx_a23+mx_a13*mx_a21) / det
+mxi_a33 = -(-mx_a11*mx_a22+mx_a12*mx_a21) / det
+tmp_x = tool_cosx * mxi_a11 + tool_cosy * mxi_a12 + tool_cosz * mxi_a13
+tmp_y = tool_cosx * mxi_a21 + tool_cosy * mxi_a22 + tool_cosz * mxi_a23
+tmp_z = tool_cosx * mxi_a31 + tool_cosy * mxi_a32 + tool_cosz * mxi_a33
+EP(tmp_x) EQ(tmp_y) ER(tmp_z)
+LSYN
+dmy=EGbiabfc(1,pl_orig_a,pl_orig_b,pl_orig_c,pl_tool_a,pl_tool_b,pl_tool_c,pl_add2_a,pl_add2_b,pl_add2_c)
+bfc_u = QPREFQ(U)
+bfc_v = QPREFQ(V)
+bfc_w = QPREFQ(W)
+IF(!ISQNAN(bfc_u)) bfc_u=bfc_u-shf_u
+IF(!ISQNAN(bfc_v)) bfc_v=bfc_v-shf_v
+IF(!ISQNAN(bfc_w)) bfc_w=bfc_w-shf_w
+G10 G0 X(bfc_x) Y(bfc_y) Z(bfc_z) U(bfc_u) V(bfc_v) W(bfc_w) A(bfc_a) B(bfc_b) C(bfc_c)
+G(sav_G70)
+RET

@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+GRAPHPRESSMOBILE=Graph Thick - Press Mobile
+Plot2=Thickness - Pressure
+L_TYPE_INTERP72=Pattern
+LIST0=Linear,Segment,Smoothing
+L_TYPE_INTERP71=Points
+L_SPEED72=Thickness [mm]
+L_POWER71=Pressure [Bar]
+
+[STATUS]
+Plot2=Pressure [Bar], Thickness [mm]
+
+[HELP]

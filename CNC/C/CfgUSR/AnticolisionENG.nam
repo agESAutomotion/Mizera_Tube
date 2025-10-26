@@ -1,0 +1,23 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+ANTICOLISION=Leaf
+Label1=Safe Distance X - X3 (Hold) [mm]
+Label2=Safe Distance X3 - X1 (Hold) [mm]
+Label3=Safe Distance X - X3 (Emergency) [mm]
+Label4=Safe Distance X3 - X1 (Emergency) [mm]
+Label5=X limit when X3 at negative during cutting
+Label6=Safe X3 - L1  [X3 Quota]
+Label7=Safe X3 - Dustbin  [X3 Quota]
+Label8=Note: M4 to unload related
+Label9=Anti-Colision Spindles
+Label10=- 3
+Label11=+ 3
+Label12=Dynamic BW safety distance according to the current B-axis angle
+
+[STATUS]
+
+[HELP]

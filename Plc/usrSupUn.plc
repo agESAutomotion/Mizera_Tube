@@ -1,0 +1,821 @@
+#funcdec "assi.plc"
+#funcdec "suppFB.plc"
+#funcdec "SPist.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+#funcdec "SupForce.plc"
+
+#include "usrMem.inc" 
+#include "Iol.inc"
+
+VAR
+#include "iof.inc"
+#include "usrIof.inc"
+#include "cnc.inc"
+
+appoggio:                      BOOL;
+AllowSecFTar:                  BOOL;
+M700_OR_M704:                  BOOL;
+TubeReachSup_71:               BOOL;
+TubeReachSup_72:               BOOL;
+TubeReachSup_73:               BOOL;
+TubeReachSup_74:               BOOL;
+TubeReachSup_75:               BOOL;
+
+TP_BIN_DOOR:                     TP;
+RTRIG_RES_PRK:        	     R_TRIG;		
+R_Trig_UseCent:              R_TRIG;
+RTRIG_Heading:               R_TRIG;
+Rtrig_TubeInMac:             R_TRIG;
+RTrig_SetFollow:             R_TRIG;
+RTRIG_RES_GEA_OPT:           R_TRIG;
+FTrig_SetFollow:             F_TRIG;
+F_TRIG_RES_FOLL:             F_TRIG;
+
+SUP71:                      SUPPORT;
+SUP72:                      SUPPORT;
+SUP73:                      SUPPORT;
+SUP74:                      SUPPORT;
+SUP75:                      SUPPORT;
+
+CALQ_PRESTOP_V:        CALQ_PRESSLV;
+SUP71_ForceDwn:  ISO_SUP_FORCE_DOWN;
+SUP72_ForceDwn:  ISO_SUP_FORCE_DOWN;
+SUP73_ForceDwn:  ISO_SUP_FORCE_DOWN;
+SUP74_ForceDwn:  ISO_SUP_FORCE_DOWN;
+SUP75_ForceDwn:  ISO_SUP_FORCE_DOWN;
+END_VAR
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"              
+END_VAR
+
+FUNCTION UNLOAD_SUPPORTS
+
+PATH  %cn8
+
+*******************************************************
+* Unloading Vertical and Horizontal Sup VEL BLENDER
+*******************************************************
+*CALC_BLD_FEED
+BLEND_FEEDRATE
+
+*******************************************************
+* Allow tube head avoidance 
+*******************************************************
+LD   IN_M700_M704
+EQ   700
+OR(
+LD   IN_M700_M704
+EQ   704
+)
+AND  %cn0.rc8.0
+ST   M700_OR_M704
+
+LD   %cn0.rc8.0
+AND  EnWriteBlendSwitch        * Unload
+ANDN M700_OR_M704
+ANDN Dis2ndFlapTar
+ANDN %ax0.ra3.0
+ANDN %ax0.ra3.2
+ANDN IN_M4_MODE
+ST   AllowSecFTar
+
+*******************************************************
+* Staggered avoidance position 
+*******************************************************
+PATH %ax31
+LD   IN_M4_MODE   
+OR   IN_M3_MODE       
+ANDN iso_G520_Running
+AND  %cn0.rc8.0   
+ST   appoggio
+CAL  CALQ_PRESTOP_V(xEn:=appoggio,xQta:=%ax31.ra92,xSpdNum:=3)
+LD   CALQ_PRESTOP_V.Q
+ST   SupervisePos_X1
+
+LDN  %ax31.ra3.2    *Forward Movement of Slave Spindle
+ANDN %ax31.ra3.0
+JMPCN BCKWARDX1CASE
+LD   %ax31.ra4
+ST   SupervisePos_X1
+BCKWARDX1CASE:
+
+LDN  %cn3.cc1.4     *Exsisting V axis
+JMPCN CASENO3SPINDLE
+     LD   -9999999
+     ST   SupervisePos_X1
+CASENO3SPINDLE:
+
+*******************************************************
+* Tube Length In the machine 
+*******************************************************
+LD   ResetTubeInMac
+ANDN PRGRUN_CN0
+ST   appoggio
+CAL  Rtrig_TubeInMac(CLK:=appoggio)
+LD   Rtrig_TubeInMac.Q
+JMPCN no_tube
+LD   %ax30.ra4
+SUB (                                * In G800, should ensure always heading without angle
+     LD  %ax33.ra4
+     SIN 
+	 MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+)
+ST   PosUHeading                     * last U heading position 
+no_tube:
+
+CAL  RTRIG_Heading (CLK:=iso_pipeinside_mngt)
+LD   RTRIG_Heading.Q               
+JMPCN  no_req_U_pos
+LD   %ax30.ra4
+ST   PosUHeading                     * last U heading position 
+no_req_U_pos:
+
+LD   PosUHeading                     * Last U heading cut position 
+SUB  %ax30.ra4                       * U axis Position
+* ADD is correct here, to avoid following support up/down during bevel cutting
+ADD (                                * In G800, should ensure always heading without angle
+     LD  %ax33.ra4
+     SIN 
+	 MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+)
+ST   TubeLengthInMach                * Tube present after the fixed spindle   
+
+LD   TubeLengthInMach
+LT   0 
+JMPCN LengthNotDefined
+LD   0
+ST   TubeLengthInMach
+LengthNotDefined:
+
+LD   %ServiceMillePGM.13 
+JMPCN Not_manual_follow
+LD   %ax30.pa22
+ST   TubeLengthInMach
+Not_manual_follow:
+
+LD   O_O_SpindleFix_Close
+AND  O_O_Mobile_Spindle_Slave_Close
+ANDN O_O_Mobile_Spindle_Close
+ST   IN_M4_MODE
+
+LD   O_O_SpindleFix_Close
+AND  O_O_Mobile_Spindle_Slave_Close
+AND  O_O_Mobile_Spindle_Close
+ST   IN_M3_MODE
+
+LD   O_O_SpindleFix_Close
+ANDN O_O_Mobile_Spindle_Slave_Close
+AND  O_O_Mobile_Spindle_Close
+ST   IN_M2_MODE
+
+*******************************************************
+* Dust Bin Management (1 == UP)
+*******************************************************
+LD   iso_bincmd   
+AND  PRGRUN_CN0      
+OR(
+LD   gui_binup
+ANDN PRGRUN_CN0 
+)
+ANDN (
+LD   %ax36.ra4
+LT   SafeDis_W_Dustbin                * Less, not allow dustbin up
+)
+OR   O_O_Flap_Incline
+OR(
+LD   O_O_Flap_Home
+ANDN I_I_Flap_Home
+)
+ST   O_O_Bin_Door     * (1 == UP)
+
+LD   Pul_Reset
+R    iso_bincmd
+R    gui_binup
+
+*******************************************************
+*         FOLLOWIING SUPPORTS MANAGEMENT              *
+*******************************************************
+CAL  F_TRIG_RES_FOLL (CLK:=PRGRUN_CN0)
+LD   F_TRIG_RES_FOLL.Q
+OR   Pul_Reset
+R    EnWriteBlendSwitch          
+R    CmdBlendSwitch
+R    ParkAllCmd
+R    AllFlapsHome    
+R    AllFlapsIncline 
+
+LD   iso_G520_Running
+AND  %cn0.rc8.1
+ST   HoldFlapInclined
+R    AllFlapsHome    
+R    AllFlapsIncline 
+R    InclineFlapL1_ISO
+R    InclineFlapL2_ISO
+R    InclineFlapL3_ISO
+R    InclineFlapL4_ISO
+R    InclineFlapL5_ISO
+
+LDN  PRGRUN_CN0
+JMPCN RSTBLEND
+     LD   %PLCFLAGS.0
+     ST   EnWriteBlendSwitch
+     ST   CmdBlendSwitch
+     ST   ParkUn71Sup_ISO
+	 ST   ParkUn72Sup_ISO
+	 ST   ParkUn73Sup_ISO
+	 ST   ParkUn74Sup_ISO
+	 ST   ParkUn75Sup_ISO
+	 ST   InclineFlapL1_ISO
+	 ST   InclineFlapL2_ISO
+	 ST   InclineFlapL3_ISO
+	 ST   InclineFlapL4_ISO
+	 ST   InclineFlapL5_ISO
+	 ST   ISO_SupUn_Init
+	 ST   ISO_Loader_Ack
+	 ST   ISO_Loader_Req
+		  
+	 LD   0
+	 ST   OffsetUnSuppDwn_71   
+     ST   OffsetUnSuppDwn_72        
+	 ST   UpSupVoffset    
+	 ST   IN_M700_M704
+RSTBLEND:
+
+LD   Reset
+OR   EMER_GEN
+ST   SUP71.xReset   
+ST   SUP72.xReset   
+ST   SUP73.xReset   
+ST   SUP74.xReset   
+ST   SUP75.xReset   
+
+LD   ISO_SupUn_Init
+ST   SUP71.xHoldExem
+ST   SUP72.xHoldExem
+ST   SUP73.xHoldExem
+ST   SUP74.xHoldExem
+ST   SUP75.xHoldExem
+
+LD   EnWriteBlendSwitch  
+AND  CmdBlendSwitch   
+ST   SUP71.xBlendSwitchEn
+ST   SUP72.xBlendSwitchEn
+ST   SUP73.xBlendSwitchEn
+ST   SUP74.xBlendSwitchEn
+ST   SUP75.xBlendSwitchEn
+
+LD   SupervisePos_X1  
+ST   SUP71.xSupervisePos        
+ST   SUP72.xSupervisePos        
+ST   SUP73.xSupervisePos        
+ST   SUP74.xSupervisePos        
+ST   SUP75.xSupervisePos        
+
+LD   OptEnabAutoPark
+ANDN (
+LD   IN_M700_M704
+EQ   700
+ANDN M700_BLEND
+AND  %cn0.rc8.0 
+)
+ST   SUP71.xEnabAutoUp
+ST   SUP72.xEnabAutoUp
+ST   SUP73.xEnabAutoUp
+ST   SUP74.xEnabAutoUp
+ST   SUP75.xEnabAutoUp
+
+LD   IN_M700_M704
+ST   SUP71.xM700_M704
+ST   SUP72.xM700_M704
+ST   SUP73.xM700_M704
+ST   SUP74.xM700_M704
+ST   SUP75.xM700_M704
+
+LD   IN_M4_MODE
+JMPCN NOG1000PRK
+     LD   0
+     ST   SUP71.xM700_M704
+     ST   SUP72.xM700_M704
+     ST   SUP73.xM700_M704
+     ST   SUP74.xM700_M704
+     ST   SUP75.xM700_M704
+NOG1000PRK:
+
+LD   OptEnabAutoPark
+ST   SUP71.xEnabAutoDwn
+ST   SUP72.xEnabAutoDwn
+ST   SUP73.xEnabAutoDwn
+ST   SUP74.xEnabAutoDwn
+ST   SUP75.xEnabAutoDwn
+
+LD   ParkingPositionUnload         
+ST   SUP71.xParkingPos  
+ST   SUP72.xParkingPos  
+ST   SUP73.xParkingPos  
+ST   SUP74.xParkingPos  
+ST   SUP75.xParkingPos  
+
+LD   UnloadSupQta
+ST   SUP71.xUnSupQta
+ST   SUP72.xUnSupQta
+ST   SUP73.xUnSupQta
+ST   SUP74.xUnSupQta
+ST   SUP75.xUnSupQta
+
+LD   20000
+ST   SUP71.xAddFollPos  
+ST   SUP72.xAddFollPos  
+ST   SUP73.xAddFollPos  
+ST   SUP74.xAddFollPos  
+ST   SUP75.xAddFollPos 
+
+* [lv, lat, ulv, uhor]=[0,1,2,3]
+LD   2
+ST   SUP71.xBlendId
+ST   SUP72.xBlendId
+ST   SUP73.xBlendId
+ST   SUP74.xBlendId
+ST   SUP75.xBlendId
+
+LD   %config_machine0.8
+*ST   SUP71.xEnCyComSup
+ST   SUP72.xEnCyComSup
+ST   SUP73.xEnCyComSup
+ST   SUP74.xEnCyComSup
+ST   SUP75.xEnCyComSup
+JMPCN _CYCOMOFT
+LD   %ax61.ra24
+*ST   SUP71.xCyComOft
+ST   SUP72.xCyComOft
+ST   SUP73.xCyComOft
+ST   SUP74.xCyComOft
+ST   SUP75.xCyComOft
+_CYCOMOFT:
+
+LD   %cn7.cc1.2
+ST   SUP72.xEnBldFeed
+LD   %cn7.cc1.3
+ST   SUP73.xEnBldFeed
+LD   %cn7.cc1.4
+ST   SUP74.xEnBldFeed
+LD   %cn7.cc1.5
+ST   SUP75.xEnBldFeed
+
+*******************************************************
+*                      SUPPORT 1                      *
+*******************************************************
+LD   %cn8.cc1.1
+JMPCN no_support_1
+
+LD   MinPieceUnload   
+DIV  2                 
+* Assuming 1/2 piece length falling down naturally
+ABS 
+LT   TubeLengthInMach
+ST   TubeReachSup_71
+
+CAL  SUP71_ForceDwn(xIsoForce=iso_LsronCutting, xHoldMovSuperv=Hold_U_Z1Supp)
+
+PATH  %ax71
+
+LD   %ax36.ra4
+LT   SafeDis_W_L1
+ANDN iso_G520_Running
+AND  %cn3.cc1.4                              * Exsisting V axis
+JMPCN SECSUPERV
+     LD   0
+     ST   SUP71.xSupervisePos                * U posiz
+SECSUPERV:
+
+LD   OffsetUnSuppDwn_71
+ST   SUP71.xSuperviseOft
+
+LD   U_Posit_Z1_Down            
+ST   SUP71.xLimitSuppDwn 
+                 
+LD   %ax36.ra4
+LT   SafeDis_W_L1
+AND  iso_G520_Running
+AND  %cn3.cc1.4                         * Exsisting V axis
+OR   ParkUn72Sup_ISO	 
+OR   ParkAllCmd
+OR   SUP71_ForceDwn.yForceDwn
+OR(
+     LDN  TubeReachSup_71
+     ANDN IN_M4_MODE
+     *ANDN iso_G510_Running
+     ANDN iso_G520_Running
+     AND  %cn0.rc8.0 
+)
+ST   SUP71.xParkCmd
+ST   SUP71_xParkCmd
+
+LD   TubeLengthInMach
+LT   200000                             * 200mm tube length
+AND  (
+LD   TubeLengthInMach
+GT   20
+)        
+AND  AllowSecFTar  
+ST   SUP71.xEnSecFollow
+
+LD   iso_G520_71_Unload
+ST   SUP71.xG520VSup
+
+CAL  SUP71
+
+LD   SUP71.yReqGrant
+ANDN ch8_in_ref
+ST   usrReqGrantSup1 
+
+LD   SUP71.yHoldMovSupp
+ANDN ch8_in_ref
+ANDN ISO_SupUn_Init
+ST   HoldZ1Supp
+
+LD   SUP71.yHoldMovSuperv
+ANDN ch8_in_ref
+ST   Hold_U_Z1Supp
+
+LD   SUP71.yAxInParkPos
+ST   Z1Supp_71InParkPos
+
+LD   SUP71.yCyComDwn
+ST   yActivatedCyCom_71
+
+LD   SUP71.yCyComOft
+ST   CyComOftAx71
+
+LDN  I_I_L1_Down
+AND(
+LD   U_Posit_Z1_Down
+SUB  %ax71.ra4
+ABS
+LT   300              * 0.3mm
+)
+S    %PLCerr21.30
+
+no_support_1:
+
+LD   Pul_Reset
+R    %PLCerr21.30
+
+*******************************************************
+*                      SUPPORT 2                      *
+*******************************************************
+LD   %cn8.cc1.2
+JMPCN no_support_2
+
+LD   U_Posit_Z2_Down
+ADD  FlapWidth                        
+ABS 
+LT   TubeLengthInMach
+ST   TubeReachSup_72
+
+CAL  SUP72_ForceDwn(xIsoForce=iso_LsronCutting, xHoldMovSuperv=Hold_U_Z2Supp)
+
+PATH  %ax72
+
+LD   OffsetUnSuppDwn_72     
+ST   SUP72.xSuperviseOft 
+
+LD   U_Posit_Z2_Down           
+ST   SUP72.xLimitSuppDwn 
+
+LD   ParkUn72Sup_ISO
+OR   ParkAllCmd
+OR   SUP72_ForceDwn.yForceDwn
+OR(
+     LDN  TubeReachSup_72
+     ANDN IN_M4_MODE
+     *ANDN iso_G510_Running
+     ANDN iso_G520_Running
+     AND  %cn0.rc8.0
+) 
+ST   SUP72.xParkCmd
+ST   SUP72_xParkCmd
+
+LD   U_Posit_Z2_Down
+ADD  FlapWidth
+ABS 
+SUB  TubeLengthInMach 
+ABS 
+LT   100000                             * 100mm tube length
+AND  AllowSecFTar  
+ST   SUP72.xEnSecFollow
+
+LD   iso_G520_72_Unload
+ST   SUP72.xG520VSup
+
+LD   BLDFEED_72_85_Percent
+ST   SUP72.xBldFeed
+
+CAL  SUP72
+
+LD   SUP72.yReqGrant
+ANDN ch8_in_ref
+ST   usrReqGrantSup2 
+
+LD   SUP72.yHoldMovSupp
+ANDN ch8_in_ref
+ANDN ISO_SupUn_Init
+ST   HoldZ2Supp
+
+LD   SUP72.yHoldMovSuperv
+ANDN ch8_in_ref
+ST   Hold_U_Z2Supp
+
+LD   SUP72.yAxInParkPos
+ST   Z2Supp_72InParkPos
+
+LD   SUP72.yCyComDwn
+ST   yActivatedCyCom_72
+
+LD   SUP72.yCyComOft
+ST   CyComOftAx72
+
+no_support_2:
+
+*******************************************************
+*                      SUPPORT 3                     *
+*******************************************************
+LD   %cn8.cc1.3
+JMPCN no_support_3
+
+LD   U_Posit_Z3_Down
+ADD  FlapWidth                         
+ABS 
+LT   TubeLengthInMach
+ST   TubeReachSup_73
+
+CAL  SUP73_ForceDwn(xIsoForce=iso_LsronCutting, xHoldMovSuperv=Hold_U_Z3Supp)
+
+PATH  %ax73
+
+LD   OffsetUnSuppDwn_73
+ST   SUP73.xSuperviseOft
+
+LD   U_Posit_Z3_Down            
+ST   SUP73.xLimitSuppDwn 
+
+LD   ParkUn73Sup_ISO
+OR   ParkAllCmd
+OR   SUP73_ForceDwn.yForceDwn
+OR(
+     LDN  TubeReachSup_73
+     ANDN IN_M4_MODE
+     *ANDN iso_G510_Running
+     ANDN iso_G520_Running
+     AND  %cn0.rc8.0
+) 
+*OR   Hor_Ax73_yVerForceDwn
+ST   SUP73.xParkCmd
+ST   SUP73_xParkCmd
+
+LD   U_Posit_Z3_Down
+ADD  FlapWidth
+ABS 
+SUB  TubeLengthInMach 
+ABS 
+LT   100000                             * 100mm tube length
+AND  AllowSecFTar   
+ST   SUP73.xEnSecFollow
+
+LD   iso_G520_73_Unload
+ST   SUP73.xG520VSup
+
+LD   BLDFEED_73_86_Percent
+ST   SUP73.xBldFeed
+
+CAL  SUP73
+
+LD   SUP73.yReqGrant
+ANDN ch8_in_ref
+ST   usrReqGrantSup3 
+
+LD   SUP73.yHoldMovSupp
+ANDN ch8_in_ref
+ANDN ISO_SupUn_Init
+ST   HoldZ3Supp
+
+LD   SUP73.yHoldMovSuperv
+ANDN ch8_in_ref
+ST   Hold_U_Z3Supp 
+
+LD   SUP73.yAxInParkPos
+ST   Z3Supp_73InParkPos
+
+LD   SUP73.yCyComDwn
+ST   yActivatedCyCom_73
+
+LD   SUP73.yCyComOft
+ST   CyComOftAx73
+
+no_support_3:
+
+*******************************************************
+*                      SUPPORT 4                     *
+*******************************************************
+LD   %cn8.cc1.4
+JMPCN no_support_4
+
+LD   U_Posit_Z4_Down
+ADD  FlapWidth               
+ABS 
+LT   TubeLengthInMach
+ST   TubeReachSup_74
+
+CAL  SUP74_ForceDwn(xIsoForce=iso_LsronCutting, xHoldMovSuperv=Hold_U_Z4Supp)
+
+PATH %ax74
+
+LD   OffsetUnSuppDwn_74
+ST   SUP74.xSuperviseOft    
+
+LD   U_Posit_Z4_Down            
+ST   SUP74.xLimitSuppDwn 
+
+LD   ParkUn74Sup_ISO
+OR   ParkAllCmd
+OR   SUP74_ForceDwn.yForceDwn
+OR(
+     LDN  TubeReachSup_74
+     ANDN IN_M4_MODE
+     *ANDN iso_G510_Running
+     ANDN iso_G520_Running
+     AND  %cn0.rc8.0
+)
+*OR   Hor_Ax74_yVerForceDwn
+ST   SUP74.xParkCmd
+ST   SUP74_xParkCmd
+
+LD   U_Posit_Z4_Down
+ADD  FlapWidth
+ABS 
+SUB  TubeLengthInMach 
+ABS 
+LT   100000                             * 100mm tube length
+AND  AllowSecFTar  
+ST   SUP74.xEnSecFollow
+
+LD   iso_G520_74_Unload
+ST   SUP74.xG520VSup
+
+LD   BLDFEED_74_87_Percent
+ST   SUP74.xBldFeed
+
+CAL  SUP74
+
+LD   SUP74.yReqGrant
+ANDN ch8_in_ref
+ST   usrReqGrantSup4
+
+LD   SUP74.yHoldMovSupp
+ANDN ch8_in_ref
+ANDN ISO_SupUn_Init
+ST   HoldZ4Supp
+
+LD   SUP74.yHoldMovSuperv
+ANDN ch8_in_ref
+ANDN ISO_SupUn_Init
+ST   Hold_U_Z4Supp
+
+LD   SUP74.yAxInParkPos
+ST   Z4Supp_74InParkPos
+
+LD   SUP74.yCyComDwn
+ST   yActivatedCyCom_74
+
+LD   SUP74.yCyComOft
+ST   CyComOftAx74
+
+no_support_4:
+
+*******************************************************
+*                      SUPPORT 5                     *
+*******************************************************
+LD   %cn8.cc1.5
+JMPCN no_support_5
+
+LD   U_Posit_Z5_Down
+ADD  FlapWidth      
+ABS 
+LT   TubeLengthInMach
+ST   TubeReachSup_75
+
+CAL  SUP75_ForceDwn(xIsoForce=iso_LsronCutting, xHoldMovSuperv=Hold_U_Z5Supp)
+
+PATH  %ax75
+
+LD   OffsetUnSuppDwn_75
+ST   SUP75.xSuperviseOft
+
+LD   U_Posit_Z5_Down                   * dwn limit for support 
+ST   SUP75.xLimitSuppDwn 
+
+LD   ParkUn75Sup_ISO
+OR   ParkAllCmd
+OR   SUP75_ForceDwn.yForceDwn
+OR(
+     LDN  TubeReachSup_75
+     ANDN IN_M4_MODE
+     *ANDN iso_G510_Running
+     ANDN iso_G520_Running
+     AND  %cn0.rc8.0  
+)
+*OR   Hor_Ax75_yVerForceDwn
+ST   SUP75.xParkCmd
+ST   SUP75_xParkCmd
+
+LD   U_Posit_Z5_Down
+ADD  FlapWidth
+ABS 
+SUB  TubeLengthInMach 
+ABS 
+LT   100000                             * 100mm tube length
+AND  AllowSecFTar  
+ST   SUP75.xEnSecFollow
+
+LD   iso_G520_75_Unload
+ST   SUP75.xG520VSup
+
+LD   BLDFEED_75_88_Percent
+ST   SUP75.xBldFeed
+
+CAL  SUP75
+
+LD   SUP75.yReqGrant
+ANDN ch8_in_ref
+ST   usrReqGrantSup5 
+
+LD   SUP75.yHoldMovSupp
+ANDN ch8_in_ref
+ANDN ISO_SupUn_Init
+ST   HoldZ5Supp
+
+LD   SUP75.yHoldMovSuperv
+ANDN ch8_in_ref
+ANDN ISO_SupUn_Init
+ST   Hold_U_Z5Supp
+
+LD   SUP75.yAxInParkPos
+ST   Z5Supp_75InParkPos
+
+LD   SUP75.yCyComDwn
+ST   yActivatedCyCom_75
+
+LD   SUP75.yCyComOft
+ST   CyComOftAx75
+
+no_support_5:
+
+********************************************************************************
+* V Axis speed reduction in case of unloading axes in parking
+* ---> Blendswitch (0 - 1000) maps to (100% - 10%) feedrate of V  
+********************************************************************************
+LD    1000
+ST    VSuppFeedReduction              * 1000 = 100%
+ 
+* LD    EnWriteBlendSwitch
+* AND(                                * Ensure V is on the right side
+*       LD    %ax31.ra4
+*       SUB   U_Posit_Z1_Down
+* 	    LT    0
+* )
+* AND(                                * Ensure V is in parking zone
+*       LD    %ax31.ra4
+*       SUB   U_Posit_Z1_Down
+* 	    ABS
+* 	    LT    200000                  * Check inside the SuppFB, keep the value same
+* )
+* JMPCN AX72_IN_PARKING    
+* 
+*       LD    %ax71.ra4
+*       SUB   ParkingPositionUnload
+*       MULDIV(M=1000,D=ParkingPositionUnload)
+*       ADD   1000
+*       ST    VSuppFeedReduction 
+*
+* AX72_IN_PARKING:
+
+*//=============================================================================
+*// Unloading Flaps On Each Support
+*//=============================================================================
+UNLOAD_FLAPS
+
+*//=============================================================================
+*// Unloading Cylinder Supports for Motor-Cylinder Combined Mode Usage 
+*//=============================================================================
+LD     %PLCFLAGS.0
+ST     M_HoldAx_V
+
+LD     %config_machine0.8
+JMPCN _CYCOMSEL
+       UN_CYLINDER_SUPPORTS
+_CYCOMSEL:
+
+********************************************************************************
+END_FUNCTION

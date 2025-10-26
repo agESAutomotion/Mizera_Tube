@@ -1,0 +1,74 @@
+[PROMPT]
+KEY_DGT       =Datos ServoLink
+
+KEY_RING0     =Ring(0)
+KEY_RING1     =Ring(1)
+KEY_RING2     =Ring(2)
+KEY_RING3     =Ring(3)
+KEY_RING4     =Ring(4)
+KEY_RING5     =Ring(5)
+KEY_RING6     =Ring(6)
+KEY_RING7     =Ring(7)
+KEY_RING8     =Ring(8)
+
+KEY_NAXES     =Dati Ring
+RING_AXES     =Numero Assi
+RING_BAUD     =Baudrate
+RING_BAUDLIST =NULL, 2-Mbit, 4-Mbit, 8-Mbit, 16-Mbit
+RING_FLEN     =Lunghezza fibra
+RING_FLENLIST =NULL, 1-10m, 10-30m, 30-50m, Over 50m
+RING_TCYC     =Tempo di ciclo
+
+KEY_DRV       =Servo Drives
+DRV_IAX       =Sys Wide Asse
+DRV_ADX       =Dip Switch Servo
+S_0032        =Position control mode
+S_0139        =Park/Out of service
+S_0123        =Feed constant
+DRV_END_SETUP =Setup terminated
+DRV_SERVOPACK =Controller type
+DRV_ENCODER   =Application type
+DRV_MOTOR     =Motor type
+DRV_OPTUNIT   =SYSTEM interface version
+DRV_C1D       =Class 1 diag
+DRV_C2D       =Class 2 diag
+DRV_C3D       =Manufacturer errors
+
+
+KEY_ID_DESCRIPTION =Device Description
+KEY_ID_DIAGNOSTICS =Device Diagnostics
+KEY_ID_DRIVEDATA   =Device Parameters
+
+DRV_FCONV_TORQUE=Torque conversion factor
+DRV_FCONV_TORQUE_ABS=Convert to absolute values
+DRV_FLT_TORQUE=Torque filter sample number
+DRV_ENB_OFF_REF =Abilita offset di taratura
+DRV_OFFSET_REF  =Offset di taratura
+DRV_DIS_PROF_VEL=Disabilita profilo velocità
+DRV_ENB_DEBUG_TXRX=Enable debug TX/RX data
+DRV_RT_BIT1_IDN=IDN programmed on RT_BIT1 ( IDN135 )
+
+[HELP]
+RING_AXES=Numero assi sul ring (1-8)
+RING_BAUD=2-Megabits 4-Megabits
+RING_FLEN=Lunghezza fibra ottica in metri (1 - 100)
+DRV_IAX=Numero Asse system-wide
+DRV_ADX=Indirizzo sercos
+S_0032 =b0=0:Con error seguimiento\nb0=1:Sin error seguimiento\nb1=0:Módulo ejes polar 360°x 12\nb1=1:Módulo ejes polar 360°
+S_0139 =Command function of drive parking, motor and encoder cable can be disconnected (activated during phase 2)
+S_0123 =Linear mm per revolution (S-0-0123)
+DRV_END_SETUP =Indica che il setup del drive è già stato effettuato, quindi di non scrivere i dati di configurazione sul drive durante l'accensione.
+DRV_FCONV_TORQUE=Questo Fattore di conversione serve per traformare il valore dell'IDN84 (S-0-0084) (Torque Feedback Value) in una grandezza più significativa e di migliore comprensione.\nEsempi:\n*Corrente assorbita dal motore (A).\n*Coppia erogata dal motore (Nm).\n*Forza erogata dal motore (N).\n\nIl Nuovo valore viene poi traferito nel registro ra26 dell'asse in questione (es. ax[28].ra26).
+DRV_FCONV_TORQUE_ABS=Converte i valori di IDN84 (S-0-0084) / ax[x].ra26 in assoluto.
+DRV_FLT_TORQUE=Number of samples for istant torque filter IDN84 (S-0-0084), if N > 1 will be calculated the average value of last N samples.
+DRV_ENB_OFF_REF =Questa opzione abilita la gestione della quota di offset di taratura da utilizzare solo con encoder assoluti
+DRV_OFFSET_REF  =L'offset di taratura è un offset della quota misurata dal drive, viene sommato alla quota letta dal drive
+DRV_DIS_PROF_VEL=Su assi lineari e polari disabilita il profilo sercos velocità (no modo open loop), non ha effetto su assi di tipo mandrino. Abilitando questo parametro si alleggerisce il protocollo sercos lasciando più tempo di CPU per altri task
+DRV_ENB_DEBUG_TXRX=Enable shared memory publishing (registers Pn0-Pn11) of sincronous TX and RX telegrams and of internal values for debug scopes.
+DRV_RT_BIT1_IDN=RT bit 1 will be refreshed on the drive's status word cyclically, this parameter define which IDN must be associated to RT bit 1 \n(IDN135 bit 6 alias %RDD_wStatus.6)
+
+
+DRV_C1D=Class 1 diagnostics (S-0-0011)
+DRV_C2D=Class 2 diagnostics (S-0-0012)
+DRV_C3D=Manufacturer specific errors (S-0-0129)
+

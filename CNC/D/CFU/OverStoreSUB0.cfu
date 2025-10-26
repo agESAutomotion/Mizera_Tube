@@ -1,0 +1,354 @@
+ : Overstore program (only for LASER machine!)
+
+;//Variabili salvataggio (usata G180 in una routine di interrupt)
+DBL sav_kine_x, sav_kine_y, sav_kine_z
+DBL sav_kine_a, sav_kine_b, sav_kine_c
+DBL sav_tf_a11, sav_tf_a12, sav_tf_a13
+DBL sav_tf_a21, sav_tf_a22, sav_tf_a23
+DBL sav_tf_a31, sav_tf_a32, sav_tf_a33
+DBL sav_ef_a11, sav_ef_a12, sav_ef_a13
+DBL sav_ef_a21, sav_ef_a22, sav_ef_a23
+DBL sav_ef_a31, sav_ef_a32, sav_ef_a33
+;//Coordinate assolute
+DBL a_x, a_y, a_z
+DBL a_x2, a_y2, a_z2
+;//Ciclica
+DBL save_G40, save_F
+DBL hix
+DBL PrevTravTech
+DBL piercing_mode
+DBL ind8
+DBL pbasel = %LsIso39
+
+ind8 = VL22
+M9999  ;Abilita Start a canali Ausiliari
+
+save_G40 = XGET("@G40")
+G40
+
+DBL sav_G70=XGET("@G70")
+G271
+
+save_F = XGET("@F")    ;Deve essere dopo sav_G70
+
+;//
+RPT .save_kine_A, .save_kine_Z, 1
+;//
+
+;//Routine di interrupt, sospendi spline
+SPC 30000,0
+
+G180 D1 P1
+
+DBL trg_x=kine_x
+DBL trg_y=kine_y
+DBL trg_z=kine_z
+DBL trg_a=kine_a
+DBL trg_b=kine_b
+DBL trg_c=kine_c
+
+;//sincronizza QPREF() usato dai cfs 5ax con le quote reali
+G153
+G10 G0 X(QCALCQ(X)) Y(QCALCQ(Y)) Z(QCALCQ(Z)) A(QCALCQ(A)) B(QCALCQ(B)) C(QCALCQ(C))
+G152
+
+;//$START
+JSR "park_all.cfs"
+
+;//PGM
+G153 G0 Z(trav_safe_z)      ;//XXX trav_safe_z_start?
+
+;//Eventuali commutazioni tecnologia e teste.  Vedi COMMUTAZ.TXT
+
+%R74 =gTravE
+
+;//G806
+;//DEBUG: Controlla che la tecnologia sia compatibile con la testa selezionata
+;//Nota: se ho teste con ossitaglio e plasma in alternativa, con una
+;//selezione hardware per ogni singola testa, la selezione hardware non puo'
+;//essere controllata in G650.
+IF( gTravTech != gTechType ) ERROR(63)
+;//Testa
+;;; ***********************************************************
+?%UnitWork.gTravT =  gTravT
+?%UnitWork.gTravH =  gTravH
+?%UnitWork.gTravD =  gTravD
+?%UnitWork.gTravS =  gTravS
+?%UnitWork.gTravE =  gTravE
+//assi a predisposizione
+?%UnitWork.BvlAngC = VA1    ;//[B]
+?%UnitWork.BvlAngA = VA1    ;//[B]
+;;; ***********************************************************
+;//$APP
+;//Grafica dinamica e visloc
+JSR "graph_set_kine.cfs"
+
+PrevTravTech = 0
+ls_stateping = 0
+
+
+;//Solo testa Y3Z3 selezionata
+IF( (%UnitWork.uxh[0].uxh_gTravT != 0) && (%UnitWork.uxh[1].uxh_gTravT == 0) ) JSR "Sel_Y3Z3.cfs"
+
+IF( !gMachining ) THEN
+    ;//PGM
+    G153 G0 Z(trav_safe_z)      ;//XXX trav_safe_z_start?
+
+    ;//XXX Attualmente la ricerca blocco non e' in grado di fermarsi dopo
+    ;//XXX la G0 dentro alla G800 e di ritornarne le coordinate.
+    ;//XXX Assumiamo che il CAD ci porti a workpiece_safe_dist dalla trg_z
+    ;//XXX del comando G800 e che il vettore utensile sia [0,0,1]
+    trg_z = trg_z - workpiece_safe_dist
+
+    G180 X(trg_x) Y(trg_y) Z(trg_z+workpiece_safe_dist) A(trg_a) B(trg_b) C(trg_c)
+    G153 G0 X(kine_x) Y(kine_y) A(kine_a) B(kine_b) C(kine_c)
+    G153 G0 Z(kine_z)
+    ;//segue G800 X(trg_x) Y(trg_y) Z(trg_z)
+
+ELSE
+    ;//gMachining
+
+    ;//G806
+    G172 T(gTravT) H(gTravH) D(gKerfDescr) S(gTravS) E(gTravE) I(gTravI)
+    ;//PGM
+    G180 X(trg_x) Y(trg_y) Z(trg_z+workpiece_safe_dist) A(trg_a) B(trg_b) C(trg_c)
+    G153 G0 X(kine_x) Y(kine_y) A(kine_a) B(kine_b) C(kine_c)
+    G153 G0 Z(kine_z)
+    ;//G800
+
+    G172 T(gTravT) H(gTravH) D(gKerfDescr) E(gTravE) I(gTravI)
+
+    ;//$APP
+    ;//Grafica run-time
+    ?%ChanMon[WHO()].CmGraphCmd = 0x0;           Attivazione Ut in Graph
+    ?%ChanMon[WHO()].CmGraphRefCed = gKerfDescr
+    ?%ChanMon[WHO()].CmGraphRefSvl = 0.0        ; standoff variabile non disponibile in grafica
+    ?%ChanMon[WHO()].CmGraphCmd = 0x101;           Attivazione Ut in Graph
+
+    G180 P1 X(trg_x) Y(trg_y) Z(trg_z)
+    a_x = kine_x
+    a_y = kine_y
+    a_z = kine_z
+
+    ;;; *********************************************
+
+    ?%UnitWork.gKerfDescr = gKerfDescr
+    ?%UnitWork.gKerfSvr = gKerfSvr
+
+    FOR hix = 0 TO 0
+        ?%UnitWork.uxh[hix].a_x = a_x
+        IF( (%UnitWork.uxh[0].uxh_gTravT != 0) && (%UnitWork.uxh[1].uxh_gTravT != 0) && (hix==1) ) THEN
+            ;//Teste Y3Z3 e Y4Z4 selezionate, iterando Y4Z4
+            ?%UnitWork.uxh[hix].a_y = a_y2
+            ?%UnitWork.uxh[hix].a_z = a_z2 + %UnitWork.uxh[hix].uxh_Thickness
+        ELSE
+            ?%UnitWork.uxh[hix].a_y = a_y
+            ?%UnitWork.uxh[hix].a_z = a_z + %UnitWork.uxh[hix].uxh_Thickness
+        ENDIF
+
+        piercing_mode = 1
+        ?%UnitWork.uxh[hix].touch_mode = gTouchMode
+        ?%UnitWork.uxh[hix].regol_mode = gRegolMode
+        ?%UnitWork.uxh[hix].piercing_mode = piercing_mode
+    ENDFOR
+    ;;; *********************************************
+
+
+    ;//;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;// selezione gas anticipata
+    ;//;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;//Se si modifica cerca 'selezione gas anticipata' in LsrOn
+    ; Nel caso di ciclo di ricerca origine non attivo i gas
+    ;M497                      ; Abilita Commutazione Valvole
+    ?%TstP[15].1 = 1           ; Abilita Commutazione Valvole
+    ;SYN
+    IF( ls_stateping == 15) THEN
+        ;//fastCut mode, la LsrOn non commuta la tabella
+        ind8 = VL22
+        ?%TabLsr[0].L_FeedA          = %TabLsr[ind8].L_FeedA
+        ?%TabLsr[0].L_CutPower       = %TabLsr[ind8].L_CutPower
+        ?%TabLsr[0].L_CutPressure    = %TabLsr[ind8].L_CutPressure
+        ?%TabLsr[0].L_CutFocal       = %TabLsr[ind8].L_CutFocal
+        ?%TabLsr[0].L_CutDistance    = %TabLsr[ind8].L_CutDistance
+        gL_CutDistance    = %TabLsr[ind8].L_CutDistance
+        ?%TabLsr[0].L_CutDuty        = %TabLsr[ind8].L_CutDuty
+        ?%TabLsr[0].L_CutFreq        = %TabLsr[ind8].L_CutFreq
+        ?%TabLsr[0].L_UserInt1       = 1
+        ?%TabLsr[0].L_UserInt3       = %TabLsr[ind8].L_UserInt3   ; Jerk
+        gL_UserInt3       = %TabLsr[ind8].L_UserInt3   ; Jerk
+        ?%TabLsr[0].L_UserInt4       = %TabLsr[ind8].L_UserInt4   ; PO(%)
+        ?%TabLsr[0].L_UserInt5       = %TabLsr[ind8].L_UserInt5   ; V0(mm/min)
+        ?%TabLsr[0].L_UserInt6       = %TabLsr[ind8].L_UserInt6   ; V1(mm/min)
+        ?%TabLsr[0].L_UserInt9       = %TabLsr[ind8].L_UserInt9   ; Kp lavorazione
+
+        ; added after graph changes
+        ?%TabLsr[0].L_SourceInt16.0   = %TabLsr[ind8].L_SourceInt16.0       ; enable speed reduction for lead in
+        gL_SourceInt16x0   = %TabLsr[ind8].L_SourceInt16.0       ; enable speed reduction for lead in
+        ?%TabLsr[0].L_SourceInt17     = %TabLsr[ind8].L_SourceInt17         ; speed for lead in
+        ?%TabLsr[0].L_SourceInt18     = %TabLsr[ind8].L_SourceInt18         ; distance for lead-in
+      ;  ?%TabLsr[0].L_SourceInt16.2 =  %TabLsr[ind8].L_SourceInt16.2        ; Enable duty management
+       ?%LsIso[83] = %TabLsr[ind8].L_SourceInt16.2               ; Enable Duty management by speed
+      
+      ;  ?%TabLsr[0].L_SourceInt16.3 =  %TabLsr[ind8].L_SourceInt16.3        ; Enable power management
+       ?%LsIso[84] = %TabLsr[ind8].L_SourceInt16.3               ; Enable Power management by speed 
+      
+      ;  ?%TabLsr[0].L_SourceInt16.4 =  %TabLsr[ind8].L_SourceInt16.4        ; Enable freq management
+       ?%LsIso[85] = %TabLsr[ind8].L_SourceInt16.4               ; Enable Frequency management by speed
+        ;
+
+    ELSE
+        ?%TabLsr[0].L_PierceTime     = (%TabLsr[pbasel+0].L_PierceTime)
+        ?%TabLsr[0].L_CutPower       = %TabLsr[pbasel+0].L_PiercePower
+
+        IF (piercing_mode != 0) THEN
+            ?%TabLsr[0].L_CutPressure    = %TabLsr[pbasel+0].L_PiercePressure
+        ENDIF
+
+        ?%TabLsr[0].L_CutFocal       = %TabLsr[pbasel+0].L_PierceFocal
+
+        IF( gTouchMode || gRegolMode ) THEN
+
+            IF( (ls_stateping >= 10) || (ls_stateping < 5) && (piercing_mode != 0)  ) THEN
+                ?%TabLsr[0].L_CutDistance    = %TabLsr[pbasel+0].L_PierceHeight
+                gL_CutDistance    = %TabLsr[pbasel+0].L_PierceHeight
+            ENDIF
+        ENDIF
+        ?%TabLsr[0].L_CutDuty        = %TabLsr[pbasel+0].L_PierceDuty
+        ?%TabLsr[0].L_CutFreq        = %TabLsr[pbasel+0].L_PierceFreq
+        ?%TabLsr[0].L_UserInt1       = %TabLsr[pbasel+0].L_UserInt1
+        ?%TabLsr[0].L_UserInt9       = %TabLsr[ind8].L_UserInt9   ; Kp lavorazione
+
+    ENDIF
+    M300                      ; Abilita Attuazione Valori Uscite
+
+
+    ;//Sgancia tutti gli assi
+    G153
+    G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Y))
+    IF(%cn[3].cc[1].5 != 0) G4005 S(AXIDX(3,W))
+    IF(%cn[3].cc[1].8 != 0) G4005 S(AXIDX(3,C))
+    G4005 S(AXIDX(3,Z))
+    G4099
+
+    M10000   ; Invoca Unit_1 (inizialavorazione)
+
+    ;//Solo testa Y3Z3 selezionata
+    IF( (%UnitWork.uxh[0].uxh_gTravT != 0) && (%UnitWork.uxh[1].uxh_gTravT == 0) ) THEN
+        ;//Aggancia asse Y3Z3 acquisendo le quote
+    
+    IF ((%UnitWork.gTravE == 0) || ((%UnitWork.gTravE != 0) && ((!%CalPipe[0].General[0].4) || (!%cn[3].cc[1].5)))) G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+    IF ((%UnitWork.gTravE != 0) && ((%CalPipe[0].General[0].4) && (%cn[3].cc[1].5))) G4010 M(AXIDX(X)) S(AXIDX(3,W)) I1
+        
+    IF ((%UnitWork.gTravE == 0) || ((%UnitWork.gTravE != 0) && ((!%CalPipe[0].General[0].5) || (!%cn[3].cc[1].5)))) G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+    IF ((%UnitWork.gTravE != 0) && ((%CalPipe[0].General[0].5) && (%cn[3].cc[1].5))) G4010 M(AXIDX(Y)) S(AXIDX(3,W)) I1  
+    
+    IF ( (%cn[3].cc[1].8 != 0) && (%UnitWork.gTravE != 0))   G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+    
+    ENDIF
+
+    G152
+    G4099
+
+    ;//Laser
+    IF( gTechType == 3 ) THEN
+
+        JSR "LsrOn.cfs"
+
+         ; added after graph changes
+         ?%TabLsr[0].L_SourceInt16.0   = %TabLsr[ind8].L_SourceInt16.0       ; enable speed reduction for lead in
+         gL_SourceInt16x0   = %TabLsr[ind8].L_SourceInt16.0       ; enable speed reduction for lead in
+         ?%TabLsr[0].L_SourceInt17     = %TabLsr[ind8].L_SourceInt17         ; speed for lead in
+         ?%TabLsr[0].L_SourceInt18     = %TabLsr[ind8].L_SourceInt18         ; distance for lead-in
+         
+        ; ?%TabLsr[0].L_SourceInt16.2 =  %TabLsr[ind8].L_SourceInt16.2        ; Enable duty management
+        ?%LsIso[83] = %TabLsr[ind8].L_SourceInt16.2               ; Enable Duty management by speed
+        
+        ;  ?%TabLsr[0].L_SourceInt16.3 =  %TabLsr[ind8].L_SourceInt16.3        ; Enable power management
+        ?%LsIso[84] = %TabLsr[ind8].L_SourceInt16.3               ; Enable Power management by speed 
+        
+        ; ?%TabLsr[0].L_SourceInt16.4 =  %TabLsr[ind8].L_SourceInt16.4        ; Enable freq management
+        ?%LsIso[85] = %TabLsr[ind8].L_SourceInt16.4               ; Enable Frequency management by speed
+         ;
+
+        : Regulation ENABLED (R=1)
+        IF( gRegolMode > 0 ) THEN
+            IF( ls_stateping<15 ) THEN
+
+                IF( gL_CutDistance < (%LSRCostK[31]/1000) ) THEN
+                    M1205   ; Attiva regolatore inseguimento
+                ENDIF
+            ENDIF
+        ENDIF
+    ENDIF
+
+    ;//Ripristina eventuale modalita' in tangenza
+    G172 T(gTravT) H(gTravH) D(gKerfDescr) E(gTravE) I(gTravI)
+ENDIF
+
+IF( gLastCompress ) SPC 30000,1
+
+;//
+RPT .rstr_kine_A, .rstr_kine_Z, 1
+;//
+
+G(save_G40)
+F(save_F) ;Deve essere prima di sav_G70
+G(200+sav_G70)
+RET
+
+.save_kine_A
+sav_kine_x = kine_x
+sav_kine_y = kine_y
+sav_kine_z = kine_z
+sav_kine_a = kine_a
+sav_kine_b = kine_b
+sav_kine_c = kine_c
+sav_tf_a11 = tf_a11
+sav_tf_a12 = tf_a12
+sav_tf_a13 = tf_a13
+sav_tf_a21 = tf_a21
+sav_tf_a22 = tf_a22
+sav_tf_a23 = tf_a23
+sav_tf_a31 = tf_a31
+sav_tf_a32 = tf_a32
+sav_tf_a33 = tf_a33
+sav_ef_a11 = ef_a11
+sav_ef_a12 = ef_a12
+sav_ef_a13 = ef_a13
+sav_ef_a21 = ef_a21
+sav_ef_a22 = ef_a22
+sav_ef_a23 = ef_a23
+sav_ef_a31 = ef_a31
+sav_ef_a32 = ef_a32
+sav_ef_a33 = ef_a33
+.save_kine_Z
+
+.rstr_kine_A
+kine_x = sav_kine_x
+kine_y = sav_kine_y
+kine_z = sav_kine_z
+kine_a = sav_kine_a
+kine_b = sav_kine_b
+kine_c = sav_kine_c
+tf_a11 = sav_tf_a11
+tf_a12 = sav_tf_a12
+tf_a13 = sav_tf_a13
+tf_a21 = sav_tf_a21
+tf_a22 = sav_tf_a22
+tf_a23 = sav_tf_a23
+tf_a31 = sav_tf_a31
+tf_a32 = sav_tf_a32
+tf_a33 = sav_tf_a33
+ef_a11 = sav_ef_a11
+ef_a12 = sav_ef_a12
+ef_a13 = sav_ef_a13
+ef_a21 = sav_ef_a21
+ef_a22 = sav_ef_a22
+ef_a23 = sav_ef_a23
+ef_a31 = sav_ef_a31
+ef_a32 = sav_ef_a32
+ef_a33 = sav_ef_a33
+.rstr_kine_Z
+

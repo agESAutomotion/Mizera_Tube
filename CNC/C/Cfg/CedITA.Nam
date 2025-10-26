@@ -1,0 +1,51 @@
+[PROMPT]
+KEY_CED       =Dati Utensili
+
+CED_RAD       =Raggio Utensile [mm]
+CED_TRAD      =Raggio raccordo per fresa torica
+CED_LENZ      =Lunghezza Z Utensile [mm]
+CED_THICK     =Spessore utensile a disco
+CED_LENX      =Lunghezza X utensile per tornitura
+CED_LENY      =Lunghezza Y utensile per tornitura
+CED_LATHE_ANG_A =Angolo di spoglia A per tornitura
+CED_LATHE_ANG_B =Angolo di spoglia B per tornitura
+CED_DSC       =Descrizione
+CED_WEAIDX    =Indice estensione per gestione usura
+
+CED_MINRPM    =Numero Minimo di giri/minuto
+CED_MAXRPM    =Numero Massimo di giri/minuto
+CED_STDRPM    =Numero di giri/minuto
+CED_CCW       =Utensile sinistrorso
+CED_MAXFEED   =Velocità max avanzamento lineare
+CED_STDFEED   =Velocità avanz. lineare di default
+CED_DIR       =Abilita controllo verso taglio
+CED_TG        =Tipo di avanzamento ammesso
+CED_TGTHRE    =Tolleranza angolare [°]
+CED_STATUS    =Eventi che coinvolgono l'utensile
+CED_MAXACC    =Massima accelerazione [rev/s²]
+CED_MAXDEC    =Massima decelerazione [rev/s²]
+
+[HELP]
+
+CED_RAD       =Raggio Utensile: Raggio dell'utensile consente di tenere in considerazione l'ingombro reale dell'utensile in fase di lavorazione
+CED_TRAD      =Raggio raccordo per fresa torica
+CED_LENZ      =Lunghezza utensile da foratura/fresatura [mm]
+CED_THICK     =La figura mostra un esempio di parametrizzazione di utensile a disco, in particolare si osservi dThick che rappresenta lo spessore dell'utensile a disco
+CED_LENX      =Lunghezza X: lunghezza ausiliaria 1 per utensili da tornitura
+CED_LENY      =Lunghezza Y: lunghezza ausiliaria 2 per utensili da tornitura
+CED_LATHE_ANG_A =Angolo di spoglia A per tornitura
+CED_LATHE_ANG_B =Angolo di spoglia B per tornitura
+CED_WEAIDX    =Indice estensione dati utensile per gestione usura
+
+CED_MINRPM    =Numero Minimo di giri/minuto
+CED_MAXRPM    =Numero Massimo di giri/minuto
+CED_STDRPM    =Numero di giri/minuto
+CED_CCW       =Utensile sinistrorso
+CED_MAXFEED   =Velocità max avanzamento lineare
+CED_STDFEED   =Velocità avanz. lineare di default
+CED_DIR       =Abilita controllo verso taglio
+CED_TG        =Tipo di avanzamento ammesso durante la lavorazione:  0-qualsiasi (es.:  fresa cilindrica);  1-solo avanzamento assiale (es.:  punta);  2-solo avanzamento radiale (es.:  lama)
+CED_TGTHRE    =Tolleranza angolare per la sorveglianza dell'avanzamento durante la lavorazione (gradi)
+CED_STATUS    =Eventi che possono condizionare l'utilizzo dell'utensile
+CED_MAXACC    =Massima accelerazione [rev/s²];  é la massima velocità di rotazione [rev/s] divisa per il tempo [s] impiegato a raggiungerla.
+CED_MAXDEC    =Massima decelerazione [rev/s²];  é la massima velocità di rotazione [rev/s] divisa per il tempo [s] impiegato a fermarsi a partire da tale velocità.

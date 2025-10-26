@@ -1,0 +1,356 @@
+**************************************************
+********* READ M FROM ISO ************************
+**************************************************
+#defcom %rc9 Register M function
+#defcom %rc8.4 Strobe M function
+
+#include "usrMem.inc"
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+VAR
+Register_M_Ch0	             AT %cn0.rc9;
+Strobe_M_Ch0  	             AT %cn0.rc8.4;
+Register_M_Ch1	             AT %cn1.rc9;
+Strobe_M_Ch1  	             AT %cn1.rc8.4;
+Register_M_Ch2	             AT %cn2.rc9;
+Strobe_M_Ch2  	             AT %cn2.rc8.4;
+Register_M_Ch3	             AT %cn3.rc9;
+Strobe_M_Ch3  	             AT %cn3.rc8.4;
+Register_M_Ch4	             AT %cn4.rc9;
+Strobe_M_Ch4  	             AT %cn4.rc8.4;
+Register_M_Ch5	             AT %cn5.rc9;
+Strobe_M_Ch5  	             AT %cn5.rc8.4;
+Register_M_Ch7	             AT %cn7.rc9;
+Strobe_M_Ch7  	             AT %cn7.rc8.4;
+Register_M_Ch8	             AT %cn8.rc9;
+Strobe_M_Ch8  	             AT %cn8.rc8.4;
+END_VAR
+
+FUNCTION USR_READ_M
+
+* cn0
+
+LD   Register_M_Ch0
+EQ   330
+AND  Strobe_M_Ch0
+ST   Fun_M330_Ch0        * Open M1 M2 M3
+
+LD   Register_M_Ch0
+EQ   331
+AND  Strobe_M_Ch0
+ST   Fun_M331_Ch0        * Close M1 M2 M3
+
+LD   Register_M_Ch0
+EQ   332
+AND  Strobe_M_Ch0
+ST   Fun_M332_Ch0        * Open Centering Clamp
+
+LD   Register_M_Ch0
+EQ   333
+AND  Strobe_M_Ch0
+ST   Fun_M333_Ch0        * Close Centering Clamp
+
+LD   Register_M_Ch0
+EQ   334
+AND  Strobe_M_Ch0
+ST   Fun_M334_Ch0      
+
+LD   Register_M_Ch0
+EQ   335
+AND  Strobe_M_Ch0
+ST   Fun_M335_Ch0      
+
+LD   Register_M_Ch0
+EQ   336
+AND  Strobe_M_Ch0
+ST   Fun_M336_Ch0      
+
+LD   Register_M_Ch0
+EQ   337
+AND  Strobe_M_Ch0
+ST   Fun_M337_Ch0      
+
+LD   Register_M_Ch0
+EQ   338
+AND  Strobe_M_Ch0
+ST   Fun_M338_Ch0       
+
+LD   Register_M_Ch0
+EQ   339
+AND  Strobe_M_Ch0
+ST   Fun_M339_Ch0    
+
+LD   Register_M_Ch0
+EQ   431
+AND  Strobe_M_Ch0
+ST   Fun_M431_Ch0      
+
+LD   Register_M_Ch0
+EQ   432
+AND  Strobe_M_Ch0
+ST   Fun_M432_Ch0    
+
+LD   Register_M_Ch0
+EQ   434
+AND  Strobe_M_Ch0
+ST   Fun_M434_Ch0      
+
+LD   Register_M_Ch0
+EQ   435
+AND  Strobe_M_Ch0
+ST   Fun_M435_Ch0     
+
+***
+* M for Overlapped movement of the spindles
+
+LD   Register_M_Ch0
+EQ   440
+AND  Strobe_M_Ch0
+ST   Fun_M440_Ch0        * Move axis 30
+
+LD   Register_M_Ch0
+EQ   441
+AND  Strobe_M_Ch0
+ST   Fun_M441_Ch0        * Move axis 31
+
+LD   Register_M_Ch0
+EQ   442
+AND  Strobe_M_Ch0
+ST   Fun_M442_Ch0        * Move axis 36
+
+LD   Register_M_Ch0
+EQ   443
+AND  Strobe_M_Ch0
+ST   Fun_M443_Ch0       
+
+LD   Register_M_Ch0
+EQ   444
+AND  Strobe_M_Ch0
+ST   Fun_M444_Ch0  
+
+LD   Register_M_Ch0
+EQ   445
+AND  Strobe_M_Ch0
+ST   Fun_M445_Ch0  
+
+LD   Register_M_Ch0
+EQ   446
+AND  Strobe_M_Ch0
+ST   Fun_M446_Ch0  
+
+LD   Register_M_Ch0
+EQ   447
+AND  Strobe_M_Ch0
+ST   Fun_M447_Ch0  
+
+LD   Register_M_Ch0
+EQ   448
+AND  Strobe_M_Ch0
+ST   Fun_M448_Ch0  
+
+LD   Register_M_Ch0
+EQ   449
+AND  Strobe_M_Ch0
+ST   Fun_M449_Ch0  
+
+LD   Register_M_Ch0
+EQ   450
+AND  Strobe_M_Ch0
+ST   Fun_M450_Ch0  
+
+LD   Register_M_Ch0
+EQ   451
+AND  Strobe_M_Ch0
+ST   Fun_M451_Ch0  
+
+LD   Register_M_Ch0
+EQ   452
+AND  Strobe_M_Ch0
+ST   Fun_M452_Ch0  
+
+LD   Register_M_Ch0
+EQ   453
+AND  Strobe_M_Ch0
+ST   Fun_M453_Ch0  
+
+LD   Register_M_Ch0
+EQ   454
+AND  Strobe_M_Ch0
+ST   Fun_M454_Ch0  
+
+LD   Register_M_Ch0
+EQ   455
+AND  Strobe_M_Ch0
+ST   Fun_M455_Ch0
+
+**
+
+LD   Register_M_Ch0
+EQ   720
+AND  Strobe_M_Ch0
+ST   Fun_M720_Ch0             ** Mobile spindle open
+     
+LD   Register_M_Ch0
+EQ   721
+AND  Strobe_M_Ch0
+ST   Fun_M721_Ch0             ** Mobile spindle close
+     
+LD   Register_M_Ch0
+EQ   722
+AND  Strobe_M_Ch0
+ST   Fun_M722_Ch0             ** Second mobile spindle open 
+     
+LD   Register_M_Ch0
+EQ   723
+AND  Strobe_M_Ch0
+ST   Fun_M723_Ch0             ** Second mobile spindle close
+
+LD   Register_M_Ch0
+EQ   724
+AND  Strobe_M_Ch0
+ST   Fun_M724_Ch0             ** Auto Up command for supports
+
+LD   Register_M_Ch0
+EQ   725
+AND  Strobe_M_Ch0
+ST   Fun_M725_Ch0             ** Auto Down Command
+
+LD   Register_M_Ch0
+EQ   726
+AND  Strobe_M_Ch0
+ST   Fun_M726_Ch0             ** Auto Up Command (Motor Following Support)
+
+LD   Register_M_Ch0
+EQ   730
+AND  Strobe_M_Ch0
+ST   Fun_M730_Ch0             * Request for load pipe
+
+LD   Register_M_Ch0
+EQ   731
+AND  Strobe_M_Ch0
+ST   Fun_M731_Ch0             * Request back loader
+
+LD   Register_M_Ch0
+EQ   732
+AND  Strobe_M_Ch0
+ST   Fun_M732_Ch0             * Read tube length
+
+LD   Register_M_Ch0
+EQ   733
+AND  Strobe_M_Ch0
+ST   Fun_M733_Ch0             * UP SUPP 1
+
+LD   Register_M_Ch0
+EQ   734
+AND  Strobe_M_Ch0
+ST   Fun_M734_Ch0             * UP SUPP 2
+
+LD   Register_M_Ch0
+EQ   735
+AND  Strobe_M_Ch0
+ST   Fun_M735_Ch0             * UP SUPP 3
+
+LD   Register_M_Ch0
+EQ   736
+AND  Strobe_M_Ch0
+ST   Fun_M736_Ch0             * UP SUPP 4
+
+LD   Register_M_Ch0
+EQ   825
+AND  Strobe_M_Ch0
+ST   Fun_M825_Ch0
+
+LD   Register_M_Ch0
+EQ   826
+AND  Strobe_M_Ch0
+ST   Fun_M826_Ch0
+
+LD   Register_M_Ch0
+EQ   827
+AND  Strobe_M_Ch0
+ST   Fun_M827_Ch0
+
+LD   Register_M_Ch0
+EQ   829
+AND  Strobe_M_Ch0
+ST   Fun_M829_Ch0
+
+LD   Register_M_Ch0
+EQ   830
+AND  Strobe_M_Ch0
+ST   Fun_M830_Ch0
+
+LD   Register_M_Ch0
+EQ   981
+AND  Strobe_M_Ch0
+ST   Fun_M981_Ch0
+
+LD   Register_M_Ch0
+EQ   982
+AND  Strobe_M_Ch0
+ST   Fun_M982_Ch0
+
+LD   Register_M_Ch0
+EQ   983
+AND  Strobe_M_Ch0
+ST   Fun_M983_Ch0
+
+LD   Register_M_Ch0
+EQ   984
+AND  Strobe_M_Ch0
+ST   Fun_M984_Ch0
+
+LD   Register_M_Ch0
+EQ   985
+AND  Strobe_M_Ch0
+ST   Fun_M985_Ch0
+
+LD   Register_M_Ch0
+EQ   986
+AND  Strobe_M_Ch0
+ST   Fun_M986_Ch0
+
+LD   Register_M_Ch0
+EQ   987
+AND  Strobe_M_Ch0
+ST   Fun_M987_Ch0
+
+LD   Register_M_Ch0
+EQ   988
+AND  Strobe_M_Ch0
+ST   Fun_M988_Ch0
+
+LD   Register_M_Ch0
+EQ   989
+AND  Strobe_M_Ch0
+ST   Fun_M989_Ch0
+
+LD   Register_M_Ch0
+EQ   990
+AND  Strobe_M_Ch0
+ST   Fun_M990_Ch0
+
+LD   Register_M_Ch0
+EQ   991
+AND  Strobe_M_Ch0
+ST   Fun_M991_Ch0
+
+LD   Register_M_Ch0
+EQ   992
+AND  Strobe_M_Ch0
+ST   Fun_M992_Ch0
+
+LD   Register_M_Ch0
+EQ   993
+AND  Strobe_M_Ch0
+ST   Fun_M993_Ch0
+
+LD   Register_M_Ch0
+EQ   994
+AND  Strobe_M_Ch0
+ST   Fun_M994_Ch0
+
+END_FUNCTION

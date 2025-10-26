@@ -1,0 +1,14 @@
+:
+;//
+;// Deseleziona Testa Y3Z3 (funzioni semi-automatiche)
+;//
+
+;//Sgancia tutti gli assi
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+G4099
+
+RET

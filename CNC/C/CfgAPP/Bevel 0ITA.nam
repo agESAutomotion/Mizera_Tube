@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=Smusso 0°
+
+[PROMPT]
+KEY_NODE=Nodo
+GRAPH1=Aspirazione
+Plot1.1=Linearizzazione
+L_TYPE_INTERP2=Punti
+L_Height=Altezza [mm]
+L_Voltage=Tensione [ADC]
+L_TYPE_INTERP1=Profilo
+LIST0=Lineare,Segmento,Smussatura
+
+[STATUS]
+Plot1.1=Altezza (mm), Tensione (DAC)
+
+[HELP]

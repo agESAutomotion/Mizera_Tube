@@ -1,0 +1,25 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+JOGOPEN=Leaf
+GroupBox=Jog Open Test
+Axes=Axes
+jog open=Disable Close Loop
+jog open1=Jog [mV]
+Axes1=Axes1
+Axes2=Axes1
+Label=MOVE ONLY ANALOG AXES
+CH3=CH3
+CH1=CH5
+CH2=CH0
+Label1=Pipe Axis
+Label2=C
+Label3=C1
+Label4=W Focal
+
+[STATUS]
+
+[HELP]

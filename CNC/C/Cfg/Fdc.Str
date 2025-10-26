@@ -1,0 +1,170 @@
+[STRUCT]
+KEY_SYSFDC {
+        KEY_FDC,cn,cg0;
+}
+KEY_FDC {
+        FDC_DLE;
+        FDC_DLM;
+        FDC_DLS;
+        FDC_CON;
+        if(@cg20>=1) {
+            FDC_ARC;
+        }
+        FDC_FCE;
+        FDC_FC0;
+        FDC_FC1;
+        FDC_FC2;
+        FDC_FC3;
+        FDC_TCE;
+        if(@cg3.10==0) {
+            FDC_TC0;
+            FDC_TC1;
+            FDC_TC2;
+            FDC_TC3;
+        }
+        if(@cg3.10==1) {
+            FDC_TC0_VIMO;
+            FDC_TC1_VIMO;
+            FDC_TC2_VIMO;
+            FDC_TC3_VIMO;
+        }
+        FDC_SAJ;
+        FDC_ANG;
+        FDC_TC_APN;
+        FDC_TC_BPN;
+        FDC_TC_CPN;
+        FDC_JRK;
+}
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+[FDC_DLE]
+ADR = fdc.dlenab
+MSK = 0, 8
+RNG = {0,1}
+HLP = FDC_DLE
+[FDC_DLM]
+ADR = fdc.dlmode
+MSK = 0, 8
+HLP = FDC_DLM
+[FDC_DLS]
+ADR = fdc.dlsight
+MSK = 0, 8
+HLP = FDC_DLS
+[FDC_FCE]
+ADR = fdc.fdcenab
+MSK = 0, 8
+RNG = {0,1}
+HLP = FDC_FCE
+[FDC_TCE]
+ADR = fdc.tcenab
+MSK = 0, 8
+RNG = {0,1}
+HLP = FDC_TCE
+[FDC_FC0]
+ADR = fdc.fca
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_FC0
+[FDC_FC1]
+ADR = fdc.fcb
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_FC1
+[FDC_FC2]
+ADR = fdc.fcc
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_FC2
+[FDC_FC3]
+ADR = fdc.fcd
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_FC3
+[FDC_TC0]
+ADR = fdc.tca
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_TC0
+[FDC_TC1]
+ADR = fdc.tcb
+FRM = DEC, 3
+MSK = 0, 64
+HLP = FDC_TC1
+[FDC_TC2]
+ADR = fdc.tcc
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_TC2
+[FDC_TC3]
+ADR = fdc.tcd
+FRM = DEC, 3
+MSK = 0, 64
+HLP = FDC_TC3
+[FDC_TC0_VIMO]
+ADR = fdc.tca
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_TC0
+[FDC_TC1_VIMO]
+ADR = fdc.tcb
+FRM = DEC, 3
+MSK = 0, 64
+HLP = FDC_TC1
+[FDC_TC2_VIMO]
+ADR = fdc.tcc
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_TC2
+[FDC_TC3_VIMO]
+ADR = fdc.tcd
+FRM = DEC, 3
+MSK = 0, 64
+HLP = FDC_TC3
+[FDC_ARC]
+ADR = fdc.arc
+FRM = QTA, 3
+MSK = 0, 64
+HLP = FDC_ARC
+[FDC_SAJ]
+ADR = pc21
+FRM = QTA, 3
+MSK = 0, 32
+HLP = FDC_SAJ
+[FDC_ANG]
+ADR = pc26
+FRM = DEC, 3
+MSK = 0, 32
+HLP = FDC_ANG
+[FDC_TC_APN]
+ADR = pc27
+FRM = DEC, 3
+MSK = 0, 32
+HLP = FDC_TC_APN
+[FDC_TC_BPN]
+ADR = pc28
+FRM = DEC, 3
+MSK = 0, 32
+HLP = FDC_TC_BPN
+[FDC_TC_CPN]
+ADR = pc29
+FRM = DEC, 3
+MSK = 0, 32
+HLP = FDC_TC_CPN
+[FDC_JRK]
+ADR = pc36
+FRM = QTA, 3
+MSK = 0, 32
+HLP = FDC_JRK
+[FDC_CON]
+ADR = pc37
+FRM = DEC, 0
+MSK = 0, 32
+HLP = FDC_CON
+[FDC_CURV]
+ADR = pc38
+FRM = DEC, 3
+MSK = 0, 32
+HLP = FDC_CURV

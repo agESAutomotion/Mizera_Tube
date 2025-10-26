@@ -1,0 +1,51 @@
+[PROMPT]
+KEY_CED       =刀具数据
+
+CED_RAD       =刀具半径 [mm]
+CED_TRAD      =环面铣刀
+CED_LENZ      =刀具Z轴长度 [mm]
+CED_THICK     =盘刀厚度
+CED_LENX      =X方向刀具旋转
+CED_LENY      =Y方向刀具旋转
+CED_LATHE_ANG_A =Clearance angle A (lathe)
+CED_LATHE_ANG_B =Clearance angle B (lathe)
+CED_DSC       =Description
+CED_WEAIDX    =磨损管理扩展指数
+
+CED_MINRPM    =最低转速速率
+CED_MAXRPM    =最高转速速率
+CED_STDRPM    =转速速率
+CED_CCW       =左手刀具
+CED_MAXFEED   =最大线速度
+CED_STDFEED   =标准线速度
+CED_DIR       =单向切割方向启用
+CED_TG        =允许加工方式
+CED_TGTHRE    =角度公差
+CED_STATUS    =涉及刀具
+CED_MAXACC    =Maximum acceleration [rev/s瞉
+CED_MAXDEC    =Maximum deceleration [rev/s瞉
+
+[HELP]
+
+CED_RAD       =Tool radius: The tool radius allows the real dimension of the tool to be considered during the machining phase
+CED_TRAD      =Union radius for toric mill
+CED_LENZ      =Tool Z Length [mm]
+CED_THICK     =The figure shows an example of the parameters setup of a disk saw blade;  please note the dThick parameter which represents the disk tool thickness
+CED_LENX      =X Length: Turning tool 1 auxiliary length
+CED_LENY      =Y Length: Turning tool 2 auxiliary length
+CED_LATHE_ANG_A =Clearance angle A (lathe)
+CED_LATHE_ANG_B =Clearance angle B (lathe)
+CED_WEAIDX    =Tool data extension index for tool wear
+
+CED_MINRPM    =Minimum rpm rate
+CED_MAXRPM    =Maximum rpm rate
+CED_STDRPM    =Rpm rate
+CED_CCW       =Left-handed tool
+CED_MAXFEED   =Max. linear advancement speed
+CED_STDFEED   =Default linear advanc. speed
+CED_DIR       =Cutting direction check enabling
+CED_TG        =Type of admitted trajectory during feed machining:  0-any (e.g.:  cylindrical mill);  1-only axial movements (e.g.:  boring bit);  2-only radial movements (e.g.:  disk saw blade)
+CED_TGTHRE    =Angular tolerance to be used for trajectory surveillance during feed machining [癩
+CED_STATUS    =Events that can condition tool use
+CED_MAXACC    =Maximum acceleration [rev/s瞉; obtained by dividing the maximum revolution speed [rev/s] by the time [s] needed to reach it.
+CED_MAXDEC    =Maximum deceleration [rev/s瞉; obtained by dividing the maximum revolution speed [rev/s] by the time [s] needed to to stop once running at the maximum revolution speed.

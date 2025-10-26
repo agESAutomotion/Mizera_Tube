@@ -1,0 +1,62 @@
+
+[PROMPT]
+KEY_ECATRNODES=Ecat Ring Config
+RG_RINGTYPELIST =0-CAN Trajectory,1-CAN Positioning,2-Ethercat
+EC_MSKOPTIONLIST=NULL,Build XML file
+LBL_RG_ENAB=DLL_Enable
+LBL_RG_RINGTYPE=Ring Type
+LBL_RG_NODES=Nodes
+LBL_EC_MSKOPTION=Boot Option
+LBL_EC_MBXCYCLETIME=Mailbox Cycle Time (usec)
+LBL_EC_DCENAB=Distribuited clocks enable
+LBL_EC_REFCLOCK=Reference clock master
+LBL_EC_WRMTIME=Write master time to ref. device
+LBL_EC_PROPDELAY=Enable prop. delay compensation
+LBL_RG_MSYNC=Measured Cycle Time (usec)
+LBL_CBD_SENDERROR1=Send Errors
+LBL_CBD_RECEIVEERRORS1=Receive Errors
+LBL_CBD_WRONGWC1=Wrong WC
+LBL_EC_MASTER_SHIFT_TIME=User shift time (usec)
+LBL_EC_PLL_GAIN=PLL Drift Compensation Gain
+LBL_EC_PLL_OFFS=PLL Drift Compensation Offs
+LBL_SLAVECOUNTS=Slaves count
+LBL_DCERROR=DC Errors
+LBL_DCINITIALIZED=DC Initialized
+LBL_ECATALM1_LED=State Update
+LBL_ECATALM2_LED=Send / Receiving Error
+LBL_ECATALM4_LED=Parse error
+LBL_ECATALM8_LED=Link Down
+LBL_ECATALM10_LED=Wrong configuration
+LBL_ECATALM20_LED=Slave-to-slave timeout
+LBL_ECATALM40_LED=Default data was set
+LBL_ECATALM80_LED=WatchDogTimeOut
+LBL_ECATALM100_LED=MasterIsLocked
+LBL_ECATALM200_LED=DC Internal Sync Established
+LBL_ECATALM400_LED=DC External Sync Established
+LBL_ECATALM800_LED=DC propagation delay Initialized
+LBL_ECATALM1000_LED=State Outputs Update
+
+[STATUS]
+
+[HELP]
+CBX_RG_RINGTYPE =Ring Type:0=CAN Trajectory, 1=CAN Positioning, 2-Ethercat
+DR_FEED0    =Feed constant (mm)
+DR_SHAFT0   =Shaft revolutions
+DR_SWIDE0   =Kvara system-wide index
+DR_SWIDE1   =Redirection system-wide number
+DR_TYPE0    =Drive Type
+ND_LIFE     =Node guarding time (msec)
+ND_NODE     =0=OutOfService, 1=Reserved, 2-60=Node Address (dec)
+ND_NUMDEV   =Number of configured Pdos
+ND_NUMOBJS  =Parameter set to be loaded: B0=Set1.  B1=Set2.  B2=Set3.  B3=Set4.  B4-B11=Reserved.  B12-B15: (000=Noop, 001=BootRead, 010=BootCheck, 011=BootWrite, 100=BootWrite & save).  B15=Reserved.
+ND_PROFILE  =Device profile (CiA)
+PDOIW1      =IW / QW mapping number
+PDOMP1      =mapping: Index,Subindex,Length (xxxxyyzz)
+PDOTM       =Inhibit time (0.1msec)
+PDOTX       =Transmission type (0=SyncAcyclic, 1-240=SyncCiclic, 252=SyncRtr, 253=AsyncRtr, 254-255=Async)
+RG_BAUD     =Ring baud rate (CiA)
+RG_ENAB     =Enable: 0=Disab, 1=Can1, 2=Can2,   AAPTINNN: AAdd(C0:FF)  Prio(0,9:13)  Tick(0,1:15)  Irq(0,5,9,10,11,15)  NNNode(1,2,100:13C / 200:23C)
+RG_NODES    =Number of configured nodes (max 60)
+RG_SYNC     =Sync time (msec)
+kRPDO1o1    =CanFb mappimg: 0=no mapping, 1=CanFb1, ...47=CanFb47
+kTPDOTX     =Transmission type (1-240=SyncCiclic, 255=Async)

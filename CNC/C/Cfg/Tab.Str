@@ -1,0 +1,137 @@
+[STRUCT]
+KEY_TAB {
+        *,TAB_T_KINE;
+        if(t_yKine == 3) {
+                T_OART_X0;
+                T_OART_Y0;
+                T_OART_Z0;
+                T_OART_ORIENT;
+                T_OART_FRAME_C;
+                T_OART_FRAME_B;
+                T_OART_FRAME_A;
+                T_OART_EC;
+                T_OART_ECREV;
+                T_OART_ECAX;
+                T_OART_X1;
+                T_OART_Y1;
+                T_OART_TILT;
+                T_OART_EB;
+                T_OART_EBREV;
+                T_OART_EBAX;
+                T_OART_X2;
+                T_OART_Y2;
+                T_OART_Z2;
+                T_OART_CAMBER;
+                T_OART_FRAME2_C;
+                T_OART_FRAME2_B;
+                T_OART_FRAME2_A;
+        }
+        ~,TAB_T_DSC;
+}
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+
+[KEY_TAB]
+ADR = tab_dsc0
+
+[TAB_T_DSC]
+ADR = tab_dsc0
+FRM = STR, 8
+HLP = TAB_T_DSC
+
+[TAB_T_KINE]
+ADR = t_yKine
+RNG = {0,3}
+FRM = CBX, 4
+LST = TAB_T_KINELIST
+HLP = TAB_T_KINE
+
+[T_OART_X0]
+ADR =      t_ttab.t_oart.t_dX
+FRM = QTA, 3
+HLP = T_OART_X0
+[T_OART_Y0]
+ADR =      t_ttab.t_oart.t_dY
+FRM = QTA, 3
+HLP = T_OART_Y0
+[T_OART_Z0]
+ADR =      t_ttab.t_oart.t_dZ
+FRM = QTA, 3
+HLP = T_OART_Z0
+[T_OART_ORIENT]
+ADR =      t_ttab.t_oart.t_yOrient
+RNG = {6,8,9}
+HLP = T_OART_ORIENT
+[T_OART_FRAME_C]
+ADR =      t_ttab.t_oart.t_dFrameC
+FRM = DEC, 3
+[T_OART_FRAME_B]
+ADR =      t_ttab.t_oart.t_dFrameB
+FRM = DEC, 3
+[T_OART_FRAME_A]
+ADR =      t_ttab.t_oart.t_dFrameA
+FRM = DEC, 3
+[T_OART_EC]
+ADR =      t_ttab.t_oart.t_dEC
+FRM = DEC, 3
+HLP = T_OART_EC
+[T_OART_ECREV]
+ADR =      t_ttab.t_oart.t_bECRev
+RNG = {0,1}
+HLP = T_OART_ECREV
+[T_OART_ECAX]
+ADR =      t_ttab.t_oart.t_yECAx
+RNG = {0,7,8,9,10,127}
+HLP = T_OART_ECAX
+[T_OART_X1]
+ADR =      t_ttab.t_oart.t_dXx
+FRM = QTA, 3
+HLP = T_OART_X1
+[T_OART_Y1]
+ADR =      t_ttab.t_oart.t_dYy
+FRM = QTA, 3
+HLP = T_OART_Y1
+[T_OART_TILT]
+ADR =      t_ttab.t_oart.t_dTilt
+FRM = DEC, 3
+HLP = T_OART_TILT
+[T_OART_EB]
+ADR =      t_ttab.t_oart.t_dEB
+FRM = DEC, 3
+HLP = T_OART_EB
+[T_OART_EBREV]
+ADR =      t_ttab.t_oart.t_bEBRev
+RNG = {0,1}
+HLP = T_OART_EBREV
+[T_OART_EBAX]
+ADR =      t_ttab.t_oart.t_yEBAx
+RNG = {0,7,8,9,10,127}
+HLP = T_OART_EBAX
+[T_OART_X2]
+ADR =      t_ttab.t_oart.t_dXX
+FRM = QTA, 3
+HLP = T_OART_X2
+[T_OART_Y2]
+ADR =      t_ttab.t_oart.t_dYY
+FRM = QTA, 3
+HLP = T_OART_Y2
+[T_OART_Z2]
+ADR =      t_ttab.t_oart.t_dZZ
+FRM = QTA, 3
+HLP = T_OART_Z2
+[T_OART_CAMBER]
+ADR =      t_ttab.t_oart.t_dCamber
+FRM = DEC, 3
+[T_OART_FRAME2_C]
+ADR =      t_ttab.t_oart.t_dFramebC
+FRM = DEC, 3
+[T_OART_FRAME2_B]
+ADR =      t_ttab.t_oart.t_dFramebB
+FRM = DEC, 3
+[T_OART_FRAME2_A]
+ADR =      t_ttab.t_oart.t_dFramebA
+FRM = DEC, 3
+

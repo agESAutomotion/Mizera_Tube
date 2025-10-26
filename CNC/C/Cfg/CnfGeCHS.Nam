@@ -1,0 +1,147 @@
+[PROMPT]
+KEY_CONFGEN   =机器配置
+
+KEY_GEN       =一般数据
+KEY_OPZCN     =NC 选项
+KEY_OPZPLC    =PLC 选项
+SPACE         = -
+
+CN_NUMCHAN    =通道数目
+CN_NUMAX      =轴数目
+CN_FIRSTSLAVE =第一从属装置板数目
+CN_MMINCI     =默认设置
+CN_DELAY      =NC 扫描延时 [s]
+CN_DLY_PATTERN =其他任务优先级
+CN_CALCREG     =从属装置载入码
+CN_COMMTICALC  =指令计算时间
+CN_CNCTIMOT    =平均通道超时
+CN_USREXTLEN   =拥护扩展长度
+CN_PTKB        =传递存储容量
+CN_RETRKB      =跟踪存储器容量
+CN_SLVBLOCKS   =从属设备模块
+CN_PARMSVER    =参数设置版本
+
+CN_CALCREGEX   =扩展从属设备代码(TimeReg/TimeCalc)
+CN_CALCREGEX_LIST =Disab, 2.0/8.0ms, 2.0/4.0ms, 2.0/2.0ms, 1.0/4.0ms, 1.0/2.0ms, 1.0/1.0ms, 0.5/2.0ms, 0.5/1.0ms, 0.5/0.5ms, 0.25/1.0ms, 0.25/0.5ms, 0.25/0.25ms, 4.0/16.0ms, 4.0/8.0ms, 4.0/4.0ms, 8.0/16.0ms, 8.0/8.0ms, 16.0/16.0ms
+CN_TIMINT      =中断源
+CN_TIMINT_LIST =外部, 内部
+
+CN_MONERRINS  =跟随误差显示
+CN_MONQTAAX   =机床回参目标显示
+CN_MONINTER   =Displ. enab. in phase with interpr.
+CN_MONPARAM   =Displ. enab. in phase with paramet.
+CN_MONCFROM   =Enab. disp. of fixed cycles in ROM
+CN_M_OVRLAP   =Enab. overlapped M functions
+CN_SRP_LAH    =Disable S-curve look-ahead
+CN_VIMO_EN    =VIMO mode enable
+CN_DIG_FC_EN    =Enable CN-side gearbox ratio for digital axes
+CN_DIGSIM_KP_EN =Enable Kp[1/s] simulation for digital axes
+CN_EXACT_LS_COMP=Use alternative method for software limit switches checking
+CN_ENABLE_G16_AUX =Enab. aux. axes handling (G16)
+CN_ENAB_CORR_DIAM_USURA=Enable diameter-based tool wear compensation
+CN_ENAB_G96_VMIN_VMAX=Enable mandatory G96 VMIN and VMAX
+CN_ENAB_AXIS_CHAN_MATCH=Enable channels/axes explicit matching
+CN_ENAB_SAFETY_EXTINT=Enable extended safety mode
+CN_ENAB_FAST_Q_REF=Enable encoder measure fast refresh mode
+CN_ENAB_TIME_ALIGNED_SETIO=Enable time-aligned IO by hardware timer
+CN_ENAB_TIME_ALIGNED_SETIO_EX=Hardware accelerated time-aligned IO (laser)
+CN_ENAB_PWM_COMBINE=Combine emission and PWM (laser)
+CN_ENAB_G10_EXCLUDE_UNGRP=Exclude ungrouped axes with G10
+CN_ENAB_G8X_NON_MODAL_EXECUTION=Enable non-modal G8x execution
+CN_ENAB_COMPACT_REFRESH=Enable compact refresh
+CN_ENAB_WRITES_PIGGYBACKING=Enable piggybacking for writes
+CN_ENAB_HOLD_PERSIST_M=Keep M functions STB with HOLD
+CN_DISAB_PPG_OPTIM=Disable PPG priority boost
+
+_DBO_ENABLE_EXT_HEAP_RT_CHK     =Heap RunTime Check Enable
+_DBO_ENABLE_KENV_DEBUG          =Kenv path search debug enable
+_DBO_ENABLE_DETAILED_DEBUG      =Debug with more details
+_DBO_ENABLE_REPORT              =Report generation
+_DBO_ENABLE_DTL_LOGGING         =Detailed event rec. on disk
+_DBO_ENABLE_TRACE               =Trace enabling
+_DBO_ENABLE_PRINTERR            =Error information mask disp.
+_DBO_ENABLE_VERBOSE_PE          =Detailed information mask disp.
+_DBO_ENABLE_WARP_ENGINE_DEBUG   =Kinematic/dynamic param. debug en.
+
+CN_SCNPLCLEN  =PLC scanning time [s]
+CN_SCNPLCVEL  =Fast PLC scanning time [s]
+CN_TMOPLCLEN  =PLC timeout [s]
+CN_TMOPLCVEL  =Fast PLC timeout [s]
+CN_RFSIONODE  =I/O ring node refresh disable
+CN_PLCTIMEDIV2 =Divide by 2 the scanning times
+CN_PLCTIMEDIV4 =Divide by 4 the scanning times
+CN_PLCTIMEDIV8 =Divide by 8 the scanning times
+CN_PLCFASTHPRI =High priority Plc fast
+CN_DISTIMCOMP  =Disab. compensation timer 1.024
+
+KEY_SYSDLLS     =System DLLs
+SYS_SLAOSC      =Oscilloscope
+SYS_SLADLL      =Slave Dll
+SYS_SLACOUP     =Coupling functions Dll
+SYS_SLAPPG      =Pressbrake
+SYS_SLADGT      =Digital drives
+SYS_CAN1        =CanOpen (first)
+SYS_CAN2        =CanOpen (second)
+SYS_SLADGT_ADDR =Base Address
+SYS_SLADGT_IRQN =IRQ Number
+SYS_SLADLL_LIST =None, Default, Filename, Debug
+SYS_SLADGT_LIST =None, McLink, SercosII, Canopen, EsaLink, SercosI, Filename, Debug
+
+CN_SYNCIRQ		= Sync IRQ
+CN_SYNCIRQLIST	= Disab,AutoIRQ,Analog,IRQ10,IRQ11,IRQ12,ECAT
+CN_SYNCTREF		= TRef
+CN_SYNCTREG		= TReg
+CN_SYNCTCALC	= TCalc
+
+[HELP]
+CN_NUMCHAN    =Number of channels
+CN_NUMAX      =Number of axes
+CN_FIRSTSLAVE =First axes board identifier used in distributed systems only - UNUSED.
+CN_MMINCI     =Entry of measuring unit used by default by PP (0)mm (1)inches
+CN_DELAY      =NC single scan Delay [s]:  must be greater than 0 to allow the proper processing time when CNC board is requested to serve incoming user interface requests.
+CN_DLY_PATTERN =Priority used for other background system activities.  To these activities a processing time programmed as 'NC single scan delay' is reserved.  The occurrance frequency is determined by this priority setting.
+CN_CALCREG    =Slave Loading Code - Optimum Value (6)
+CN_COMMTICALC =Number of commands processed by "slave" every calculation time. Standard value: 1
+CN_CNCTIMOT   =Maximum time allowed between the beginning of a channel execution and the beginning of the next scheduled channel execution.  Must be greater than the 'NC single scan delay' time interval setting [s].
+CN_USREXTLEN  =ISO blocks user extensions length.  The available block extensions are shared among the various channels and among each channel's state machines, thus, this size should be suitable for the biggest data structure to be handled.
+CN_PTKB       =Pass-thru execution memory size (KB), shared among all CNC channels.  To assure that each channel will dispose of its actual required memory amount (configured by the proper channel configuration parameter), this parameter must be equal or greater than the memory required by the various combinations of simultaneously executing channel.
+CN_RETRKB     =Retrace memory size (KB), shared among all CNC channels.  To assure that each channel will dispose of its actual required memory amount (configured by the proper channel configuration parameter), this parameter must be equal or greater than the memory required by the various combinations of simultaneously executing channel.
+CN_SLVBLOCKS  =No of blocks to be used for slave queues, shared among all CNC channels.  To assure that each channel will dispose of its actual required slave blocks amount (depending from channel configuration parameters), this parameter must be equal or greater than the blocks amount required by the various combinations of simultaneously executing channel.
+CN_PARMSVER   =Parameters set version;  a version greater or equal than 1 causes engineering units to be used for the input of axes motion parameters.  Specify 0 to achieve compatibility with older SW versions where, i.e., the input of acceleration parameters in seconds was required.
+
+CN_MONERRINS  =Follow error display enabling:  (0) absolute target and differential target (1) follow error
+CN_MONQTAAX   =Machine reference axes target display enabling: (0)workpiece origin reference system (1)machine origin reference system
+CN_MONINTER   =Enabling of display in phase with language interpreter
+CN_MONPARAM   =Enabling of display in phase with parametrics
+CN_MONCFROM   =Enabling of display of fixed cycles in ROM : enabling of display of fixed cycle in progress
+CN_M_OVRLAP   =Enabling of overlapped M functions: (0)default synchronization mode (1)overlap mode
+CN_SRP_LAH    =Disable S-curve look-ahead:  when S-curve are used, the jerk at corners transition is taken into account by the look-ahead process only if this parameter is set to 0.  A value of 1 disables look-ahead processing
+CN_VIMO_EN    =Enables VIMO mode to optimize G64 block transitions, expecially in presence of axes with strongly different dynamics.
+CN_DIG_FC_EN    =Always use 1 on new applications, 0 is only for backward compatibility.
+CN_DIGSIM_KP_EN =This setting depends on the software driver.  Use 0 unless otherwise specified.
+CN_EXACT_LS_COMP=Use alternative method for software limit switches checking
+CN_ENABLE_G16_AUX =Enable auxiliary axes handling by G16 (e.g.: G16 ZUU+)
+CN_ENAB_CORR_DIAM_USURA=Enable diameter-based tool wear compensation (0=radius-based, 1=diameter-based)
+CN_ENAB_G96_VMIN_VMAX=Enable mandatory G96 VMIN and VMAX (0=optional, 1=mandatory)
+
+_DBO_ENABLE_EXT_HEAP_RT_CHK     =Enable Run Time control of the consistency of 'freecells' user extensions
+_DBO_ENABLE_KENV_DEBUG          =Enable display of file search path
+_DBO_ENABLE_DETAILED_DEBUG      =Display more debugging information
+_DBO_ENABLE_REPORT              =REPORT file creation : 0-disabled 1-creates .deb file
+_DBO_ENABLE_DTL_LOGGING         =Detailed recording of events on disk:0-disable 1-enable
+_DBO_ENABLE_TRACE               =Trace enabling: 0-disabled 1-monitors the channel activities without creating files
+_DBO_ENABLE_PRINTERR            =Error information mask display enabling
+_DBO_ENABLE_VERBOSE_PE          =Detailed error information mask display enabling
+_DBO_ENABLE_WARP_ENGINE_DEBUG   =Debugger enabling for kinematic and dynamic section parameters
+
+CN_SCNPLCLEN  =PLC scanning time [s]:time period between two subsequent PLC iterations.
+CN_SCNPLCVEL  =Fast PLC scanning time [s]:time period between two subsequent Fast-PLC iterations.
+CN_TMOPLCLEN  =PLC timeout [s]:maximum time from the beginning of a PLC scan the scan itself is allowed to end within.
+CN_TMOPLCVEL  =Fast PLC timeout [s]:maximum time from the beginning of a Fast-PLC scan the scan itself is allowed to end within.
+CN_RFSIONODE  =Disable automatic keep alive pulse for the I/O link every 32 ms. Use only when scanning time of slow PLC is lower then 40 ms to reduce CPU load if optical-fiber I/O ring is present.
+CN_PLCTIMEDIV2 =Divide by 2 the PLC scanning times. Use to reduce the FAST PLC scanning time until 0.5 ms.
+CN_PLCTIMEDIV4 =Divide by 4 the PLC scanning times. Use to reduce the FAST PLC scanning time until 0.25 ms.
+CN_PLCTIMEDIV8 =Divide by 8 the PLC scanning times. Use to reduce the FAST PLC scanning time until 0.125 ms.
+CN_PLCFASTHPRI =Set the FAST PLC priority over the axis regulator priority.
+CN_DISTIMCOMP  =Disable timer compensation 1.024. Use to improve the ripetibility of the timers with preset values lower than 100 ms.
+

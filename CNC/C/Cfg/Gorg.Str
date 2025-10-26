@@ -1,0 +1,24 @@
+[STRUCT]
+KEY_GORG {
+        GORG_X;
+        GORG_Y;
+        GORG_Z;
+}
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+
+[GORG_X]
+ADR =      orAxisOrigin0
+FRM = QTA, 3
+HLP = GORG_X
+[GORG_Y]
+ADR =      orAxisOrigin1
+FRM = QTA, 3
+HLP = GORG_Y
+[GORG_Z]
+ADR =      orAxisOrigin2
+FRM = QTA, 3
+HLP = GORG_Z

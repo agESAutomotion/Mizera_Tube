@@ -1,0 +1,54 @@
+
+[KEYS]
+TITLE=nLight
+TXT8=Shoot On
+TXT9=Shoot Off
+TXT10=Dry Run
+
+[PROMPT]
+KEY_NODE=
+LASERPAGE=Leaf
+GroupBoxLin=Laser commands
+GroupBoxLout=Laser answers
+GroupBoxlTest=Test Laser
+Button1=Laser Power ON
+Button3=Laser error reset
+Button6=Guide laser ON
+Label16=Laser ready
+Label19=Laser active
+Label20=Emission enable
+Label22=Laser error
+LBL_POTENZA1=Power (W)
+LBL_DUTY1=Duty (%)
+LBL_FREQUENZA1=Frequency (HZ)
+LBL_PIERCING1=Time (s)
+Label41=Laser Shot
+Label23=Laser source max power [W]
+LabelSim1=nLIGHT IN SIMULATION
+LIST0=O2,N2,AIR,NO GAS
+LabelGasSel=Gas
+LabelPressure=Press (BAR)
+LabelDryRun2=DRY RUN, remove for testing
+LabelAitOff2=Air
+LabelN2Off2=N2
+LabelO2Off2=O2
+LabelAit2=Air
+LabelN2=N2
+LabelO2=O2
+Label1=Exten in
+Label2=FW Ready
+Label3=Ext. Contr. Enable
+Label4=Ext.Contr Ready
+GroupBoxLout1=Analog Diagnostic
+LabelOut1=Back Reflection
+LabelOut3=Auxiliary
+LabelOut2=Beam Dump
+LabelOut4=Optical Power
+GroupBox2=Settings
+Label5=Enable
+Button2=Show Graph
+
+[STATUS]
+Button1=power on unit
+
+[HELP]

@@ -1,0 +1,19 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+TEST=Leaf
+LbAngle_1=Angle
+LbAngle_np1=Num points
+LbAngle_2=Enable
+L_TYPE_INTERP2=Pattern
+LIST0=Linear,Segment,Smoothing
+Plot_angle_speed1=Speed
+LbNote2=Note: If speed=ON and Angle > 8 degree, disable Check Power and Duty
+
+[STATUS]
+Plot_angle_speed1=Speed(%),Angle(?
+
+[HELP]

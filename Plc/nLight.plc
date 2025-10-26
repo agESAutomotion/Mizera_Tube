@@ -1,0 +1,208 @@
+*******************************************************************************
+*   nLight.plc
+*   ESAutomotion
+*   LASER machine
+*   (Fiber Laser nLight)
+*   Procedure to turn on laser supply
+*******************************************************************************
+
+VAR
+#include "Cnc.inc"
+*#include "Iof.inc"
+END_VAR
+
+#include "Iol.inc"
+#include "nLight.inc"
+
+VAR
+system_on:            BOOL;
+appoggio:             BOOL;
+laser_on:             BOOL;
+nLight_ready_io:      BOOL;          * nlight is ready to receive input and output
+laser_guide_disable:  BOOL;          * Monitor variable to enable laser after close laser guide
+
+RTRIG_SYS_ON_START: R_TRIG;
+RTRIG_SYS_ON:       R_TRIG;    
+FTRIG_TURNOF:       F_TRIG;
+FTRIG_GUIDE:        F_TRIG;
+RTRIG_ENAB_LAS:     R_TRIG;
+
+TP_TIMER_SYS_ON:        TP;
+TON_CHECK_ERR:         TON;
+TON_I_COMM_READY:      TON;
+TON_NLIGHT_READY:      TON;
+TOF_GUIDE:             TON;
+
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+FUNCTION_BLOCK  NLIGHT
+
+
+VAR_INPUT
+
+xEmer:       BOOL;
+
+END_VAR
+
+CAL  TON_I_COMM_READY (IN:=I_I_FW_READY_nLight,PT:=500) ** (IW0.1) nLight ready to recieve input
+
+LD   TON_I_COMM_READY.Q              
+ST   O_O_ExtCtr_ENABLE_nLight        ** (QW2.6) Enable external control of nlight
+       
+LD   O_O_ExtCtr_ENABLE_nLight        ** (QW2.6) Enable external control of nlight
+AND  TON_I_COMM_READY.Q
+AND  I_I_ExtCtr_Ready_nLight         ** (IW0.6) nLight external control ready                  
+ST   nLight_ready_io               ** nlight is ready to receive input and output
+
+***************************************************************************************
+* Laser Guide Management
+***************************************************************************************
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   O_O_GUIDE_nLight                ** (QW2.2) Guide laser nlight
+
+CAL  TOF_GUIDE (IN:=ch0_InRun,PT:=2000)
+
+LD   Pul_Guide_Laser               ** (LsPlc20.0) Push-button nlight guide laser 
+ANDN (
+LD   TOF_GUIDE.Q                     ** %cn0.rc8.0 CH0 Programa RUN activo
+*ANDN ReqPosOrig                    ** (gPlc13.0)Richiesta pos. X,Y su Origine corrente
+ANDN ReqAcqOrig                    ** (gPlc13.1)Richiesta acquisizione origine
+ANDN %PlcOp0.2                      * Dryrun simulation
+)
+JMPCN no_laser_guide
+
+LD   Pul_Guide_Laser               ** (LsPlc20.0) Push-button nlight guide laser 
+R    O_O_EXTEN_IN_nLight             ** (QW2.1) nlight exten in
+R    laser_guide_disable           ** Monitor variable to enable laser after close laser guide
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   O_O_GUIDE_nLight                ** (QW2.2) Guide laser nlight
+
+no_laser_guide:
+****************************************************************************************
+
+* Power on laser sequence 
+
+LD   Pul_Sys_On                    ** (rLsPlc10.2) Push-button system on
+AND  nLight_ready_io               ** nlight is ready to receive input and output
+ANDN EMER_GEN                      ** (M0.10)Emergenza generale
+AND  xEmer                   ** (IW0.10)Macchina OK            
+ST   appoggio
+
+CAL  RTRIG_SYS_ON_START (CLK:=appoggio) 
+
+CAL  TP_TIMER_SYS_ON (IN:=RTRIG_SYS_ON_START.Q,PT:=200)
+
+LD   TP_TIMER_SYS_ON.Q                 
+S    O_O_SYSTEM_ON_nLight            ** (QW2.3) nlight system on
+
+CAL  TON_CHECK_ERR (IN:=O_O_SYSTEM_ON_nLight,PT:=1500) ** (QW2.3) nlight system on
+
+LDN  I_I_ERR_nLight                  ** (IW0.3) nlight error
+AND  I_I_RDY_nLight                  ** (IW0.4) laser nlight ready
+AND  TON_CHECK_ERR.Q
+S    system_on                      * system on sent
+
+CAL  RTRIG_SYS_ON(CLK:=system_on)   * system on sent
+CAL  FTRIG_GUIDE(CLK:=O_O_GUIDE_nLight) ** (QW2.2) Guide laser nlight
+
+LD   FTRIG_GUIDE.Q                  * () guide laser nlight
+S    laser_guide_disable           ** Monitor variable to enable laser after close laser guide
+ 
+LD   laser_guide_disable           ** Monitor variable to enable laser after close laser guide
+AND  I_I_RDY_nLight                  ** (IW0.4) laser nlight ready
+ST   appoggio
+
+CAL  RTRIG_ENAB_LAS (CLK:=appoggio)
+
+LD   RTRIG_SYS_ON.Q
+OR   RTRIG_ENAB_LAS.Q               
+AND  I_I_RDY_nLight                  ** (IW0.4) laser nlight ready
+S    O_O_EXTEN_IN_nLight             ** (QW2.1) nlight exten in
+
+LD   O_O_EXTEN_IN_nLight             ** (QW2.1) nlight exten in
+AND  I_I_RDY_nLight                  ** (IW0.4) laser nlight ready
+AND  I_I_EMISS_nLight                ** (IW0.2) emiss nlight enable
+ST   laser_on                       *  laser ready to shoot (waiting gate_in and analog)
+                   
+CAL  FTRIG_TURNOF (CLK:=Pul_Sys_On) ** (rLsPlc10.2) Push-button system on
+                   
+LD   I_I_ERR_nLight                  ** (IW0.3) nlight error
+OR   EMER_GEN                      ** (M0.10)Emergenza generale
+ORN  xEmer                   ** (IW0.10)Macchina OK            
+OR   FTRIG_TURNOF.Q
+ORN  I_I_FW_READY_nLight             ** (IW0.1) nLight ready to recieve input
+R    O_O_SYSTEM_ON_nLight            ** (QW2.3) nlight system on
+R    O_O_EXTEN_IN_nLight             ** (QW2.1) nlight exten in
+R    system_on                      * system on sent
+
+LD   Pul_Error_Reset               ** (LsPlc20.1) Push-button nlight reset error 
+OR   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+ST   O_O_RESET_nLight                ** (QW2.5) Reset error nlight
+
+* laser diagnostic ********************************************************
+
+LD   I_I_ERR_nLight                  ** (IW0.3) nlight error
+S    %PLCerr6.17                    * nLight Laser Error 
+
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+R    %PLCerr6.17                    * nLight Laser Error
+
+LDN  nLight_ready_io               ** nlight is ready to receive input and output
+ST   %PLCerr6.18                    * nLight doesn't accept Input...Check nLight GUI
+
+LDN  I_I_RDY_nLight                  ** (IW0.4) laser nlight ready
+AND  O_O_SYSTEM_ON_nLight            ** (QW2.3) nlight system on
+ANDN O_O_GUIDE_nLight                ** (QW2.2) Guide laser nlight
+ST   appoggio
+
+CAL  TON_NLIGHT_READY (IN:=appoggio,PT:=1500)
+
+LD   TON_NLIGHT_READY.Q
+ST   %PLCerr6.19                     * nLight Resonator not ready
+
+* Analog Signals ***********************************************************
+
+*LD   IA_BEAM_DUMP                  ** (IW802) [190]Beam dump monitor
+*ST   BEAM_DUMP                     ** (PlPlc76) Beam dump monitor 
+
+*LD   IA_AUXILIARY                  ** (IW803) [191]Auxiliary monitor
+*ST   AUXILIARY                     ** (PlPlc77) Auxiliary monitor
+
+*LD   IA_BACK_REFL                  ** (IW804) [192]Back reflection monitor
+*ST   BACK_REFL                     ** (PlPlc78) Back reflection monitor
+
+*LD   IA_OPT_POWER                  ** (IW805) [193]Optical power monitor
+*ST   OPT_POWER                     ** (PlPlc79) Optical power monitor 
+                                                  
+* led interface ************************************************************
+
+LD   O_O_SYSTEM_ON_nLight            ** (QW2.3) nlight system on
+ST   guiSystemOn                   ** (LsGui25.0) nLight System On
+
+LD   O_O_EXTEN_IN_nLight             ** (QW2.1) nlight exten in
+ST   guiExTenIn                    ** (LsGui25.1) nLight ExTenIn
+
+LD   laser_on                       *  laser ready to shoot (waiting gate_in and analog)
+ST   guiLaserOn                    ** (LsGui25.2) nLight Laser On
+       
+LD   I_I_RDY_nLight                  ** (IW0.4) laser nlight ready
+ST   guiReady                      ** (LsGui25.3) nLight Laser ready
+
+LD   I_I_ERR_nLight                  ** (IW0.3) nlight error
+ST   guiErr                        ** (LsGui25.4) nLight Error
+
+LD   I_I_EMISS_nLight                ** (IW0.2) emiss nlight enable
+ST   guiEmiss                      ** (LsGui25.5) nLight Emiss
+
+LD   O_O_RESET_nLight                ** (QW2.5) Reset error nlight
+ST   guiResetError                 ** (LsGui25.6) nLight reset error
+
+LD   O_O_GUIDE_nLight                ** (QW2.2) Guide laser nlight
+ST   guiGuideLaser                 ** (LsGui25.7) nLight guide laser
+
+END_FUNCTION_BLOCK

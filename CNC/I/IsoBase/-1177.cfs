@@ -1,0 +1,13 @@
+:G177
+;//
+;// G177
+;//         Disattiva correzione lunghezza utensile
+;//
+tool_cosx=0
+tool_cosy=0
+tool_cosz=0
+cut_edge_no=0
+cut_edge_svl=0
+
+G152
+RET

@@ -1,0 +1,35 @@
+P Q R D [S]0 :G176
+;//
+;// G176    P<tool_cosX> Q<tool_cosY> R<tool_cosZ> D<cut_edge_no> [S<cut_edge_svl>]
+;//         Attiva correzione lunghezza utensile
+;//
+DBL tool_module
+DBL svl=CTOMM(VA18)
+DBL sav_G70=XGET("@G70")
+G71
+
+rtcp_on=0
+
+tool_cosx=VA15
+tool_cosy=VA16
+tool_cosz=VA17
+cut_edge_no=VA3
+cut_edge_svl=svl
+
+IF( cut_edge_no == 0 ) ERROR(221)
+
+;//Normalizzazione (G180 et al)
+tool_module = SQRT(tool_cosx * tool_cosx + tool_cosy * tool_cosy + tool_cosz * tool_cosz)
+IF( tool_module < 0.000001 ) THEN
+    tool_cosx=0
+    tool_cosy=0
+    tool_cosz=0
+ELSE
+    tool_cosx = tool_cosx / tool_module;
+    tool_cosy = tool_cosy / tool_module;
+    tool_cosz = tool_cosz / tool_module;
+ENDIF
+
+G152
+G(sav_G70)
+RET

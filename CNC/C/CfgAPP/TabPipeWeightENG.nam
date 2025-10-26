@@ -1,0 +1,17 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+TABPIPEWEIGHT=Pipe weight table
+LB_Kgm=Kg/m
+LB_Acc_U=U Acc [mm/sec2]
+LB_Dec_U=U Dec [mm/sec2]
+LB_jerk_U=U jerk [mm/sec3]
+LB_Acc_C=C Acc [mm/sec2]
+LB_Dec_C=C Dec [mm/sec2]
+LB_jerk_C=C jerk [mm/sec3]
+[STATUS]
+
+[HELP]

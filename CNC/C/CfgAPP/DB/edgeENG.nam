@@ -1,0 +1,37 @@
+
+[KEYS]
+TITLE=Piercing parameters
+MSG9=Are you sure? Current database line will be overwritten
+TXT11=Find inD.B
+TXT12=Database
+
+[PROMPT]
+KEY_NODE=Node
+EDGE=Leaf
+LBL_VELOCITA1=Corner Speed
+LBL_MMMIN2=[mm/min] 90°
+Label1=7
+Label2=6
+Label3=5
+Label4=4
+Label5=3
+Label6=2
+Label7=1
+Label8=8
+Label9=9
+Label10=10
+LBL_VELOCITA2=Radius Speed
+LBL_MMMIN1=[mm/min] R=10 mm
+LBL_VELOCITA4=Cooling Pt. Time
+LBL_MMMIN4=[ms]
+Label11=Enab. Corner
+Label12=Enab. Cooling Point
+Label13=11
+Label14=12
+Label15=13
+Label16=14
+Label17=15
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,16 @@
+
+[KEYS]
+TITLE=ASPIRATOR
+TXT0=Vacum air param.
+
+[PROMPT]
+KEY_NODE=
+ASPIRATOR=Leaf
+Label8=Time OFF aspirator with program not in run [sec]
+LabelAspAUTO=AUTO MODE
+LabelAspMAN=MANUAL MODE
+LabelAspRun=Aspirator running...
+
+[STATUS]
+
+[HELP]

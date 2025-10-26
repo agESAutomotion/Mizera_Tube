@@ -1,0 +1,17 @@
+ : aidDisengage
+
+IF (%cn[WHO()].rc[0].21) RET
+
+ ;//disattiva trasformazione
+ G153
+ IF (AEXISTS(8,Z))G4005 S(AXIDX(8,Z))
+ IF (AEXISTS(8,Y))G4005 S(AXIDX(8,Y))
+ IF (AEXISTS(8,U))G4005 S(AXIDX(8,U))
+ IF (AEXISTS(8,V))G4005 S(AXIDX(8,V))
+ IF (AEXISTS(8,W))G4005 S(AXIDX(8,W))
+ G152
+ G4099
+ 
+ ;//Disable blendSwitch PLC writes
+ ?%gIso19.0=0
+RET

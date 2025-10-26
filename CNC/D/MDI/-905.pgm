@@ -1,0 +1,17 @@
+%MDI
+; MDI CHANNEL 5
+
+DBL fSimul = %cn[WHO()].rc[0].21
+DBL fGraph = %cn[WHO()].pc[14].25
+.loop
+
+G4 F1
+SYN
+PAUSE
+IF(! fGraph ) JMP .loop
+
+G4 F10
+
+
+M2
+M30

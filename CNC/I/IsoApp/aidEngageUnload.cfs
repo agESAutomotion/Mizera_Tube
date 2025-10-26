@@ -1,0 +1,116 @@
+ : aidEngageUnload
+;============================================================================
+; aidEngageUnload - Initialization G4011 T36 with proper supports positions
+;============================================================================
+IF (%cn[WHO()].rc[0].21) RET
+IF (CouplingFollowEn == 1) RET 
+
+; Different Loader side Support Travel 
+L_COM_PrkPos = %UNLOADER.values5 / 1000;
+  
+; Motor cylinder composite support virtual axis granted
+WAITBIT("%ax61.ra3.28",0)
+
+DBL ulifter_A[10], ulifter_D[10]  					 
+DBL velAxisx = %ax[AXIDX(5,X)].pa9
+DBL innerRadius = MIN(ABS( %gIso[24] ), ABS( %gIso[23] )) / 2
+DBL outerRadiusPlusone = optimized_lift - 19
+DBL filterT1Rate = velAxisx / (outerRadiusPlusone - innerRadius) 
+DBL velAddValue = velAxisx 
+										        
+;//Blending filter time constants               
+DBL max_q0 = ABS(L_COM_PrkPos)                  ;//max slave displacement [mm]
+DBL max_q1 = velAddValue/60                     ;//max slave velocity [mm/min]
+DBL max_q2 = 5000                               ;//max slave acceleration [mm/s^2]
+DBL max_q3 = 50000                              ;//max slave jerk [mm/s^3]
+										                           
+DBL filterT2 = max_q1/max_q2                    ;//TODO: add 2x for direction change
+DBL filterT3 = max_q2/max_q3                    ;//2x added for triangular velocity
+
+RPT .UngearAll_Start, .UngearAll_End, 1
+ 
+;============================================================================
+; Bring each support to the position to init (CN8) 
+;============================================================================ 
+; SYN
+; ; when loader is running init unloader with parking 
+; ?%SUPPORTS_SYSTEM.boolean.31 = 1
+; G4 F0.05
+; SYN
+; AWAIT( !%SUPPORTS_SYSTEM.boolean.31 )
+; AWAIT( !%LOADER.boolean.31 )
+ 
+;============================================================================
+;// G4011 T36 (motion blending) 
+;// Following registers are used:
+;//       %ax[slave].rgau0    G4011 T36: blendSwitch      input  [0|1]
+;//       %ax[slave].rgau1    G4011 T36: addValue         input  [um]
+;//       %ax[slave].rgau2    G4011 T36: blendState       output [0..1]
+;//       %ax[slave].rgau3    G4011 T36: addValueM        input  [um]
+;//       %ax[slave].rgau4    G4011 T36: actualAddValue   output [um] _3
+;//       %ax[slave].rgau5    G4011 T36: actualAddValueM  output [um] _3
+;// NOTE: blendSwitch and addValue are reset at G4011 T36 time and should be
+;//       written by the PLC afterwards (using VAR_IN_OUT).
+;// 
+;//       [G<addValueVelM> H<accTimeM> I<jerkTimeM>] _3
+;//       [J<addValueVel> K<accTime> L<jerkTime>] _3
+;// 
+;============================================================================
+iter=1
+SYN
+WHILE( iter <= 5 )
+     ulifter_A[iter] = QCALC(AXIDX(5,X)) + ulifter[iter] / 1000
+     ulifter_D[iter] = outerRadiusPlusone + ulifter[iter] / 1000
+	 iter = iter + 1
+ENDW
+
+?%gIso19.0 = 0      ; Disable blendSwitch PLC writes
+?%gIso19.1 = 1      ; =0 parking, =1 follow 
+
+;// Check HoldZxSupp from PLC
+RPT .Chk_HoldZxSupp_Start, .Chk_HoldZxSupp_End, 1
+
+SYN
+G153
+IF (AEXISTS(8,Y)) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(!ulifter_A[1]) M(-1) D(ulifter_D[1]) N(AXIDX(5,X)) P(AXIDX(6,Y)) S(AXIDX(8,Y)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)              
+IF (AEXISTS(8,Z)) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(!ulifter_A[2]) M(-1) D(ulifter_D[2]) N(AXIDX(5,X)) P(AXIDX(6,Y)) S(AXIDX(8,Z)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)   
+IF (AEXISTS(8,U)) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(!ulifter_A[3]) M(-1) D(ulifter_D[3]) N(AXIDX(5,X)) P(AXIDX(6,Y)) S(AXIDX(8,U)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)   
+IF (AEXISTS(8,V)) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(!ulifter_A[4]) M(-1) D(ulifter_D[4]) N(AXIDX(5,X)) P(AXIDX(6,Y)) S(AXIDX(8,V)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)   
+IF (AEXISTS(8,W)) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(!ulifter_A[5]) M(-1) D(ulifter_D[5]) N(AXIDX(5,X)) P(AXIDX(6,Y)) S(AXIDX(8,W)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)   
+G152
+G4099
+
+?%BLEND_VEL.filTRate[2] = filterT1Rate * 1000
+?%BLEND_VEL.velAddVal[2] = velAddValue * 1000
+
+?%gIso19.1 = 1      ; =0 parking, =1 follow
+?%gIso19.0 = 1      ; Enable blendSwitch PLC writes
+
+CouplingFollowEn = 1
+ 
+RET
+
+.UngearAll_Start
+   G153
+   IF (AEXISTS(8,Y)) G4005 S(AXIDX(8,Y))
+   IF (AEXISTS(8,Z)) G4005 S(AXIDX(8,Z))
+   IF (AEXISTS(8,U)) G4005 S(AXIDX(8,U))
+   IF (AEXISTS(8,V)) G4005 S(AXIDX(8,V))
+   IF (AEXISTS(8,W)) G4005 S(AXIDX(8,W))
+   G152
+   G4099
+.UngearAll_End
+
+.Chk_HoldZxSupp_Start
+   iter=1 
+   SYN
+   WHILE(iter<=5)
+        IF( ists_8cn[iter] ) ulifter_A[iter] = ABS(%ax[70+iter].ra24 / 1000 - ulifter_A[iter]) > 15 
+		IF( ists_8cn[iter] ) ulifter_D[iter] = IFEXP( ulifter_A[iter] == 0, ulifter_D[iter], L_COM_PrkPos)  
+     	iter = iter + 1
+   ENDW   
+.Chk_HoldZxSupp_End
+
+
+
+ 

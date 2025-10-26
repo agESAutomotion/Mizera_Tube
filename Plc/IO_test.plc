@@ -1,0 +1,223 @@
+*******************************************************************************
+*   IO_TEST.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+
+*** Reserved from %C80 to %C99  !!!
+*** Reserved from %R90 to %R99  !!!
+
+MASK_IN0                AT %C80;        * C80 Forced Inputs
+MASK_IN1                AT %C81;        * C81 Forced Inputs
+MASK_IN2                AT %C82;        * C82 Forced Inputs
+MASK_IN3                AT %C83;        * C83 Forced Inputs
+MASK_IN4                AT %C84;        * C84 Forced Inputs
+MASK_IN5                AT %C85;        * C85 Forced Inputs
+MASK_IN6                AT %C86;        * C86 Forced Inputs
+MASK_IN7                AT %C87;        * C87 Forced Inputs
+MASK_IN8                AT %C88;        * C88 Forced Inputs
+MASK_IN9                AT %C89;        * C89 Forced Inputs
+
+MASK_OUT0               AT %C90;        * C90 Forced Outputs OFF/ON
+MASK_OUT1               AT %C91;        * C91 Forced Outputs OFF/ON
+MASK_OUT2               AT %C92;        * C92 Forced Outputs OFF/ON
+MASK_OUT3               AT %C93;        * C93 Forced Outputs OFF/ON
+MASK_OUT4               AT %C94;        * C94 Forced Outputs OFF/ON
+MASK_OUT5               AT %C95;        * C95 Forced Outputs OFF/ON
+MASK_OUT6               AT %C96;        * C96 Forced Outputs OFF/ON
+MASK_OUT7               AT %C97;        * C97 Forced Outputs OFF/ON
+MASK_OUT8               AT %C98;        * C98 Forced Outputs OFF/ON
+MASK_OUT9               AT %C99;        * C99 Forced Outputs OFF/ON
+
+ABIL_OUT0               AT %R90;        * R90 Enable single bit
+ABIL_OUT1               AT %R91;        * R91 Enable single bit
+ABIL_OUT2               AT %R92;        * R92 Enable single bit
+ABIL_OUT3               AT %R93;        * R93 Enable single bit
+ABIL_OUT4               AT %R94;        * R94 Enable single bit
+ABIL_OUT5               AT %R95;        * R95 Enable single bit
+ABIL_OUT6               AT %R96;        * R96 Enable single bit
+ABIL_OUT7               AT %R97;        * R97 Enable single bit
+ABIL_OUT8               AT %R98;        * R98 Enable single bit
+ABIL_OUT9               AT %R99;        * R99 Enable single bit
+
+ForceInputs             AT %C100.0;     * C100.0 Auxiliary to Force Inputs
+ForceOutputs            AT %C100.1;     * C100.1 Auxiliary to Force Outputs
+
+END_VAR
+
+#include "Iol.inc"
+
+VAR_IN_OUT
+R_REGISTER              AT %R;          * R regsiter used about forcing output
+C_REGISTER              AT %C;          * R regsiter used about forcing output
+END_VAR
+
+******************************************************************************
+* INPUTS
+******************************************************************************
+FUNCTION_BLOCK INP_MNGMT
+VAR_INPUT
+xInp:       WORD;           *
+xIndex:     WORD;           *
+END_VAR
+
+VAR_OUTPUT
+yInp:       WORD;           *
+END_VAR
+
+VAR
+IndexMask:  WORD;           *
+END_VAR
+
+LD   xIndex                        ** 
+ADD  80
+ST   IndexMask                     ** 
+
+LD   C_REGISTER[IndexMask]         ** R regsiter used about forcing output
+***Commentare OR se si vuole forzare a zero un ingresso
+***OR   xInp
+ST   yInp                          ** 
+
+END_FUNCTION_BLOCK
+
+******************************************************************************
+* OUTPUTS
+******************************************************************************
+FUNCTION_BLOCK OUT_MNGMT
+VAR_INPUT
+xOut:       WORD;           *
+xIndex:     WORD;           *
+END_VAR
+
+VAR_OUTPUT
+yOut:       WORD;           *
+END_VAR
+
+VAR
+IndexMask:  WORD;           *
+SetResMask: WORD;           *
+CncMask:    WORD;           *
+END_VAR
+
+LD   xIndex                        ** 
+ADD  90
+ST   IndexMask                     ** 
+
+LD   ForceOutputs                  ** C100.1 Auxiliary to Force Outputs
+JMPC EndOut
+
+LD   0
+ST   R_REGISTER[IndexMask]         ** R regsiter used about forcing output
+ST   C_REGISTER[IndexMask]         ** R regsiter used about forcing output
+
+EndOut:
+LD   R_REGISTER[IndexMask]         ** R regsiter used about forcing output
+AND  C_REGISTER[IndexMask]         ** R regsiter used about forcing output
+ST   SetResMask                    ** 
+
+LD   R_REGISTER[IndexMask]         ** R regsiter used about forcing output
+XOR  16#FFFF                       ** bit complement
+AND  xOut                          ** 
+ST   CncMask                       ** 
+
+LD   SetResMask                    ** 
+OR   CncMask                       ** 
+ST   yOut                          ** 
+
+END_FUNCTION_BLOCK
+
+VAR
+INP1:       INP_MNGMT;
+INP2:       INP_MNGMT;
+INP3:       INP_MNGMT;
+INP4:       INP_MNGMT;
+INP5:       INP_MNGMT;
+INP6:       INP_MNGMT;
+OUT1:       OUT_MNGMT;
+OUT2:       OUT_MNGMT;
+OUT3:       OUT_MNGMT;
+OUT4:       OUT_MNGMT;
+OUT5:       OUT_MNGMT;
+END_VAR
+
+******************************************************************************
+FUNCTION INP_TEST
+******************************************************************************
+LD   ForceInputs                   ** C100.0 Auxiliary to Force Inputs
+JMPCN BypassInp1
+
+LD   %IW0
+ST   INP1.xInp
+LD   0
+ST   INP1.xIndex
+CAL  INP1
+LD   INP1.yInp
+ST   %IO0
+
+LD   %IW1
+ST   INP2.xInp
+LD   1
+ST   INP2.xIndex
+CAL  INP2
+LD   INP2.yInp
+ST   %IO1
+
+LD   %IW4
+ST   INP3.xInp
+LD   2
+ST   INP3.xIndex
+CAL  INP3
+LD   INP3.yInp
+ST   %IO4
+
+LD   %IW5
+ST   INP4.xInp
+LD   3
+ST   INP4.xIndex
+CAL  INP4
+LD   INP4.yInp
+ST   %IO5
+
+BypassInp1:
+END_FUNCTION
+
+******************************************************************************
+FUNCTION OUT_TEST
+******************************************************************************
+
+LD   %QW2
+ST   OUT1.xOut
+LD   0
+ST   OUT1.xIndex
+CAL  OUT1
+LD   OUT1.yOut
+ST   %QW2
+
+LD   %QW3
+ST   OUT2.xOut
+LD   1
+ST   OUT2.xIndex
+CAL  OUT2
+LD   OUT2.yOut
+ST   %IO3
+
+LD   %QW6
+ST   OUT3.xOut
+LD   2
+ST   OUT3.xIndex
+CAL  OUT3
+LD   OUT3.yOut
+ST   %QW6
+
+LD   %QW7
+ST   OUT4.xOut
+LD   3
+ST   OUT4.xIndex
+CAL  OUT4
+LD   OUT4.yOut
+ST   %QW7
+
+
+END_FUNCTION

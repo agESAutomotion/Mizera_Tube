@@ -1,0 +1,10 @@
+[PROMPT]
+
+KEY_USRDLL          =用户通信
+DL_ENABLE           =通信方式选择 [0-2]
+DL_PORT             =通信端口
+
+[HELP]
+DL_ENABLE           =Enable and type of user DLL: 0 - Disabled, 1 - DLL using a serial port or no communication DLL, 2 - DLL using a TCP port. See Kvara.ini for complete PATH
+DL_PORT             =Communications port used by user DLL. Enter 0 for no communication port. Enter the # of COM for serial port or the # of TCP static port (1-4095)
+

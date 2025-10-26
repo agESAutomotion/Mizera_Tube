@@ -1,0 +1,32 @@
+:
+;// Basic VRTC gateway variables and constants
+
+DBL toolVidx = VRTCIDX(3,0)     ;//this example may refer to these to access
+DBL surfaceVidx = VRTCIDX(3,1)  ;//some parameters, such as mandatory pos range
+
+;//See example.plc for complete registers mapping
+;//uvh{Tool|Surface}Command[0] mask
+DBL c_reset             = 0x00000001
+DBL c_simul             = 0x00000002
+DBL c_move_to_target    = 0x00000004
+DBL c_reset_pos_int     = 0x00000008
+DBL c_pos_lim_disab     = 0x00000010
+DBL c_de_overlap        = 0x00000020
+DBL c_error_amp         = 0x00000040
+DBL c_toggle            = 0x80000000
+;//uvh{Tool|Surface}Command[_]
+DBL cr_SimOffsetSet = 1
+DBL cr_Setpoint     = 2
+DBL cr_VectorSelect = 3
+;//uvh{Tool|Surface}Status[0] mask
+;//uvh{Tool|Surface}Status[0].2     SignalLock
+;//uvh{Tool|Surface}Status[0].31    ToggleAck
+;//uvh{Tool|Surface}Status[_]
+DBL sr_SimOffsetCur = 1
+DBL sr_FltQ         = 2
+
+DBL tcr = 0
+DBL scr = 0
+
+
+RET

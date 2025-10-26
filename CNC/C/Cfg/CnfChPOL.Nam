@@ -1,0 +1,74 @@
+[PROMPT]
+KEY_CONFCHAN  =Kanal kofiguracji
+
+CC_CHNAME     =Nazwa kanalu
+CC_NUMBOARD   =Numer plyty przetwarzajacej 
+CC_MASKAXES   =Maska kanalu osi
+CC_NX         =Numer osi X 
+CC_NY         =Numer osi Y
+CC_NZ         =Numer osi Z
+CC_NU         =Numer osi U
+CC_NV         =Numer osi V
+CC_NW         =Numer osi W 
+CC_NA         =Numer osi A
+CC_NB         =Numer osi B
+CC_NC         =Numer osi C
+CC_NM         =Numer osi S (wrzeciono 1)
+CC_S2         =Numer osi S2 (wrzeciono 2)
+CC_S3         =Numer osi S3 (wrzeciono 3)
+CC_MAINPROC   =Numer glównego procesu
+CC_AUXPROC    =Numer pomocniczego procesu
+CC_PRIORITY   =Priorytet kanalu
+CC_TWIBASE    =Podstawowa tablica indeksu wrzeciona
+CC_TWIAMOUNT  =Liczba wrzecion
+CC_THDBASE    =Podstawowa tablica indeksów uchwytów nrzêdzi
+CC_THDAMOUNT  =Liczba uchwytów nrzêdzi
+CC_CEDBASE    =Podstwowy indeks tablicy narzêdzi
+CC_CEDAMOUNT  =Liczba narzêdzi
+CC_VARSPERLEVEL=Zablokowanie zmiennej podprocedury
+CC_CHANPTKB   =Przejscie przez zakres pamiêci
+CC_PTMONLINESC=Pass-thru buffered lines (client browser)
+CC_PTMONLINESS=Pass-thru buffered lines (server browser)
+CC_CHANRETRKB =Odtworzenie pamiêci
+CC_MAG        =Typ magazynu narzêdzi
+CC_RV         =Nr magazynu narzêdzi
+CC_TABBASE    =Tables table base index
+CC_TABAMOUNT  =Number of tables
+CC_GORGBASE   =Global origins table base index
+CC_GORGAMOUNT =Number of global origins
+CC_SOSID      =Slave extension index (0=none)
+CC_SOSQUEUE   =Queue size [elements]
+
+[HELP]
+
+CC_CHNAME     =Ciag maksimum 8 znaków nazwy kanalu
+CC_NUMBOARD   =Numer plyty przetwarzajacej:numer plyty wykonujacej opercje logiczne kanalu, stosowany tylko dla rozdzielonych systemów.  
+CC_MASKAXES   =Maska kanalu osi: Tworzy grupê osi sterowana przez kanal 
+CC_NX         =Numer osi X: numer procesu osi X
+CC_NY         =Numer osi Y: numer procesu osi Y 
+CC_NZ         =Numer osi Z: numer procesu osi Z
+CC_NU         =Numer osi U: numer procesu osi U
+CC_NV         =Numer osi V: numer procesu osi V
+CC_NW         =Numer osi W: numer procesu osi W 
+CC_NA         =Numer osi A: numer procesu osi A
+CC_NB         =Numer osi B: numer procesu osi B 
+CC_NC         =Numer osi C: numer procesu osi C
+CC_NM         =Numer osi S (wrzeciono): numer procesu osi wrzeciona
+CC_MAINPROC   =Numer glównego procesu: numer procesu odpowiedzialnego za sterowanie interpolacja kanalu 
+CC_AUXPROC    =Numer pomocniczego procesu:  uzytego przez PLC Function Blocks
+CC_PRIORITY   =Priorytet kanalu. Im nizsza wartosc tym wyzszy priorytet.  Wartosci   (0-1-2-3) sa wykonywne z nadanym priorytetem priorytet (10) nie jest realizowany
+CC_TWIBASE    =Indeks pierwszego wrzeciona uzytego przez kanal w tablicy zawierajacej wszystkie wrzeciona
+CC_TWIAMOUNT  =Liczba wrzecion uzytych przez kanal
+CC_THDBASE    =Indeks pierwszego uchwytu narzêdzi uzytego przez kanal w tablicy uchwytów 
+CC_THDAMOUNT  =Liczba uchwytów nrzêdzi uzytych przez kanal
+CC_CEDBASE    =Indeks pierwszego narzêdzia uzytego przez kanal w tablicy zawierajacej wszystkie narzêdzia
+CC_CEDAMOUNT  =Liczba narzêdzi uzytych przez kanal
+CC_VARSPERLEVEL=Lokalna zmienna dla kazdego poziomu podprocedury
+CC_CHANPTKB   =Przejscie przez zakres pamiêci (KB).  Patrz równiez podobny parametr konfiguracji CN, który nalezy uaktualnic po zmianie.
+CC_CHANRETRKB =Odtworzenie pamiêci (KB). Patrz równiez podobny parametr konfiguracji CN, który moze wymagac uaktualnic po zmianie.
+CC_MAG        =Typ magazynu narzêdzi: 0) brak magazynu 1) rewolwerowy
+CC_RV         =Indeks magazynu narzêdzi :  wartoc od 1 do pozycji rewolweru 
+CC_TABBASE    =Tables table base index
+CC_TABAMOUNT  =Number of tables
+CC_GORGBASE   =Global origins table base index
+CC_GORGAMOUNT =Number of global origins

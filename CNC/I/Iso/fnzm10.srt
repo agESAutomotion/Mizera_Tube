@@ -1,0 +1,10 @@
+: 
+; Sospendi ciclo
+
+SPC 30099,1  ;Preprocessor sync
+M10
+SYN
+$
+SPC 30099,1  ;Preprocessor sync
+
+RET

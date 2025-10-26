@@ -1,0 +1,173 @@
+*****************************************************************************************************
+* Used for One Axes Anti-collision with Support(Obstercal) Control(Duo)
+*
+* The function is based on AO_DYN_TARGET 92
+*
+* #funcdec "AntiAtoS.plc"
+* ANTIAXIS:              ANTI_AXIS_SUPPORT;
+*
+* CAL ANTIAXIS(xEnable:=,xAx_Num:=,xObs_Qta:=,xDisSafe:=,xReset:=)
+* LD  ANTIAXIS.yHoldMov *---> Pul_Stop, .xJogMinus , .xJogPlus, xHoldMoving
+*****************************************************************************************************
+
+FUNCTION_BLOCK  ANTI_AXIS_SUPPORT
+*****************************************************************************************************
+* The Function Block to prevent two axes collide
+*****************************************************************************************************
+
+VAR_INPUT
+xEnable:           BOOL;          * Enable
+xReset:            BOOL;          * To Reset the Anticolision Alarm
+xAx_Num:           DWORD;         * Axis ID
+xObs_Qta:          DWORD;         * [um]The Obstercal Abs Quota(one side, if two side using two FB)
+xDisSafe:          DWORD;         * [um]Safe Distance Between Two Heads(Exact Speed 0)
+xColiDir:          DWORD;         * Colisiion direction 0 = BOTH, 1 = POS, 2 = NEG
+END_VAR
+
+VAR_OUTPUT
+yHoldMov:          BOOL;          * Hold Ax and STOP at calculated distance
+END_VAR
+
+VAR
+ZeroSpeed:         BOOL; 
+Ax_Plus:           BOOL;
+Ax_Minus:          BOOL;
+ColisionDirection: BOOL;
+Ax_Ferma:          BOOL;
+HoldPos:           BOOL;
+HoldNeg:           BOOL;
+HoldMov:           BOOL;
+OnlyMovPos:        BOOL;
+OnlyMovNeg:        BOOL;
+BothDir:           BOOL;
+Ax_dcc:           DWORD;
+Ax_speed:         DWORD;
+Ax_Quota:         DWORD;
+Ax_AvaQta:        DWORD;
+END_VAR
+
+*****************************************************************************************************
+PATH     %ax[xAx_Num]
+
+LD       %ra24                                    
+ST       Ax_Quota               *um
+
+LD       %pa2
+ST       Ax_dcc                 *mm/s2
+
+LD       %ra3.2                 * ra3.2  Direzione moto asse avanti
+OR       %ra0.8                 * ra0.8 Comando avanti
+AND      %ra3.13                * ra3.13  Ordine di moto
+AND      %cn0.rc8.0
+OR( 
+LD       %ra0.8                 * ra0.8 Comando avanti
+ANDN     %cn0.rc8.0
+)
+ST       Ax_Plus
+
+LDN      %ra3.2                 * ra3.2  Direzione moto asse avanti
+OR       %ra0.9                 * ra0.9 Comando indietro
+AND      %ra3.13                * ra3.13  Ordine di moto
+AND      %cn0.rc8.0
+OR(
+LD       %ra0.9                 * ra0.9 Comando indietro
+ANDN     %cn0.rc8.0
+)
+ST       Ax_Minus
+
+LD       %ra3.0
+ST       Ax_Ferma
+
+LD       %ra92
+ST       Ax_AvaQta              *um
+
+LD       xReset
+OR       %PLCFLAGS.8
+JMPCN    INITOUTPUT
+LD       0
+ST       HoldMov
+ST       yHoldMov
+INITOUTPUT:
+
+LD       xColiDir
+EQ       0
+ST       BothDir
+
+LD       xColiDir
+EQ       1
+ST       OnlyMovPos
+
+LD       xColiDir
+EQ       2
+ST       OnlyMovNeg
+
+*****************************************************************************************************
+* Only when moving towards each other activates it
+*****************************************************************************************************
+LD       xObs_Qta
+GT       Ax_AvaQta             *Ax_Quota
+AND      Ax_Plus
+ANDN     OnlyMovNeg
+OR(
+LD       xObs_Qta
+LT       Ax_AvaQta             *Ax_Quota     
+AND      Ax_Minus
+ANDN     OnlyMovPos
+)
+ST       ColisionDirection
+
+LD       ColisionDirection
+AND      xEnable
+AND(
+LD       xDisSafe
+GT       0
+)
+ANDN     yHoldMov
+JMPCN    ANTICOLISIONCAL
+
+*****************************************************************************************************
+* Calculate the Position to apply hold axis and stop
+*****************************************************************************************************
+LD       Ax_AvaQta
+SUB      xDisSafe
+LT       xObs_Qta
+AND      Ax_Minus
+ST       HoldNeg
+
+LD       Ax_AvaQta
+ADD      xDisSafe
+GT       xObs_Qta
+AND      Ax_Plus
+ST       HoldPos
+
+LD       HoldNeg
+OR       HoldPos    
+ST       HoldMov
+
+ANTICOLISIONCAL:
+
+*****************************************************************************************************
+* FB Outputs Section
+*****************************************************************************************************
+LD       HoldMov
+AND      ColisionDirection
+ANDN     xReset
+S        yHoldMov
+
+LD       xReset
+OR(
+LD       HoldPos
+AND      Ax_Minus
+ANDN     %cn0.rc8.0
+)
+OR(
+LD       HoldNeg
+AND      Ax_Plus
+ANDN     %cn0.rc8.0
+)
+ORN      xEnable
+R        HoldMov
+R        yHoldMov
+
+*****************************************************************************************************
+END_FUNCTION_BLOCK

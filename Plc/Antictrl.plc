@@ -1,0 +1,277 @@
+*************************************************************************************
+* Used for 2 Axes Anti-collision Control(Duo)
+*
+* The function is based on AO_DYN_TARGET 92
+*
+* CAL ANTIAXIS(xAx1_Fst:=,xReset:=,xAx1_Num:=,xAx2_Num:=,xDisSafe:=)
+* LD  ANTIAXIS.yHoldMov ---> Pul_Stop, .xJogMinus , .xJogPlus, xHoldMoving
+* LD  ANTIAXIS.yDisSafeCal
+*************************************************************************************
+
+FUNCTION_BLOCK  ANTI_AXIS
+*************************************************************************************
+* The Function Block to prevent two axes collide
+*************************************************************************************
+
+VAR_INPUT
+xAx1_Fst:          BOOL;          * TRUE when Ax1 is more near to the origin
+xReset:            BOOL;          * To Reset the Anticolision Alarm
+xAx1_Num:          DWORD;         * Axis 1 ID
+xAx2_Num:          DWORD;         * Axis 2 ID
+xDisSafe:          DWORD;         * [um]Safe Distance Between Two Heads(Exact Speed 0)
+END_VAR
+
+VAR_OUTPUT
+yHoldMov:          BOOL;          * Hold Ax and STOP at calculated distance
+yDisSafeCal:       DWORD;         * [um]The distance start to stop(to show gui or debug)
+END_VAR
+
+VAR
+PowerOn:           BOOL;
+DangerZone:        BOOL;
+ZeroSpeed:         BOOL; 
+CaseToEach1:       BOOL;
+CaseToEach2:       BOOL;
+Ax1_Go_Cn:          BOOL;
+Ax2_Go_Cn:          BOOL;
+Ax1_Plus:          BOOL;
+Ax1_Minus:         BOOL;
+Ax2_Plus:          BOOL;
+Ax2_Minus:         BOOL;
+HoldMov:           BOOL;
+InPosLimit:        BOOL;
+JogSafeDirection:  BOOL;
+DisTDelay:         DWORD;
+DisSafeCal:        DWORD;
+DeltaDis1:         DWORD;
+DeltaDis2:         DWORD;
+Ax1_dcc:           DWORD;
+Ax2_dcc:           DWORD;
+Ax1_speed:         DWORD;
+Ax2_speed:         DWORD;
+Ax1_Quota:         DWORD;
+Ax2_Quota:         DWORD; 
+Ax1_AvaQta:        DWORD;
+Ax2_AvaQta:        DWORD;
+Ax1_MinQta:        DWORD;
+Ax2_MinQta:        DWORD;
+Ax1_MaxQta:        DWORD;
+Ax2_MaxQta:        DWORD;
+END_VAR
+
+*************************************************************************************
+PATH     %ax[xAx1_Num]
+
+LD       %ra3.10
+ST       PowerOn
+
+LD       %ra4                    *             
+ST       Ax1_Quota       
+        
+LD       %ra3.13               * ra3.13  Ordine di moto
+*AND      %ra3.0		
+ST       Ax1_Go_Cn		
+		
+LD       %ra5
+DIV      1000          
+ST       Ax1_speed             *um/s
+
+LD       %pa2
+ST       Ax1_dcc               *mm/s2
+
+LD       %ra3.2                 * ra3.2  Direzione moto asse avanti
+OR       %ra0.8                 * ra0.8 Comando avanti
+AND      %ra3.13                * ra3.13  Ordine di moto
+AND      %cn0.rc8.0
+OR( 
+LD       %ra0.8                 * ra0.8 Comando avanti
+AND      %ra3.13                * ra3.13  Ordine di moto
+ANDN     %cn0.rc8.0
+)
+ST       Ax1_Plus
+
+LDN      %ra3.2                 * ra3.2  Direzione moto asse avanti
+OR       %ra0.9                 * ra0.9 Comando indietro
+AND      %ra3.13                * ra3.13  Ordine di moto
+AND      %cn0.rc8.0
+OR(
+LD       %ra0.9                 * ra0.9 Comando indietro
+AND      %ra3.13                * ra3.13  Ordine di moto
+ANDN     %cn0.rc8.0
+)
+ST       Ax1_Minus
+
+LD       %pa21
+ST       Ax1_MinQta
+
+LD       %pa22
+ST       Ax1_MaxQta
+
+LD       %ra92
+ST       Ax1_AvaQta
+
+PATH     %ax[xAx2_Num]
+
+LD       %ra4                    
+ST       Ax2_Quota
+
+LD       %ra3.13               * ra3.13  Ordine di moto
+*AND      %ra3.0		
+ST       Ax2_Go_Cn	               
+
+LD       %ra5                    *um/s
+DIV      1000 
+ST       Ax2_speed               *mm/s
+
+LD       %pa2
+ST       Ax2_dcc                 *mm/s2
+
+LD       %ra3.2                 * ra3.2  Direzione moto asse avanti
+OR       %ra0.8                 * ra0.8 Comando avanti
+AND      %ra3.13                * ra3.13  Ordine di moto
+AND      %cn0.rc8.0
+OR( 
+LD       %ra0.8                 * ra0.8 Comando avanti
+AND      %ra3.13                * ra3.13  Ordine di moto
+ANDN     %cn0.rc8.0
+)
+ST       Ax2_Plus
+
+LDN      %ra3.2                 * ra3.2  Direzione moto asse avanti
+OR       %ra0.9                 * ra0.9 Comando indietro
+AND      %ra3.13                * ra3.13  Ordine di moto
+AND      %cn0.rc8.0
+OR(
+LD       %ra0.9                 * ra0.9 Comando indietro
+AND      %ra3.13                * ra3.13  Ordine di moto
+ANDN     %cn0.rc8.0
+)
+ST       Ax2_Minus
+
+LD       %pa21
+ST       Ax2_MinQta
+
+LD       %pa22
+ST       Ax2_MaxQta
+
+LD       %ra92
+ST       Ax2_AvaQta
+
+LD       Ax1_Quota
+SUB      Ax2_Quota
+ABS
+LT       xDisSafe
+ST       DangerZone
+
+LD       xReset
+ANDN     DangerZone
+OR       %PLCFLAGS.8
+ORN      PowerOn
+JMPCN    INITOUTPUT
+LD       xDisSafe
+ST       DisSafeCal
+ST       yDisSafeCal
+LD       %PLCFLAGS.0
+ST       HoldMov
+ST       yHoldMov
+INITOUTPUT:
+
+*************************************************************************************
+* Only when the two axis moving towards each other activates it
+*************************************************************************************
+LD       Ax1_speed
+EQ       0
+AND(
+LD       Ax2_speed
+EQ       0
+) 
+ST       ZeroSpeed    
+
+LD       Ax1_speed
+GE       0
+AND(
+LD       Ax2_speed
+LE       0
+)  
+AND      xAx1_Fst  
+ST       CaseToEach1
+  
+LD       Ax1_speed
+LE       0
+AND(
+LD       Ax2_speed
+GE       0
+)  
+ANDN     xAx1_Fst  
+ST       CaseToEach2
+
+LD       CaseToEach1
+OR       CaseToEach2
+*ANDN     ZeroSpeed
+OR(
+LD       Ax1_Minus
+AND      Ax2_Minus
+)
+OR(
+LD       Ax1_Plus
+AND      Ax2_Plus
+)  
+AND(
+LD       xDisSafe
+GT       0
+)
+ANDN     yHoldMov
+JMPCN    ANTICOLISIONCAL
+
+*************************************************************************************
+* Calculate the Position to apply hold axis and stop
+* Only Consider the case of consistent speed(Jog Mode)
+*************************************************************************************
+LD       Ax1_AvaQta
+SUB      Ax2_AvaQta
+ABS
+LE       DisSafeCal       
+OR       DangerZone
+AND      PowerOn
+ST       HoldMov
+
+ANTICOLISIONCAL:
+
+LD       Ax1_Minus
+OR       Ax2_Plus
+AND      xAx1_Fst
+OR(
+LD       Ax2_Minus
+OR       Ax1_Plus
+ANDN     xAx1_Fst
+) 
+ANDN(
+LD       Ax1_Minus
+AND      Ax2_Minus
+)
+ANDN(
+LD       Ax1_Plus
+AND      Ax2_Plus
+)    
+ST       JogSafeDirection
+
+*************************************************************************************
+* FB Outputs Section
+*************************************************************************************
+LD       DisSafeCal
+ST       yDisSafeCal
+
+LD       HoldMov
+ANDN     JogSafeDirection
+S        yHoldMov
+
+LD       JogSafeDirection
+ANDN(
+LD       Ax1_Go_Cn
+AND      Ax2_Go_Cn
+)
+R        HoldMov
+R        yHoldMov
+
+*************************************************************************************
+END_FUNCTION_BLOCK

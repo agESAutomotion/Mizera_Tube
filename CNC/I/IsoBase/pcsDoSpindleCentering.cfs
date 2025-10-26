@@ -1,0 +1,102 @@
+ : pcsDoSpindleCentering
+;// pipe calibration cycles:
+;// adjusts tube spindle centering using face facing upwards, determined by
+;// pcsEligibleFace.
+;// Spindle centering error in the polygon reference frame is returned.
+;// INPUT:
+;//     pcSpindleZ
+;//     pcSpindleW
+;//     pcCommonAngle
+;//     pcFaces[2]
+;//     pcVLeads[2]
+;//     pcIsEdge[2]
+;// OUTPUT:
+;//     pcDeltaS[2]
+
+;// See pcsEvalFace
+;// INPUT:
+DBL pcFaceToEval
+;// OUTPUT:
+DBL pcAngleBC
+DBL pcLengthBC
+DBL pcPb[2], pcPc[2]
+DBL pcPbr, pcPcr
+DBL pcLb, pcLc
+DBL pcSignB, pcSignC
+;// See pcuSlidingProbe
+;// INPUT:
+DBL pcC
+DBL pcV[3], pcH[3]
+DBL pcW
+;// OUTPUT:
+DBL pcAcquired[3]
+
+DBL sn, cs
+DBL xs[2], ys[2]
+DBL thxs[2], thys[2]
+DBL dx, dy
+
+DBL i
+
+;// Spindle code
+sn = SIN(pcCommonAngle)
+cs = COS(pcCommonAngle)
+
+FOR i = 0 TO 1
+    IF (pcIsEdge[i]) THEN
+        pcFaceToEval = pcFaces[i]
+        JSR "pcsEvalFace.cfs"
+
+        IF (i == 0) THEN
+            pcV[0] = cs * (+pcVLeads[i]) + pcPb[0]
+            pcV[1] = sn * (+pcVLeads[i]) + pcPb[1]
+            pcH[0] = cs * (+pcLb) + pcPb[0]
+            pcH[1] = sn * (+pcLb) + pcPb[1]
+        ELSE
+            pcV[0] = cs * (-pcVLeads[i]) + pcPc[0]
+            pcV[1] = sn * (-pcVLeads[i]) + pcPc[1]
+            pcH[0] = cs * (-pcLc) + pcPc[0]
+            pcH[1] = sn * (-pcLc) + pcPc[1]
+        ENDIF
+        pcV[2] = pcSpindleZ
+        pcH[2] = pcSpindleZ
+        pcW = pcSpindleW
+        pcC = -(pcCommonAngle - 180.0)
+
+        thxs[i] = pcH[0]
+        thys[i] = pcH[1]
+
+        JSR "pcuSlidingProbe.cfs"
+
+        xs[i] = pcAcquired[0]
+        ys[i] = pcAcquired[1]
+    ENDIF
+ENDFOR
+
+IF ((!pcIsEdge[0]) && (!pcIsEdge[1])) THEN
+    ERROR(55) ;//internal error
+ELSEIF ((pcIsEdge[0]) && (!pcIsEdge[1])) THEN
+    xs[1] = xs[0]
+    ys[1] = ys[0]
+    thxs[1] = thxs[0]
+    thys[1] = thys[0]
+ELSEIF ((!pcIsEdge[0]) && (pcIsEdge[1])) THEN
+    xs[0] = xs[1]
+    ys[0] = ys[1]
+    thxs[0] = thxs[1]
+    thys[0] = thys[1]
+ENDIF
+
+;// Rotate 180°
+sn = -sn
+cs = -cs
+
+;//           T   (s0 - ths0) + (s1 - ths1)
+;// deltaS = R  * -------------------------
+;//                           2
+dx = ((xs[0] - thxs[0]) + (xs[1] - thxs[1])) / 2
+dy = ((ys[0] - thys[0]) + (ys[1] - thys[1])) / 2
+pcDeltaS[0] = +cs * dx +sn * dy
+pcDeltaS[1] = -sn * dx +cs * dy
+
+RET

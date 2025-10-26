@@ -1,0 +1,84 @@
+[PROMPT]
+KEY_UT        =Daten Werkzeuge (ver. 1.5)
+
+UT_TYPE    =Typ werkzeug
+DU_DESC    =Description
+
+PT_LUNGZ   =Z-L‰nge Werkzeug[mm]
+PT_USLUNGZ =Verschleiﬂ Z-L‰nge[mm]
+PT_PRES    =Preset Werkzeug
+PT_VITA    =Standzeit Werkzeug
+PT_THDLUNGZ =THD Z-L‰nge Werkzeug[mm]
+
+FC_LUNGZ   =Z-L‰nge Werkzeug[mm]
+FC_RAD     =Radius Werkzeug[mm]
+FC_PRES    =Preset Werkzeug
+FC_VITA    =Standzeit Werkzeug
+FC_USLUNGZ =Verschleiﬂ Z-L‰nge[mm]
+FC_USRAD   =Verschleiﬂ Radius[mm]
+FC_THDLUNGZ =THD Z-L‰nge Werkzeug[mm]
+
+FA_LUNGZ   =Z-L‰nge Werkzeug[mm]
+FA_LUNGX   =X-L‰nge Werkzeug[mm]
+FA_RAD     =Radius Werkzeug[mm]
+FA_PRES    =Preset Werkzeug
+FA_VITA    =Standzeit Werkzeug
+FA_USLUNGZ =Verschleiﬂ Z-L‰nge[mm]
+FA_USLUNGX =Verschleiﬂ X-L‰nge[mm]
+FA_USRAD   =Verschleiﬂ Radius[mm]
+FA_THDLUNGZ =THD Z-L‰nge Werkzeug[mm]
+FA_THDLUNGX =THD X-L‰nge Werkzeug[mm]
+
+TN_LUNGZ   =Z-L‰nge Werkzeug[mm]
+TN_LUNGX   =X-L‰nge Werkzeug[mm]
+TN_RAD     =Radius Werkzeug[mm]
+TN_ANG_A   =Clearance angle A
+TN_ANG_B   =Clearance angle B
+TN_PRES    =Preset Werkzeug
+TN_VITA    =Standzeit Werkzeug
+TN_USLUNGZ =Verschleiﬂ Z-L‰nge[mm]
+TN_USLUNGX =Verschleiﬂ X-L‰nge[mm]
+TN_USRAD   =Verschleiﬂ Radius[mm]
+TN_THDLUNGZ =THD Z-L‰nge Werkzeug[mm]
+TN_THDLUNGX =THD X-L‰nge Werkzeug[mm]
+TN_THDLUNGY =THD Y-L‰nge Werkzeug[mm]
+
+VITA_PREAL =Tool wearing out warning
+
+[HELP]
+UT_TYPE       =Typ Werkzeug: 1-Fingerfr‰ser 2-Winkelkopffr‰ser 3-Drehmaschine 4-Bohrer
+
+PT_LUNGZ   =Z-L‰nge Werkzeug: L‰nge des Werkzeugs in der ortogonalen Richtung zur gew‰hlten Ebene
+PT_USLUNGZ =Verschleiﬂ Z-L‰nge
+PT_PRES    =Preset Werkzeug
+PT_VITA    =Standzeit Werkzeug
+
+FC_LUNGZ   =Z-L‰nge Werkzeug: L‰nge des Werkzeugs in der ortogonalen Richtung zur gew‰hlten Ebene
+FC_RAD     =Radius Werkzeug: Radius des Werkzeugs, gestattet den tats‰chlichen Platzbedarf des Werkzeugs w‰hrend der Fertigung zu ber¸cksichtigen
+FC_PRES    =Preset Werkzeug
+FC_VITA    =Standzeit Werkzeug
+FC_USLUNGZ =Verschleiﬂ Z-L‰nge
+FC_USRAD   =Verschleiﬂ Radius
+
+FA_LUNGZ   =Z-L‰nge Werkzeug: L‰nge des Werkzeugs in der ortogonalen Richtung zur gew‰hlten Ebene
+FA_LUNGX   =X-L‰nge Werkzeug: Offset des Werkzeugs auf der Fertigungsebene
+FA_RAD     =Radius Werkzeug:Radius des Werkzeugs, gestattet den tats‰chlichen Platzbedarf des Werkzeugs w‰hrend der Fertigung zu ber¸cksichtigen
+FA_PRES    =Preset Werkzeug
+FA_VITA    =Standzeit Werkzeug
+FA_USLUNGZ =Verschleiﬂ Z-L‰nge
+FA_USLUNGX =Verschleiﬂ X-L‰nge
+FA_USRAD   =Verschleiﬂ Radius
+
+TN_LUNGZ   =Z-L‰nge Werkzeug: L‰nge des Werkzeugs in der ortogonalen Richtung zur gew‰hlten Ebene
+TN_LUNGX   =X-L‰nge Werkzeug: Offset des Werkzeugs auf der Fertigungsebene
+TN_RAD     =Radius Werkzeug: Radius des Werkzeugs, gestattet den tats‰chlichen Platzbedarf des Werkzeugs w‰hrend der Fertigung zu ber¸cksichtigen
+TN_ANG_A   =Clearance angle A
+TN_ANG_B   =Clearance angle B
+TN_PRES    =Preset
+TN_VITA    =Standzeit Werkzeug
+TN_USLUNGZ =Verschleiﬂ Z-L‰nge
+TN_USLUNGX =Verschleiﬂ X-L‰nge
+TN_USRAD   =Verschleiﬂ Radius
+
+VITA_PREAL =Tool wearing out warning
+

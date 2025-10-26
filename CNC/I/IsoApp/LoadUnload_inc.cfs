@@ -1,0 +1,87 @@
+: LoadUnload_inc
+
+; Loader Parameters
+DBL tube_len
+DBL SupOffset = 0
+DBL CatchLoadOft = %LOADER.values10 / 1000;
+                
+; Unload Parameters
+DBL DisUnloadCon_V  = %UNLOADER.values1.9;  
+DBL TubeLengthInMach = %UNLOADER.values0 / 1000.0;
+DBL TubeMinimumLength = %UNLOADER.values7 / 1000.0;                  ; minimum length
+DBL MaxTubeLenghtDisc = %UNLOADER.values8 / 1000.0;                  ; maximum length
+
+DBL UnloadShortQta = %ax30.pa21 / 1000.0;                            ; The minmum of X for short unloading    
+DBL SawSupWidth = ABS(%R24) 
+
+; 3 Spindles 
+DBL FetchingTail = 1 
+DBL TailLen[2];
+DBL FetchCnt = 3
+DBL LstIsHead = 0
+DBL M_4TubeLen = 0
+DBL LstBreakPoint = 0
+DBL TubeCaliM4On = 0
+
+DBL OffSetSClamp = %UNLOADER.values24 / 1000.0;
+DBL UnLoadFlapOnOffTime = %UNLOADER.values10 / 1000;
+DBL MinPieceUnload = %UNLOADER.values28 / 1000;
+DBL ChuckOpenCloseTime = %UNLOADER.values29 / 1000;
+DBL ChuckOpenCloseTimeMain = %UNLOADER.values25 / 1000;
+DBL Auto_X_M2_Qta = %CostK15/1000 + 10
+DBL EnSingleSpindle = %UNLOADER.values1.17
+
+;============================================================================
+; Unloader Following Supports
+;============================================================================
+DBL OpEnUnloadFollower = %UNLOADER.values1.1;
+DBL L_COM_PrkPos = %UNLOADER.values5 / 1000;
+DBL UnSupOffset = %UNLOADER.values6
+DBL NearParkOffset = 180000 ;180mm
+
+;============================================================================
+; General Supports
+;============================================================================
+DBL iter=1 
+DBL ldPos[10], uldPos[10]
+DBL ists_5cn[10], ists_7cn[10], ists_8cn[10], ists_9cn[10] 
+
+; Loader Supports Info (CN5)
+; SUPPORT_1_Quota AT %SUPPORTS_SYSTEM.values0;
+; SUPPORT_2_Quota AT %SUPPORTS_SYSTEM.values1;
+; SUPPORT_3_Quota AT %SUPPORTS_SYSTEM.values2;
+; SUPPORT_4_Quota AT %SUPPORTS_SYSTEM.values3;
+; SUPPORT_5_Quota AT %SUPPORTS_SYSTEM.values4;
+
+; Unloader Supports Info (CN8)
+; U_Posit_Z1_Down AT %UNLOADER.values19;
+; U_Posit_Z2_Down AT %UNLOADER.values20;
+; U_Posit_Z3_Down AT %UNLOADER.values21;
+; U_Posit_Z4_Down AT %UNLOADER.values22;
+; U_Posit_Z5_Down AT %UNLOADER.values23;
+
+WHILE( iter<=5 )
+     ists_5cn[iter] = (%cn5.cc1) & SHL(1,iter)
+	 ists_8cn[iter] = (%cn8.cc1) & SHL(1,iter)
+	 ists_9cn[iter] = (%cn9.cc1) & SHL(1,iter)
+	 ldPos[iter] = IFEXP( ists_5cn[iter], %SUPPORTS_SYSTEM.values[iter-1] / 1000, -99999999 ) 
+	 uldPos[iter] = IFEXP( ists_8cn[iter], %UNLOADER.values[iter+18] / 1000, -99999999 )  
+	 iter = iter + 1
+ENDW
+
+iter=2
+WHILE( iter <= 5 )
+	 ists_7cn[iter] = (%cn7.cc1) & SHL(1,iter)
+	 iter = iter + 1
+ENDW
+
+;//CyComOftAx
+DBL lifter[10], ulifter[10]
+
+;//Mid Quota Between Two Unloaders
+DBL Mid_L1_L2 = ( uldPos[1] + uldPos[2] ) / 2;
+DBL Mid_L2_L3 = ( uldPos[2] + uldPos[3] ) / 2;
+DBL Mid_L3_L4 = ( uldPos[3] + uldPos[4] ) / 2;
+DBL Mid_L4_L5 = ( uldPos[4] + uldPos[5] ) / 2;
+
+RET

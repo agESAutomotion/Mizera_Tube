@@ -1,0 +1,49 @@
+:
+;//
+;// Seleziona Testa Y4Z4
+;//
+
+DBL fc_x_minus3 = %ax[AXIDX(3,X)].pa[22] / 1000.0  ; 10
+DBL fc_y_minus3 = %ax[AXIDX(3,Y)].pa[21] / 1000.0  ; 10
+
+;//Notifica al PLC
+;M(_xxx_seleziona_testa_Y4Z4_xxx_)
+
+;//
+;// Aggancia testa Y4Z4, parcheggia testa Y3Z3
+;//
+
+;//Sgancia tutti gli assi
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+G4005 S(AXIDX(4,X))
+G4005 S(AXIDX(4,Y))
+;G4005 S(AXIDX(4,Z))
+G4099
+
+;//Aggancia assi Y3Z3 acquisendo le quote
+G153
+G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+G152
+G4099
+;//Parcheggia
+G153 G0 Z(trav_safe_z)
+G153 G0 X(fc_x_minus3) Y(fc_y_minus3)
+;//Sgancia
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+G4099
+
+;//Aggancia assi Y4Z4 acquisendo le quote
+G153
+G4010 M(AXIDX(X)) S(AXIDX(4,X)) I1
+G4010 M(AXIDX(Y)) S(AXIDX(4,Y)) I1
+;G4010 M(AXIDX(Z)) S(AXIDX(4,Z)) I1
+G152
+G4099
+
+RET

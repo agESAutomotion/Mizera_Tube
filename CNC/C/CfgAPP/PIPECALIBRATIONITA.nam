@@ -1,0 +1,48 @@
+
+[KEYS]
+TITLE=Calibrazione TUBO
+TXT8=Dati
+
+[PROMPT]
+KEY_NODE=Node
+PIPECALIBRATION=Pipe Calibration
+GroupBox4=Selezione tipo di calibrazione
+GroupBox1=Calibrazione MANDRINO
+GroupBox2=Dati generali
+GroupBox=Calibrazione TUBO
+Label=Tabella di Backup
+Label1=Max. err. vericale [mm]
+Label2=Max. err orizzontale [mm]
+Label3=Coordinata X [mm]
+Label4=Coordinata Y [mm]
+Label5=Bordo [mm]
+Label6=Lato minimo [mm]
+Label14=Quadrato
+Label15=Tondo
+Label16=Lunghezza [mm]
+Label18=Radius [mm]
+Label19=Side 1  [mm]
+Label20=Side 2  [mm]
+Label21=Round [mm]
+Label23=Side 1  [mm]
+Label24=Side 2  [mm]
+Label25=Round [mm]
+Label26=Tipo
+LIST0=Tubo,Mandrino,Mandrino + Tubo
+Button=START CALIBRAZIONE MANUALE
+Label7=Ultima dimensione tubo:
+Label8=X
+Label9=Y
+Label10=Z
+Label11=No Delete
+Label12=, need for par.dat
+Button1=RESET CALIBRAZIONE
+LabelPipe_qtaU=Coordinata U [mm]
+LabelPipe_qtaV=Coordinata V [mm]
+LabelCalibDisab=Disabilita calibrazione
+Label13=Lunghezza [mm]
+Label17=Lunghezza [mm]
+
+[STATUS]
+
+[HELP]

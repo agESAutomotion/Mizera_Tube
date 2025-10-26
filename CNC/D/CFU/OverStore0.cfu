@@ -1,0 +1,5 @@
+:OVERSTORE
+JSR "OverStoreSUB0.cfu"
+M[1]=41
+S[1]=0 M[1]=5
+RET

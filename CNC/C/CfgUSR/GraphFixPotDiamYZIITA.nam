@@ -1,0 +1,26 @@
+[KEYS]
+TITLE=Pressione - Diametro (Fisso)
+
+[PROMPT]
+KEY_NODE=nodo
+GRAPHFIXPOTDIAM=Mandrino Fisso S-P
+GroupBox2=Misura Lato Y
+GroupBox1=Misura Lato Z
+Plot2=Potenziometro - Lato Z
+L_TYPE_INTERP62=Schema
+LIST0=Lineare,Segmento,Smussatura
+L_TYPE_INTERP61=Punti
+Plot3=Potenziometro - Lato Y
+L_TYPE_INTERP63=Schema
+LIST0=Lineare,Segmento,Smussatura
+L_TYPE_INTERP64=Punti
+L_SPEED62=Pot [ADC]
+L_POWER61=Lato Z [mm]
+L_SPEED61=Pot [ADC]
+L_POWER62=Lato Y [mm]
+
+[STATUS]
+Plot2=Lato [mm],Potenziometro [ADC]
+Plot3=Lato [mm],Potenziometro [ADC]
+
+[HELP]

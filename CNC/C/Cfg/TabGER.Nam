@@ -1,0 +1,57 @@
+[PROMPT]
+KEY_TAB       =Tables Data
+
+TAB_T_KINELIST=0-Null, 3=Nutator
+TAB_T_KINE    =Type of kinematic mechanism
+TAB_T_DSC     =Description
+
+T_OART_X0       =X coordinate of first pivot
+T_OART_Y0       =Y coordinate of first pivot
+T_OART_Z0       =Z coordinate of first pivot
+T_OART_ORIENT   =Z axis table positioning
+T_OART_FRAME_C  =Reference frame Z (Y) rotation
+T_OART_FRAME_B  =Reference frame Y (P) rotation
+T_OART_FRAME_A  =Reference frame X (R) rotation
+T_OART_EC       =Rotation around  Z axis
+T_OART_ECREV    =Reversal towards rotation actuator
+T_OART_ECAX     =Actuator for rot.  around Z axis
+T_OART_X1       =X coordinate of second pivot
+T_OART_Y1       =Y coordinate of  second pivot
+T_OART_TILT     =Nutation angle
+T_OART_EB       =Rotation around Y axis
+T_OART_EBREV    =Reversal towards rotation actuator
+T_OART_EBAX     =Actuator for rot. around Y axis
+T_OART_X2       =X coordinate of workpiece holder
+T_OART_Y2       =Y coordinate of workpiece holder
+T_OART_Z2       =Z coordinate of workpiece holder
+T_OART_CAMBER   =Camber angle
+T_OART_FRAME2_C =Workpiece reference frame Z (Y) rotation
+T_OART_FRAME2_B =Workpiece reference frame Y (P) rotation
+T_OART_FRAME2_A =Workpiece reference frame X (R) rotation
+
+[HELP]
+TAB_T_KINE      =Type of kinematic mechanism
+
+T_OART_X0       =X coordinate of first pivot
+T_OART_Y0       =Y coordinate of first pivot
+T_OART_Z0       =Z coordinate of first pivot
+T_OART_ORIENT   =Z axis table positioning
+T_OART_FRAME_C  =Reference frame Z (Y) rotation
+T_OART_FRAME_B  =Reference frame Y (P) rotation
+T_OART_FRAME_A  =Reference frame X (R) rotation
+T_OART_EC       =Rotation around  Z axis
+T_OART_ECREV    =Reversal towards rotation actuator
+T_OART_ECAX     =Actuator for rot.  around Z axis
+T_OART_X1       =X coordinate of second pivot
+T_OART_Y1       =Y coordinate of  second pivot
+T_OART_TILT     =Nutation angle
+T_OART_EB       =Rotation around Y axis
+T_OART_EBREV    =Reversal towards rotation actuator
+T_OART_EBAX     =Actuator for rot. around Y axis
+T_OART_X2       =X coordinate of workpiece holder
+T_OART_Y2       =Y coordinate of workpiece holder
+T_OART_Z2       =Z coordinate of workpiece holder
+T_OART_FRAME2_C =Workpiece reference frame Z (Y) rotation
+T_OART_FRAME2_B =Workpiece reference frame Y (P) rotation
+T_OART_FRAME2_A =Workpiece reference frame X (R) rotation
+

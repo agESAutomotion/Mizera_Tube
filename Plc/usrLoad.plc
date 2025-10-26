@@ -1,0 +1,599 @@
+#funcdec "FLP.plc"
+#funcdec "SPist.plc"
+
+#include "usrMem.inc"
+#include "Iol.inc"
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"
+END_VAR
+
+VAR
+M1_M2_M3_MOVE:        SINGLE_PISTON;
+CenteringPist1:       SINGLE_PISTON;
+CenteringPist2:       SINGLE_PISTON;
+CenteringPist3:       SINGLE_PISTON;
+CenteringPist4:       SINGLE_PISTON;
+Sup_G_Pist:           SINGLE_PISTON;
+Pist_F_FB:            SINGLE_PISTON;
+J_VEL_SWITCH:                    FF;
+TON_CHAIN:                      TON;
+TON_INVERTER_FIL:               TON;
+TON_INVERTER_FIL1:              TON;
+END_VAR
+
+FUNCTION LOADER
+************************************************************
+* Loader Initialization Selection
+************************************************************
+PAGE_PLC
+
+************************************************************
+* Loader arms to be back (Arms J)
+************************************************************
+LD     ch0_ValFunM
+EQ     330
+OR(
+LD     ch8_ValFunM
+EQ     330
+)
+OR(
+LD     ch0_ValFunM                * Arms J Going Back Slow
+EQ     431
+)
+OR(
+LD     ch0_ValFunM                * whole loader homming
+EQ     445
+)
+AND    PRGRUN_CN0 
+ANDN   PRGSTOP_CN0
+OR(
+LD     BtnGuiM1M2M3_Open
+ANDN   PRGRUN_CN0
+)
+ANDN   I_I_M1_M2_M3_OPEN
+ST     O_O_M1_M2_M3_Open 
+
+LDN    I_I_M1_M2_M3_OPEN
+AND(
+LD     %ax30.ra92
+LT     SUPPORT_4_Quota
+)
+ANDN   %cn0.rc8.0
+ANDN   ch0_in_ref  
+S      %PLCmsg8.5
+
+************************************************************
+* Loader arms to be in machine (Arms J)
+************************************************************
+LD     ch0_ValFunM
+EQ     331
+OR(
+LD     ch8_ValFunM
+EQ     331
+)
+AND    PRGRUN_CN0 
+ANDN   PRGSTOP_CN0
+OR(
+LD     BtnGuiM1M2M3_Close
+ANDN   PRGRUN_CN0
+)
+ANDN   I_I_M1_M2_M3_CLOSE
+ST     O_O_M1_M2_M3_Close
+
+CAL    TON_INVERTER_FIL(IN=I_I_M1_M2_M3_ALARM, PT=300)    
+LD     TON_INVERTER_FIL.Q 
+S      %PLCerr21.8
+
+************************************************************
+* Loader arms speed control
+************************************************************
+LD     O_O_M1_M2_M3_Close
+OR(
+       LD     ch0_ValFunM
+       EQ     431                 * Slow Chain Backward
+       AND    O_O_M1_M2_M3_Open
+)
+ANDN(
+       LD     ch0_ValFunM
+       EQ     330
+       OR(
+       LD     ch8_ValFunM
+       EQ     330
+       )
+	   OR(
+       LD     ch0_ValFunM                * whole loader homming
+       EQ     445
+       )
+)
+ORN    %cn0.rc8.0
+ST     O_O_Arm_Slow
+
+LDN    O_O_Arm_Slow   
+ST     O_O_Arm_Fast 
+
+************************************************************
+* Loader chain to be inside (D)
+************************************************************
+LD     ch0_ValFunM
+EQ     443
+OR(
+LD     ch8_ValFunM
+EQ     443
+)
+AND    PRGRUN_CN0 
+ANDN   PRGSTOP_CN0
+OR(
+LD     BtnGuiChainForw
+ANDN   I_I_TubeOnChain_D
+ANDN   PRGRUN_CN0
+)
+ST     O_O_Chain_Forw_D
+
+CAL    TON_CHAIN(IN=O_O_Chain_Forw_D,PT=20000) *20S
+LD     TON_CHAIN.Q
+AND    PRGRUN_CN0 
+S      STORE_Empty
+
+CAL    TON_INVERTER_FIL1(IN=I_I_Loader_Alarm, PT=300)    
+LD     TON_INVERTER_FIL1.Q 
+S      %PLCerr21.9
+
+************************************************************
+* Loader chain to be outside (D)
+************************************************************
+LD     ch0_ValFunM
+EQ     444
+OR(
+LD     ch8_ValFunM
+EQ     444
+)
+AND    PRGRUN_CN0 
+ANDN   PRGSTOP_CN0
+ANDN   I_I_HomeChain_E
+OR(
+LD     BtnGuiChainBackw
+ANDN   PRGRUN_CN0
+)
+ST     O_O_Chain_Back_D
+
+************************************************************
+* Centering Piston 1
+************************************************************ 
+LD     PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+ST     CenteringPist1.xAuto
+	   
+LD     Pul_Reset                      ** (gPlc0.3)Reset pushbutton
+OR     Pul_Start                      ** (gPlc0.1)Start pushbutton
+ST     CenteringPist1.xReset	  
+          
+LD     BtnGuiCentering_Open_1
+OR     BtnGuiCentering_Open_All
+OR     Force_Open_Center_1
+ST     CenteringPist1.xManualPlus	  
+	   
+LD     BtnGuiCentering_Close_1
+OR     BtnGuiCentering_Cls_All
+ANDN   Force_Open_Center_1
+ST     CenteringPist1.xManualMinus    
+	   
+LD     Fun_M332_Ch0   
+OR(
+LD     ch8_ValFunM
+EQ     332
+)
+OR     Fun_M445_Ch0    
+OR     Force_Open_Center_1  
+OR     Fun_M452_Ch0                   ** Open all centering                               
+ST     CenteringPist1.xAutoPlus
+	   
+LD     Fun_M333_Ch0
+OR(
+LD     ch8_ValFunM
+EQ     333
+)
+OR     Fun_M455_Ch0
+ST     CenteringPist1.xAutoMinus    
+	   
+LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
+ST     CenteringPist1.xAirPressure
+	   
+LD     I_I_Centering_Open_1
+ST     CenteringPist1.xSensorPlus 
+	   
+LD     %PLCFLAGS.1 
+ST     CenteringPist1.xSensorMinus           
+	   
+LD     %PLCFLAGS.1
+ST     CenteringPist1.xPlusAtInit           
+	   
+LD     %PLCFLAGS.1
+ST     CenteringPist1.xSingleEffect
+	   
+LD     10000             
+ST     CenteringPist1.xTimeOut     
+	   
+LDN    I_I_EMERGENZA                  ** Machine OK (no EMERG.)
+ST     CenteringPist1.xEmerg	          
+	   
+CAL    CenteringPist1
+	   
+LD     CenteringPist1.yPistonPlus 
+ST     O_O_Centering_Open_1
+	   
+LD     CenteringPist1.yPistonMinus 
+ST     O_O_Centering_Close_1
+
+LD     CenteringPist1.yAlarm
+ST     %PLCerr21.10
+
+************************************************************
+* Centering Piston 2
+************************************************************ 
+LD     PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+ST     CenteringPist2.xAuto
+	   
+LD     Pul_Reset                      ** (gPlc0.3)Reset pushbutton
+OR     Pul_Start                      ** (gPlc0.1)Start pushbutton
+ST     CenteringPist2.xReset	  
+          
+LD     BtnGuiCentering_Open_2
+OR     BtnGuiCentering_Open_All
+OR     Force_Open_Center_2
+ST     CenteringPist2.xManualPlus	  
+	   
+LD     BtnGuiCentering_Close_2
+OR     BtnGuiCentering_Cls_All
+ANDN   Force_Open_Center_2
+ST     CenteringPist2.xManualMinus    
+	   
+LD     Fun_M446_Ch0   
+OR(
+LD     ch8_ValFunM
+EQ     446
+)
+OR     Fun_M445_Ch0  
+OR     Force_Open_Center_2   
+OR     Fun_M452_Ch0                   ** Open all centering                                     
+ST     CenteringPist2.xAutoPlus
+	   
+LD     Fun_M447_Ch0
+OR(
+LD     ch8_ValFunM
+EQ     447
+)
+OR     Fun_M455_Ch0
+ST     CenteringPist2.xAutoMinus    
+	   
+LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
+ST     CenteringPist2.xAirPressure
+	   
+LD     I_I_Centering_Open_2
+ST     CenteringPist2.xSensorPlus 
+	   
+LD     %PLCFLAGS.1 
+ST     CenteringPist2.xSensorMinus           
+	   
+LD     %PLCFLAGS.1
+ST     CenteringPist2.xPlusAtInit           
+	   
+LD     %PLCFLAGS.1
+ST     CenteringPist2.xSingleEffect
+	   
+LD     10000             
+ST     CenteringPist2.xTimeOut     
+	   
+LDN    I_I_EMERGENZA                  ** Machine OK (no EMERG.)
+ST     CenteringPist2.xEmerg	          
+	   
+CAL    CenteringPist2
+	   
+LD     CenteringPist2.yPistonPlus 
+ST     O_O_Centering_Open_2
+	   
+LD     CenteringPist2.yPistonMinus 
+ST     O_O_Centering_Close_2
+
+LD     CenteringPist2.yAlarm
+ST     %PLCerr21.11
+
+************************************************************
+* Centering Piston 3
+************************************************************ 
+LD     PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+ST     CenteringPist3.xAuto
+	   
+LD     Pul_Reset                      ** (gPlc0.3)Reset pushbutton
+OR     Pul_Start                      ** (gPlc0.1)Start pushbutton
+ST     CenteringPist3.xReset	  
+          
+LD     BtnGuiCentering_Open_3
+OR     BtnGuiCentering_Open_All
+OR     Force_Open_Center_3
+ST     CenteringPist3.xManualPlus	  
+	   
+LD     BtnGuiCentering_Close_3
+OR     BtnGuiCentering_Cls_All
+ANDN   Force_Open_Center_3
+ST     CenteringPist3.xManualMinus    
+	   
+LD     Fun_M448_Ch0   
+OR(
+LD     ch8_ValFunM
+EQ     448
+)
+OR     Fun_M445_Ch0   
+OR     Force_Open_Center_3  
+OR     Fun_M452_Ch0                   ** Open all centering                                      
+ST     CenteringPist3.xAutoPlus
+	   
+LD     Fun_M449_Ch0
+OR(
+LD     ch8_ValFunM
+EQ     449
+)
+OR     Fun_M455_Ch0
+ST     CenteringPist3.xAutoMinus    
+	   
+LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
+ST     CenteringPist3.xAirPressure
+	   
+LD     I_I_Centering_Open_3
+ST     CenteringPist3.xSensorPlus 
+	   
+LD     %PLCFLAGS.1 
+ST     CenteringPist3.xSensorMinus           
+	   
+LD     %PLCFLAGS.1
+ST     CenteringPist3.xPlusAtInit           
+	   
+LD     %PLCFLAGS.1
+ST     CenteringPist3.xSingleEffect
+	   
+LD     10000             
+ST     CenteringPist3.xTimeOut     
+	   
+LDN    I_I_EMERGENZA                  ** Machine OK (no EMERG.)
+ST     CenteringPist3.xEmerg	          
+	   
+CAL    CenteringPist3
+	   
+LD     CenteringPist3.yPistonPlus 
+ST     O_O_Centering_Open_3
+	   
+LD     CenteringPist3.yPistonMinus 
+ST     O_O_Centering_Close_3
+
+LD     CenteringPist3.yAlarm
+ST     %PLCerr21.12
+
+************************************************************
+* Centering Piston 4
+************************************************************ 
+LD     PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+ST     CenteringPist4.xAuto
+	   
+LD     Pul_Reset                      ** (gPlc0.3)Reset pushbutton
+OR     Pul_Start                      ** (gPlc0.1)Start pushbutton
+ST     CenteringPist4.xReset	  
+          
+LD     BtnGuiCentering_Open_4
+OR     BtnGuiCentering_Open_All
+OR     Force_Open_Center_4
+ST     CenteringPist4.xManualPlus	  
+	   
+LD     BtnGuiCentering_Close_4
+OR     BtnGuiCentering_Cls_All
+ANDN   Force_Open_Center_4
+ST     CenteringPist4.xManualMinus    
+	   
+LD     Fun_M450_Ch0   
+OR(
+LD     ch8_ValFunM
+EQ     450
+)
+OR     Fun_M445_Ch0     
+OR     Force_Open_Center_4                  
+OR     Fun_M452_Ch0                   ** Open all centering                 
+ST     CenteringPist4.xAutoPlus
+	   
+LD     Fun_M451_Ch0
+OR(
+LD     ch8_ValFunM
+EQ     451
+)
+OR     Fun_M455_Ch0
+ST     CenteringPist4.xAutoMinus    
+	   
+LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
+ST     CenteringPist4.xAirPressure
+	   
+LD     I_I_Centering_Open_4
+ST     CenteringPist4.xSensorPlus 
+	   
+LD     %PLCFLAGS.1 
+ST     CenteringPist4.xSensorMinus           
+	   
+LD     %PLCFLAGS.1
+ST     CenteringPist4.xPlusAtInit           
+	   
+LD     %PLCFLAGS.1
+ST     CenteringPist4.xSingleEffect
+	   
+LD     10000             
+ST     CenteringPist4.xTimeOut     
+	   
+LDN    I_I_EMERGENZA                  ** Machine OK (no EMERG.)
+ST     CenteringPist4.xEmerg	          
+	   
+CAL    CenteringPist4
+	   
+LD     CenteringPist4.yPistonPlus 
+ST     O_O_Centering_Open_4
+	   
+LD     CenteringPist4.yPistonMinus 
+ST     O_O_Centering_Close_4
+
+LD     CenteringPist4.yAlarm
+ST     %PLCerr21.13
+
+************************************************************
+* Support ( G up / down )
+************************************************************
+LD     PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+ST     Sup_G_Pist.xAuto
+	   
+LD     Pul_Reset                      ** (gPlc0.3)Reset pushbutton
+OR     Pul_Start                      ** (gPlc0.1)Start pushbutton
+ST     Sup_G_Pist.xReset	  
+          
+LD     BtnGui_G_Up
+ST     Sup_G_Pist.xManualPlus	  
+	   
+LD     BtnGui_G_Dwn
+ST     Sup_G_Pist.xManualMinus    
+	   
+LD     Fun_M334_Ch0 
+OR(
+LD     ch8_ValFunM
+EQ     334
+)                                           
+ST     Sup_G_Pist.xAutoPlus          * Up
+	   
+LD     Fun_M335_Ch0
+OR(
+LD     ch8_ValFunM
+EQ     335
+)
+OR     Fun_M445_Ch0  
+ST     Sup_G_Pist.xAutoMinus         * Dwn
+	   
+LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
+ST     Sup_G_Pist.xAirPressure
+	   
+LD     I_I_CylinderUp_G
+ST     Sup_G_Pist.xSensorPlus 
+	   
+LD     I_I_CylinderDwn_G
+ST     Sup_G_Pist.xSensorMinus           
+	   
+LD     %PLCFLAGS.0
+ST     Sup_G_Pist.xPlusAtInit           
+	   
+LD     %PLCFLAGS.1
+ST     Sup_G_Pist.xSingleEffect
+	   
+LD     10000             
+ST     Sup_G_Pist.xTimeOut     
+	   
+LDN    I_I_EMERGENZA                  ** Machine OK (no EMERG.)
+ST     Sup_G_Pist.xEmerg	          
+	   
+CAL    Sup_G_Pist
+	   
+LD     Sup_G_Pist.yPistonPlus
+*ANDN   I_I_CylinderUp_G 
+ST     O_O_CylinderUp_G
+	   
+LD     Sup_G_Pist.yPistonMinus 
+*ANDN   I_I_CylinderDwn_G
+ST     O_O_CylinderDwn_G
+
+LD     Sup_G_Pist.yAlarm
+ST     %PLCerr20.13
+
+************************************************************
+* Support F (Forward/Backward)
+************************************************************
+LD     PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+ST     Pist_F_FB.xAuto
+	   
+LD     Pul_Reset                      ** (gPlc0.3)Reset pushbutton
+OR     Pul_Start                      ** (gPlc0.1)Start pushbutton
+ST     Pist_F_FB.xReset	  
+          
+LD     BtnGui_F_Forw
+ST     Pist_F_FB.xManualPlus	  
+	   
+LD     BtnGui_F_Backw
+ST     Pist_F_FB.xManualMinus    
+	   
+LD     Fun_M434_Ch0  
+OR(
+LD     ch8_ValFunM
+EQ     434
+)                                          
+ST     Pist_F_FB.xAutoPlus          
+	   
+LD     Fun_M435_Ch0
+OR(
+LD     ch8_ValFunM
+EQ     435
+)
+OR(
+LD     ch0_ValFunM                    * whole loader homming
+EQ     445
+)
+ST     Pist_F_FB.xAutoMinus         
+	   
+LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
+ST     Pist_F_FB.xAirPressure
+	   
+LD     I_I_CylinderForw_F
+ST     Pist_F_FB.xSensorPlus 
+	   
+LD     I_I_CylinderBack_F 
+ST     Pist_F_FB.xSensorMinus           
+	   
+LD     %PLCFLAGS.1
+ST     Pist_F_FB.xPlusAtInit           
+	   
+LD     %PLCFLAGS.1 
+ST     Pist_F_FB.xSingleEffect
+	   
+LD     10000             
+ST     Pist_F_FB.xTimeOut     
+	   
+LDN    I_I_EMERGENZA                  ** Machine OK (no EMERG.)
+ST     Pist_F_FB.xEmerg	          
+	   
+CAL    Pist_F_FB
+	   
+LD     Pist_F_FB.yPistonPlus 
+ANDN   I_I_CylinderForw_F
+ST     O_O_CylinderForw_F
+	   
+LD     Pist_F_FB.yPistonMinus 
+ANDN   I_I_CylinderBack_F
+ST     O_O_CylinderBack_F
+
+LD     Pist_F_FB.yAlarm
+ST     %PLCerr20.14
+
+************************************************************
+* Alarm / Status Reset
+************************************************************
+LD     Pul_Reset
+ST     O_O_Rst_InverterAlm
+R      %PLCmsg8.5
+R      %PLCerr21.8
+R      %PLCerr21.9
+R      ISO_Loader_Retrace
+R      iso_G510_Running
+R      iso_G520_V_Unload
+R      iso_G580_Running
+
+LD     Pul_Reset
+ORN    PRGRUN_CN0    
+R      STORE_Empty
+R      TubeOnGworklist
+
+LD     BtnClrLoaderBreakPoint
+ANDN   %cn0.rc8.0
+JMPCN  CLRLDSTATUS
+LD     0
+ST     LoaderProcess
+CLRLDSTATUS:
+
+END_FUNCTION

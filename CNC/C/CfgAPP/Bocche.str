@@ -1,0 +1,68 @@
+[STRUCT]
+
+KEY_SETVASCHE {
+    ?R2,KEY_BOCCHE_A;
+    ?R2,KEY_BOCCHE,Bocca,32;
+}
+
+KEY_BOCCHE_A {
+    delay_spegn_vasche;
+    BC_SVR;
+}
+
+KEY_BOCCHE {
+    BC_START_X;
+    BC_END_X;
+    BC_START_Y;
+    BC_END_Y;
+}
+
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 3
+LEN = 7
+MCH = 0
+
+[BC_START_X]
+ADR = QStart
+FRM = DEC, 3
+MCH = 7
+HFG = Exhaust.bmp
+
+[BC_END_X]
+ADR = QEnd
+FRM = DEC, 3
+MCH = 7
+HFG = Exhaust
+HFG = Exhaust.bmp
+
+[BC_START_Y]
+ADR = QStartY
+FRM = DEC, 3
+MCH = 7
+HFG = Exhaust
+HFG = Exhaust.bmp
+
+[BC_END_Y]
+ADR = QEndY
+FRM = DEC, 3
+MCH = 7
+HFG = Exhaust
+HFG = Exhaust.bmp
+
+[BC_SVR]
+ADR = CostK56
+FRM = DEC, 3
+MCH = 7
+
+[delay_spegn_vasche]
+ADR=CostK57
+MCH = 7
+TBS=1
+FRM=DEC,0,0
+STY=LEFT
+FBR=0
+DSV=0
+HLP = delay_spegn_vasche
+

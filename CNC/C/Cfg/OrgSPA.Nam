@@ -1,0 +1,43 @@
+[PROMPT]
+KEY_ORG       =Orígenes Canal
+
+G54X =Origen1: cota eje X (G54/G54.0)
+G54Y =Origen1: cota eje Y (G54/G54.0)
+G54Z =Origen1: cota eje Z (G54/G54.0)
+G55X =Origen2: cota eje X X (G55)
+G55Y =Origen2: cota eje Y Y (G55)
+G55Z =Origen2: cota eje Z Z (G55)
+G56X =Origen3: cota eje X X (G56)
+G56Y =Origen3: cota eje Y Y (G56)
+G56Z =Origen3: cota eje Z Z (G56)
+G57X =Origen4: cota eje X (G57)
+G57Y =Origen4: cota eje Y (G57)
+G57Z =Origen4: cota eje Z (G57)
+
+G54_1X =Origen5: cota eje X (G54.1)
+G54_1Y =Origen5: cota eje Y (G54.1)
+G54_1Z =Origen5: cota eje Z (G54.1)
+G54_2X =Origen6: cota eje X (G54.2)
+G54_2Y =Origen6: cota eje Y (G54.2)
+G54_2Z =Origen6: cota eje Z (G54.2)
+G54_3X =Origen7: cota eje X (G54.3)
+G54_3Y =Origen7: cota eje Y (G54.3)
+G54_3Z =Origen7: cota eje Z (G54.3)
+G54_4X =Origen8: cota eje X (G54.4)
+G54_4Y =Origen8: cota eje Y (G54.4)
+G54_4Z =Origen8: cota eje Z (G54.4)
+
+[HELP]
+
+G54X =Origen1: cota eje X -> Define la cota X del origen pieza n.1 seleccionable con el mando G54
+G54Y =Origen1: cota eje Y -> Define la cota Y del origen pieza n.1 seleccionable con el mando G54
+G54Z =Origen1: cota eje Z -> Define la cota Z del origen pieza n.1 seleccionable con el mando G54
+G55X =Origen2: cota eje X -> Define la cota X del origen pieza n.2 seleccionable con el mando G55
+G55Y =Origen2: cota eje Y -> Define la cota Y del origen pieza n.2 seleccionable con el mando G55
+G55Z =Origen2: cota eje Z -> Define la cota Z del origen pieza n.2 seleccionable con el mando G55
+G56X =Origen3: cota eje X -> Define la cota X del origen pieza n.3 seleccionable con el mando G56
+G56Y =Origen3: cota eje Y -> Define la cota Y del origen pieza n.3 seleccionable con el mando G56
+G56Z =Origen3: cota eje Z -> Define la cota Z del origen pieza n.3 seleccionable con el mando G56
+G57X =Origen4: cota eje X -> Define la cota X del origen pieza n.4 seleccionable con el mando G57
+G57Y =Origen4: cota eje Y -> Define la cota Y del origen pieza n.4 seleccionable con el mando G57
+G57Z =Origen4: cota eje Z -> Define la cota Z del origen pieza n.4 seleccionable con el mando G57

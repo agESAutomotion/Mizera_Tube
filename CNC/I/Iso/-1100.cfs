@@ -1,0 +1,18 @@
+ W :G100
+
+SYN
+GRP[V]=1
+GRP[W]=1
+G4 F1
+IF(%C108.1==0) THEN
+    PRS[V]=0
+    PRS[W]=0
+?%C108.1 = 1
+ENDIF
+G4 F1
+G153 G0 V(VA22) W(VA22) 
+GRP[V]=0
+GRP[W]=0
+?%C108.1 = 0
+
+RET

@@ -1,0 +1,70 @@
+:CypW CICLO FISSO COPY Wn TO Wm (In CN6)
+
+IF (%C99.10 == 0) RET 
+
+DBL CurNum = %rLsPlc56 
+DBL TarNum = %rLsPlc57
+DBL fint,tempt,tempc,outtent,outtenc
+
+IF( (TarNum <= 0) || (TarNum > 15) || (CurNum <= 0) || (CurNum > 15) ) RET
+outtenc = IFEXP(CurNum>10,1,0)
+outtent = IFEXP(TarNum>10,1,0)
+
+; Basic cutting parameters
+%TabLsr[TarNum].L_FeedA          = %TabLsr[CurNum].L_FeedA               ; Cut Speed
+%TabLsr[TarNum].L_CutPower       = %TabLsr[CurNum].L_CutPower
+%TabLsr[TarNum].L_CutPressure    = %TabLsr[CurNum].L_CutPressure
+%TabLsr[TarNum].L_CutFocal       = %TabLsr[CurNum].L_CutFocal
+%TabLsr[TarNum].L_CutDistance    = %TabLsr[CurNum].L_CutDistance
+%TabLsr[TarNum].L_CutDuty        = %TabLsr[CurNum].L_CutDuty
+%TabLsr[TarNum].L_CutFreq        = %TabLsr[CurNum].L_CutFreq
+%TabLsr[TarNum].L_UserInt3       = %TabLsr[CurNum].L_UserInt3            ; Dynamic
+%TabLsr[TarNum].L_KerfA          = %TabLsr[CurNum].L_KerfA               ; Kerf
+%TabLsr[TarNum].L_UserInt9       = %TabLsr[CurNum].L_UserInt9            ; Height Control Gain
+%TabLsr[TarNum].L_SourceInt15    = %TabLsr[CurNum].L_SourceInt15         ; Laser OFF Delay
+%TabLsr[TarNum].L_SourceInt16    = %TabLsr[CurNum].L_SourceInt16         ; Options
+%TabLsr[TarNum].L_SourceInt17    = %TabLsr[CurNum].L_SourceInt17         ; Speed for lead in
+%TabLsr[TarNum].L_SourceInt18    = %TabLsr[CurNum].L_SourceInt18         ; Distance for lead-in
+
+; Dynamic Speed-Duty,Power,Frequency
+tempt = (TarNum-1)*4 + outtent*60
+tempc = (CurNum-1)*4 + outtenc*60
+RPT .cypsplines, .cypsplinee, 3
+
+; Dynamic Bevel Angle Parameters
+IF( (CurNum <= 3) && (TarNum <= 3) ) THEN
+   tempt = (TarNum-1)*7 + 150
+   tempc = (CurNum-1)*7 + 150
+   RPT .cypsplines, .cypsplinee, 7
+ENDIF
+
+IF( (CurNum <= 3) && (TarNum >= 11) && (TarNum <= 13) ) THEN
+   tempt = (TarNum-11)*7 + 180
+   tempc = (CurNum-1)*7 + 150
+   RPT .cypsplines, .cypsplinee, 7
+ENDIF
+
+IF( (CurNum >= 11) && (CurNum <= 13) && (TarNum <= 3) ) THEN
+   tempt = (TarNum-1)*7 + 150
+   tempc = (CurNum-11)*7 + 180
+   RPT .cypsplines, .cypsplinee, 7
+ENDIF
+
+IF( (CurNum >= 11) && (CurNum <= 13) && (TarNum >= 11) && (TarNum <= 13) ) THEN
+   tempt = (TarNum-11)*7 + 180
+   tempc = (CurNum-11)*7 + 180
+   RPT .cypsplines, .cypsplinee, 7
+ENDIF
+
+RET
+
+.cypsplines
+   FOR fint = 0 TO 19 
+       %pd_splines[tempt].pdh_X[fint]   = %pd_splines[tempc].pdh_X[fint] 
+       %pd_splines[tempt].pdh_Y[fint]   = %pd_splines[tempc].pdh_Y[fint] 
+   ENDFOR
+   %pd_splines[tempt].pdh_nPoints       = %pd_splines[tempc].pdh_nPoints     
+   %pd_splines[tempt].pdh_interpType    = %pd_splines[tempc].pdh_interpType  
+   tempt = tempt + 1
+   tempc = tempc + 1
+.cypsplinee

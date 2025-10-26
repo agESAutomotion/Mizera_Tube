@@ -1,0 +1,16 @@
+
+[KEYS]
+TITLE=ASPIRATORE
+TXT0=Vacum air param.
+
+[PROMPT]
+KEY_NODE=
+ASPIRATOR=Leaf
+Label8=Tempo spegnimento aspirazione con programma non in esecuzione [sec]
+LabelAspAUTO=MODALITA' AUTO
+LabelAspMAN=MODALITA' MANUALE
+LabelAspRun=Aspiratore in funzione ...
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,38 @@
+[PROMPT]
+KEYWORD       =Parameter
+KEY_SYS       =System
+#include "org?.nam"
+#include "twi?.nam"
+#include "thd?.nam"
+#include "ced?.nam"
+#include "tab?.nam"
+#include "gorg?.nam"
+#include "ut?.nam"
+#include "wear?.nam"
+#include "mag?.nam"
+#include "czo?.nam"
+#include "vrtc?.nam"
+#include "probe?.nam"
+#include "tor?.nam"
+#include "gantr?.nam"
+#include "cnfge?.nam"
+#include "CnfPLC?.nam"
+#include "cnfch?.nam"
+#include "geoch?.nam"
+#include "parch?.nam"
+#include "fdc?.nam"
+#include "cnfax?.nam"
+#include "parax?.nam"
+#include "traslo?.nam"
+#include "antslt?.nam"
+#include "dgt?.nam"
+#include "can?.nam"
+#include "ssistat?.nam"
+#include "UserDll?.nam"
+#include "FastInp?.nam"
+#include "Iocfg?.nam"
+#include "LinDac?.nam"
+
+[HELP]
+KEYWORD       =Parameter
+

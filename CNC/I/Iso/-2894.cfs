@@ -1,0 +1,153 @@
+ N [G]0.0 [H] X Y Z [U] [V] [W] [P] [Q] [R] : G1894
+
+;//
+;// G1894   N<phase> [G<tip_radius>] [H<sphere_radius>]
+;//         X<ax> Y<ay> Z<az>    (N1, N2, N3)
+;//         U<bx> V<by> W<bz>    (N1, N2, [N3])
+;//         P<cx> Q<cy> R<cz>    (N1)
+;//
+;// Maps a sphere given a set of 5+1 points and radius (or 6+1 points and no
+;// radius).  The additional point is required in phase 1 to setup a frame.
+;// Sphere and tool tip radii signs depend on surface side (outside or inside).
+;// Multiple calls with ascending values of N have to be made.
+;//
+;// -- N1 --
+;// Maps Y-normal section plane and Z-normal dummy plane, given 2+1 points.
+;// Dummy plane is used to determine a frame.
+;//
+;// uf_a<1..3><1..3> is initialized so that frame X is normal to AB, and
+;// frame Z is parallel to AC ^ AB (not AB ^ AC!).  Frame is finalized.
+;// uf_o<1..3> is set halfway A to B.
+;//
+;// -- N2 --
+;// Maps X-normal section plane, parallel to frame Z and Y axes, given 2 points.
+;// Points must have same distance from Y plane.
+;// Requires a previous call to N1.
+;//
+;// uf_o<1..3> position along frame X axis is finalized.
+;//
+;// -- N3 --
+;// Maps Z-normal section plane given 1 point and radius, or 2 points and no
+;// radius.  In case of no radius, points must have same signed distance from
+;// Y- and X-normal section planes.  In case of radius, A point must be on the
+;// intersection of X and Y-normal section planes.
+;// Requires a previous call to N2.
+;//
+;// uf_o<1..3> contains finalized origin (sphere center).
+;//
+
+DBL ax = VA23, ay = VA24, az = VA25
+DBL bx = VA20, by = VA21, bz = VA22
+DBL cx = VA15, cy = VA16, cz = VA17
+DBL tip_rad = VA6
+DBL sph_rad = VA7
+DBL phase = VA13
+
+DBL abx, aby, abz
+DBL acx, acy, acz
+DBL d1, d2
+DBL d
+
+JMPF phase
+
+N1
+
+IF (!(VALID(ax) && VALID(ay) && VALID(az))) ERROR(55)
+IF (!(VALID(bx) && VALID(by) && VALID(bz))) ERROR(55)
+
+;//ab = b - a
+abx = bx - ax
+aby = by - ay
+abz = bz - az
+
+IF (!(VALID(cx) && VALID(cy) && VALID(cz))) ERROR(55)
+
+;//ac = c - a
+acx = cx - ax
+acy = cy - ay
+acz = cz - az
+
+;//uf_a_3 = norm(ac ^ ab)
+uf_a13 = acy * abz - acz * aby
+uf_a23 = acz * abx - acx * abz
+uf_a33 = acx * aby - acy * abx
+
+d = SQRT(uf_a13 * uf_a13 + uf_a23 * uf_a23 + uf_a33 * uf_a33)
+
+IF (d < 0.001) ERROR(38) ;//divide by zero
+
+uf_a13 = uf_a13 / d
+uf_a23 = uf_a23 / d
+uf_a33 = uf_a33 / d
+
+;//uf_a_2 = norm(ab)
+uf_a12 = abx
+uf_a22 = aby
+uf_a32 = abz
+
+d = SQRT(uf_a12 * uf_a12 + uf_a22 * uf_a22 + uf_a32 * uf_a32)
+
+IF (d < 0.001) ERROR(38) ;//divide by zero
+
+uf_a12 = uf_a12 / d
+uf_a22 = uf_a22 / d
+uf_a32 = uf_a32 / d
+
+;//uf_a_1 = uf_a_2 ^ uf_a_3
+uf_a11 = uf_a22 * uf_a33 - uf_a32 * uf_a23
+uf_a21 = uf_a32 * uf_a13 - uf_a12 * uf_a33
+uf_a31 = uf_a12 * uf_a23 - uf_a22 * uf_a13
+
+;//uf_o_ = a + ab / 2
+uf_o1 = ax + abx / 2
+uf_o2 = ay + aby / 2
+uf_o3 = az + abz / 2
+
+tip_rad = 0.0
+
+N2
+
+IF (!(VALID(ax) && VALID(ay) && VALID(az))) ERROR(55)
+IF (!(VALID(bx) && VALID(by) && VALID(bz))) ERROR(55)
+
+;//d1 = (a - uf_o_) * uf_a_1
+d1 = (ax - uf_o1) * uf_a11 + (ay - uf_o2) * uf_a21 + (az - uf_o3) * uf_a31
+
+;//d2 = (b - uf_o_) * uf_a_1
+d2 = (bx - uf_o1) * uf_a11 + (by - uf_o2) * uf_a21 + (bz - uf_o3) * uf_a31
+
+d = (d1 + d2) / 2
+
+;//uf_o_' = uf_o_ + d * uf_a_1
+uf_o1 = uf_o1 + d * uf_a11
+uf_o2 = uf_o2 + d * uf_a21
+uf_o3 = uf_o3 + d * uf_a31
+
+tip_rad = 0.0
+
+sph_rad = QNAN()
+
+N3
+
+IF (!(VALID(ax) && VALID(ay) && VALID(az))) ERROR(55)
+
+;//d1 = (a - uf_o_) * uf_a_3
+d1 = (ax - uf_o1) * uf_a13 + (ay - uf_o2) * uf_a23 + (az - uf_o3) * uf_a33
+
+IF (VALID(sph_rad)) THEN
+    IF (VALID(bx) || VALID(by) || VALID(bz)) ERROR(55)
+    d = d1 - tip_rad + sph_rad
+ELSE
+    IF (!(VALID(bx) && VALID(by) && VALID(bz))) ERROR(55)
+    ;//d2 = (b - uf_o_) * uf_a_3
+    d2 = (bx - uf_o1) * uf_a13 + (by - uf_o2) * uf_a23 + (bz - uf_o3) * uf_a33
+
+    d = (d1 + d2) / 2
+ENDIF
+
+;//uf_o_' = uf_o_ + d * uf_a_3
+uf_o1 = uf_o1 + d * uf_a13
+uf_o2 = uf_o2 + d * uf_a23
+uf_o3 = uf_o3 + d * uf_a33
+
+RET

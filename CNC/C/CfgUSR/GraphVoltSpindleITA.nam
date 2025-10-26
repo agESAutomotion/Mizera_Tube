@@ -1,0 +1,17 @@
+[KEYS]
+TITLE=Pressione - Volt
+
+[PROMPT]
+KEY_NODE=Nodo
+GRAPHPRESSSPINDLE=Leaf
+Plot1=Pressione - Volt
+L_TYPE_INTERP1=Schema
+LIST0=Lineare,Segmento,Smussatura
+L_TYPE_INTERP2=Punti
+L_SPEED1=P [bar]
+L_POWER2=V [Volt]
+
+[STATUS]
+Plot1=Tensione (V), Pressione (bar)
+
+[HELP]

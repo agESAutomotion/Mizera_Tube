@@ -1,0 +1,51 @@
+:CICLO FISSO Pulizia Nozzle su spazzola
+
+DBL count = 0
+DBL count_prog = %Cost_User19
+
+DBL sav_G70=XGET("@G70")
+G271
+
+SYN
+$ Head cleaning....
+
+?%C26.1 = 1        ; nozzle cleaning in run 
+
+SYN
+G153
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+G152
+G4099
+
+G153                                                                       
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1                                         
+G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1                                         
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1                                         
+G152                                                                       
+G4099
+
+;G806 T3 N1 H1 D1
+G153 G0 Z(%ax[29].pa[22]/1000 - 20)
+
+G153 G1 X(%Cost_User[16]/1000) Y(%Cost_User[17]/1000) F40000    ; X Y a quota Spazzola
+G153 G1 Z(%Cost_User[18]/1000) F5000                            ; Z a quota di pulizia
+
+.pulizia
+G153 G1 X(%Cost_User[16]/1000) Y(%Cost_User[17]/1000) F20000    ; X Y a quota Spazzola
+G153 G1 X(%Cost_User[20]/1000) Y(%Cost_User[21]/1000) F20000    ; X Y a quota Spazzola
+G4 F0.1
+SYN
+count = count + 1
+IF( count <= count_prog ) JMP .pulizia
+
+G153 G0 Z(%ax[29].pa[22]/1000 - 20)
+
+G(200+sav_G70)
+?%C26.1 = 0       ; nozzle cleaning in run 
+
+SYN
+$ 
+
+RET

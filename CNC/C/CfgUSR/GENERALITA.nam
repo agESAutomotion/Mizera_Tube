@@ -1,0 +1,52 @@
+
+[KEYS]
+TITLE=
+TXT0=[0] Scaricatore
+TXT1=[1] Caricatore
+TXT2=[2] Supporti
+TXT3=[3] Mandrini
+
+[PROMPT]
+KEY_NODE=Node
+GENERAL=Leaf
+Button2=Lateral Door
+Button3=Trash Box
+Button1=Tavolo L2 dritto
+Button4=Ribalta L2
+Button5=Avanti tavolo L2
+Button6=Indietro tavolo L2
+Button7=Tavolo L3 dritto
+Button8=Ribalta L3
+Button9=Tavolo L4 dritto
+Button10=Ribalta L4
+Button11=Tavolo L5 dritto
+Button12=Ribalta L5
+Button13=Morsetto per sega Y apri
+Button14=Morsetto per sega Y Chiudi
+Button15=Abbassa morsetto sega Z
+Button16=Alza morsetto sega Z
+Button17=Morsetto sega Z ruota apri
+Button18=Morsetto sega Z ruota chiudi
+Button19=Apri Cm
+Button20=Chiudi Cm
+Button21=Apri C2
+Button22=Chiudi C2
+Button23=Apri C1
+Button24=Chiudi C1
+Label=[2]
+Label1=[3]
+Label2=[3]
+Label3=[0]
+Button25=Alzare supporti
+Button26=Abbassare supporti
+P_REF2=Vel. +
+Label4=%
+P_REF1=Vel. -
+P_REF3=<< X
+P_REF4=X >>
+P_REF5=<< X1
+P_REF6=X1 >>
+
+[STATUS]
+
+[HELP]

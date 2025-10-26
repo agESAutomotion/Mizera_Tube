@@ -1,0 +1,9 @@
+*.obs
+*.obf
+*.err
+*.cmd
+*.csv
+*.alm
+*.rpt
+
+TMP

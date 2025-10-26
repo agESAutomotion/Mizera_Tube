@@ -1,0 +1,307 @@
+*******************************************************************************
+*   INTGRAPH.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "DynMng.plc"
+
+VAR
+#include "Cnc.inc"
+
+Bevel0Calc:     LINEAR_CALC;
+Bevel15Calc:    LINEAR_CALC;
+Bevel30Calc:    LINEAR_CALC;
+Bevel45Calc:    LINEAR_CALC;
+PolResult:      DWORD;          * Polynomial result
+Segment:        DWORD;          * Segment of the curve              
+segment_numb:   DWORD;          * Segment number
+yResult:        DWORD;          * Result  
+yOk:            DWORD;          * error code
+FTRIG_PGRRUN:   F_TRIG;
+RTRIG_INIT:     R_TRIG;
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+*******************************************************************************
+*   Gestione Sensore Capacitivo per linearizzazione da CNC (con bevel)
+*   NOTA BENE: utilizza dati della struttura %TsCalib[]
+*******************************************************************************
+FUNCTION_BLOCK InterpGraph
+
+VAR_INPUT
+xInput:                  DWORD;
+xActualAngle:            DWORD;
+xIndexFirstTable:        DWORD;
+xIndexSecondTable:       DWORD;
+xIndexThirdTable:        DWORD;
+xIndexFourthTable:       DWORD;
+xIndexOutIntVal:         DWORD;
+END_VAR
+
+VAR_OUTPUT
+yOutInterpVal:           DWORD;
+END_VAR
+
+
+PATH %pd_splines[xIndexOutIntVal]
+
+LD   3
+ST   nSpan
+
+LD   0
+ST   Segment                       ** Segment of the curve              
+
+loop1:
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans[Segment]            ** Segment of the curve              
+
+LD   1
+ST   SPAN_NUM
+
+LD   0
+ST   COEFICIENT_0
+ST   COEFICIENT_1
+ST   COEFICIENT_2
+ST   COEFICIENT_3
+ST   COEFICIENT_4
+ST   COEFICIENT_5
+
+LD   Segment                       ** Segment of the curve              
+ADD  1
+ST   Segment                       ** Segment of the curve              
+
+LD   Segment                       ** Segment of the curve              
+LT   4
+JMPC loop1
+
+
+***************************************
+*   0 degree
+***************************************
+LD   xInput
+MUL  1000
+ST   Bevel0Calc.xInput
+
+LD   xIndexFirstTable
+ST   Bevel0Calc.xIndex
+
+CAL  Bevel0Calc
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans0
+
+LD   0
+ST   XSTART    
+LD   %TsCalib1.targ_b_axis              * es. 15 gradi
+ST   XEND 
+
+LD   Bevel0Calc.yResult                * Result
+ST   YSTART
+
+***************************************
+*   15 degree
+***************************************
+LD   xInput  
+MUL  1000
+ST   Bevel15Calc.xInput
+     
+LD   xIndexSecondTable
+ST   Bevel15Calc.xIndex
+     
+CAL  Bevel15Calc
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans0
+
+LD   Bevel15Calc.yResult                * Result
+ST   YEND  
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans1
+
+LD   %TsCalib1.targ_b_axis              * es. 15 gradi
+ST   XSTART
+LD   %TsCalib2.targ_b_axis              * es. 30 gradi
+ST   XEND
+
+LD   Bevel15Calc.yResult                * Result
+ST   YSTART                     * Height 15 degree bevel
+
+***************************************
+*   30 degree
+***************************************
+LD   xInput
+MUL  1000
+ST   Bevel30Calc.xInput
+     
+LD   xIndexThirdTable
+ST   Bevel30Calc.xIndex
+     
+CAL  Bevel30Calc
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans1
+
+LD   Bevel30Calc.yResult               * Result
+ST   YEND 
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans2
+ 
+LD   %TsCalib2.targ_b_axis              * es. 30 gradi
+ST   XSTART
+LD   %TsCalib3.targ_b_axis              * es. 45 gradi
+ST   XEND
+ 
+LD   Bevel30Calc.yResult               * Result
+ST   YSTART                    * Height 30 degree bevel
+
+***************************************
+*   45 degree
+***************************************
+LD   xInput
+MUL  1000
+ST   Bevel45Calc.xInput
+     
+LD   xIndexFourthTable
+ST   Bevel45Calc.xIndex
+     
+CAL  Bevel45Calc
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans2
+
+LD   Bevel45Calc.yResult               * Result
+ST   YEND  
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans3
+
+LD   Bevel45Calc.yResult               * Result
+ST   YSTART                    * Height 45 degree bevel
+
+LD   %TsCalib3.targ_b_axis              * es. 45 gradi
+ST   XSTART 
+
+
+***************************************
+LD   0
+ST   Segment                       ** Segment of the curve              
+
+loop:
+
+PATH %pd_splines[xIndexOutIntVal]
+      
+LD   nSpan
+SUB  1
+ST   segment_numb                  ** Segment number
+
+LD   Segment                       ** Segment of the curve              
+GT   segment_numb                  ** Segment number
+OR  (
+LD   Segment                       ** Segment of the curve              
+GT   20
+)
+JMPC check_last
+
+PATH %pd_splines[xIndexOutIntVal]
+PATH %pd_spans[Segment]            ** Segment of the curve              
+  
+LD   xActualAngle
+LE   XSTART
+JMPCN next_check
+
+LD   YSTART                 * firts curve point
+ST   yResult                       ** Result  
+JMP  exitfunc
+next_check:
+
+LD   xActualAngle
+GT   XSTART
+AND  (
+LD   xActualAngle
+LT   XEND
+)
+JMPC FindData
+
+LD   xActualAngle
+EQ   XSTART
+JMPCN next_check1
+
+LD   YEND                 
+ST   yResult                       ** Result  
+JMP  exitfunc
+next_check1:
+
+LD   Segment                       ** Segment of the curve              
+ADD  1
+ST   Segment                       ** Segment of the curve              
+JMP  loop
+
+check_last:
+
+LD   xActualAngle
+GE   XEND
+JMPCN gest_error
+LD   YEND                   * firts curve point
+ST   yResult                       ** Result  
+JMP  exitfunc
+
+FindData:
+
+LD   0                                   
+POLY_INIT (INS=2, XS=XSTART, XE=XEND, YS=YSTART, YE=YEND, A2=COEFICIENT_2, A3=COEFICIENT_3, A4=COEFICIENT_4, A5=COEFICIENT_5, PS=SPAN_NUM)                                 
+ST   PolResult                     ** Polynomial result
+                                  
+LD   PolResult                     ** Polynomial result
+NE   0          
+JMPC gest_error
+
+LD   0                      * N/C
+POLY_EVAL_Y0 (INS=2, X0=xActualAngle)
+ST   yResult                       ** Result  
+
+LD   yResult                       ** Result  
+EQ   2147483647
+JMPCN exitfunc
+
+gest_error:
+LD  -1
+ST  yOk                            ** error code
+JMP exit 
+exitfunc:
+
+LD   1
+ST   yOk                           ** error code
+
+exit:
+
+LD   yResult                       ** Result  
+MUL  AnalCapFeedback       *Capacitive analog resolution
+DIV  %LSRCostK31                   ** Capacitive sensor range
+ST   yOutInterpVal
+
+* Range for graph
+
+LD   %LSRCostK31                   ** Capacitive sensor range
+DIV  1000
+ST   CapRange                      ** (C151) Capacitive range
+
+* Reset interface command for coefficients calc
+
+CAL  FTRIG_PGRRUN (CLK:=%cn0.rc8.0)
+
+LD   FTRIG_PGRRUN.Q
+JMPCN no_res_bit
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   CoefInterfCalc                ** (ui0.10) calculate the coefficients
+no_res_bit:
+
+END_FUNCTION_BLOCK

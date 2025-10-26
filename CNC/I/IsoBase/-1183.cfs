@@ -1,0 +1,10 @@
+ [J]0 :G183
+;//
+;// G183    [J<mode>]
+;//
+;// set 3D tool compensation mode
+
+SPC 30150, VA9
+t_comp = VA9
+
+RET

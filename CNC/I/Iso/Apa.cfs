@@ -1,0 +1,91 @@
+: Richiamo APA
+;******************************************************************************
+;   FUNZIONE CHIAMATA DA PART PROGRAM ALL'INIZIO DELLO STESSO,
+;   OPPURE DA ACQUISIZIONE MANUALE IN PAG. ORIGINI (1000.PGM)
+;
+;   IMPORTANTE !!!!!!!!
+;   Nel part program deve essere rispettata la seguente sequenza
+:       JSR "inizio.cfs"
+;       JSR "Apa.cfs"
+;******************************************************************************
+DBL origROT
+
+; if block search running exit
+IF( (%cn[0].rc[8].8) && !(%cn[0].rc[8].15) ) RET
+
+IF( %cn[WHO()].rc[0].21 ) RET           ; Channel in test (graphics running)
+IF( !apa_enable ) RET                   ; Se non Abilitata Ricerca origine lamiera (APA) Esce....
+IF( %IndexORG == 0 ) ERROR(769)         ; Se origine selezionata = 0 non è possibile fare APA
+
+DBL sav_G70=XGET("@G70")
+G271
+
+?%C18.2 = 0                             ; Acquisizione origine effettuata
+?%C18.31 = 1                            ; APA in RUN
+?%C18.7 = 1
+M8000          ;DISABILITA RETRACE
+
+IF( apa_along_y == 0 ) THEN
+    JSR "getoriX.cfs"
+ELSE
+    JSR "getoriY.cfs"
+ENDIF
+
+IF( apa_list_enable ) THEN
+    ; Se acquisizione da pagina lista, la funzione APA la copia all'intermno dell'orig. n. 19
+    IF( apa_submode == 1 ) THEN
+        %Wlist[%Uipl.Row].wl_dwpar0 = %funz[%IndexORG].origprgX * 1000
+        %Wlist[%Uipl.Row].wl_dwpar1 = %funz[%IndexORG].origprgY * 1000
+        %Wlist[%Uipl.Row].wl_dwpar7 = 0
+    ENDIF
+
+    IF( apa_call_byprog ) THEN
+        %Wlist[%WlistMngt.wl_Index].wl_dwpar0 = %funz[%IndexORG].origprgX * 1000
+        %Wlist[%WlistMngt.wl_Index].wl_dwpar1 = %funz[%IndexORG].origprgY * 1000
+        %Wlist[%WlistMngt.wl_Index].wl_dwpar7 = (%funz[%IndexORG].rotEA * 1000)
+    ENDIF
+ENDIF
+
+;Attivazione Origini calcolate
+G254
+G4 F0.1
+
+JSR "graph_set_kine.cfs"
+
+SYN
+$ Learning END
+?%C18.2 = 1                             ; Acquisizione origine effettuata
+?%C18.7 = 0
+?%C18.31 = 0                            ; END APA in RUN
+
+
+; Se acquisizione manuale da pagina origini
+IF( (apa_call_byprog) && (apa_list_enable == 0) && ((%rLsGui[45].2) || (%LsPlc[47].15)) ) THEN  ; rLsGui[45].2 wait after apa enable && (apa_mode == 3)
+    $ Goto 0 Origin
+    G1 X0 Y0 F50000   
+    $
+    G4 F1
+ENDIF
+
+IF ((%rLsGui[45].2) && (!%LSRPlcOp0.5) && (apa_mode == 3) && !(%LsPlc[47].15) ) THEN
+    $ Push [START] to continue
+    ?%C57.1=1    ; reset APA FUNCTION
+    G4 F0.05
+    ?%C57.1=0
+    M0
+    $
+ENDIF
+
+; Clear Tube Length After Acquire Origin
+IF( %rLsGui0.13 ) THEN
+   SYN
+   ?%LsIso9.1 = 0   
+   G4 F0.3    
+   ?%LsIso9.1 = 1
+   G4 F0.3 
+   ?%LsIso9.1 = 0
+ENDIF
+
+G(200+sav_G70)
+
+RET

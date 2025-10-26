@@ -1,0 +1,219 @@
+ : pcsEligibleFace
+;// pipe calibration cycles:
+;// find eligible face(s) for a specific operation.
+;//
+;// INPUT:
+;//     pcRequiredC         (optional)
+;//     pcSearchMode        1 = PC_LEVELING
+;//                         2 = PC_SPINDLE_CENTERING
+;//                         3 = PC_TUBE_CENTERING
+;// OUTPUT:
+;//     pcCommonAngle       angle common to eligible validFaces
+;//     pcFaces[2]          per-face index
+;//     pcVLeads[2]         per-face lead (vertex B for face 1 and C for face 2)
+;//     pcIsEdge[2]         per-face edge (vertex B for face 1 and C for face 2)
+;//     pcIsEligible        eligible face is found
+DBL pi = tubePI
+DBL c = pcRequiredC
+IF (VALID(c)) c = -c + 180.0
+
+;// See pcsEvalFace
+;// INPUT:
+DBL pcFaceToEval
+;// OUTPUT:
+DBL pcAngleBC
+DBL pcLengthBC
+DBL pcPb[2], pcPc[2]
+DBL pcPbr, pcPcr
+DBL pcLb, pcLc
+DBL pcSignB, pcSignC
+
+DBL validFaces[10]
+DBL iValidFace, nValidFaces, maxValidFaces = 10
+DBL bx, by
+DBL cx, cy
+DBL lx, ly
+DBL angleBC
+DBL length
+DBL delta
+DBL ti
+DBL i, n
+DBL isValid
+DBL nEdges
+DBL bIsEdge, cIsEdge
+DBL bVLead, cVLead
+DBL maxLength
+DBL maxEdges
+DBL minDelta
+DBL minSide
+
+n = %gmaPolygons[pi].gmanVertices
+IF (n < 3) ERROR(55) ;// at least 3p for a polygon
+
+;// Accumulate v(alid)validFaces if specific C is required (class-independent)
+nValidFaces = 0
+IF (VALID(c)) THEN
+    FOR i = 0 TO n - 1
+        ;// load data for BC, where current segment is BC and polygon is closed
+        ti = i
+        bx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+        by = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+        ti = i + 1
+        IF (ti >= n) ti = ti - n
+        cx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+        cy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+        lx = cx - bx
+        ly = cy - by
+        length = SQRT(lx * lx + ly * ly)
+        IF (length < 0.1) ERROR(55) ;// null segment
+        angleBC = ATANXY(ly, lx)
+
+        ;// check if near to C value
+            ;// modulo difference algorithm => [+180..-180)
+        delta = c - angleBC
+        delta = MOD(delta, 360.0)
+        IF (delta < 0.0)   delta = delta + 360.0
+        IF (delta > 180.0) delta = delta - 360.0
+
+        IF (ABS(delta) < 0.1) THEN
+            IF (nValidFaces == maxValidFaces) ERROR(55)
+            validFaces[nValidFaces] = i
+            nValidFaces = nValidFaces + 1
+        ENDIF
+    ENDFOR
+ENDIF
+
+;// Class-dependent part
+SWITCH (tubeClass)
+CASE 0
+    ;// NOT A TUBE
+    ERROR(55) ;not a tube
+CASE 1, 2, 3, 4, 5, 6
+    ;// RECTANGLE/FLAT OVAL/ROUND
+    ;// TRIANGLE
+    ;// REGULAR POLYGON
+    ;// I-BEAM
+    ;// C-BEAM
+    ;// L-BEAM
+
+    ;// Choose valid, non-degenerate faces then, among them,
+    ;//    -in case of LEVELING:
+    ;//     the longest ones then, among them,
+    ;//    -in case of SPINDLE CENTERING:
+    ;//     those with at least one edge then, among them,
+    ;//     those with the highest number of edges (1 or 2) then, among them,
+    ;//    -in case of TUBE_CENTERING:
+    ;//     nothing more than
+    ;// the one whose surface normal is more close to Y+ in the polygon system.
+
+    maxEdges = -1
+    maxLength = -1.0
+    minDelta = 360.0
+    FOR i = 0 TO n - 1
+        IF (!VALID(c)) THEN
+            isValid = 1
+        ELSE
+            isValid = 0
+            FOR iValidFace = 0 TO nValidFaces - 1
+                IF (i == validFaces[iValidFace]) isValid = 1
+            ENDFOR
+        ENDIF
+
+        IF (isValid) THEN
+            pcFaceToEval = i
+            JSR "pcsEvalFace.cfs"
+
+            ;// Invalidate cases that would lead to collision
+            SWITCH (tubeClass)
+            CASE 4
+                ;// I-BEAM
+                IF (n != 12) ERROR(55)
+                SWITCH (i)
+                CASE 1, 2, 4, 5, 7, 8, 10, 11
+                    isValid = 0
+                ENDSWITCH
+            CASE 5
+                ;// C-BEAM
+                IF (n != 8) ERROR(55)
+                SWITCH (i)
+                CASE 1, 2, 4, 5
+                    isValid = 0
+                ENDSWITCH
+            CASE 6
+                ;// L-BEAM
+                IF (n != 6) ERROR(55)
+                SWITCH (i)
+                CASE 1, 4
+                    isValid = 0
+                ENDSWITCH
+            ENDSWITCH
+        ENDIF
+
+        IF (isValid) THEN
+            ;// TUBE_CENTERING: probing can happen also on the top of a circle!
+            bVLead = pcLb + IFEXP((pcSearchMode == 3), 0.0, pcBorder)
+            cVLead = pcLc + IFEXP((pcSearchMode == 3), 0.0, pcBorder)
+
+            IF (pcSignB < 0) bVLead = MAX(bVLead, pcAllowance)
+            IF (pcSignC < 0) cVLead = MAX(cVLead, pcAllowance)
+
+            length = pcLengthBC - bVLead - cVLead
+            ;// TUBE_CENTERING: only 1 point probing
+            minSide = IFEXP((pcSearchMode == 3), 0.0, pcMinSide)
+            IF (length >= (minSide - 0.001)) THEN
+                bIsEdge = (pcSignB > 0) && (pcPbr <= (pcMaxRounding + 0.001))
+                cIsEdge = (pcSignC > 0) && (pcPcr <= (pcMaxRounding + 0.001))
+                nEdges = bIsEdge + cIsEdge
+                ;// LEVELING or TUBE_CENTERING: skip checking for edges
+                IF ((pcSearchMode == 1) || (pcSearchMode == 3)) nEdges = 1
+                IF (nEdges > 0) THEN
+                    IF (maxEdges <= nEdges) THEN
+                        IF (maxEdges < nEdges) THEN
+                            maxEdges = nEdges
+                            maxLength = -1
+                        ENDIF
+                        ;// SPINDLE_CENTERING or TUBE_CENTERING:
+                        ;// skip checking for length
+                        IF ((pcSearchMode == 2) || (pcSearchMode == 3)) THEN
+                            length = 0.0
+                        ENDIF
+                        IF (maxLength <= (length + 0.001)) THEN
+                            IF (maxLength < (length - 0.001)) THEN
+                                maxLength = length
+                                minDelta = 360.0
+                            ENDIF
+                            ;// obtain angle between X- and BC
+                                ;// modulo difference algorithm => [+180..-180)
+                            delta = +180.0 - pcAngleBC
+                            delta = MOD(delta, 360.0)
+                            IF (delta < 0.0)   delta = delta + 360.0
+                            IF (delta > 180.0) delta = delta - 360.0
+                            delta = ABS(delta)
+                            IF (minDelta > (delta + 0.001)) THEN
+                                minDelta = delta
+                                pcCommonAngle = pcAngleBC
+                                pcFaces[0] = i
+                                pcFaces[1] = i
+                                pcVLeads[0] = bVLead
+                                pcVLeads[1] = cVLead
+                                pcIsEdge[0] = bIsEdge
+                                pcIsEdge[1] = cIsEdge
+                            ENDIF
+                        ENDIF
+                    ENDIF
+                ENDIF
+            ENDIF
+        ENDIF
+    ENDFOR
+    IF (minDelta > 270.0) THEN
+        pcIsEligible = 0
+        RETCONT
+    ENDIF
+OTHERWISE
+    ERROR(55) ;unhandled tube class
+ENDSWITCH
+
+pcIsEligible = 1
+RET

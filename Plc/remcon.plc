@@ -1,0 +1,149 @@
+#include "Iol.inc"
+
+
+VAR
+#include "Cnc.inc"
+#include "RemContr.inc"
+END_VAR
+
+VAR
+DryrunSig                  AT %PlcOp0.2 ; ** DryRun
+HoldingZ                   AT %ax29.ra0.1;                  * %ax29.ra0.1 holding Z axis
+HoldingX                   AT %ax27.ra0.1;                  * %ax27.ra0.1 holding X axis
+HoldingY                   AT %ax28.ra0.1;                  * %ax29.ra0.1 holding Y axis
+END_VAR
+
+FUNCTION REMOTE_DISPLAY
+******************************************************************************
+* THE AXIS DISPLAY
+******************************************************************************
+LD   %ax30.ra4                   *U position Yang
+DIV  10
+ST   X_AXIS_POSITION 
+
+LD   %ax28.ra4
+DIV  10
+ST   Y_AXIS_POSITION 
+
+LD   %ax29.ra4
+DIV  10
+ST   Z_AXIS_POSITION 
+
+LD      HoldingZ                   ** %ax29.ra0.1 holding Z axis
+JMPCN   Z_HOLDING
+LD      4
+ST      LineZaxis                  ** XhcApp.Xhc_LineIdx3 Feedrate and mode 
+JMP     END_AZ
+Z_HOLDING:
+LD      1
+ST      LineZaxis                  ** XhcApp.Xhc_LineIdx3 Feedrate and mode 
+END_AZ:
+
+LD      HoldingX                   ** %ax27.ra0.1 holding X axis
+JMPCN   X_HOLDING
+LD      5
+ST      LineXaxis                  ** XhcApp.Xhc_LineIdx1 X axis quote      
+JMP     END_AX
+X_HOLDING:
+LD      2
+ST      LineXaxis                  ** XhcApp.Xhc_LineIdx1 X axis quote      
+END_AX:
+
+LD      HoldingY                   ** %ax29.ra0.1 holding Y axis
+JMPCN   Y_HOLDING
+LD      6
+ST      LineYaxis                  ** XhcApp.Xhc_LineIdx2 Y axis quote      
+JMP     END_AY
+Y_HOLDING:
+LD      3
+ST      LineYaxis                  ** XhcApp.Xhc_LineIdx2 Y axis quote      
+END_AY:
+
+******************************************************************************
+* THE FEEDRATE DISPLAY
+******************************************************************************
+LD       DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_TAR                   * rc0.8  Selettore modi operativi su REF (taratura)
+JMPCN    DRY_REF  
+LD       12 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+DRY_REF:               
+
+LDN      DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_TAR                   * rc0.8  Selettore modi operativi su REF (taratura)
+JMPCN    NOTDRY_REF  
+LD       7 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+NOTDRY_REF:   
+
+LD       DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_MAN                   * rc0.9  Selettore modi operativi su JOG (manuale)
+JMPCN    DRY_JOG  
+LD       13 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+DRY_JOG: 
+
+LDN      DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_MAN                   * rc0.9  Selettore modi operativi su JOG (manuale)
+JMPCN    NOTDRY_JOG  
+LD       8 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+NOTDRY_JOG: 
+
+LD       DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_INC                   * rc0.10  Selettore modi operativi su INC (inc.fissi)
+JMPCN    DRY_INC  
+LD       14 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+DRY_INC: 
+
+LDN      DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_INC                   * rc0.10  Selettore modi operativi su INC (inc.fissi)
+JMPCN    NOTDRY_INC  
+LD       9 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+NOTDRY_INC: 
+
+LD       DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_MDI                   * rc0.11  Selettore modi operativi su MDI (semiautom)
+JMPCN    DRY_MDI  
+LD       15 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+DRY_MDI: 
+
+LDN      DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_MDI                   * rc0.11  Selettore modi operativi su MDI (semiautom)
+JMPCN    NOTDRY_MDI  
+LD       10 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+NOTDRY_MDI: 
+
+LD       DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_AUT                   * rc0.12  Selettore modi operativi su AUT (automatic)
+JMPCN    DRY_AUT  
+LD       16 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+JMP      END_CONDITION 
+DRY_AUT: 
+
+LDN      DryrunSig                 ** %PlcOp0.2 Dry signal
+AND      BCI_AUT                   * rc0.12  Selettore modi operativi su AUT (automatic)
+JMPCN    NOTDRY_AUT  
+LD       11 
+ST       LineFeed                  ** XhcApp.Xhc_LineIdx0 Z axis quote      
+
+NOTDRY_AUT: 
+
+
+END_CONDITION: 
+
+
+END_FUNCTION

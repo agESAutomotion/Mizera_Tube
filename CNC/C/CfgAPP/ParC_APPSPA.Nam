@@ -1,0 +1,11 @@
+[PROMPT]
+KEYWORD =Parámetros
+
+#include "Applpar?.nam"
+#include "aCFGpar?.nam"
+#include "dCFGpar?.nam"
+#include "lsrCFGpar?.nam"
+
+[HELP]
+
+[KEYS]

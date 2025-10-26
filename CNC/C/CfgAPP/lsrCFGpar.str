@@ -1,0 +1,851 @@
+[STRUCT]
+
+KEY_LSROPT {
+        LSR_OPT0;
+        LSR_OPT1;
+        LSR_OPT2;
+        LSR_OPT3;
+        LSR_OPT4;
+        LSR_OPT5;
+        LSR_OPT6;
+        LSR_OPT7;
+        LSR_OPT8;
+        LSR_OPT9;
+        LSR_OPT10;
+        LSR_OPT11;
+        LSR_OPT12;
+        LSR_OPT13;
+        LSR_OPT14;
+        LSR_OPT15;
+        LSR_OPT16;
+        LSR_OPT17;
+        LSR_OPT18;
+        LSR_OPT19;
+        LSR_OPT20;
+        LSR_OPT21;
+        LSR_OPT22;
+        LSR_OPT23;
+        LSR_OPT24;
+        LSR_OPT25;
+        LSR_OPT26;
+        LSR_OPT27;
+        LSR_OPT28;
+        LSR_OPT29;
+        LSR_OPT30;
+        LSR_OPT31;
+        LSR_OPT100;
+        LSR_OPT101;
+        LSR_OPT102;
+        LSR_OPT103;
+        LSR_OPT104;
+        LSR_OPT105;
+        LSR_OPT106;
+        LSR_OPT107;
+        LSR_OPT108;
+        LSR_OPT109;
+        LSR_OPT110;
+        LSR_OPT111;
+        LSR_OPT112;
+        LSR_OPT113;                
+        LSR_OPT114;                
+        LSR_OPT115;                
+        LSR_OPT116;                
+        LSR_OPT117;                
+        LSR_OPT118;                
+        LSR_OPT119;                
+        LSR_OPT120;                
+        LSR_OPT121;                
+        LSR_OPT122;                
+        LSR_OPT123;                
+        LSR_OPT124;                
+        LSR_OPT125;                
+        LSR_OPT126;                
+        LSR_OPT127;                
+        LSR_OPT128;                
+        LSR_OPT129;                
+        LSR_OPT130;                
+        LSR_OPT131;                
+}
+
+KEY_LSRCOSTK {
+        LSR_COSTK0;
+        LSR_COSTK1;
+        LSR_COSTK2;
+        LSR_COSTK3;
+        LSR_COSTK4;
+        LSR_COSTK5;
+        LSR_COSTK6;
+        LSR_COSTK7;
+        LSR_COSTK8;
+        LSR_COSTK9;
+        LSR_COSTK10;
+        LSR_COSTK11;
+        LSR_COSTK12;
+        LSR_COSTK13;
+        LSR_COSTK14;
+        LSR_COSTK15;
+        LSR_COSTK16;
+        LSR_COSTK17;
+        LSR_COSTK18;
+        LSR_COSTK19;
+        LSR_COSTK20;
+        LSR_COSTK21;
+        LSR_COSTK22;
+        LSR_COSTK23;
+        LSR_COSTK24;
+        LSR_COSTK25;
+        LSR_COSTK26;
+        LSR_COSTK27;
+        LSR_COSTK28;
+        LSR_COSTK29;
+        LSR_COSTK30;
+        LSR_COSTK31;
+        LSR_COSTK32;
+        LSR_COSTK33;
+        LSR_COSTK34;
+        LSR_COSTK35;
+        LSR_COSTK36;
+        LSR_COSTK37;
+        LSR_COSTK38;
+        LSR_COSTK39;
+        LSR_COSTK40;
+        LSR_COSTK41;
+        LSR_COSTK42;
+        LSR_COSTK43;
+        LSR_COSTK44;
+        LSR_COSTK45;
+        LSR_COSTK46;
+        LSR_COSTK47;
+        LSR_COSTK48;
+        LSR_COSTK49;
+        LSR_COSTK50;
+        LSR_COSTK51;
+        LSR_COSTK52;
+        LSR_COSTK53;
+        LSR_COSTK54;
+        LSR_COSTK55;
+        LSR_COSTK56;
+        LSR_COSTK57;
+        LSR_COSTK58;
+        LSR_COSTK59;
+        LSR_COSTK60;
+        LSR_COSTK61;
+        LSR_COSTK62;
+        LSR_COSTK63;
+}
+
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+MCH = 0
+
+
+//***************** PLCOPT ***********************
+
+[LSR_OPT0]
+ADR = LSRPlcOp0
+MSK = 0,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT1]
+ADR = LSRPlcOp0
+MSK = 1,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT2]
+ADR = LSRPlcOp0
+MSK = 2,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT3]
+ADR = LSRPlcOp0
+MSK = 3,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT4]
+ADR = LSRPlcOp0
+MSK = 4,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT5]
+ADR = LSRPlcOp0
+MSK = 5,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT6]
+ADR = LSRPlcOp0
+MSK = 6,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT7]
+ADR = LSRPlcOp0
+MSK = 7,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT8]
+ADR = LSRPlcOp0
+MSK = 8,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT9]
+ADR = LSRPlcOp0
+MSK = 9,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT10]
+ADR = LSRPlcOp0
+MSK = 10,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT11]
+ADR = LSRPlcOp0
+MSK = 11,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT12]
+ADR = LSRPlcOp0
+MSK = 12,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT13]
+ADR = LSRPlcOp0
+MSK = 13,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT14]
+ADR = LSRPlcOp0
+MSK = 14,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT15]
+ADR = LSRPlcOp0
+MSK = 15,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT16]
+ADR = LSRPlcOp0
+MSK = 16,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT17]
+ADR = LSRPlcOp0
+MSK = 17,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT18]
+ADR = LSRPlcOp0
+MSK = 18,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT19]
+ADR = LSRPlcOp0
+MSK = 19,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT20]
+ADR = LSRPlcOp0
+MSK = 20,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT21]
+ADR = LSRPlcOp0
+MSK = 21,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT22]
+ADR = LSRPlcOp0
+MSK = 22,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT23]
+ADR = LSRPlcOp0
+MSK = 23,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT24]
+ADR = LSRPlcOp0
+MSK = 24,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT25]
+ADR = LSRPlcOp0
+MSK = 25,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT26]
+ADR = LSRPlcOp0
+MSK = 26,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT27]
+ADR = LSRPlcOp0
+MSK = 27,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT28]
+ADR = LSRPlcOp0
+MSK = 28,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT29]
+ADR = LSRPlcOp0
+MSK = 29,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT30]
+ADR = LSRPlcOp0
+MSK = 30,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT31]
+ADR = LSRPlcOp0
+MSK = 31,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT100]
+ADR = LSRPlcOp1
+MSK = 0,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT101]
+ADR = LSRPlcOp1
+MSK = 1,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT102]
+ADR = LSRPlcOp1
+MSK = 2,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT103]
+ADR = LSRPlcOp1
+MSK = 3,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT104]
+ADR = LSRPlcOp1
+MSK = 4,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT105]
+ADR = LSRPlcOp1
+MSK = 5,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT106]
+ADR = LSRPlcOp1
+MSK = 6,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT107]
+ADR = LSRPlcOp1
+MSK = 7,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT108]
+ADR = LSRPlcOp1
+MSK = 8,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT109]
+ADR = LSRPlcOp1
+MSK = 9,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT110]
+ADR = LSRPlcOp1
+MSK = 10,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT111]
+ADR = LSRPlcOp1
+MSK = 11,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT112]
+ADR = LSRPlcOp1
+MSK = 12,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT113]
+ADR = LSRPlcOp1
+MSK = 13,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT114]
+ADR = LSRPlcOp1
+MSK = 14,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT115]
+ADR = LSRPlcOp1
+MSK = 15,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT116]
+ADR = LSRPlcOp1
+MSK = 16,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT117]
+ADR = LSRPlcOp1
+MSK = 17,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT118]
+ADR = LSRPlcOp1
+MSK = 18,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT119]
+ADR = LSRPlcOp1
+MSK = 19,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT120]
+ADR = LSRPlcOp1
+MSK = 20,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT121]
+ADR = LSRPlcOp1
+MSK = 21,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT122]
+ADR = LSRPlcOp1
+MSK = 22,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT123]
+ADR = LSRPlcOp1
+MSK = 23,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT124]
+ADR = LSRPlcOp1
+MSK = 24,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT125]
+ADR = LSRPlcOp1
+MSK = 25,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT126]
+ADR = LSRPlcOp1
+MSK = 26,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT127]
+ADR = LSRPlcOp1
+MSK = 27,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT128]
+ADR = LSRPlcOp1
+MSK = 28,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT129]
+ADR = LSRPlcOp1
+MSK = 29,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT130]
+ADR = LSRPlcOp1
+MSK = 30,1
+FRM = CHK, 0
+DSV = 0
+
+[LSR_OPT131]
+ADR = LSRPlcOp1
+MSK = 31,1
+FRM = CHK, 0
+DSV = 0
+
+
+//***************** COSTK ***********************
+[LSR_COSTK0]
+ADR = LSRCostK0
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK1]
+ADR = LSRCostK1
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK2]
+ADR = LSRCostK2
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK3]
+ADR = LSRCostK3
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK4]
+ADR = LSRCostK4
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK5]
+ADR = LSRCostK5
+MCH = 7
+
+[LSR_COSTK6]
+ADR = LSRCostK6
+FRM = QTA, 3
+MCH = 7
+
+[LSR_COSTK7]
+ADR = LSRCostK7
+FRM = QTA, 3
+MCH = 7
+
+[LSR_COSTK8]
+ADR = LSRCostK8
+FRM = QTA, 3
+MCH = 7
+
+[LSR_COSTK9]
+ADR = LSRCostK9
+FRM = QTA, 3
+MCH = 7
+
+[LSR_COSTK10]
+ADR = LSRCostK10
+MCH = 7
+
+[LSR_COSTK11]
+ADR = LSRCostK11
+MCH = 7
+
+[LSR_COSTK12]
+ADR = LSRCostK12
+MCH = 7
+
+[LSR_COSTK13]
+ADR = LSRCostK13
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK14]
+ADR = LSRCostK14
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK15]
+ADR = LSRCostK15
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK16]
+ADR = LSRCostK16
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK17]
+ADR = LSRCostK17
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK18]
+ADR = LSRCostK18
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK19]
+ADR = LSRCostK19
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK20]
+ADR = LSRCostK20
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK21]
+ADR = LSRCostK21
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK22]
+ADR = LSRCostK22
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK23]
+ADR = LSRCostK23
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK24]
+ADR = LSRCostK24
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK25]
+ADR = LSRCostK25
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK26]
+ADR = LSRCostK26
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK27]
+ADR = LSRCostK27
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK28]
+ADR = LSRCostK28
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK29]
+ADR = LSRCostK29
+FRM = DEC, 2
+MCH = 7
+
+[LSR_COSTK30]
+ADR = LSRCostK30
+UDM = mm,inch
+FRM = QTA, 2
+MCH = 7
+
+[LSR_COSTK31]
+ADR = LSRCostK31
+FRM = QTA, 3
+UDM = mm,inch
+MCH = 7
+
+[LSR_COSTK32]
+ADR = LSRCostK32
+FRM = QTA, 3
+UDM = mm,inch
+MCH = 7
+
+[LSR_COSTK33]
+ADR = LSRCostK33
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK34]
+ADR = LSRCostK34
+FRM = QTA, 0
+UDM = mm,inch
+MCH = 7
+
+[LSR_COSTK35]
+ADR = LSRCostK35
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK36]
+ADR = LSRCostK36
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK37]
+ADR = LSRCostK37
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK38]
+ADR = LSRCostK38
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK39]
+ADR = LSRCostK39
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK40]
+ADR = LSRCostK40
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK41]
+ADR = LSRCostK41
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK42]
+ADR = LSRCostK42
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK43]
+ADR = LSRCostK43
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK44]
+ADR = LSRCostK44
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK45]
+ADR = LSRCostK45
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK46]
+ADR = LSRCostK46
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK47]
+ADR = LSRCostK47
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK48]
+ADR = LSRCostK48
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK49]
+ADR = LSRCostK49
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK50]
+ADR = LSRCostK50
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK51]
+ADR = LSRCostK51
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK52]
+ADR = LSRCostK52
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK53]
+ADR = LSRCostK53
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK54]
+ADR = LSRCostK54
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK55]
+ADR = LSRCostK55
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK56]
+ADR = LSRCostK56
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK57]
+ADR = LSRCostK57
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK58]
+ADR = LSRCostK58
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK59]
+ADR = LSRCostK59
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK60]
+ADR = LSRCostK60
+FRM = DEC, 0
+MCH = 7
+
+[LSR_COSTK61]
+ADR = LSRCostK61
+FRM = DEC, 3
+MCH = 7
+
+[LSR_COSTK62]
+ADR = LSRCostK62
+FRM = QTA, 3
+MCH = 7
+
+[LSR_COSTK63]
+ADR = LSRCostK63
+FRM = QTA, 3
+MCH = 7

@@ -1,0 +1,20 @@
+
+[KEYS]
+TITLE=I/O ANALOGICI
+
+[PROMPT]
+KEY_NODE=
+ANALOG01=Leaf
+LabelCapacitive=Ingresso analogico capacitivo (IW20)
+LabelOut1=Uscita analogica POTENZA (QW913)
+LabelOut2=Uscita analogica FOCALE (QW900)
+LabelOut3=Uscita analogica PWM-DUTY  (QW908)
+LabelCapacitive1=Beam dump monitor (IW800)
+LabelCapacitive2=Auxiliary monitor (IW801)
+LabelCapacitive3=Back reflection monitor (IW802)
+LabelCapacitive4=Optical power monitor (IW803)
+LabelCapacitive5=Lettura dati testa (IW807)
+
+[STATUS]
+
+[HELP]

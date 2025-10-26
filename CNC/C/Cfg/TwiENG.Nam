@@ -1,0 +1,109 @@
+[PROMPT]
+KEY_TWI       =Spindles Data
+
+TWI_KINELIST =0-Null, 1=Rotary Hd, 2=Fork Hd, 3=Nutator
+TWI_KINE      =Type of kinematic mechanism
+TWI_DSC       =Description
+
+RH_X0         =X coordinate of first pivot
+RH_Y0         =Y coordinate of first pivot
+RH_Z0         =Z coordinate of first pivot
+RH_ORIENT     =Z axis head positioning
+RH_FRAME_C    =Reference frame Z (Y) rotation
+RH_FRAME_B    =Reference frame Y (P) rotation
+RH_FRAME_A    =Reference frame X (R) rotation
+RH_ORIENTLST  =6: X+, 8: Y+, 9: Z+
+RH_EC         =Rotation around Z axis
+RH_ECREV      =Reversal towards rotation actuator
+RH_ECAX       =Actuator for rot. around Z axis
+RH_AXLST      =0-NC, 7-A axis, 8-B axis, 9-C axis, 10-Spindle, 127-Pursuit
+
+FRH_X0        =X coordinate of first pivot
+FRH_Y0        =Y coordinate of first pivot
+FRH_Z0        =Z coordinate of first pivot
+FRH_ORIENT    =Z axis head positioning
+FRH_FRAME_C   =Reference frame Z (Y) rotation
+FRH_FRAME_B   =Reference frame Y (P) rotation
+FRH_FRAME_A   =Reference frame X (R) rotation
+FRH_EC        =Rotation around Z axis
+FRH_ECREV     =Reversal towards rotation actuator
+FRH_ECAX      =Actuator for rot. around Z axis
+FRH_X1        =X coordinate of second pivot
+FRH_Y1        =Y coordinate of second pivot
+FRH_EB        =Rotation around Y axis
+FRH_EBREV     =Reversal towards rotation actuator
+FRH_EBAX      =Actuator for rot. around Y axis
+FRH_X2        =Toolholder X coordinate
+FRH_Z2        =Toolholder Z coordinate
+
+OARH_X0       =X coordinate of first pivot
+OARH_Y0       =Y coordinate of first pivot
+OARH_Z0       =Z coordinate of first pivot
+OARH_ORIENT   =Z axis head positioning
+OARH_FRAME_C  =Reference frame Z (Y) rotation
+OARH_FRAME_B  =Reference frame Y (P) rotation
+OARH_FRAME_A  =Reference frame X (R) rotation
+OARH_EC       =Rotation around Z axis
+OARH_ECREV    =Reversal towards rotation actuator
+OARH_ECAX     =Actuator for rot. around Z axis
+OARH_X1       =X coordinate of second pivot
+OARH_Y1       =Y coordinate of second pivot
+OARH_TILT     =Nutation angle
+OARH_EB       =Rotation around Y axis
+OARH_EBREV    =Reversal towards rotation actuator
+OARH_EBAX     =Actuator for rot. around Y axis
+OARH_X2       =X coordinate of tool holder
+OARH_Y2       =Y coordinate of tool holder
+OARH_Z2       =Z coordinate of tool holder
+OARH_CAMBER   =Camber angle
+
+TWI_MINRPM    =Minimum rpm rate
+TWI_MAXRPM    =Maximum rpm rate
+TWI_CCW       =Normal left-handed direction
+
+[HELP]
+TWI_KINE      =Type of kinematic mechanism: 1 =ROTARY_HEAD, 2 =FORK_ROTARY_HEAD
+
+RH_X0         =X coordinate of first pivot with respect to the machining head reference point
+RH_Y0         =Y coordinate of first pivot with respect to the machining head reference point
+RH_Z0         =Z coordinate of first pivot with respect to the machining head reference point
+RH_ORIENT     =Z axis head positioning:6 =X+ 8 =Y+ 9 =Z+
+RH_EC1        =Rotation around Z axis belonging to the reference system which has its origin on the first pivot
+RH_ECREV      =Around-Z rotation actuator direction reverse:  1 - Enable;  0 - Disable
+RH_ECAX       =Actuator for rot. around Z axis: 0 =NC 7 =A 8 =B 9 =C 10 =Spindle axis 127 = With mechanical following
+
+FRH_X0        =X coordinate of first pivot with respect to the machining head reference point
+FRH_Y0        =Y coordinate of first pivot with respect to the machining head reference point
+FRH_Z0        =Z coordinate of first pivot with respect to the machining head reference point
+FRH_ORIENT    =Z axis head positioning: 6 =X+ 8 =Y+ 9 =Z+
+FRH_EC        =Rotation around Z axis belonging to the reference system which has its origin on the first pivot
+FRH_ECREV     =Around-Z rotation actuator direction reverse:  1 - Enable;  0 - Disable
+FRH_ECAX      =Actuator for rot. around Z axis: 0 =NC 7 =A 8 =B 9 =C 10 =Spindle axis 127 =With mechanical following
+FRH_X1        =X coordinate of second pivot measured on a reference system which has its origin on the first pivot
+FRH_Y1        =Y coordinate of second pivot measured on a reference system which has its origin on the first pivot
+FRH_EB        =Rotation around Y' axis belonging to the reference system which has its origin on the second pivot
+FRH_EBREV     =Around-Y' rotation actuator direction reverse:  1 - Enable;  0 - Disable
+FRH_EBAX      =Actuator for rot. around Y' axis: 0 =NC 7 =A 8 =B 9 =C 10 =Spindle axis 127 =With mechanical following
+FRH_X2        =Tool holder X coordinate measured on a reference system which has its origin on the second pivot
+FRH_Z2        =Tool holder Z coordinate measured on a reference system which has its origin on the second pivot
+
+OARH_X0       =X coordinate of the first  pivot with reference to the zero point of the head
+OARH_Y0       =Y coordinate of the first  pivot with reference to the zero point of the head
+OARH_Z0       =Z coordinate of the first pivot  with reference to the zero point of the head
+OARH_ORIENT   =Z axis head orientation : 6 =X+  8 =Y+   9 =Z+
+OARH_EC       =Rotation around Z axis belonging to the reference  system that has its origin on the first pivot
+OARH_ECREV    =Around Z  axis rotation actuator direction reverse:  1 - Enable;  0 - Disable
+OARH_ECAX     =Actuator for rot. around Z axis:  0 =NC   7 =A    8 =B    9 =C   10 =Spindle  127 = Mechanical following
+OARH_X1       =X coordinate of the second pivot respect  the reference system  with origin on the first pivot
+OARH_Y1       =Y coordinate of the second pivot respect  the reference system with origin  on the first pivot
+OARH_TILT     =Angle between the head Y axis and the normal to the tilting plane
+OARH_EB       = Rotation around Y axis belonging to the reference system  that has its origin on the second  pivot
+OARH_EBREV    =Around Y axis  rotation actuator direction reverse:  1 - Enable;  0 - Disable
+OARH_EBAX     =Actuator for rot. around Y axis:  0 =NC   7 =A   8 =B   9 =C   10 =Spindle  127 =Mechanical following
+OARH_X2       =X coordinate of the tool holder respect  the reference system with  origin on the second pivot
+OARH_Y2       =Y coordinate of the tool holder respect  the reference system with origin on the second pivot
+OARH_Z2       =Z coordinate of the tool holder respect  the reference system with origin on the second pivot
+
+TWI_MINRPM    =Minimum rpm rate
+TWI_MAXRPM    =Maximum rpm rate
+TWI_CCW       =Normal left-handed direction

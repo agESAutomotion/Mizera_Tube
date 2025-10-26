@@ -1,0 +1,21 @@
+ Z K : G11033
+
+;// Calcola la cinematica diretta (sostegno dinamico (lunetta) con tabella n-polinomiale)
+;// e ritorna il risultato in lifter_z (definire esternamente).
+;// Utilizzare prima della G4011 T35 per impostare le quote del master Z.
+;// Z = selezione tabella fz dell'equazione z'=fz(z)
+;// K = slave z'
+;// ove:
+;//     z' = scorrimento z' del cuneo/rotazione della biella
+
+DBL tableZ = VA25
+SYN
+DBL jointZ = QCALC(VA10)
+DBL table_x, table_y    ;//G11035 output
+
+;//   -1
+;//z=fz(z')
+G11035 D0 T(tableZ) Y(jointZ)
+lifter_z = table_x
+
+RET

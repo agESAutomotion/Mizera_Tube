@@ -1,0 +1,26 @@
+: M703    ; Blendswitch (ON) NOT USED
+
+IF(%cn[WHO()].rc[0].21) RET      ;Canale in test
+IF( !%config_machine0.6) ERROR(55) ;Abilitazione
+
+IF( !CouplingFollowEn || !%gIso19.0) THEN ;Enable blendSwitch PLC writes
+
+    SYN
+    ; Se asse Z agganciato lo sgancio e poi in seguito lo riaggancio
+    IF( %ax29.ra8.14 ) THEN
+        ; Sgancio assi
+        G4005 S(AXIDX(3,Z))
+        G4099
+
+        JSR "aidEngageUnload.cfs"
+
+        G153
+        G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+        G152
+        G4099
+    ELSE
+        JSR "aidEngageUnload.cfs"
+    ENDIF
+ENDIF
+
+RET

@@ -1,0 +1,105 @@
+ : pcmLifterMeasure
+;// pipe calibration cycles:
+;// helper: calculate tube lifter position.
+;// Polygon winding must be CCW.
+;// INPUT:
+;//     pcCurrentC
+;// OUTPUT:
+;//     pcLifterY
+DBL pi = tubePI
+DBL c = -pcCurrentC
+DBL sav_G70 = XGET("@G70")
+G71
+
+DBL ax, ay
+DBL bx, by, br
+DBL cx, cy
+DBL lx, ly
+DBL angleAB, angleBC
+DBL angleABC
+DBL sign
+DBL length
+DBL delta
+DBL lb
+DBL deltaABC
+DBL Cbx, Cby
+DBL i, n, ti
+DBL y
+DBL isFound = 0
+
+n = %gmaPolygons[pi].gmanVertices
+IF (n < 3) ERROR(55) ;// at least 3p for a polygon
+
+FOR i = 0 TO n - 1
+    ;// load data for ABC, where current segment is BC and polygon is closed
+    ti = i - 1
+    IF (ti < 0) ti = ti + n
+    ax = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    ay = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+    ti = i
+    bx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    by = %gmaPolygons[pi].gmaVertices[ti].gma_v
+    br = %gmaPolygons[pi].gmaVertices[ti].gma_r
+
+    ti = i + 1
+    IF (ti >= n) ti = ti - n
+    cx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+    cy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+    ;// obtain AB, BC orientations
+    lx = bx - ax
+    ly = by - ay
+    length = SQRT(lx * lx + ly * ly)
+    IF (length < 0.1) ERROR(55) ;// null segment
+    angleAB = ATANXY(ly, lx)
+
+    lx = cx - bx
+    ly = cy - by
+    length = SQRT(lx * lx + ly * ly)
+    IF (length < 0.1) ERROR(55) ;// null segment
+    angleBC = ATANXY(ly, lx)
+
+    ;// obtain ABC angle.
+        ;// modulo difference algorithm => [+180..-180)
+    delta = angleBC - angleAB
+    delta = MOD(delta, 360.0)
+    IF (delta < 0.0)   delta = delta + 360.0
+    IF (delta > 180.0) delta = delta - 360.0
+    IF ((delta > +175.0) || (delta < -175.0)) THEN
+        ERROR(55) ;// vertex too sharp
+    ENDIF
+    sign = SGN(delta)
+    ;// assume winding CCW
+    IF (sign >= 0) THEN
+        deltaABC = ABS(delta)
+        angleABC = 180.0 - deltaABC
+
+        lb = br / TAN(angleABC/2)
+
+        ;// obtain center near B
+        Cbx = +COS(angleBC) * lb  -SIN(angleBC) * br * sign + bx
+        Cby = +SIN(angleBC) * lb  +COS(angleBC) * br * sign + by
+
+        ;// check if inside current rounding span
+            ;// modulo difference algorithm => [+180..-180)
+        delta = c - angleAB
+        delta = MOD(delta, 360.0)
+        IF (delta < 0.0)   delta = delta + 360.0
+        IF (delta > 180.0) delta = delta - 360.0
+
+        delta = delta * sign
+
+        IF ((delta > -0.001) && (delta < (deltaABC +0.001))) THEN
+            y = +SIN(-c) * Cbx +COS(-c) * Cby - br * sign
+            IF (!isFound || (pcLifterY > y)) pcLifterY = y
+            isFound = 1
+        ENDIF
+    ENDIF
+ENDFOR
+
+IF (!isFound) ERROR(55) ;// lifter span not found
+
+G(sav_G70)
+pcLifterY = CFRMM(pcLifterY)
+RET

@@ -1,0 +1,41 @@
+[PROMPT]
+KEYWORD       =Parameters
+KEY_SYS       =System
+#include "org?.nam"
+#include "twi?.nam"
+#include "thd?.nam"
+#include "ced?.nam"
+#include "tab?.nam"
+#include "gorg?.nam"
+#include "czo?.nam"
+#include "vrtc?.nam"
+#include "gantr?.nam"
+#include "PlcTabInterp?.nam"
+#include "cnfge?.nam"
+#include "CnfPLC?.nam"
+#include "cnfch?.nam"
+#include "parch?.nam"
+#include "fdc?.nam"
+#include "cnfax?.nam"
+#include "parax?.nam"
+//#include "antslt?.nam"
+#include "dgt?.nam"
+#include "can?.nam"
+#include "Ecat?.nam"
+#include "UserDll?.nam"
+#include "aCFGpar?.nam"
+#include "lsrCFGpar?.nam"
+#include "lsrKuser?.nam"
+#include "Applpar?.nam"
+#include "cut?.nam"
+#include "SavePar?.nam"
+#include "ParUsr?.nam"
+#include "GraphMobPotDiamYZ?.nam"
+
+[HELP]
+KEYWORD =Parameters
+
+[KEYS]
+TXT6 = Load Parameters
+TXT7 = Save  Parameters
+TXT8 = Load Comp.Zone

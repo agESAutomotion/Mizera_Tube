@@ -1,0 +1,31 @@
+ : mapCalibrationRotaryAxes
+
+;// RTCP Calibration Cycle
+;// DEFINED -> rtcp_calib
+;// Helper CFS to map current head axes in calibration cycles
+
+SYN
+tbCurrentA1 = -1
+tbCurrentA2 = -1
+
+IF (%twi[tbCurrent].yKine != 3) RET
+
+SWITCH (%twi[tbCurrent].htwi.oarh.yECAx)
+CASE 7
+    tbCurrentA1 = AXIDX(tbChan,A)
+CASE 8
+    tbCurrentA1 = AXIDX(tbChan,B)
+CASE 9
+    tbCurrentA1 = AXIDX(tbChan,C)
+ENDSWITCH
+
+SWITCH (%twi[tbCurrent].htwi.oarh.yEBAx)
+CASE 7
+    tbCurrentA2 = AXIDX(tbChan,A)
+CASE 8
+    tbCurrentA2 = AXIDX(tbChan,B)
+CASE 9
+    tbCurrentA2 = AXIDX(tbChan,C)
+ENDSWITCH
+
+RET

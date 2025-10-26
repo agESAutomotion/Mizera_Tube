@@ -1,0 +1,28 @@
+
+[KEYS]
+TITLE=Parametri JUMPING
+
+[PROMPT]
+KEY_NODE=Node
+REG_CHECK2=Jumping data
+LabelDist1=P1- P2 Limiti zone per controllo jumping [mm]
+LabelK=K1-K2-K3   Altezza testa alla fine del jump se quota o tempo piercing = 0 [% del capacitivo]
+LabelJumpingDistance=DISTANZA JUMPING [mm]
+LabelJumpingDistance1=DISTANZA JUMPING [mm]
+LabelP1=P1
+LabelP2=P2
+LabelD1=D1
+LabelD2=D2
+LabelD3=D3
+LabelK1=K1
+LabelK2=K2
+LabelK3=K3
+LabelK4=D1-D2-D3   Distanza per abilitare capacitivo [mm]
+LabelK5=Distanza per abilitare capacitivo
+LabelStartPoint=START
+LabelEndPoint=END
+LabelMax=MAX
+
+[STATUS]
+
+[HELP]

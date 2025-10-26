@@ -1,0 +1,67 @@
+A Q [V]0 [W]0 :600
+
+
+RET
+;G600 PLC Axes position
+;---------------------------------------
+;(VA0)  A ID asse
+;(VA16) Q Quota
+;(VA21) V Velocità
+;(VA22) W Wait Enable
+DBL IdAx=VA0
+DBL PosQta=VA16*1000.0
+DBL PosVel=ABS(VA21)
+DBL PosWait=VA22
+
+
+SYN
+;Verifica parametri
+IF (PosVel==0) PosVel=%ax[VA0].pa9            ;Massima velocità
+IF (PosVel>%ax[VA0].pa9) PosVel=%ax[VA0].pa9  ;Massima velocità
+IF ((IdAx<0) ||(IdAx>89)) JMP.ERR1            ;Id(0..20)
+IF (PosQta>%ax[VA0].pa22) JMP .ERR2           ;Finecorsa positivo
+IF (PosQta<%ax[VA0].pa21) JMP .ERR2           ;Finecorsa negativo
+
+
+SYN
+;Verifica se attiva un altro posizionamento
+AWAIT(!%zAx[IdAx].AxPosRun.0)
+AWAIT(!%zAx[IdAx].AxPosStr.0)
+;Verifica InPos +/- 0.01
+IF (ABS(PosQta-%ax[VA0].ra4)<10) RET
+
+
+SYN
+;Parametri AxPos
+?%zAx[IdAx].AxPosQta=PosQta         ;Quota
+?%zAx[IdAx].AxPosVel=PosVel         ;Velocita
+?%zAx[IdAx].AxPosStr.0=1            ;Start funzione
+AWAIT(%zAx[IdAx].AxPosRun.0)        ;Attende conferma start
+
+
+SYN
+;Attendi fine AxPos
+IF (PosWait>0) AWAIT(!%zAx[IdAx].AxPosStr.0)
+
+;Verifica Error AxPos
+AWAIT(!%zAx[IdAx].AxPosErr.0)
+
+;END
+SYN
+RET
+
+
+
+;Gestione Errori
+;------------------------------------------------
+.ERR1
+SYN
+MSGOUT "G600 ERROR ID AX"
+M0
+JMP .ERR1
+
+.ERR2
+SYN
+MSGOUT "G600 ERROR AX:" VA0 " POSITION OUT-RANGE:" VA16
+M0
+JMP .ERR2

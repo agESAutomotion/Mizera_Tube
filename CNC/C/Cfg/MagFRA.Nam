@@ -1,0 +1,124 @@
+[PROMPT]
+KEY_MAG       =Données Magasin Outils
+
+KEY_REV0      =Tourelle(0)
+KEY_REV1      =Tourelle(1)
+KEY_REV2      =Tourelle(2)
+KEY_REV3      =Tourelle(3)
+KEY_REV4      =Tourelle(4)
+KEY_REV5      =Tourelle(5)
+
+KEY_RV        =Configurer Tourelle
+KEY_TPMAP     =Association Outil-Poche
+KEY_KINPOCKET =Données Cinématiques Tourelle
+KEY_DYNTOOL   =Données Dynamiques broche
+
+RV_AXTYPE     =Type
+RV_TURRETS    =Nombre de tourelles revolver (1-12)
+RV_GIRISP     =Tours broche
+RV_GIRIRV     =Tours tourelle
+RV_VELLIM     =Vitesse limite Revolver (tr/mn)
+RV_ACCTIME    =Temps accélération (s)
+RV_DECTIME    =Durée décélération (s)
+RV_DELAYS     =Tempo di rampa ad S
+RV_GAINP      =Gain P
+RV_FWERR      =Erreur max. poursuite (impulsions)
+RV_TOLLERF    =Cote tolérance fine (degrés)
+RV_TARQUOTA   =Cote d'étalonnage (degrés)
+RV_PARKQTA    =Cote de Stationnement (degrés)
+RV_VELPOS     =Vitesse en orientation (tr/m)
+RV_VELJOG     =Vitesse en JOG
+RV_VELCYCLE   =Vitesse en SINGLE CYCLE
+
+TP_PROMPT0     =Numéro
+TP_PROMPT1     =Type
+TP_PROMPT2     =Pocket
+TP_PROMPT3     =Dynamique
+TP_TOOL1       =T 1
+TP_TOOL2       =T 2
+TP_TOOL3       =T 3
+TP_TOOL4       =T 4
+TP_TOOL5       =T 5
+TP_TOOL6       =T 6
+
+PKIN_COMPX     =Compensation Mécanique X
+PKIN_COMPY     =Compensation Mécanique Y
+PKIN_COMPZ     =Compensation Mécanique Z
+
+TDYN_VELLIM    =Vitesse limite (tr/mn)
+TDYN_ACCTIME   =Temps accélération (s)
+TDYN_DECTIME   =Durée décélération (s)
+TDYN_DELAYS    =Tempo di Rampa ad S
+TDYN_GAINP     =Gain P
+TDYN_FWERR     =Erreur max. poursuite (impulsions)
+TDYN_TOLLERF   =Cote tolérance fine (degrés)
+TDYN_VELPOS    =Vit. orientation mandrin (tr/mn)
+
+
+[HELP]
+
+KEY_MAG       =Données Magasin Outils
+
+KEY_REV0      =Tourelle(0)
+KEY_REV1      =Tourelle(1)
+KEY_REV2      =Tourelle(2)
+KEY_REV3      =Tourelle(3)
+KEY_REV4      =Tourelle(4)
+KEY_REV5      =Tourelle(5)
+
+KEY_RV        =Configurer Tourelle
+KEY_TPMAP     =Association Outil-Poche
+KEY_KINPOCKET =Données Cinématiques Tourelle
+KEY_DYNTOOL   =Données Dynamiques broche
+
+RV_AXTYPE     =Type
+RV_TURRETS    =Données pour décrire le modèle de Revolver: Nombre de tourelles revolver (1-12)
+RV_GIRISP     =Rapport de réduction broche: numérateur de la fraction q=n/d, où q est le nombre des tours de broche nécessaires pour obtenir un tour de revolver
+RV_GIRIRV     =Rapport de réduction revolver: dénomination de la fraction q=n/d, où q est le nombre de tours broche nécessaires pour obtenir un tour de revolver
+RV_VELLIM     =Vitesse limite Revolver (tr/mn)
+RV_ACCTIME    =Temps accélération (s)
+RV_DECTIME    =Durée décélération (s)
+RV_DELAYS     =Tempo di rampa ad S
+RV_GAINP      =Gain P
+RV_FWERR      =Erreur max. poursuite (impulsions)
+RV_TOLLERF    =Cote tolérance fine (degrés)
+RV_TARQUOTA   =Cote d'étalonnage (degrés)
+RV_PARKQTA    =Cote de Stationnement (degrés)
+RV_VELPOS     =Vitesse en orientation (tr/m)
+RV_VELJOG     =Vitesse en JOG
+RV_VELCYCLE   =Vitesse en SINGLE CYCLE
+
+TP_PROMPT0     =Numéro
+TP_PROMPT1     =Type
+TP_PROMPT2     =Pocket
+TP_PROMPT3     =Dynamique
+
+TP_MAP1        =Cette colonne permet de changer l'association entre l'outil et sa position dans la numération des postes revolver ( défaut outil 1 sur pocket 1 )
+TP_MAP2        =
+TP_MAP3        =
+TP_MAP4        =
+TP_MAP5        =
+TP_MAP6        =
+
+TP_DYN1        =Cette colonne permet de différencier la dynamique de chaque outil en fonction de la masse du porte-outil et des caractéristiques de l'usinage. La valeur introduite correspond à l'index de la table des Données Dynamiques Broche ( défaut outil 1 sur dynamique 1 )
+TP_DYN2        =
+TP_DYN3        =
+TP_DYN4        =
+TP_DYN5        =
+TP_DYN6        =
+
+
+PKIN_COMPX     =Données Cinématiques Revolver: pour être alignée à la première, chaque tourelle du revolver doit être compensée dans les 3 composantes dX,dY,dZ ( valeurs fournies par le constructeur du Revolver )
+PKIN_COMPX     =Compensation Mécanique X
+PKIN_COMPY     =Compensation Mécanique Y
+PKIN_COMPZ     =Compensation Mécanique Z
+
+TDYN_VELLIM    =Données Dynamiques Broche: ces données permettent de personnaliser la dynamique de la broche après avoir sélectionné l'outil du magasin. Vitesse limite de la broche 
+TDYN_ACCTIME   =Temps accélération (s)
+TDYN_DECTIME   =Durée décélération (s)
+TDYN_DELAYS    =Tempo di Rampa ad S
+TDYN_GAINP     =Gain P
+TDYN_FWERR     =Erreur max. poursuite (impulsions)
+TDYN_TOLLERF   =Cote tolérance fine (degrés)
+TDYN_VELPOS    =Vit. orientation mandrin (tr/mn)
+

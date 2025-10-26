@@ -1,0 +1,158 @@
+: M123
+
+;// RTCP Calibration Cycle
+;// DEFINED -> rtcp_calib
+
+IF(%cn[WHO()].rc[0].21) RET      ;Canale in test
+
+IF(XGET("@G70")!=71) ERROR(55)   ;Illegal operation
+
+G161 L(ml_usr_origin)
+G186 L(ml_usr_origin)
+
+;//XXX i livelli di frame sono terminati
+;//XXX assumi che non ci siano frame attivi dopo quello delle origini.
+G169
+
+DBL oriT=1
+;//XXX i livelli di subroutine sono terminati
+;JSR"calibrationStateMachine.pgm"
+RPT .stateMacha, .stateMachz, 1
+
+G168
+RET
+
+.stateMacha
+;// ======================================
+;// BASE calibrationStateMachine.pgm BEGIN
+;// --------------------------------------
+
+;// Calibration state machine example
+;// NOTA:
+;//       L'aggancio di eventuali assi virtuali si assume avvenire all'interno.
+;//       Non devono esserci origini attive
+
+;//XXX $APP
+DBL iCh         = WHO()
+;//XXX $APP DBL oriT definito esternamente.
+;//XXX provvedere anche parametri per i seguenti ???
+;//channel for real rotary axes look-up
+DBL tbChan      = 0
+;//twi tables
+DBL tbCurrent   = oriT
+DBL tbTemporary = IFEXP(oriT!=2, 11, 21)
+DBL tbDelta     = IFEXP(oriT!=2, 12, 22)
+DBL tbFactory   = IFEXP(oriT!=2, 13, 23)
+;//tool tables
+DBL calibTool   = 48
+DBL calibHolder = 0
+;//$APP user array indexes for rotary axes homing positions
+DBL tbaTemporaryA1 = IFEXP(oriT!=2, 2, 8)
+DBL tbaTemporaryA2 = IFEXP(oriT!=2, 3, 9)
+DBL tbaDeltaA1     = IFEXP(oriT!=2, 4, 10)
+DBL tbaDeltaA2     = IFEXP(oriT!=2, 5, 11)
+DBL tbaFactoryA1   = IFEXP(oriT!=2, 6, 12)
+DBL tbaFactoryA2   = IFEXP(oriT!=2, 7, 13)
+;//mapCalibrationRotaryAxes output
+DBL tbCurrentA1
+DBL tbCurrentA2
+;//misc status
+DBL rotaryHomingReq = 0
+
+;//XXX $APP
+DBL fAutoPrepare = %RtcpCalib0.RCrWtGui[0].0              ;//Sensor in a fixed position
+
+DBL service
+DBL exitRequest = 0
+
+DBL sav_G70=XGET("@G70")
+G71
+
+;//reset "done flags" and run
+?%RtcpCalib0.RCgIso18.0 = 0
+?%RtcpCalib0.RCgIso18.1 = 0
+?%RtcpCalib0.RCgIso18.2 = 0
+?%RtcpCalib0.RCgIso18.3 = 0
+?%RtcpCalib0.RCgIso18.15 = 0
+?%RtcpCalib0.RCgIso18.16 = 0
+?%RtcpCalib0.RCgIso18.17 = 0
+?%RtcpCalib0.RCgIso18.18 = 0
+
+JSR "mapCalibrationRotaryAxes.cfs"
+
+;//$APP
+IF( %cn[WHO()].pc[14].25 != 0 ) JMPF .graphics
+
+;//$APP
+;//L'utente e' costretto ad abbandonare la pagina per andare in REF,
+;//quindi si troverebbe inaspettatamente il flag a 1
+;IF (!fAutoPrepare) %RtcpCalib0.RCrWtGui[0].5 = 1          ;//JOG preparation requested
+
+WHILE (!exitRequest)
+    M124									 ;//XXX $APP Await service code
+    SYN
+    service = %RtcpCalib0.RCgPlc[18]  ;//XXX $APP
+    $
+
+    SWITCH(service)
+    CASE 1
+        JSR "calibrationResetToFactory.cfs"
+        JSR "mapCalibrationRotaryAxes.cfs"
+    CASE 2
+        ;//head-dependent calibrationPerform__()
+        RPT .calibrationPerforma, .calibrationPerformz, 1
+    CASE 3
+        JSR "calibrationConfirm.cfs"
+    CASE 4
+        ;// UNDER PASSWORD
+        JSR "calibrationSetFactory.cfs"
+    CASE 5
+        exitRequest = 1
+    ENDSWITCH
+
+    IF (rotaryHomingReq) THEN
+        rotaryHomingReq = 0
+        G4 F2
+        $Redo rotary axes homing
+    ENDIF
+ENDWHILE
+
+JMPF .end
+
+.graphics
+
+.calibrationPerforma
+SYN
+IF (%twi[tbCurrent].yKine == 0) $No initial data!
+IF (%twi[tbCurrent].yKine == 0) JMPF .endPerform
+
+SWITCH(%twi[tbCurrent].htwi.oarh.yOrient)
+CASE 6
+    ;//AB head
+    JSR "calibrationPerformAB.cfs"
+CASE 8
+    ;//BA head
+    JSR "calibrationPerformBA.cfs"
+CASE 9
+    IF (ABS(%twi[tbCurrent].htwi.oarh.dTilt) < 5.0) THEN
+        ;//CA head
+        JSR "calibrationPerformCA.cfs"
+    ELSE
+        ;//CA nutation head
+        JSR "calibrationPerformCAnut.cfs"
+    ENDIF
+OTHERWISE
+    ERROR(55)
+ENDSWITCH
+
+.endPerform
+.calibrationPerformz
+
+.end
+G(sav_G70)
+
+;// --------------------------------------
+;// BASE calibrationStateMachine.pgm END
+;// ======================================
+.stateMachz
+

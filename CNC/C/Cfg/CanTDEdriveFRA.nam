@@ -1,0 +1,123 @@
+[PROMPT]
+
+TDE_NUMOBJS =Boot Options
+
+TDE_NUMOBJSLIST =DISABLED, UPLOAD, DOWNLOAD
+
+TDE_ENABLE2 =ENAB
+
+
+TDE_IXOBJ0 = Digital Output ID (QW##)
+TDE_VXOBJ0 = Digital Input ID (IW##)
+TDE_IXOBJ1 = Monitor Variable Field
+TDE_VXOBJ1 = Monitor Variable Enabled
+TDE_VXOBJ2 = Par3 Vx
+TDE_VXOBJ3 = Par4 Vx
+TDE_VXOBJ4 = Par5 Vx
+TDE_VXOBJ5 = Par6 Vx
+TDE_VXOBJ6 = Par7 Vx
+TDE_VXOBJ7 = Par8 Vx
+
+TDE_MOTORNAME = Motor File Name
+TDE_IXOBJ1LIST = NULL, QCurrent
+TDE_VXOBJ1LIST = Disabled, Enabled 16bit
+
+TDE_MONVAROUTPUT = Monitor Variable Output ax[SysWide].ra26
+
+PAR_OPTIONAL=Optional Boards
+PAR_SUPPLY=Supply
+PAR_BRAKINGCIRCUIT=Braking Circuit
+PAR_CURRENT=Current
+PAR_SPEED=Speed
+PAR_POSITION=Position
+PAR_MOTOR=Motor
+PAR_INPUTFUN=Input Functions
+
+TDE_VXOBJ8 = Main Voltage P012 (V)
+TDE_VOLTLIST=230V, 400V, 480V
+TDE_VXOBJ9 = Internal/External P013 
+TDE_BRAKRES = Internal,External
+TDE_VXOBJ10 = Ext. Value P014 (Ohm)
+TDE_VXOBJ11 = Ext. Max. Power P015 (W)
+TDE_VXOBJ12 = Kp q P050 
+TDE_VXOBJ13 = Ti q P051 (ms)
+TDE_VXOBJ14 = I Rated P062 (A)
+TDE_VXOBJ15 = I Max P063 (A)
+TDE_VXOBJ16 = I2t Time P064 (s)
+TDE_VXOBJ17 = Kp speed P070 
+TDE_VXOBJ18 = Ki speed P071 
+TDE_VXOBJ19 = Kd speed P072 
+TDE_VXOBJ20 = Encoder filter P073 (ms)
+TDE_VXOBJ21 = Ref. filter P074 (ms)
+TDE_VXOBJ22 = Derivative filter P075 (ms)
+TDE_VXOBJ23 = Max speed P078 (rpm)
+TDE_VXOBJ24 = Brake enabled P110
+TDE_VXOBJ25_1 = Input Polarity 1 P119
+TDE_VXOBJ25_2 = Input Polarity 2 P119
+TDE_VXOBJ25_3 = Input Polarity 3 P119
+TDE_VXOBJ25_4 = Input Polarity 4 P119
+TDE_VXOBJ25_5 = Input Polarity 5 P119
+TDE_VXOBJ26 = Conf. Input 1 P121
+TDE_VXOBJ27 = Conf. Input 2 P122
+TDE_VXOBJ28 = Conf. Input 3 P123 
+TDE_VXOBJ29 = Conf. Input 4 P124 
+TDE_VXOBJ30 = Conf. Input 5 P125 
+TDE_VXOBJ31 = Motor poles number P200
+TDE_VXOBJ32 = Enc. Phase Angle P201 (°)
+TDE_VXOBJ33 = Feedback Type P204
+TDE_VXOBJ34 = Encoder Resolution P205
+TDE_VXOBJ35 = Tbrake ON P208 (ms)
+TDE_VXOBJ36 = Tbrake OFF P209 (ms)
+TDE_VXOBJ37 = Thermal Constant P066 (s)
+TDE_VXOBJ38 = PLL enable P038
+TDE_VXOBJ39 = Kp Position P100
+TDE_VXOBJ40 = Slot1
+TDE_VXOBJ41 = Slot2
+TDE_VXOBJ42 = Slot3
+TDE_VXOBJ43 = Feed-forward disable P104
+TDE_VXOBJ44 = Single Phase P378
+TDE_VXOBJ44LIST=Three Phase, Single Phase
+
+TDE_VXOBJ24LIST = Disabled/Digital I/O, Enabled
+TDE_VXOBJ25LIST = Normal Open, Normal Close
+TDE_VXOBJ26LIST = 0:None, 1:Drive Enable, 2:Speed Enable, 3:Home Switch, 4:Negative Limit Switch, 5:Positive Limit Switch, 6:None, 7:Reset Alarms, 8:Invert Speed Reference
+TDE_VXOBJ40LIST = 0:None, 1:Ethercat
+TDE_VXOBJ41LIST = 0:None, 1:Encoder (A,B,Index) 5V Input
+TDE_VXOBJ42LIST = 0:None, 1:Backup
+
+[HELP]
+TDE_NUMOBJS =Parameter read/write command executed both at boot and every time the ENAB key of a selected parameter group is pressed. DOWNLOAD=transfer data from CNC to SERVODRIVE, UPLOAD=transfer data from SERVODRIVE to CNC, DISABLED=no operation.
+TDE_VXOBJ0  =Digital Output ID (QW##), BIT0=BrakeON/OFF (View "Brake Enabled").
+TDE_IXOBJ1  =ID of variable to be refreshed in ax[].ra26. A 0 value causes the servodrive instantaneous current to be refreshed. 16=Q current, 23=Bus voltage, 24=Speed
+TDE_VXOBJ1  =Set to 53 if the variable to be refreshed is 16 bits wide, 54 if 32 bits wide. As for instantaneous current, set to 53. Set to 0 to disable the refresh feature.
+
+TDE_VXOBJ8  =Mains Voltage (V) 0=230V, 1=400V, 2=480V
+TDE_VXOBJ9  =Braking Resistor 0=Internal 1=External
+TDE_VXOBJ10 =Ext. Braking Resistor Value (Ohms)
+TDE_VXOBJ11 =Ext. Braking Resistor Max. Power (W)
+TDE_VXOBJ12 =Current loop proportional gain
+TDE_VXOBJ13 =Current loop integral time constant (ms)
+
+TDE_VXOBJ17 =Speed loop proportional gain. Range: 50 - 3000
+TDE_VXOBJ18 =Speed loop integrative gain. Range: 1 - 200
+TDE_VXOBJ19 =Speed loop derivative gain.  Currently unimplemented.  Always set to 0.
+TDE_VXOBJ20 =(msec) Encoder filter - do NOT modify.
+TDE_VXOBJ21 =(msec) Velocity demand filter.  May be adjusted to reduce noise.  Typically set to 1 msec or slightly less. Range: 0 – 2ms.  Increasing the time noise will be reduced.
+TDE_VXOBJ22 =(msec) Derivative filter. Always set to 0.
+TDE_VXOBJ23 =(rpm) Maximum motor speed
+TDE_VXOBJ24 = Brake Enabled, 0=brake management is OFF or brake management is done by digital I/O; 1=brake management is ON. View "Digital Output".
+
+TDE_VXOBJ25 =PRM_INPUT_POLARITY_0. Allows to configure the polarity for all 4 programmable digital inputs (see parameters P121, P122, P123 and P124). It's a 16 bit value to be expressed in hex format, according to the following bit map: Bit0 = - always 0, Bit1 = DGT_IN2 Input (Homing Switch) – In case of a normally open switch set to 0, Bit2 = DGT_IN3 Input (Positive Limit Switch) – In case of a normally closed switch set to 1, Bit3 + DGT_IN4 Input (Negative Limit Switch) – In case of a normally closed switch set to 1. All remaining bits must be set to 0. In the above scenario, the value will be 0x000C.
+TDE_VXOBJ26 =PRM_INPUT_2_FUNCTION.
+TDE_VXOBJ27 =PRM_INPUT_3_FUNCTION.
+TDE_VXOBJ28 =PRM_INPUT_4_FUNCTION.
+TDE_VXOBJ29 =PRM_INPUT_5_FUNCTION.
+
+TDE_VXOBJ38 = PLL enable P038, enable = 1
+TDE_VXOBJ39 = Kp Position P100
+TDE_VXOBJ40 = Slot3
+TDE_VXOBJ41 = Slot2
+TDE_VXOBJ42 = Slot1
+TDE_VXOBJ43 = Feedforward disable P104, disable = 1
+TDE_VXOBJ44 = 0=Three Phase 1=Single Phase
+

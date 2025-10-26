@@ -1,0 +1,24 @@
+:
+;//
+;// Seleziona Testa Y3Z3 (funzioni semi-automatiche)
+;//
+
+;//Sgancia tutti gli assi
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+G4099
+
+; Aggancia asse virtuale
+G153
+G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+IF (AEXISTS(3,A)) G4010 M(AXIDX(A)) S(AXIDX(3,A)) I1
+IF (AEXISTS(3,B)) G4010 M(AXIDX(B)) S(AXIDX(3,B)) I1
+G152
+G4099
+
+RET

@@ -1,0 +1,93 @@
+ [X] [Y] [Z] [U] [V] [W] [C] : G2312
+;// Full 3D tube centering
+;// Tube centering starts by centering the spindle using one of the faces.
+;// If C is specified, a face facing upwards with that C is addressed:
+;// if the face is not eligible for that operation, spindle centering may be
+;// silently omitted.
+;// If C is omitted, the best face among those eligible is automatically
+;// chosen:  if there are no eligible faces, spindle centering may be
+;// silently omitted.
+;// In any case, clamps centering will be executed by making the best possible
+;// use of [other] tube faces.
+
+;// Optional C for spindle centering (QNAN() = auto)
+;// Z, W for pc cycles
+;// Spindle centering error
+;// Clamps centering error
+;// See pcDoTubeCentering
+;// INPUTS:
+
+IF( %LSRPlcOp0.8 ) RET   
+IF( %LSRPlcOp0.23 == 1 ) RET       
+
+DBL pcRequiredCS
+DBL pcRequiredZ
+DBL pcRequiredW
+;// OUTPUTS:
+DBL pcErrorS[2]
+DBL pcErrorC[2]
+
+pcRequiredCS = VA2
+
+SWITCH (tubeAxis)
+CASE 0
+    pcRequiredZ = CTOMM(VA23)
+    pcRequiredW = CTOMM(VA20)
+    IF (VALID(VA24) || VALID(VA25)) ERROR(55)
+    IF (VALID(VA21) || VALID(VA22)) ERROR(55)
+    IF (!VALID(pcRequiredW)) pcRequiredW = XGET("@U")
+CASE 1
+    pcRequiredZ = CTOMM(VA24)
+    pcRequiredW = CTOMM(VA21)
+    IF (VALID(VA25) || VALID(VA23)) ERROR(55)
+    IF (VALID(VA22) || VALID(VA20)) ERROR(55)
+    IF (!VALID(pcRequiredW)) pcRequiredW = XGET("@V")
+CASE 2
+    pcRequiredZ = CTOMM(VA25)
+    pcRequiredW = CTOMM(VA22)
+    IF (VALID(VA23) || VALID(VA24)) ERROR(55)
+    IF (VALID(VA20) || VALID(VA21)) ERROR(55)
+    IF (!VALID(pcRequiredW)) pcRequiredW = XGET("@W")
+OTHERWISE
+    ERROR(55) ;bad tube axis
+ENDSWITCH
+
+IF (!VALID(pcRequiredZ)) ERROR(55)
+
+DBL sav_G70 = XGET("@G70")
+G71
+
+;// XXX TODO: Assegnare i parametri corretti
+;// distance of sampling point from vertex (or beginning of edge rounding)
+DBL pcBorder = %CalPipe.BorderDist/1000
+;// min distance between sampling points for leveling
+DBL pcMinSide = %CalPipe.MinSide/1000
+;// max rounding radius for a vertex to become an edge for spindle centering
+DBL pcMaxRounding = 8.0
+;// distance between a wall and sampling point in concave polygons
+DBL pcAllowance = 35.0
+
+;// C Offset from Polygon reference system to user Physical reference system
+;// See pcuPolygonToPhysical
+DBL pcPolyToPhy
+
+IF( (%gIso[23] < 20) || (%gIso[24] < 20) ) THEN 
+    IF( (pcBorder > 1.5) || (pcMinSide > 1.5) ) THEN
+        pcBorder = 1.5
+        pcMinSide = 1.5
+	ENDIF
+ENDIF
+
+JSR "pcuPolygonToPhysical.cfs"
+
+IF (VALID(pcRequiredCS)) pcRequiredCS = pcRequiredCS - pcPolyToPhy
+
+JSR "pcmDoTubeCentering.cfs"
+
+;// XXX TODO: Sostituire con pubblicazione in pagina diag UIPL
+SYN
+MSGOUT "Spindle error: (" NPREC(pcErrorS[0], 0.001) ", " NPREC(pcErrorS[1], 0.001) ")"
+MSGOUT "Clamps error: (" NPREC(pcErrorC[0], 0.001) ", " NPREC(pcErrorC[1], 0.001) ")"
+
+G(sav_G70)
+RET

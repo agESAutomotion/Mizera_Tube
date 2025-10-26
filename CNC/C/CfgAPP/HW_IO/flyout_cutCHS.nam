@@ -1,0 +1,14 @@
+
+[KEYS]
+TITLE=飞切输出
+
+[PROMPT]
+KEY_NODE=Node
+FLYOUT_CUT=Leaf
+PIN1=PIN3: 数字控制
+PIN2=PIN2: 电源参考
+PIN3=PIN1: 飞行切割输出信号
+
+[STATUS]
+
+[HELP]

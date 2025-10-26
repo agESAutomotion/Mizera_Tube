@@ -1,0 +1,48 @@
+
+[KEYS]
+TITLE=Service 1
+MSG40=SPINDLE ALIGMENT: Are you sure ?
+
+[PROMPT]
+KEY_NODE=
+MAINTENANCE=Leaf
+GroupBoxGeneralPar=PARAMETRI GENERALI
+GroupBoxlINC=MODALITA' INC / ALLINEAMENTO MANDRINI
+Label2=Label
+GroupBoxlTest2=POSIZIONE ASSI PER SERVICE
+lbDato2=Quota X [mm]
+lbDato1=Quota Z [mm]
+lbDato4=Quota Y [mm]
+LabelVelXYService1=Velocita' assi XY[mm/min]
+Button=START ASSI PER "SERVICE"
+Label1=Label
+GroupBoxlJogRTCP=JOG RTCP
+ButtonEnabJogRtcp=JOG RTCP ON/OFF
+LabelJogRTCP1=JOG RTCP
+LabelPar2=Quota offset zero asse U 2D [mm]
+LabelPar1=Coordinata Z portautensile [mm]
+LabelPar4=Coordinata Z primo pivot [mm]
+LabelPar3=RTCP Coordinata Y portautensile [mm]
+AxesLaserCH1=Axes1
+AxesLaserCH2=Axes1
+GroupBoxlRefAbs=TARATURA ASSOLUTA ASSI
+lbDatoActualRefQuota=Quota di taratura assoluta [mm]
+LIST0=REF GENERALE,REF SINGOLO
+LabelParK48=Altezza di sicurezza Z per muovere assi X/U [mm]
+LabelParMaxDis=Massimo disallineamento mandrini (C-C1) [mm]
+LabelSelQtaINC1=Quota INC [mm]
+lbDatoServiceB=Quota B [mm]
+ButtonSpindleAlig=ALLINEAMENTO MANDRINI
+LabelParLunette=Support parking quota [mm]
+GroupBoxWelding=DATI RICERCA SALDATURA
+LabelWeldingPar1=Offset X sensore [mm]
+LabelWeldingPar2=Offset Y sensore [mm]
+LabelWeldingPar3=Offset Z sensore [mm]
+LabelWeldingPar4=Altezza del sensore dal tubo [mm]
+LabelWeldingPar5=Quota asse X [mm]
+LabelWeldingPar6=Quota asse U [mm]
+LabelWeldingPar7=Quota asse "C" trovata
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,2 @@
+Picture in top-left = Customer_Logo.bmp   // LOGO_FILE_BMP=C:\Kvara\Res\Customer_Logo.bmp          in Deskto08.ini
+Background = Background_Customer.bmp      // Background=C:\Kvara\res\Background_Customer.bmp       in Kvara.ini

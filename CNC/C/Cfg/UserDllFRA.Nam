@@ -1,0 +1,10 @@
+[PROMPT]
+
+KEY_USRDLL          =DLL utente
+DL_ENABLE           =Abilitazione DLL [0-2]
+DL_PORT             =Porta comunicazione
+
+[HELP]
+DL_ENABLE           =Abilitazione e tipo della DLL utente: 0 - Disabilitata, 1 - DLL che utilizza una linea seriale o di sola elaborazione, 2 - DLL che utilizza un port TCP. Il PATH completo della DLL deve essere configurato nel file Kvara.ini
+DL_PORT             =Porta di comunicazione utilizzata dalla DLL utente. Per DLL di sola elaborazione impostare 0. Per DLL su linea seriale, impostare il numero della COM da utilizzare. Per DLL su LAN, impostare il port TCP statico (1-4095)
+

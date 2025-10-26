@@ -1,0 +1,18 @@
+[KEYS]
+TITLE=
+TXT14=
+MSG40=Pulizia nozzle TESTA ?
+[PROMPT]
+CLEANHEAD=Leaf
+GroupBox=Parametri di pulizia degli ugelli
+ButtonStartCalib1=START pulizia
+Label1=Quota abs. di INIZIO asse X per pulizia [mm]
+Label2=Quota abs. di INIZIO asse Y per pulizia [mm]
+Label3=Quota abs. asse Z per pulizia [mm]
+Label4=Numero di cicli di pulizia
+AxesCh1=Axes
+LabelXend=Quota abs. di FINE asse X per pulizia [mm]
+LabelYend=Quota abs. di FINE asse Y per pulizia [mm]
+GroupBox1=Parametri della piastra di calibrazione
+Label5=X Quota Abs piastra per la calibrazione
+Label6=Y Quota Abs piastra per la calibrazione

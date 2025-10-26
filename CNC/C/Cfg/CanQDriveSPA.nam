@@ -1,0 +1,67 @@
+[PROMPT]
+
+QD_NUMOBJS =Boot Options
+
+QD_NUMOBJSLIST =DISABLED, UPLOAD, DOWNLOAD
+
+QD_ENABLE2 = ENAB
+
+QD_IXOBJ0 = 
+QD_VXOBJ0 = 
+QD_VXOBJ2 = 
+QD_VXOBJ3 = 
+QD_VXOBJ4 = 
+QD_VXOBJ5 = 
+QD_VXOBJ6 = 
+QD_VXOBJ7 = 
+
+QD_IXOBJ1 = Monitor Variable Field
+QD_VXOBJ1 = Monitor Variable Enabled
+QD_MONVAROUTPUT = Monitor Variable Output ax[SysWide].ra26
+
+QD_MOTORNAME  = Motor File Name
+QD_IXOBJ1LIST = NULL, QCurrent
+QD_VXOBJ1LIST = Disabled, Enabled 16bit
+
+QD_MONVAROUTPUT = Monitor Variable Output ax[SysWide].ra26
+
+PAR_OPTIONAL=Optional Boards
+PAR_SUPPLY=Supply
+PAR_BRAKINGCIRCUIT=Braking Circuit
+PAR_CURRENT=Current
+PAR_SPEED=Speed
+PAR_POSITION=Position
+
+PAR_SECONDSET=Second Gain Set
+
+PAR_MOTOR=Motor
+PAR_INPUTFUN=Input Functions
+
+QD_VXOBJ8  = Pn000 Basic Function Selection Switch 1
+QD_VXOBJ9  = Pn001 Basic Function Selection Switch 2
+QD_VXOBJ10 = Pn003 Basic Function Selection Switch 3
+QD_VXOBJ11 = Pn004 Basic Function Selection Switch 4
+QD_VXOBJ12 = Pn100 Speed Loop Gain
+QD_VXOBJ13 = Pn101 Speed Loop Integral Time Constant
+QD_VXOBJ14 = Pn102 Position Loop Gain
+QD_VXOBJ15 = Pn103 Moment of Inertia Ratio
+QD_VXOBJ16 = Pn127 Automatic Gain Tuning Switch
+QD_VXOBJ17 = Pn401 Torque Reference Filter Time
+QD_VXOBJ18 = Pn502 Rotation Detection Level
+QD_VXOBJ19 = Pn503 Speed Coincidence Signal Output Width
+QD_VXOBJ20 = Pn504 Zero Clamp Level
+QD_VXOBJ21 = Pn505 Servo ON Delay Time
+QD_VXOBJ22 = Pn506 Brake Reference-ServoOFF Delay Time
+QD_VXOBJ23 = Pn507 Brake Reference Output Speed Level
+QD_VXOBJ24 = Pn508 Waiting Time for Brake When Motor Run
+QD_VXOBJ25 = Pn509 Input Signal Selection 1
+QD_VXOBJ26 = Pn513 Output Signal Selection 1
+QD_VXOBJ27 = Pn514 Output Signal Selection 2
+QD_VXOBJ28 = Pn519 Input Signal Logic Selection 1
+QD_VXOBJ29 = Pn520 Input Signal Logic Selection 2
+QD_VXOBJ30 = Pn521 Output Signal Inverse Selection 1
+QD_VXOBJ31 = Pn522 Output Signal Inverse Selection 2
+QD_VXOBJ32 = Pn523 Excessive Position Error Alarm Level
+
+
+[HELP]

@@ -1,0 +1,28 @@
+: 
+; Turn on laser during the program
+
+; Draw a small circle where the laser is tuned on
+DBL xposa, yposa;
+
+IF ( %cn[WHO()].rc[0].21 ) THEN
+  
+    ; Cooling point function enabled
+    IF (%LSRPlcOp1.22) THEN
+        xposa = XGET("@X")
+        yposa = XGET("@Y")
+        G2803  R(0.05) W5  X(xposa) Y(yposa) C12        ;Channel in test
+    ENDIF
+ENDIF
+
+; Laser
+IF (gTechType == 3) THEN 
+;    IF ((%LSRPlcOp1.22) && (!%PlcOp0.2)) THEN
+    IF( !%PlcOp0.2 ) THEN
+        SPC 30099,1  ;Preprocessor sync
+        ?%TstP[15].3 = 1           ; (LASER_ON)
+        SPC 30099,1  ;Preprocessor sync
+        _wait_bit( 0," %LsPlc1.25",1) ; wait laser on        
+    ENDIF
+ENDIF 
+
+RET

@@ -1,0 +1,16 @@
+
+[KEYS]
+TITLE=
+TXT14=Cancella allarmi
+
+[PROMPT]
+KEY_NODE=Node
+CALC_KP_DRIVE=HELP Drive Kp
+X parameter1=Calcolo Kp drive
+Label1=Kp [Hz]
+Label2=Motore RPM
+Label3=Kp Drive
+
+[STATUS]
+
+[HELP]

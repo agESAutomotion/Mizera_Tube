@@ -1,0 +1,36 @@
+
+[KEYS]
+CMD0  = DEFAULT
+CMD1  = DEFAULT
+CMD2  = DEFAULT
+CMD3  = DEFAULT
+CMD4  = DEFAULT
+
+[STRUCT]
+
+KEY_NODE {
+    KEY_NODEMONITOR,can_ring0.Node,can_ring0.can_drives;
+    KEY_NODEDRIVESTATUS,can_ring0.Node,can_ring0.can_drives;
+}
+
+#include "Can.str" 
+
+
+[PROVA]
+BKG=RGB(192,192,192)
+TMR=200
+STB=1
+
+
+
+
+[HELLO]
+FNM=Times New Roman
+FSZ=16
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(255,0,0)
+STY=LEFT

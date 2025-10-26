@@ -1,0 +1,28 @@
+[PROMPT]
+KEY_GEOCHAN   =Geometria Canale
+
+GC_GEOTYPE    = Tipo geometria
+GC_MODE       = Mode (0=Disab 1=Enab)
+GC_X_ANG_SGN  = Inversione Ang(B)
+GC_X_ANG      = Angolo (B) asse X
+GC_X_DST_SGN  = Inversione Asse(X)
+GC_X_DST      = Distanza X dal CM
+GC_Y_ANG_SGN  = Inversione Ang(A)
+GC_Y_ANG      = Angolo (A) asse Y
+GC_Y_DST_SGN  = Inversione Asse(Y)
+GC_Y_DST      = Distanza Y dal CM
+GC_Z_ANG_SGN  = Inversione Ang(xx)
+GC_Z_ANG      = Angolo asse Z
+GC_Z_DST_SGN  = Inversione Asse(Z)
+GC_Z_DST      = Distanza Z dal CM
+GC_EA_DEF_SGN = Inversione Ang(EA)
+GC_EA_DEF     = Angolo Tool (EA)
+GC_EB_DEF_SGN = Inversione Ang(EB)
+GC_EB_DEF     = Angolo Tool (EB)
+GC_EC_DEF_SGN = Inversione Ang(EC)
+GC_EC_DEF     = Angolo Tool (EC)
+
+
+[HELP]
+
+

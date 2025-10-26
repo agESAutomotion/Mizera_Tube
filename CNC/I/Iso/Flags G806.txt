@@ -1,0 +1,10 @@
+
+
+- G806: il campo F e' l'OR aritmetico dei seguenti valori esadecimali:
+      0x0002    programmazione asse V abilitata nei blocchi ISO
+                con posizione testa di tipo assoluto
+                (OBBLIGATORIO)
+      0x0004    lavorazione su superficie contrapposta a quella della testa
+                principale (per ITC)
+      0x0010    testa inizialmente inattiva
+      0x0020    testa con touch inizialmente disabilitato

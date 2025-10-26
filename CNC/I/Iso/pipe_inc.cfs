@@ -1,0 +1,63 @@
+: PIPE_INC
+ 
+IF(DEFINED("PIPE_INC")) RET
+
+DBL PIPE_INC = 1
+
+DBL subpart 
+DBL xs 
+DBL xe 
+DBL ys 
+DBL ye 
+DBL zs 
+DBL ze 
+DBL xr 
+DBL yr 
+DBL zr 
+DBL color
+DBL shp_only 
+DBL shx 
+DBL shy 
+DBL shz 
+DBL min_flatness
+DBL rnd
+DBL pipe_weight = 0
+ 
+
+;// BEGIN tubeCalibration data
+;// General
+DBL isTubeY
+DBL isErrorTypeMcs = %CalPipe.CalibrType  
+DBL lift 
+DBL optimized_lift
+DBL overTravelV 
+DBL overTravelH 
+DBL spindle_id, tool_id, table_id
+DBL factory_id, graph_id
+DBL glbIsPolygon
+DBL x_calib 
+DBL u_calib 
+
+;// Acquire parameters
+DBL border
+DBL minSide 
+
+;// Simulation grid
+DBL simulationEnable 
+DBL simErrorX 
+DBL simErrorY 
+DBL simErrorZ 
+DBL simErrorA 
+DBL simErrorB 
+
+;// Calculated size
+DBL sizeX, sizeY, sizeZ
+;// END tubeCalibration data
+
+DBL fSimul 
+DBL fGraph 
+DBL dst, src
+
+DBL dataCleared = 1
+
+RET

@@ -1,0 +1,134 @@
+[PROMPT]
+KEY_SETLASER = Laser
+KEY_GENLASER = Generali
+KEY_FLYCUT = FlyCut
+KEY_RESONATOR = Generatore
+KEY_GASES = Gas
+KEY_CAPACITIVE = Capacitivo
+KEY_FOCAL = Focale
+KEY_SPLINE = Spline
+
+SL_CAPACITIVE_MNGT = Gestione capacitivo
+INP_RES_CAPACITIVE = Capacitive analog input resolution
+SL_CAPACITIVE_RANGE = Range sensore capacitivo
+SL_CAPACITIVE_SIM = Simulazione
+SL_GENERATOR_MNGT = Tipo generatore
+SL_TIPT_FILTER = Filtro tip-touch [msec]
+SL_FOCAL_TYPE = Tipo focale
+FOC_TYPE_LIST = manuale, analog, asse ana., pwm
+SL_FOC_MODEL = Modello Testa 
+SL_BIT_OUT_FOCAL = Risoluzione uscita focale
+SL_PROP_OXYGEN = Gestione valvola proporzionale
+SL_VALV_PROP_BUS = Gestione valvola proporzionale (0=Analog, 1=bus)
+SL_VALV_PROP_TYPE = Tipo valvola proporzionale
+SL_PROP_TYPE = DIWAL(bus), Hoerbiger, Analogica
+SL_BIT_IN_VALV_PROP = Numero bit dispositivo di ingresso per lettura valvola proporzionale
+SL_BIT_OUT_VALV_PROP = Numero bit dispositivo di uscita per scrittura valvola proporzionale
+SL_NBIT = 12bit, 16bit(half),16bit(full)
+SL_NBIT_2= 16bit, 12bit, 11bit
+RES_LIST = 12bit, 16bit(half),16bit(full)
+SL_PALLET_LIST = no pallet,esa motors,ext plc,no esa motors,hydr+no pist,hyd+mot+pist  
+SL_PALLET_SYS = Sistema Pallet
+SL_LUB_SYS = Sistema di lubrificazione
+SL_DOOR_SYS = Sicurezza porta [LSRPlc55]
+LIST_DOOR = no,safety 1,safety 2
+LIST_LUB = No Lub,Lub On/off,Lub Mot
+SL_MAX_PRESS = Massima pressione valvola proporzionale [bar]
+SL_MAX_PRESS_OXY = Massima pressione ossigeno [bar]
+SL_MAX_PRESS_AZOTO = Massima pressione azoto [bar]
+SL_MAX_PRESS_ARIA = Massima pressione aria [bar]
+SL_MAX_PRESS_TEST = Gas pressione test[bar]    
+SL_MAX_PRESS_SPURGO = Pressione di spurgo [bar]
+SL_TIM_SPURGO = Tempo spurgo durante esecuzione programma [sec]
+SL_GAS_LINEARIZ = Abilita linearizzazione
+SL_GAS_EXTRA_EV = Abilita gestione valve ausiliaria a valle della valvola proporzionale
+SL_GAS_CLOSE_PROP_STOPGAS = Chiusura GAS in ciclo attivo con chiusura solo valvola proporzionale
+SL_GAS_SIM = Simulazione gas
+
+
+L_JUMP_GAS = Apri/chiudi gas in funzione della distanza [LSRPlcOp1.20] 
+L_CORN_RADIUS=Abilita gestione cambio velocità spigoli e raggi[LSRPlcOp1.21]
+L_COOL_PT = Cooling point [LSRPlcOp1.22]
+
+SL_ALARM_TOLL = Allarme tolleranza [bar]
+SL_ALARM_TIME = Ritardo per allarme [s]
+SL_MAX_DIFF_PRESS = Massima differenza pressione in ingresso [bar]
+SL_DELAY_FDBACK = Ritardo per controllo feedback gas [s]
+
+SL_HEAD_FOCALTYPE = Tipo focale
+L_CLEAN_CALIB = Pulizia nozzle [LSRPlcOp1.5]
+
+SL_CAPACITIVE_TYPE = Precitec,LaserMech, Highyag, ECAT Cap, Precitec Similar (ECAT), Thermacut, Procon
+SL_GENERATOR_TYPE = YLS/Fuji,YLR/Max/Raycus,Raycus,Rofin,Trumpf,NLIGHT
+SL_PROP_OXYGEN_TYPE = Standard,solo oxy
+FOC_LIST = Precitec,WSX/OpenLaser,HighYag,Raytools,Procon
+LIST_CAP_RANGE = 10mm,20mm
+
+
+CN_ENAB_TIME_ALIGNED_SETIO_EX = Abilita accelerazione hardware allineamento IO (laser)
+CN_ENAB_PWM_COMBINE = Abilita emissione e PWM combinati (laser)
+K_USER3 = Valore Personalizzazione Utente Latenza Attivazione DigitalBeam(m/sec) (Cost_User3)
+K_USER4 = Valore Personalizzazione Utente Latenza Disattivazione DigitalBeam(m/sec) (Cost_User4)
+LSR_COSTK3 = Valore di fabbrica Latenza Attivazione DigitalBeam (m/sec) [LSRCostK3]
+LSR_COSTK4 = Valore di fabbrica Latenza Disattivazione DigitalBeam (m/sec) [LSRCostK4]
+LSR_COSTK15 = Massima accelerazione [LSRCostK15]
+LSR_COSTK16 = Massima decelerazione [LSRCostK16]
+
+
+// Capacitivo
+L_CALIB_CHECK = Abilita controllo calibrazione (debug LsIso90-99) [LSRPlcOp1.8] 
+L_CNC_LIN = Abilita linearizzazione capacitivo da CNC [LSRPlcOp1.9]         
+SL_CAP_ENAB_FAR = Abilita gestione ingresso FAR
+SL_CAP_CALIB_POINT = Gestione calibrazione
+CALIB_POINT = 16punti,1punto
+SL_EMPOWER_CAPFAR = EMPOWER 88C1 Capacitance FAR Value
+SL_EMPOWER_CAPTOUCH = EMPOWER 88C1 Capacitance Tip-touch
+
+
+// Resonator
+RES_LAB1 = .
+RES_MAXPOWER = Potenza massima [watt]
+RES_INTSPEEDFILTER = Filtro FIR sulla velocità interpolata calcolata (per POTENZA) [msec]
+RES_INTSPEEDFILTER_DUTY = Filtro FIR sulla velocità interpolata calcolata (per DUTY) [msec]
+RES_INTSPEEDFILTER_FREQ = Filtro FIR sulla velocità interpolata calcolata (per FREQ.) [msec]
+RES_SYNC_DELAY = Tempo di sincronismo per allineamento taglio in accelerazione/decelerazione [msec]
+RES_DELAY_LASER_OFF = Ritardo spegnimento laser [msec]
+RES_XREF_FREQ = Freq utilizzata per gestione tempo sincronismo tra vel. e DUTY
+RES_X1_FREQMIN = Freq minima per gestione tempo di risposta generatore al PWM  
+RES_X2_FREQMAX = Freq massima per gestione tempo di risposta generatore al PWM  
+RES_Y1_TIM_FREQMIN = Tempo di risposta generatore al PWM alla frequenza minima [msec]
+RES_Y2_TIM_FREQMAX = Tempo di risposta generatore al PWM alla frequenza massima [msec]
+RES_POWER_ON_BUS = Potenza gestita da BUS digitale
+RES_USE_POWER_ON_PWM = Utilizzo uscita anlogica su scheda PWM per gestione POTENZA
+RES_DAC_RES = Risoluzione convertitore DAC [punti]
+RES_SIM = Simulazione
+RES_LINEAR = Abilita gestione linearizzazione potenza
+//RES_SHOOT_POWER = SHOOT: power [w]
+//RES_SHOOT_DUTY = SHOOT: duty [%]
+//RES_SHOOT_FREQ = SHOOT: frequency [w]
+//RES_SHOOT_GAS_TYPE = SHOOT: gas type
+//RES_SHOOT_GAS_PRESS = SHOOT: pressure [bar]
+
+
+// Focal
+SL_FOC_MIN = Valore minimo [mm]
+SL_FOC_MAX = Valore massimo [mm]
+
+//Spline
+SP_LAB1 = G800 G0...
+SP_DISCR_INT = Discretizzation interval [EBK18]
+SP_MAXINPSIZE =  Max input segment size [EBK19]
+SP_OUTSIZE_ROUND = Output segment size [EBK14]
+SP_ACCTRJ_ROUND = Trajectory acceleration [EBK12]
+SP_DECTRJ_ROUND = Trajectory deceleration [EBK13]
+SP_FDCWEI_C_ROUND =  FDCWEI[C] [EBK10]
+SP_FDCWEI_B_ROUND = FDCWEI[B] [EBK11]
+SP_CURV_MOD_ROUND = Curvature modulation [EBK15] 
+SP_LIM_ANGLE_ROUND = Limit angle [EBK16] 
+SP_DEGREE = Degree [EBK17] 
+SP_MIN_RADIUS = Minimum radius [EBK20] 
+
+
+TXT6 = 
+TXT7 = 
+

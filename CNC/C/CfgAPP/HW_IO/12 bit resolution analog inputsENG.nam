@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=Analog Input
+
+[PROMPT]
+KEY_NODE=Node
+12_BIT_RESOLUTION_ANALOG_INPUTS=Leaf
+PIN1=PIN1: Input signal IW20
+PIN2=PIN2: Input signal IW21
+PIN3=PIN3: Input signal IW22
+PIN4=PIN4: Input signal IW23
+PIN5=PIN5: +5V power supply output voltage
+PIN6=PIN6: Power source ground output voltage
+PIN7=PIN7: Ground reference
+
+[STATUS]
+
+[HELP]

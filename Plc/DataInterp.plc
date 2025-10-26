@@ -1,0 +1,738 @@
+*******************************************************************************
+*   DataInterp.plc
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "DynMng.plc"
+
+VAR
+#include "Cnc.inc"
+
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+VAR_IN_OUT
+A_CUT_DISTANCE          AT %L_CutDistance;
+A_CUT_PRESSURE          AT %L_CutPressure;
+A_CUT_FOCAL             AT %L_CutFocal;
+A_CUT_FEED              AT %L_FeedA;
+A_CUT_POWER             AT %L_CutPower;
+A_CUT_DUTY              AT %L_CutDuty;
+A_OPTION_FUN_SPEED      AT %L_SourceInt16;
+A_OPTION_ENAB           AT %L_SourceInt16;
+END_VAR
+
+VAR
+END_VAR
+
+*******************************************************************************
+*   Calcola dati di taglio tramite interpolazione lineare tra 2 linee di taglio   
+*
+*       Formula: Y = Y1 + ( ((X-X1)/(X2-X1)) * (Y2-Y1) )
+*******************************************************************************
+FUNCTION_BLOCK LSR_DATA_INTERP
+
+VAR_INPUT
+xAngle:         DWORD;      * degree x 1000
+xCutLineInd:    DWORD;      *
+xFir:           DWORD;      *
+END_VAR
+
+VAR_OUTPUT
+yCutPower:      DWORD;
+yCutDuty:       DWORD;
+yCutPressure:   DWORD;
+yCutFocal:      DWORD;
+yCutDistance:   DWORD;
+yCutFeed:       DWORD;
+yCutFeedPerc:   DWORD;
+yFirstLine:     DWORD;
+ySecondLine:    DWORD;
+END_VAR
+
+VAR
+lAngleABS:      DWORD;
+lFirstCutLine:  DWORD;
+lSecondCutLine: DWORD;
+l_x1:           DWORD;
+l_x2:           DWORD;
+l_y1:           DWORD;
+l_y2:           DWORD;
+l_x_x1:         DWORD;
+l_x2_x1:        DWORD;
+l_y2_y1:        DWORD;
+POWER_CALC:     POINTS_INT_CALC;
+POWER_CALC2:    POINTS_INT_CALC;
+DUTY_CALC:      POINTS_INT_CALC;
+DUTY_CALC2:     POINTS_INT_CALC;
+Fir1:           DWORD;
+flgerror_fir1:  DWORD;
+RTRIG_FIR_INIT: R_TRIG;
+l_CutFeedPerc:  DWORD;
+ltemp:          DWORD;
+END_VAR
+***************************************
+
+CAL  RTRIG_FIR_INIT (CLK:=%cn0.rc8.0)
+LD   RTRIG_FIR_INIT.Q
+JMPCN no_init_fir
+
+LD   xFir               
+DIV  %plc0.PlcCycle
+ST   Fir1
+LD   0
+FIR_INIT (INS=7, LEN=Fir1)
+ST   flgerror_fir1             * 0 = OK
+
+no_init_fir:
+LD   xAngle
+ABS
+ST   lAngleABS
+
+LD   lAngleABS
+GE   30000
+JMPCN no_30
+LD   5
+ST   lFirstCutLine
+LD   6
+ST   lSecondCutLine
+
+LD   30000
+ST   l_x1
+LD   45000
+ST   l_x2
+JMP  com_a
+
+no_30:
+LD   lAngleABS
+GE   15000
+JMPCN no_15
+LD   xCutLineInd
+ST   lFirstCutLine
+LD   5
+ST   lSecondCutLine
+LD   15000
+ST   l_x1
+LD   30000
+ST   l_x2
+JMP  com_a
+
+no_15:
+LD   xCutLineInd
+ST   lFirstCutLine
+ST   lSecondCutLine
+LD   0
+ST   l_x1
+LD   15000
+ST   l_x2
+
+com_a:
+LD   lAngleABS
+SUB  l_x1
+ST   l_x_x1
+LD   l_x2
+SUB  l_x1
+ST   l_x2_x1
+
+LD   lFirstCutLine
+ST   yFirstLine
+LD   lSecondCutLine
+ST   ySecondLine
+
+***************************************
+*   Pressione
+***************************************
+PATH %TabLsr[lFirstCutLine]
+LD   A_CUT_PRESSURE
+ST   l_y1
+
+PATH %TabLsr[lSecondCutLine]
+LD   A_CUT_PRESSURE
+ST   l_y2
+
+LD   l_y2
+SUB  l_y1
+ST   l_y2_y1
+
+LD   l_x_x1
+MULDIV(M=l_y2_y1,D=l_x2_x1)
+ADD  l_y1
+ST   yCutPressure
+
+
+***************************************
+*   Focale
+***************************************
+PATH %TabLsr[lFirstCutLine]
+LD   A_CUT_FOCAL
+ST   l_y1
+
+PATH %TabLsr[lSecondCutLine]
+LD   A_CUT_FOCAL
+ST   l_y2
+
+LD   l_y2
+SUB  l_y1
+ST   l_y2_y1
+
+LD   l_x_x1
+MULDIV(M=l_y2_y1,D=l_x2_x1)
+ADD  l_y1
+ST   yCutFocal
+
+
+***************************************
+*   Altezza di taglio
+***************************************
+PATH %TabLsr[lFirstCutLine]
+LD   A_CUT_DISTANCE
+ST   l_y1
+
+PATH %TabLsr[lSecondCutLine]
+LD   A_CUT_DISTANCE
+ST   l_y2
+
+LD   l_y2
+SUB  l_y1
+ST   l_y2_y1
+
+LD   l_x_x1
+MULDIV(M=l_y2_y1,D=l_x2_x1)
+ADD  l_y1
+ST   yCutDistance
+
+
+***************************************
+*   Velocita' di taglio
+*   - yCutFeed  [mm/min]
+*   - yCutFeedPerc  [%] rispetto a linea taglio no bevel
+***************************************
+***todo PATH %TabLsr[lFirstCutLine]
+PATH %TabLsr[1]
+LD   A_CUT_FEED
+ST   l_y1
+
+PATH %TabLsr[lSecondCutLine]
+LD   A_CUT_FEED
+ST   l_y2
+
+LD   l_y2
+SUB  l_y1
+ST   l_y2_y1
+
+LD   lAngleABS
+ST   l_x_x1
+LD   l_x2
+ST   l_x2_x1
+
+
+
+LD   l_x_x1
+MULDIV(M=l_y2_y1,D=l_x2_x1)
+ADD  l_y1
+ST   yCutFeed
+
+LD   100            * 100%
+ST   l_CutFeedPerc
+
+LD   yCutFeed
+MUL  100
+DIV  l_y1
+ST   l_CutFeedPerc
+
+***todo
+***LD   l_y2_y1
+***EQ   0
+***JMPC f_eq
+***LD   yCutFeed
+***SUB  l_y1
+***MUL  100
+***DIV  l_y2_y1
+
+LD   0                       * N/C
+FIR_RUN (INS=7, X=l_CutFeedPerc)     
+ST   ltemp
+
+LD   l_CutFeedPerc
+EQ   2147483647
+JMPCN no_err_1
+
+LD   ltemp
+ST   l_CutFeedPerc
+
+no_err_1:
+f_eq:
+LD   l_CutFeedPerc
+ST   yCutFeedPerc           
+
+
+***************************************
+*   Potenza
+***************************************
+PATH %TabLsr[lFirstCutLine]
+
+LD   A_CUT_POWER
+ST   l_y1
+
+LD   A_OPTION_FUN_SPEED.3
+JMPCN no_pow_funspeed
+
+LD   PercInterpSpeed
+ST   POWER_CALC.xPercSpeed
+LD   lFirstCutLine
+ST   POWER_CALC.xCutLineInd
+LD   1
+ST   POWER_CALC.xCodTec             * Tecnology 0=duty 1=power 2=frequency
+
+CAL  POWER_CALC
+
+LD   POWER_CALC.yResult
+DIV  1000
+MUL  A_CUT_POWER
+DIV  100
+ST   l_y1
+
+no_pow_funspeed:
+
+PATH %TabLsr[lSecondCutLine]
+LD   A_CUT_POWER
+ST   l_y2
+
+LD   A_OPTION_FUN_SPEED.3           * enab power=funz(speed)
+JMPCN no_pow_funspeed2
+
+LD   PercInterpSpeed
+ST   POWER_CALC2.xPercSpeed
+LD   lSecondCutLine
+ST   POWER_CALC2.xCutLineInd
+LD   1
+ST   POWER_CALC2.xCodTec            * 0=duty 1=power 2=frequency
+
+CAL  POWER_CALC2
+
+LD   POWER_CALC2.yResult
+DIV  1000
+MUL  A_CUT_POWER
+DIV  100
+ST   l_y2
+
+no_pow_funspeed2:
+LD   l_y2
+SUB  l_y1
+ST   l_y2_y1
+
+LD   l_x_x1
+MULDIV(M=l_y2_y1,D=l_x2_x1)
+ADD  l_y1
+ST   yCutPower
+
+
+***************************************
+*   Duty
+***************************************
+PATH %TabLsr[lFirstCutLine]
+
+LD   A_CUT_DUTY
+ST   l_y1
+
+LD   A_OPTION_FUN_SPEED.2           * enab duty=funz(speed)
+JMPCN no_duty_funspeed
+
+LD   PercInterpSpeed
+ST   DUTY_CALC.xPercSpeed
+LD   lFirstCutLine
+ST   DUTY_CALC.xCutLineInd
+LD   0
+ST   DUTY_CALC.xCodTec              * 0=duty 1=power 2=frequency
+
+CAL  DUTY_CALC
+
+LD   DUTY_CALC.yResult
+DIV  1000
+MUL  A_CUT_DUTY
+DIV  100
+ST   l_y1
+
+no_duty_funspeed:
+PATH %TabLsr[lSecondCutLine]
+LD   A_CUT_DUTY
+ST   l_y2
+
+LD   A_OPTION_FUN_SPEED.2           * enab duty=funz(speed)
+JMPCN no_duty_funspeed2
+
+LD   PercInterpSpeed
+ST   DUTY_CALC2.xPercSpeed
+LD   lSecondCutLine
+ST   DUTY_CALC2.xCutLineInd
+LD   0
+ST   DUTY_CALC2.xCodTec             * 0=duty 1=power 2=frequency
+
+CAL  DUTY_CALC2
+
+LD   DUTY_CALC2.yResult
+DIV  1000
+MUL  A_CUT_DUTY
+DIV  100
+ST   l_y2
+
+no_duty_funspeed2:
+LD   l_y2
+SUB  l_y1
+ST   l_y2_y1
+
+LD   l_x_x1
+MULDIV(M=l_y2_y1,D=l_x2_x1)
+ADD  l_y1
+ST   yCutDuty
+
+END_FUNCTION_BLOCK
+
+
+
+
+
+
+
+*******************************************************************************
+*   Calcola dati di taglio in base all'angolo utilizzando le pd_spline
+*   dedicate nell'attuale linea di taglio selezionata
+*
+*NB:
+*pd_spline[150]     potenza linea 1    	(L_SourceInt16.8=abilitazione)
+*pd_spline[151]		velocità linea 1	(L_SourceInt16.9=abilitazione)	
+*pd_spline[152]		altezza linea 1	    (L_SourceInt16.10=abilitazione)
+*pd_spline[153]		focale linea 1	    (L_SourceInt16.11=abilitazione)
+*pd_spline[154]		duty linea 1	    (L_SourceInt16.12=abilitazione)	
+*pd_spline[155]		gas linea 1		    (L_SourceInt16.13=abilitazione)
+*pd_spline[156]		... linea 1         (L_SourceInt16.14=abilitazione)
+*
+* NB: Usa variabili globali SOLO per la simulazione (PER TEST USO INTERNO!)
+* NB: %LSRPlcOp0.3 -> Enab function
+*******************************************************************************
+FUNCTION_BLOCK LSRDATACALC_ANGLE
+
+VAR_INPUT
+xAngle:         DWORD;      * degree x 1000
+xCutLineInd:    DWORD;      * cutting line selected (1-10)
+END_VAR
+
+VAR_OUTPUT
+yCutPower:      DWORD;      * % x 1000
+yCutDuty:       DWORD;      * % x 1000
+yCutFocal:      DWORD;      * % x 1000
+yCutCuth:       DWORD;      * % x 1000
+yCutGas:        DWORD;      * % x 1000
+END_VAR
+
+VAR
+lAngleABS:      DWORD;
+pdspline_num:   DWORD;
+tmpPower:       DWORD;      
+tmpDuty:        DWORD;
+tmpFocal:       DWORD;
+tmpCuth:        DWORD;
+tmpGas:         DWORD;
+ANGLE_POWER_CALC:   LINEAR_CALC;
+ANGLE_DUTY_CALC:    LINEAR_CALC;
+ANGLE_FOCAL_CALC:   LINEAR_CALC;
+ANGLE_CUTH_CALC:    LINEAR_CALC;
+ANGLE_GAS_CALC:     LINEAR_CALC;
+END_VAR
+***************************************
+
+*** SOLO per SIMULAZIONE INTERNA
+LD   %TsCutDataLinear.CDL_SimOnPsw
+EQ   2021
+JMPCN no_sim_datainterp
+
+LD   %TsCutDataLinear.CDL_SimAngle
+ST   lAngleABS
+
+LD   1
+ST   xCutLineInd            * 1 per solo TEST !
+
+JMP  initf
+
+no_sim_datainterp:
+LD   xAngle
+ABS
+ST   lAngleABS
+
+initf:
+PATH %TabLsr[xCutLineInd]
+
+* Cuttting lines 1,2,3
+LD   xCutLineInd
+SUB  1
+MUL  7                      * numero pd_spline[] per ciascuna linea di taglio
+ADD  150
+ST   pdspline_num           * 150 pd_spline linea1, 157 pd_spline linea2.....
+
+* Cutting lines 11,12,13
+LD   xCutLineInd
+GT   10
+JMPCN FROM11TO15
+     LD   xCutLineInd
+     SUB  11
+     MUL  7                 * numero pd_spline[] per ciascuna linea di taglio
+     ADD  180
+     ST   pdspline_num      * 180 pd_spline linea1, 157 pd_spline linea2.....
+FROM11TO15:
+
+***************************************
+*   POTENZA
+*   pd_spline[150]=linea 1
+*   Il valore trovato è l'incremento o
+*   decremento della potenza attuale
+***************************************
+LD   0
+ST   tmpPower
+
+LD   A_OPTION_ENAB.8
+AND  %LSRPlcOp0.3                       * Enab data cutting interpolation
+AND  IncaseofbevelCut
+JMPCN dato_ko
+
+LD   lAngleABS
+ST   ANGLE_POWER_CALC.xInput
+
+LD   pdspline_num
+ST   ANGLE_POWER_CALC.xIndex
+
+CAL  ANGLE_POWER_CALC
+
+LD   ANGLE_POWER_CALC.yResult
+EQ   2147483647
+JMPC dato_ko
+
+LD   ANGLE_POWER_CALC.yResult
+ST   tmpPower
+
+dato_ko:
+LD   tmpPower
+ST   yCutPower
+
+***************************************
+*   DUTY
+*   pd_spline[154]=linea 1
+*   Il valore trovato è l'incremento o
+*   decremento del duty attuale
+***************************************
+LD   0
+ST   tmpDuty
+
+LD   A_OPTION_ENAB.12
+AND  %LSRPlcOp0.3                       * Enab data cutting interpolation
+AND  IncaseofbevelCut
+JMPCN dato_ko1
+
+LD   lAngleABS
+ST   ANGLE_DUTY_CALC.xInput
+
+LD   pdspline_num
+ADD  4
+ST   ANGLE_DUTY_CALC.xIndex
+
+CAL  ANGLE_DUTY_CALC
+
+LD   ANGLE_DUTY_CALC.yResult
+EQ   2147483647
+JMPC dato_ko1
+
+LD   ANGLE_DUTY_CALC.yResult
+ST   tmpDuty
+
+dato_ko1:
+LD   tmpDuty
+ST   yCutDuty
+
+
+***************************************
+*   FOCALE
+*   pd_spline[153]=linea 1
+*   Il valore trovato è l'incremento o
+*   decremento del duty attuale
+***************************************
+LD   0
+ST   tmpFocal
+
+LD   A_OPTION_ENAB.11
+AND  %LSRPlcOp0.3                       * Enab data cutting interpolation
+AND  IncaseofbevelCut
+JMPCN dato_ko2
+
+LD   lAngleABS
+ST   ANGLE_FOCAL_CALC.xInput
+
+LD   pdspline_num
+ADD  3
+ST   ANGLE_FOCAL_CALC.xIndex
+
+CAL  ANGLE_FOCAL_CALC
+
+LD   ANGLE_FOCAL_CALC.yResult
+EQ   2147483647
+JMPC dato_ko2
+
+LD   ANGLE_FOCAL_CALC.yResult
+ST   tmpFocal
+
+dato_ko2:
+LD   tmpFocal
+ST   yCutFocal
+
+
+***************************************
+*   ALTEZZA DI TAGLIO
+*   pd_spline[152]=linea 1
+*   Il valore trovato è l'incremento o
+*   decremento del duty attuale
+***************************************
+LD   0
+ST   tmpCuth
+
+LD   A_OPTION_ENAB.10
+AND  %LSRPlcOp0.3                       * Enab data cutting interpolation
+AND  IncaseofbevelCut
+JMPCN dato_ko3
+
+LD   lAngleABS
+ST   ANGLE_CUTH_CALC.xInput
+
+LD   pdspline_num
+ADD  2
+ST   ANGLE_CUTH_CALC.xIndex
+
+CAL  ANGLE_CUTH_CALC
+
+LD   ANGLE_CUTH_CALC.yResult
+EQ   2147483647
+JMPC dato_ko3
+
+LD   ANGLE_CUTH_CALC.yResult
+ST   tmpCuth
+
+dato_ko3:
+LD   tmpCuth
+ST   yCutCuth
+
+***************************************
+*   GAS
+*   pd_spline[155]=linea 1
+*   Il valore trovato è l'incremento o
+*   decremento della pressione attuale
+***************************************
+LD   0
+ST   tmpGas
+
+LD   A_OPTION_ENAB.13
+AND  %LSRPlcOp0.3                       * Enab data cutting interpolation
+AND  IncaseofbevelCut
+JMPCN dato_ko4
+
+LD   lAngleABS
+ST   ANGLE_GAS_CALC.xInput
+
+LD   pdspline_num
+ADD  5
+ST   ANGLE_GAS_CALC.xIndex
+
+CAL  ANGLE_GAS_CALC
+
+LD   ANGLE_GAS_CALC.yResult
+EQ   2147483647
+JMPC dato_ko4
+
+LD   ANGLE_GAS_CALC.yResult
+ST   tmpGas
+
+dato_ko4:
+LD   tmpGas
+ST   yCutGas
+
+END_FUNCTION_BLOCK
+
+
+
+*******************************************************************************
+*   GESTIONE DI UNA FUNZIONE LINEARE GENERICA
+*   DATO UN PUNTO (X o Y) VIENE CALCOLATO IL RELATIVO PUNTO (Y o X)
+*
+*   UTILIZZATA PER IL CALCOLO DI UNA CORREZIONE DI TEMPO SUL FILTRO FIR DI
+*   SINCRONISMO TRA VELOCITA' E DUTY IN BASE ALL FREQUENZA IMPOSTATA.
+*   Questo perchè normalmente il generatore, per il DUTY, ha un tempo di risposta
+*   diverso in funzione della frequenza settata
+*
+*       LinearFun_tim_Y1        AT %rGui22;     *(rGui22)Funzione lineare: Y1
+*       LinearFun_tim_Y2        AT %rGui23;     *(rGui23)Funzione lineare: Y1
+*       LinearFun_freq_X1       AT %rGui24;     *(rGui24)Funzione lineare: X1
+*       LinearFun_freq_X2       AT %rGui25;     *(rGui25)Funzione lineare: X4
+*       LinearFun_freq_REF      AT %rGui26;     *(rGui26)Funzione lineare: frequenza di riferimento per settaggio tempo sync duty=fun(vel)
+*
+*       Formula: Y = Y1 + ( ((X-X1)/(X2-X1)) * (Y2-Y1) )
+*
+*******************************************************************************
+FUNCTION_BLOCK LSR_GEN_LIN_INTERP
+
+VAR_INPUT
+x_Y1:           DWORD;
+x_Y2:           DWORD;
+x_X1:           DWORD;
+x_X2:           DWORD;
+x_X:            DWORD;
+x_REF:          DWORD;
+END_VAR
+
+VAR_OUTPUT
+y_Y:            DWORD;
+y_REF:          DWORD;
+END_VAR
+
+VAR
+l_xref_x1:      DWORD;
+l_x_x1:         DWORD;
+l_x2_x1:        DWORD;
+l_y2_y1:        DWORD;
+temp:           DWORD;
+END_VAR
+***************************************
+
+LD   x_X
+SUB  x_X1
+ST   l_x_x1
+
+LD   x_REF
+SUB  x_X1
+ST   l_xref_x1
+
+LD   x_X2
+SUB  x_X1
+ST   l_x2_x1
+
+LD   x_Y2
+SUB  x_Y1
+ST   l_y2_y1
+
+LD   l_x_x1
+MULDIV(M=l_y2_y1,D=l_x2_x1)
+ST   temp
+
+LD   temp
+ADD  x_Y1
+ST   y_Y
+
+LD   l_xref_x1
+MULDIV(M=l_y2_y1,D=l_x2_x1)
+ST   temp
+
+LD   temp
+ADD  x_Y1
+ST   y_REF
+
+END_FUNCTION_BLOCK

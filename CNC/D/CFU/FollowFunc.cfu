@@ -1,0 +1,68 @@
+[A]0 :Following Test Function (FollowFunc.cfu)
+
+;---> In Case only X master spindle here
+;---> Calibration at 3mm
+;---> VA0 Incremento Calib Start Pos
+
+DBL trg_x, trg_y,trg_z, trg_v, trg_w, trg_C1
+DBL sav_G70=XGET("@G70")
+G71
+
+; if block search running exit
+IF( (%cn[0].rc[8].8) && !(%cn[0].rc[8].15) ) RET
+IF( %cn[WHO()].rc[0].21 ) RET           ; Channel in test (graphics running)
+IF( %IndexORG == 0 ) ERROR(769)         ; Se origine selezionata = 0 non ?possibile fare APA
+
+M8000                                   ; DISABILITA RETRACE
+; Fixed spindle or Mobile command open
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+
+?%LsIso81.3 = 1 
+
+?%C18.17 = 1                            ; Capacitive test in progress
+
+IF( (%gIso26) <= 1 ) THEN
+    trg_z = %gIso[24] / 2
+ELSE
+    SYN
+    trg_z = QCALC( AXIDX(3,Z) )
+ENDIF
+
+G806 T3 N1 H1 D1 E1 A11
+gOptimEnableG806 = 0
+
+G161 L(ml_usr_origin) 
+G186 L(ml_usr_origin)
+G58 C(0)
+pl_orig_c = 0
+
+%gIso[0] = 3 ;//� un laser (XXX per evitare la G650)
+G180 D1 Z(trg_z)
+trg_x = kine_x
+trg_y = kine_y
+trg_z = kine_z
+MSGOUT"trg_x="trg_x ",trg_y="trg_y ",trg_z="trg_z
+trg_C1 = QCALC( AXIDX(3,C) )
+trg_v = SIN(trg_C1)
+trg_w = COS(trg_C1)
+
+G153 G0 Z(trav_safe_z)
+
+G180 X(trg_x) Y(trg_y) Z(trg_z) C(trg_C1)
+G153 G0 X(kine_x) Y(kine_y)
+G800 G0 K0 D1 X(trg_x) Y(trg_y) Z(trg_z) C(trg_C1) F(1000) T1 R1 U(0) V(trg_v) W(trg_w) P0 Q0
+SYN
+$Press STOP or RESET to abort
+SYN
+AWAIT( (%gPlc0.3) ||  (%XhcApp.Xhc_Puls.18) )
+$
+
+?%LsIso81.4 = 1 
+
+G840
+G153 G0 Z(trav_safe_z)
+
+?%C18.17 = 0                            ; Capacitive test in progress
+
+G(sav_G70)
+RET

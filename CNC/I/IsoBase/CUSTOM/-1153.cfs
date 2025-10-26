@@ -1,0 +1,131 @@
+ [T] [E] [L] [G] [X] [Y] [Z] [U] [V] [W] [A] [B] [C] [F] :G153
+DBL bfc_u, bfc_v, bfc_w, bfc_a, bfc_b, bfc_c
+DBL shf_x, shf_y, shf_z, shf_u, shf_v, shf_w, shf_a, shf_b, shf_c
+DBL head_enable = VA19
+DBL table_enable = VA4
+DBL ml = VA11
+DBL qtx=CTOMM(VA23)
+DBL qty=CTOMM(VA24)
+DBL qtz=CTOMM(VA25)
+DBL qtu=CTOMM(VA20)
+DBL qtv=CTOMM(VA21)
+DBL qtw=CTOMM(VA22)
+DBL sav_G70=XGET("@G70")
+G71
+IF( XGET("@G90") != 90 ) ERROR(3)    
+IF( ISQNAN(head_enable) && ISQNAN(table_enable) && ISQNAN(ml) ) THEN
+    head_enable = 0
+    table_enable = 0
+    ml = -1
+ENDIF
+
+;//$GRAPH
+IF( %cn[WHO()].pc[14].25 != 0 ) THEN
+    IF( !ISQNAN(VA6) ) THEN
+        G(VA6) X(qtx) Y(qty) Z(qtz) U(qtu) V(qtv) W(qtw) A(VA0) B(VA1) C(VA2) F(VA5)
+    ENDIF
+	G(sav_G70)
+ENDIF
+IF( %cn[WHO()].pc[14].25 != 0 ) RET
+;//$GRAPH
+
+IF( ISQNAN(head_enable) ) head_enable = 1
+IF( ISQNAN(table_enable) ) table_enable = 1
+IF( ISQNAN(ml) ) ml = ml_curr
+IF( table_enable == 0 ) ml = -1
+IF( (head_enable != 0) || (table_enable != 0) || (ml != -1) ) JMPF .Override
+    f_G153=1
+    DYNMOD = 0
+    MLV=0
+    SVL (0)
+    COMMIT ;Richiesto per SVL seguita da TWI
+    TWI(0)
+    THD(0)
+    EP(0) EQ(0) ER(0)
+    D(0)
+    TAB(0)
+    ICLNUT = 0
+    PADSID = 0
+    shf_u = QEXPQ(U,pl_add1_u)
+    shf_v = QEXPQ(V,pl_add1_v)
+    shf_w = QEXPQ(W,pl_add1_w)
+    shf_a = QEXPQ(A,pl_add1_a)
+    shf_b = QEXPQ(B,pl_add1_b)
+    shf_c = QEXPQ(C,pl_add1_c)
+    G58 U(shf_u) V(shf_v) W(shf_w) A(shf_a) B(shf_b) C(shf_c)
+    LSYN
+    bfc_u = QPREFQ(U)
+    bfc_v = QPREFQ(V)
+    bfc_w = QPREFQ(W)
+    bfc_a = QPREFQ(A)
+    bfc_b = QPREFQ(B)
+    bfc_c = QPREFQ(C)
+    IF(!ISQNAN(bfc_u)) bfc_u=bfc_u-shf_u
+    IF(!ISQNAN(bfc_v)) bfc_v=bfc_v-shf_v
+    IF(!ISQNAN(bfc_w)) bfc_w=bfc_w-shf_w
+    IF(!ISQNAN(bfc_a)) bfc_a=bfc_a-shf_a
+    IF(!ISQNAN(bfc_b)) bfc_b=bfc_b-shf_b
+    IF(!ISQNAN(bfc_c)) bfc_c=bfc_c-shf_c
+    G10 G0 X(QPREFQ(X)) Y(QPREFQ(Y)) Z(QPREFQ(Z)) U(bfc_u) V(bfc_v) W(bfc_w) A(bfc_a) B(bfc_b) C(bfc_c)
+    IF( !ISQNAN(VA6) ) THEN
+        G(VA6) X(qtx) Y(qty) Z(qtz) U(qtu) V(qtv) W(qtw) A(VA0) B(VA1) C(VA2) F(VA5)
+        G152
+    ENDIF
+    G(sav_G70)
+    RET
+    ;//cycle ends
+.Override
+DBL ml_save
+DBL sav_rtcp_on, sav_rtcp_oritrans
+DBL sav_tool_cosx, sav_tool_cosy, sav_tool_cosz, sav_cut_edge_no, sav_cut_edge_svl
+DBL sav_twist_head_no, sav_tool_holder_no, sav_rtcp_cut_edge_no, sav_rtcp_cut_edge_svl, sav_twist_table_no
+;//Funzione non valida
+IF( ISQNAN(VA6) ) ERROR(3)
+sav_rtcp_on           = rtcp_on
+sav_rtcp_oritrans     = rtcp_oritrans
+sav_tool_cosx         = tool_cosx
+sav_tool_cosy         = tool_cosy
+sav_tool_cosz         = tool_cosz
+sav_cut_edge_no       = cut_edge_no
+sav_cut_edge_svl      = cut_edge_svl
+sav_twist_head_no     = twist_head_no
+sav_tool_holder_no    = tool_holder_no
+sav_rtcp_cut_edge_no  = rtcp_cut_edge_no
+sav_rtcp_cut_edge_svl = rtcp_cut_edge_svl
+sav_twist_table_no    = twist_table_no
+IF( head_enable == 0 ) THEN
+    ;//Operazione illegale
+    IF( table_enable != 0 ) ERROR(55)
+    IF( sav_rtcp_on ) THEN
+        G173
+    ELSE
+        G177
+    ENDIF
+ELSE
+    IF( table_enable == 0 ) THEN
+        IF( sav_rtcp_on ) THEN
+            G172 T(sav_twist_head_no) H(sav_tool_holder_no) D(sav_rtcp_cut_edge_no) S(sav_rtcp_cut_edge_svl) E0 I(sav_rtcp_oritrans)
+        ENDIF
+    ENDIF
+ENDIF
+ml_save = ml_curr
+IF( !ISQNAN(ml) ) G167 L(ml)
+G(VA6) X(qtx) Y(qty) Z(qtz) U(qtu) V(qtv) W(qtw) A(VA0) B(VA1) C(VA2) F(VA5)
+IF( !ISQNAN(ml) ) G167 L(ml_save)
+IF( head_enable == 0 ) THEN
+    ;//Operazione illegale
+    IF( table_enable != 0 ) ERROR(55)
+    IF( sav_rtcp_on ) THEN
+        G172 T(sav_twist_head_no) H(sav_tool_holder_no) D(sav_rtcp_cut_edge_no) S(sav_rtcp_cut_edge_svl) E(sav_twist_table_no) I(sav_rtcp_oritrans)
+    ELSE
+        G176 P(sav_tool_cosx) Q(sav_tool_cosy) R(sav_tool_cosz) D(sav_cut_edge_no) S(sav_cut_edge_svl)
+    ENDIF
+ELSE
+    IF( table_enable == 0 ) THEN
+        IF( sav_rtcp_on ) THEN
+            G172 T(sav_twist_head_no) H(sav_tool_holder_no) D(sav_rtcp_cut_edge_no) S(sav_rtcp_cut_edge_svl) E(sav_twist_table_no) I(sav_rtcp_oritrans)
+        ENDIF
+    ENDIF
+ENDIF
+G(sav_G70)
+RET

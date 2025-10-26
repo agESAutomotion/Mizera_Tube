@@ -1,0 +1,9 @@
+: VAR_USR.CFS
+
+DBL HeightEnd = 35                 ; It cannot be less THEN 35 precitec calibration
+
+DBL PAR1    ; Utilizzata da IsoMsg()
+DBL PAR2    ; Utilizzata da IsoMsg()
+DBL PAR3    ; Utilizzata da IsoMsg()
+
+RET

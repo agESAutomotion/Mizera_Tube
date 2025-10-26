@@ -1,0 +1,864 @@
+ [X]0 [Y]0 [U]0 [V]0 : G2300
+
+ERROR(55); PLEASE SWITCH TO NEW CYCLES
+
+;// spindleCalibration
+;//
+;// uses data from G2292 and from part-program
+;//     DBL xs ...
+;//     DBL acquireX, ...
+;// simulation data
+;//     DBL simErrorX, ...
+;// size information is output
+;//     DBL sizeX, ...
+;//
+;// *** IMPORTANT ***
+;// 1) pipes must be quadrant-symmetric
+;// 2) coordinates from G2292 MUST be already sorted
+;//
+DBL minFlatness = 2*border + minSide
+DBL u[4], v[4], rnd
+DBL isFlat[4]
+DBL fSimul = %cn[WHO()].rc[0].21
+DBL fGraph = %cn[WHO()].pc[14].25
+DBL isAngleDone
+DBL x, y, z, c
+DBL thx, thy, thz
+;// DEBUG: force angle probing until specific side(s) [0(disable)..4]
+DBL cycleDebug = 0
+DBL touch_epsilon
+DBL p[4]
+DBL pLj, pRj, pLi, pRi
+DBL saveF = XGET("@F")
+DBL dst
+DBL tmp[3]
+DBL Vacq_x, Vacq_y, Vacq_z
+DBL Hacq_x, Hacq_y, Hacq_z
+;// Calculated errors
+DBL errorX, errorY, errorZ
+DBL errorA, errorB
+DBL SaveX, SaveY
+DBL vout0   = 0x04
+DBL vout    = 0x08
+DBL vmax    = 0x10
+DBL acquireX = VA23
+DBL acquireY = VA24
+DBL acquireU = VA20
+DBL acquireV = VA21
+DBL sav_gTravT
+DBL z_abs
+DBL DistFromPiece
+DBL touch_enable = 1
+DBL gTouchMode = 1
+DBL gRegolMode = 1
+DBL piercing_mode = 0
+DBL hix = 0
+DBL tx, ty, tz
+DBL ti, tj, tk
+DBL vectorSelect =  1   ;//1 = tool, 2 = surface, 6 = Z
+
+IF( glbIsPolygon ) RET
+
+;;;IF( !UserCalibSpindle ) RET         ;Abilitazione calibrazione da user
+IF( glbIsPolygon ) RET
+IF( roundFlag ) RET
+IF( %LSRPlcOp0.23 == 1 ) RET        ;function disable
+IF( ls_stateping != 0 ) ERROR(55)   ;Error if not G840 L0
+IF (fSimul) RET
+
+;// cannot measure width accurately with too high a rounding
+IF (rnd > 9.5) THEN
+    $ Spindle calibration not possible
+    SYN
+    G4 F0.1
+    M0
+    $
+ENDIF
+IF (rnd > 9.5) RET
+
+SYN
+IF( (!%gPlc0.29) && (!%PlcOp0.2) ) THEN ; If not 1000.pgm and not DRYRUN
+    IF( %M107.1 ) M496  ;Disable GASES
+ENDIF
+
+sav_gTravT = gTravT
+
+;// select plane
+IF (isTubeY == 0) THEN
+    rnd = xr
+    u[0] = ys + rnd
+    u[1] = ys + rnd
+    v[0] = zs + rnd
+    v[3] = zs + rnd
+    u[2] = ye - rnd
+    u[3] = ye - rnd
+    v[2] = ze - rnd
+    v[1] = ze - rnd
+ELSE
+    rnd = yr
+    u[0] = zs + rnd
+    u[1] = zs + rnd
+    v[0] = xs + rnd
+    v[3] = xs + rnd
+    u[2] = ze - rnd
+    u[3] = ze - rnd
+    v[2] = xe - rnd
+    v[1] = xe - rnd
+ENDIF
+
+IF (u[3] < (u[0] - 0.002)) ERROR(55)
+IF (v[0] > (v[1] + 0.002)) ERROR(55)
+IF (u[1] > (u[2] + 0.002)) ERROR(55)
+IF (v[2] < (v[3] - 0.002)) ERROR(55)
+
+;// make sure it's quadrant-symmetric
+IF (ABS(u[3] + u[0]) > 0.02) ERROR(55)
+IF (ABS(v[0] + v[1]) > 0.02) ERROR(55)
+IF (ABS(u[1] + u[2]) > 0.02) ERROR(55)
+IF (ABS(v[2] + v[3]) > 0.02) ERROR(55)
+
+;// shape flatness (bottom, left, top, right)
+isFlat[0] = u[3] > (u[0] + minFlatness)
+isFlat[1] = v[0] < (v[1] - minFlatness)
+isFlat[2] = u[1] < (u[2] - minFlatness)
+isFlat[3] = v[2] > (v[3] + minFlatness)
+
+;// Meaning of _s, _e, u[] v[] coordinates and isFlat[] side flags
+;//
+;//    s     e
+;// v  :  2  :            pipe
+;// ^   ----- .. e        axis
+;// |  |1   2|           X or Y
+;// | 1|     |3          :    :
+;// |  |0   3|      u = (Y or Z)
+;// |   ----- .. s       :    :
+;// |     0         v = (Z or X)
+;// +--------> u
+
+MSGOUT "Spindle calibration in progress..."
+G172 T(spindle_id) H1 D(tool_id) E(table_id)
+G153 G0 Z(optimized_lift)
+
+; cut_type is the the reference to understand if there is a calibration for 2D or 3D
+IF (cut_type == 2) dst = 2
+IF (cut_type == 3) dst = 3
+
+SYN
+; Ripristino tabella 2 o 3 con i dati della tabella principale
+%tab[dst].t_ttab.t_oart.t_dX  = %tab[table_id].t_ttab.t_oart.t_dX
+%tab[dst].t_ttab.t_oart.t_dY  = %tab[table_id].t_ttab.t_oart.t_dY
+%tab[dst].t_ttab.t_oart.t_dZ  = %tab[table_id].t_ttab.t_oart.t_dZ
+%tab[dst].t_ttab.t_oart.t_dEC = %tab[table_id].t_ttab.t_oart.t_dEC
+%tab[dst].t_ttab.t_oart.t_dXx = %tab[table_id].t_ttab.t_oart.t_dXx
+%tab[dst].t_ttab.t_oart.t_dYy = %tab[table_id].t_ttab.t_oart.t_dYy
+
+;// PHASE ONE: acquire angle and level the upper surface to enhance accuracy
+isAngleDone = 0
+IF (isTubeY == 0) THEN
+    ;// tube axis is X
+    x = acquireX
+
+    z = ze
+    c = 0
+    IF (((cycleDebug > 0) || !isAngleDone) && isFlat[2]) THEN
+        y = u[1] + border
+        RPT .acquire_a, .acquire_z, 1
+        pLi = y
+        pLj = Vacq_z
+        y = u[2] - border
+        RPT .acquire_a, .acquire_z, 1
+        pRi = y
+        pRj = Vacq_z
+        isAngleDone = 1
+    ENDIF
+
+    y = ye
+    c = 90
+    IF (((cycleDebug > 1) || !isAngleDone) && isFlat[3]) THEN
+        z = v[2] - border
+        RPT .acquire_a, .acquire_z, 1
+        pLi = z
+        pLj = Vacq_y
+        z = v[3] + border
+        RPT .acquire_a, .acquire_z, 1
+        pRi = z
+        pRj = Vacq_y
+        isAngleDone = 1
+    ENDIF
+
+    z = zs
+    c = 180
+    IF (((cycleDebug > 2) || !isAngleDone) && isFlat[0]) THEN
+        y = u[3] - border
+        RPT .acquire_a, .acquire_z, 1
+        pLi = y
+        pLj = Vacq_z
+        y = u[0] + border
+        RPT .acquire_a, .acquire_z, 1
+        pRi = y
+        pRj = Vacq_z
+        isAngleDone = 1
+    ENDIF
+
+    y = ys
+    c = 270
+    IF (((cycleDebug > 3) || !isAngleDone) && isFlat[1]) THEN
+        z = v[0] + border
+        RPT .acquire_a, .acquire_z, 1
+        pLi = z
+        pLj = Vacq_y
+        z = v[1] - border
+        RPT .acquire_a, .acquire_z, 1
+        pRi = z
+        pRj = Vacq_y
+        isAngleDone = 1
+    ENDIF
+
+    IF (!isAngleDone) THEN
+        errorA = 0.0
+    ELSE
+        errorA = ATAN((pRj - pLj) / ABS(pRi - pLi))
+    ENDIF
+    errorB = 0.0
+    ;// apply corrections
+    IF (!fSimul) THEN
+        SYN
+        ;dst = table_id
+        G153
+        %tab[dst].t_ttab.t_oart.t_dEC = %tab[dst].t_ttab.t_oart.t_dEC + errorA
+        G152
+        G178 C(pl_add1_c - errorA)
+    ENDIF
+ELSE
+    ;// tube axis is Y
+    y = acquireY
+
+    z = ze
+    c = 0
+    IF (((cycleDebug > 0) || !isAngleDone) && isFlat[3]) THEN
+        x = v[2] - border
+        RPT .acquire_a, .acquire_z, 1
+        pLi = x
+        pLj = Vacq_z
+        x = v[3] + border
+        RPT .acquire_a, .acquire_z, 1
+        pRi = x
+        pRj = Vacq_z
+        isAngleDone = 1
+    ENDIF
+
+    x = xs
+    c = 90
+    IF (((cycleDebug > 1) || !isAngleDone) && isFlat[0]) THEN
+        z = u[3] - border
+        RPT .acquire_a, .acquire_z, 1
+        pLi = z
+        pLj = Vacq_x
+        z = u[0] + border
+        RPT .acquire_a, .acquire_z, 1
+        pRi = z
+        pRj = Vacq_x
+        isAngleDone = 1
+    ENDIF
+
+    z = zs
+    c = 180
+    IF (((cycleDebug > 2) || !isAngleDone) && isFlat[1]) THEN
+        x = v[0] + border
+        RPT .acquire_a, .acquire_z, 1
+        pLi = x
+        pLj = Vacq_z
+        x = v[1] - border
+        RPT .acquire_a, .acquire_z, 1
+        pRi = x
+        pRj = Vacq_z
+        isAngleDone = 1
+    ENDIF
+
+    x = xe
+    c = 270
+    IF (((cycleDebug > 3) || !isAngleDone) && isFlat[2]) THEN
+        z = u[1] + border
+        RPT .acquire_a, .acquire_z, 1
+        pLi = z
+        pLj = Vacq_x
+        z = u[2] - border
+        RPT .acquire_a, .acquire_z, 1
+        pRi = z
+        pRj = Vacq_x
+        isAngleDone = 1
+    ENDIF
+
+    IF (!isAngleDone) THEN
+        errorB = 0.0
+    ELSE
+        errorB = ATAN((pRj - pLj) / ABS(pRi - pLi))
+    ENDIF
+    errorA = 0.0
+    ;// apply corrections
+    IF (!fSimul) THEN
+        SYN
+        ;dst = table_id
+        G153
+        %tab[dst].t_ttab.t_oart.t_dEC = %tab[dst].t_ttab.t_oart.t_dEC + errorB
+        G152
+        G178 C(pl_add1_c - errorB)
+    ENDIF
+ENDIF
+
+;// PHASE TWO: acquire upper surface
+isAngleDone = 0
+IF (isTubeY == 0) THEN
+    ;// tube axis is X
+    x = acquireX
+	thx = x
+
+    z = ze
+    thz = z
+    c = 0
+    IF (((cycleDebug > 0) || !isAngleDone) && isFlat[2]) THEN
+        y   = u[1] + border
+        thy = u[1] - rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pLi = y
+        pLj = Vacq_z
+        p[1] = Hacq_y
+        y   = u[2] - border
+        thy = u[2] + rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pRi = y
+        pRj = Vacq_z
+        p[3] = Hacq_y
+        p[2] = (pLj + pRj) / 2
+        p[0] = p[2] - (ze - zs)
+        isAngleDone = 1
+    ENDIF
+
+    y = ye
+    thy = y
+    c = 90
+    IF (((cycleDebug > 1) || !isAngleDone) && isFlat[3]) THEN
+        z   = v[2] - border
+        thz = v[2] + rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pLi = z
+        pLj = Vacq_y
+        p[2] = Hacq_z
+        z   = v[3] + border
+        thz = v[3] - rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pRi = z
+        pRj = Vacq_y
+        p[0] = Hacq_z
+        p[3] = (pLj + pRj) / 2
+        p[1] = p[3] - (ye - ys)
+        isAngleDone = 1
+    ENDIF
+
+    z = zs
+    thz = z
+    c = 180
+    IF (((cycleDebug > 2) || !isAngleDone) && isFlat[0]) THEN
+        y   = u[3] - border
+        thy = u[3] + rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pLi = y
+        pLj = Vacq_z
+        p[3] = Hacq_y
+        y   = u[0] + border
+        thy = u[0] - rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pRi = y
+        pRj = Vacq_z
+        p[1] = Hacq_y
+        p[0] = (pLj + pRj) / 2
+        p[2] = p[0] + (ze - zs)
+        isAngleDone = 1
+    ENDIF
+
+    y = ys
+    thy = y
+    c = 270
+    IF (((cycleDebug > 3) || !isAngleDone) && isFlat[1]) THEN
+        z   = v[0] + border
+        thz = v[0] -rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pLi = z
+        pLj = Vacq_y
+        p[0] = Hacq_z
+        z   = v[1] - border
+        thz = v[1] + rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pRi = z
+        pRj = Vacq_y
+        p[2] = Hacq_z
+        p[1] = (pLj + pRj) / 2
+        p[3] = p[1] + (ye - ys)
+        isAngleDone = 1
+    ENDIF
+
+    errorY = (p[3] + p[1]) / 2
+    errorZ = (p[2] + p[0]) / 2
+    errorX = 0.0
+    sizeY  = p[3] - p[1]
+    sizeZ  = p[2] - p[0]
+    sizeX  = 0.0
+
+    IF (!isAngleDone) THEN
+        ERROR(55) ;//no eligible side
+        errorA = 0.0
+    ELSE
+        errorA = ATAN((pRj - pLj) / ABS(pRi - pLi))
+        sizeY = sizeY * COS(errorA)
+        sizeZ = sizeZ * COS(errorA)
+    ENDIF
+    errorB = 0.0
+    ;// apply corrections
+    IF (!fSimul) THEN
+        SYN
+        ;dst = table_id
+        G153
+        %tab[dst].t_ttab.t_oart.t_dY  = %tab[dst].t_ttab.t_oart.t_dY  + errorY
+        %tab[dst].t_ttab.t_oart.t_dZ  = %tab[dst].t_ttab.t_oart.t_dZ  + errorZ
+        G152
+        G178 C(pl_add1_c - errorA)
+    ENDIF
+ELSE
+    ;// tube axis is Y
+    y = acquireY
+    thy = y
+
+    z = ze
+    thz = z
+    c = 0
+    IF (((cycleDebug > 0) || !isAngleDone) && isFlat[3]) THEN
+        x   = v[2] - border
+        thx = v[2] + rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pLi = x
+        pLj = Vacq_z
+        p[2] = Hacq_x
+        x   = v[3] + border
+        thx = v[3] - rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pRi = x
+        pRj = Vacq_z
+        p[0] = Hacq_x
+        p[3] = (pLj + pRj) / 2
+        p[1] = p[3] - (ze - zs)
+        isAngleDone = 1
+    ENDIF
+
+    x = xs
+    thx = x
+    c = 90
+    IF (((cycleDebug > 1) || !isAngleDone) && isFlat[0]) THEN
+        z   = u[3] - border
+        thz = u[3] + rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pLi = z
+        pLj = Vacq_x
+        p[3] = Hacq_z
+        z   = u[0] + border
+        thz = u[0] - rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pRi = z
+        pRj = Vacq_x
+        p[1] = Hacq_z
+        p[0] = (pLj + pRj) / 2
+        p[2] = p[0] + (xe - xs)
+        isAngleDone = 1
+    ENDIF
+
+    z = zs
+    thz = z
+    c = 180
+    IF (((cycleDebug > 2) || !isAngleDone) && isFlat[1]) THEN
+        x   = v[0] + border
+        thx = v[0] - rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pLi = x
+        pLj = Vacq_z
+        p[0] = Hacq_x
+        x   = v[1] - border
+        thx = v[1] + rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pRi = x
+        pRj = Vacq_z
+        p[2] = Hacq_x
+        p[1] = (pLj + pRj) / 2
+        p[3] = p[1] + (ze - zs)
+        isAngleDone = 1
+    ENDIF
+
+    x = xe
+    thx = x
+    c = 270
+    IF (((cycleDebug > 3) || !isAngleDone) && isFlat[2]) THEN
+        z   = u[1] + border
+        thz = u[1] - rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pLi = z
+        pLj = Vacq_x
+        p[1] = Hacq_z
+        z   = u[2] - border
+        thz = u[2] + rnd
+        RPT .acquire_scan_a, .acquire_scan_z, 1
+        pRi = z
+        pRj = Vacq_x
+        p[3] = Hacq_z
+        p[2] = (pLj + pRj) / 2
+        p[0] = p[2] - (xe - xs)
+        isAngleDone = 1
+    ENDIF
+
+    errorZ = (p[3] + p[1]) / 2
+    errorX = (p[2] + p[0]) / 2
+    errorY = 0.0
+    sizeZ  = p[3] - p[1]
+    sizeX  = p[2] - p[0]
+    sizeY  = 0.0
+
+    IF (!isAngleDone) THEN
+        ERROR(55) ;//no eligible side
+        errorB = 0.0
+    ELSE
+        errorB = ATAN((pRj - pLj) / ABS(pRi - pLi))
+        sizeZ = sizeZ * COS(errorB)
+        sizeX = sizeX * COS(errorB)
+    ENDIF
+    errorA = 0.0
+    ;// apply corrections
+    IF (!fSimul) THEN
+        SYN
+        ;dst = table_id
+        G153
+        %tab[dst].t_ttab.t_oart.t_dX  = %tab[dst].t_ttab.t_oart.t_dX  + errorX
+        %tab[dst].t_ttab.t_oart.t_dZ  = %tab[dst].t_ttab.t_oart.t_dZ  + errorZ
+        G152
+        G178 C(pl_add1_c - errorB)
+    ENDIF
+ENDIF
+
+G173
+
+gTravT=-1
+; SOLO CON MONOTESTA !!!
+;G806 A11 T(sav_gTravT) N1 H(gTravH) D(gTravD) E(gTravE) S(gTravS)
+
+G806 A11 T3 N1 H1 D1 E1 S(workpiece_safe_dist)
+gOptimEnableG806 = 0
+
+SYN
+IF( (!%gPlc0.29) && (!%PlcOp0.2) ) THEN ; If not 1000.pgm and not DRYRUN
+    IF( %M107.1 ) M497  ;Enable GASES
+ENDIF
+
+MSGOUT
+UserExecutedCalibSp=1
+F(saveF)
+RET
+
+;******************************************************************************
+.acquire_a
+
+    DistFromPiece = 3
+    ;// approach
+    G180 X(x) Y(y) Z(z) B0 C(c)
+    IF (isTubeY == 0) THEN
+        G1000 X(kine_x) Y(kine_y) B(kine_b) C(kine_c) U(acquireU)
+    ELSE
+        G1000 X(kine_x) Y(kine_y) B(kine_b) C(kine_c) V(acquireV)
+    ENDIF
+
+    ?%CalPipe[0].General[3] = 1                  ; index to communicate in laser touch the setpoint for the calibration
+
+    G180 P1 X(x) Y(y) Z(z) C(c)
+
+    ?%UnitWork.uxh[0].a_x = kine_x
+    ?%UnitWork.uxh[0].a_y = kine_y
+    ?%UnitWork.uxh[0].a_z = kine_z + %UnitWork.uxh[0].uxh_Thickness + DistFromPiece;
+    ?%UnitWork.uxh[0].touch_mode = 1
+    ?%UnitWork.uxh[0].regol_mode = 1
+
+    SYN
+    ; Relative Coordinates
+    tx = x
+    ty = y
+    tz = z
+
+    ti = 0
+    tj = SIN(c)
+    tk = COS(c)
+    EI(ti) EJ(tj) EK(tk)
+    G152
+    JSR "laser_start.cfs"
+
+    SYN
+    touch_epsilon = (%vrtc1.VrMon_Q_Flt_Q / 1000)
+
+    ?%CalPipe[0].General[3] = 0                ; index to communicate in laser touch the setpoint for the calibration
+
+    JSR "laser_stop.cfs"
+
+    ;// Ricerca blocco NON in corso e NON verify|grafica ($ricgrp)
+    ;;;; IF ( ((!(%cn[0].rc[8].8)) || (%cn[0].rc[8].15)) && !%cn[WHO()].rc[0].21 ) JSR "Sel_Y3Z3.cfs"
+
+    ;Pipe calibration with touching
+    IF( %LSRPlcOp0.10 == 1 ) THEN
+
+        G153
+
+        ;Disab filter
+        ?%LsIso15.2 = 1 ;
+        ?%LsIso16.2 = 1 ;
+        G4 F0.1         ;
+
+        ;Disable tip touch
+        ?%LsIso17.0 = 1
+
+        DECTRJ=4000     ;
+        JRKTRJ=0        ;
+
+        ;//Parametri per _singolo e _singfc
+        ; 0x10              ;vmax presente
+        ; 0x04              ;forza vout  = 0
+        ; 0x08              ;forza vout != 0
+        ; 0x01              ;quota assoluta
+        ; 2                 ;indietro
+        ; 1                 ;avanti
+        _singfc( ( 0x10 | 0x08 ), Z, 2, 200, 0, "%LsPlc11.8", 1 )
+
+        ;Enab filter
+        ?%LsIso15.2 = 0 ;
+        ?%LsIso16.2 = 0 ;
+        G4 F0.1         ;
+
+        DECTRJ=%cn[WHO()].pc7
+        JRKTRJ=%cn[WHO()].pc16
+
+        _singfc( ( 0x10 | 0x04 ), Z, 1, 200, 0, "%LsPlc11.8", 0 )
+        G4 F0.2
+
+        ;Enable tip touch
+        ?%LsIso17.0 = 0
+
+        SYN
+        z_abs = GET(Z)
+        touch_epsilon = z_abs - %UnitWork.uxh[0].a_z + DistFromPiece
+        G10 G0 Z(QCALC(Z))
+        G152
+    ENDIF
+
+    MSGOUT "touch_epsilon= " NPREC(touch_epsilon, 0.001)
+
+    IF (fGraph) G2805 C12 X(x) Y(y) Z(z)
+
+    G180 P1 X(x) Y(y) Z(z)
+
+    G180 D1 P1 Z(kine_z + touch_epsilon)
+    Vacq_x = kine_x
+    Vacq_y = kine_y
+    Vacq_z = kine_z
+
+    ;// leave
+    G153 G0 Z(optimized_lift)
+.acquire_z
+;******************************************************************************
+
+
+;******************************************************************************
+.acquire_scan_a
+
+    DistFromPiece = 1
+
+    ;// approach
+    G180 X(x) Y(y) Z(z) C(c)
+    G153 G1 X(kine_x) Y(kine_y) C(kine_c) F30000
+
+    SaveX = kine_x
+    SaveY = kine_y
+
+    ?%CalPipe[0].General[3] = 2         ; setpoint for SCAN
+
+    G180 P1 X(x) Y(y) Z(z) C(c)
+
+    ?%UnitWork.uxh[0].a_x = kine_x
+    ?%UnitWork.uxh[0].a_y = kine_y
+    ?%UnitWork.uxh[0].a_z = kine_z + %UnitWork.uxh[0].uxh_Thickness + DistFromPiece;
+    ?%UnitWork.uxh[0].touch_mode = 1
+    ?%UnitWork.uxh[0].regol_mode = 1
+
+    SYN
+    ; Relative Coordinates
+    tx = x
+    ty = y
+    tz = z
+
+    ti = 0
+    tj = SIN(c)
+    tk = COS(c)
+    EI(ti) EJ(tj) EK(tk)
+    G152
+
+    JSR "laser_start.cfs"
+
+    SYN
+    touch_epsilon = (%vrtc1.VrMon_Q_Flt_Q / 1000)
+
+    ?%CalPipe[0].General[3] = 0                ; index to communicate in laser touch the setpoint for the calibration
+
+    JSR "laser_stop.cfs"
+
+    ;// Ricerca blocco NON in corso e NON verify|grafica ($ricgrp)
+    ;;;; IF ( ((!(%cn[0].rc[8].8)) || (%cn[0].rc[8].15)) && !%cn[WHO()].rc[0].21 ) JSR "Sel_Y3Z3.cfs"
+
+    ;Pipe calibration with touching
+    IF( %LSRPlcOp0.10 == 1 ) THEN
+
+        G153
+
+        ;Disab filter
+        ?%LsIso15.2 = 1 ;
+        ?%LsIso16.2 = 1 ;
+        G4 F0.1         ;
+
+        ;Disable tip touch
+        ?%LsIso17.0 = 1
+
+        DECTRJ=4000     ;
+        JRKTRJ=0        ;
+
+        ;//Parametri per _singolo e _singfc
+        ; 0x10              ;vmax presente
+        ; 0x04              ;forza vout  = 0
+        ; 0x08              ;forza vout != 0
+        ; 0x01              ;quota assoluta
+        ; 2                 ;indietro
+        ; 1                 ;avanti
+        _singfc( ( 0x10 | 0x08 ), Z, 2, 200, 0, "%LsPlc11.8", 1 )
+
+        ;Enab filter
+        ?%LsIso15.2 = 0 ;
+        ?%LsIso16.2 = 0 ;
+        G4 F0.1         ;
+
+        DECTRJ=%cn[WHO()].pc7
+        JRKTRJ=%cn[WHO()].pc16
+
+        _singfc( ( 0x10 | 0x04 ), Z, 1, 200, 0, "%LsPlc11.8", 0 )
+        G4 F0.2
+
+        ;Enable tip touch
+        ?%LsIso17.0 = 0
+
+        SYN
+        z_abs = GET(Z)
+        touch_epsilon = z_abs - %UnitWork.uxh[0].a_z + DistFromPiece
+        G10 G0 Z(QCALC(Z))
+
+        G180 P1 X(x) Y(y) Z(z)
+
+        ; Move Z 1 mm plus from the piece in order to scan surface in the next step
+        G153 G0 Z(kine_z + touch_epsilon + DistFromPiece)
+
+        G152
+
+    ENDIF
+
+    MSGOUT "touch_epsilon= " NPREC(touch_epsilon, 0.001)
+
+    ;// V-ACQUIRE
+    ;// TODO: PROBE CYCLE (uses: overTravelV)
+
+    IF (fGraph) G2805 C12 X(x) Y(y) Z(z)
+
+    G180 P1 X(x) Y(y) Z(z)
+
+    G180 D1 P1 Z(kine_z + touch_epsilon)
+    Vacq_x = kine_x
+    Vacq_y = kine_y
+    Vacq_z = kine_z
+
+    G180 X(thx) Y(thy) Z(thz)
+
+    ?%CalPipe[0].General[2] = 1                  ; index to comunicate to plc the spindle singfc start
+
+    ;// H-ACQUIRE
+    ;// TODO: PROBE CYCLE (uses: overTravelH)
+    ;// XXX BUG grafica con G1
+    IF (isTubeY == 0) THEN
+        IF ( fGraph) G153 G0 Y(kine_y)
+
+        ?%CalPipe[0].General[1] = kine_y
+
+        IF (!fGraph) THEN
+            IF ( SaveY > kine_y) THEN
+                G153
+                _singfc( ( vmax | vout0 ),Y,2, 1000, 0,"%gPlc2.13", 0 )      ; Z goes to touch the plate
+                G4 F0.02
+                SYN
+                G10 G0 X(QCALC(X)) Y(QCALC(Y))
+                touch_epsilon = GET(Y) - kine_y
+                G152
+            ENDIF
+            IF ( SaveY < kine_y) THEN
+                G153
+                _singfc( ( vmax | vout0 ),Y,1, 1000, 0,"%gPlc2.13", 0 )      ; Z goes to touch the plate
+                G4 F0.02
+                SYN
+                G10 G0 X(QCALC(X)) Y(QCALC(Y))
+                touch_epsilon = GET(Y) - kine_y
+                G152
+            ENDIF
+        ENDIF
+    ELSE
+        IF ( fGraph) G153 G0 X(kine_x)
+         IF (!fGraph) THEN
+
+          ?%CalPipe[0].General[1] = kine_x
+
+            IF ( SaveX > kine_x) THEN
+             G153
+               _singfc( ( vmax | vout0 ),X,2, 1000, 0,"%gPlc2.13", 0 )      ; Z goes to touch the plate
+              G4 F0.02
+              SYN
+              G10 G0 X(QCALC(X)) Y(QCALC(Y))
+              touch_epsilon = GET(X) - kine_x
+             G152
+            ENDIF
+
+            IF ( SaveX < kine_x) THEN
+             G153
+               _singfc( ( vmax | vout0 ),X,1, 1000, 0,"%gPlc2.13", 0 )      ; Z goes to touch the plate
+              G4 F0.02
+              SYN
+              G10 G0 X(QCALC(X)) Y(QCALC(Y))
+              touch_epsilon = GET(X) - kine_x
+             G152
+            ENDIF
+        ENDIF
+    ENDIF
+
+    ?%CalPipe[0].General[2] = 0                  ; index to comunicate to plc the spindle singfc start
+
+    IF (fGraph) G2806 C12 X(x) Y(y) Z(z) U(thx) V(thy) W(thz)
+    IF (fGraph) G2805 C11 X(thx) Y(thy) Z(thz)
+
+    G180 P1 X(x) Y(y) Z(z)
+
+    IF (isTubeY == 0) THEN
+        G180 D1 P1 Y(kine_y + touch_epsilon)
+    ELSE
+        G180 D1 P1 X(kine_x + touch_epsilon)
+    ENDIF
+
+    Hacq_x = kine_x
+    Hacq_y = kine_y
+    Hacq_z = kine_z
+
+    ;// leave
+    G153 G0 Z(optimized_lift)
+
+.acquire_scan_z
+;******************************************************************************

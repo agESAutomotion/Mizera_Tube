@@ -1,0 +1,33 @@
+
+
+	Lista  Funzioni M
+
+	FUNZIONE	DESCRIZIONE
+	
+	M300		Aggiornamento analogiche Potenza_Duty_Frequenza_Laser e GAS
+
+	M410		Attivazione Emission ON Laser
+	M411		Disattivazione Emission ON Laser
+	
+	M421		Attivazione Aspiratore
+	M422		Disattivazione Aspiratore
+	
+	M430		Richiesta Scarico lamiera da macchina
+
+	M435 		JOB DATA lamiera validi a Carico
+	M436 		Consenso CARICO lamiera a Carico (Laser cut ready for next sheet)
+	M437 		SCARICO lamiera effettuato a Carico (Cutting of sheet from coil complete)
+
+	M438		Stampa Etichetta
+	M439 		START Applicazione Etichetta
+
+
+	M492 		Verifica presenza NOZZLE LOST
+	M493		Attivazione aria assistenza al taglio
+	M494		Disattivazione aria assistenza al taglio
+
+	M497		Attivazione gas di taglio
+	M498		Disattivazione gas di taglio
+
+
+

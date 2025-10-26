@@ -1,0 +1,81 @@
+ [A]0 [B]0 [C]0 [D]0 [E]0 [F]0 [G]0 [H]0 [I]0 [J]0 [K]0 [L]0 [U]0 [V]0 M [N]-1 [O]-1 [P]-1 [Q]-1 [R]-1 S T [Z] : G4011
+;Collega un asse slave ad un certo numero di assi master
+;A=VA0: Parametro 1
+;B=VA1: Parametro 2
+;C=VA2: Parametro 3
+;D=VA3: Parametro 4
+;E=VA4: Parametro 5
+;F=VA5: Parametro 6
+;G=VA6: Parametro 7
+;H=VA7: Parametro 8
+;I=VA8: Parametro 9
+;J=VA9: Parametro 10
+;K=VA10: Parametro 11
+;L=VA11: Parametro 12
+;U=VA20: Parametro 13
+;V=VA21: Parametro 14
+;M=VA12: system wide asse master 1
+;N=VA13: system wide asse master 2
+;O=VA14: system wide asse master 3
+;P=VA15: system wide asse master 4
+;Q=VA16: system wide asse master 5
+;R=VA17: system wide asse master 6
+;S=VA18: system wide asse slave
+;T=VA19: Tipo di connessione
+DBL ix = VA18
+DBL cix = IFEXP(ISQNAN(VA25),WHO(),VA25)
+
+IF( !vax_c_pend ) THEN
+    ;//ACQUIRE(conn_super_lock)
+    WTAS( "%rg[20]", WHO(), -1 )
+    vax_c_pend = 1
+ENDIF
+
+;//PRIMA dell'avvio della sequenza di aggancio
+?%ax[ix].rga[10] = cix  ;//(ax_conn_ch)
+
+?%ax[ix].rgdau0 = 0
+?%ax[ix].rgdau1 = 0
+?%ax[ix].rgdau2 = 0
+?%ax[ix].rgdau3 = 0
+?%ax[ix].rgdau4 = 0
+?%ax[ix].rgdau5 = 0
+?%ax[ix].rgdau6 = 0
+?%ax[ix].rgdau7 = 0
+?%ax[ix].rgau0  = 0
+?%ax[ix].rgau1  = 0
+?%ax[ix].rgau2  = 0
+?%ax[ix].rgau3  = 0
+?%ax[ix].rgau4  = 0
+?%ax[ix].rgau5  = 0
+?%ax[ix].rgau6  = 0
+?%ax[ix].rgau7  = 0
+?%ax[ix].rgau8  = 0     ;//reserved as output status register
+?%ax[ix].rgau9  = 0     ;//reserved as output status register
+
+?%ax[ix].rga3 = VA12 ;numero asse master 1
+?%ax[ix].rga4 = VA13 ;numero asse master 2
+?%ax[ix].rga5 = VA14 ;numero asse master 3
+?%ax[ix].rga6 = VA15 ;numero asse master 4
+?%ax[ix].rga8 = VA16 ;numero asse master 5
+?%ax[ix].rga9 = VA17 ;numero asse master 6
+?%ax[ix].rga7 = VA19 ;tipo di connessione
+?%ax[ix].rgda0 = VA0 ;parametro 1
+?%ax[ix].rgda1 = VA1 ;parametro 2
+?%ax[ix].rgda2 = VA2 ;parametro 3
+?%ax[ix].rgda3 = VA3 ;parametro 4
+?%ax[ix].rgda4 = VA4 ;parametro 5
+?%ax[ix].rgda5 = VA5 ;parametro 6
+?%ax[ix].rgda6 = VA6 ;parametro 7
+?%ax[ix].rgda7 = VA7 ;parametro 8
+?%ax[ix].rgda8 = VA8 ;parametro 9
+?%ax[ix].rgda9 = VA9 ;parametro 10
+?%ax[ix].rgda10 = VA10 ;parametro 11
+?%ax[ix].rgda11 = VA11 ;parametro 12
+?%ax[ix].rgda12 = VA20 ;parametro 13
+?%ax[ix].rgda13 = VA21 ;parametro 14
+
+?%ax[ix].rga0.2 = 1     ;//(req_coup_ax)
+?%rg17.0 = 1            ;//(busy)
+
+RET

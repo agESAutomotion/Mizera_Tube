@@ -1,0 +1,46 @@
+[PROMPT]
+KEY_ECATQDRIVES_SEVEN=Ecat QDrives Seven
+EC_HIWIN_LBL_BOOTOPTIONS=BOOT OPTIONS
+EC_HIWIN_BOOTOPTIONSLIST =DISABLED, UPLOAD, DOWNLOAD, DOWNLOAD-SUBSET,DOWNLOAD-SAVE
+EC_HIWIN_BTN_NODE_UPLOAD=Upload
+EC_HIWIN_BTN_NODE_DOWNLOAD=Download
+EC_HIWIN_BTN_NODE_SAVE=Save
+EC_HIWIN_KEY_HEADER=ETHERCAT PARAMETERS
+
+HIWIN_KEY_HEADER008=(Pt100) Velocitì loop gain
+HIWIN_KEY_HEADER009=(Pt101) Velocity loop integragal time constant
+HIWIN_KEY_HEADER010=(Pt102) Positoin loop gain
+HIWIN_KEY_HEADER011=(Pt103) Momento of inertia ratio
+HIWIN_KEY_HEADER012=(Pt109) Feedforward
+HIWIN_KEY_HEADER013=(Pt140) Model based control selection
+HIWIN_KEY_HEADER014=(Pt14A) Vibration suppression frequency
+HIWIN_KEY_HEADER015=(Pt14B) Vibration suppression compensation
+HIWIN_KEY_HEADER016=(Pt401) First stage first torquecommand filter time constant 
+HIWIN_KEY_HEADER017=(Pt408) Torque related function selection
+HIWIN_KEY_HEADER018=(Pt409) First stage notch filter frequency
+HIWIN_KEY_HEADER019=(Pt40A) First stage notch filter Q value
+HIWIN_KEY_HEADER020=(Pt40B) First stage notch filter depth
+HIWIN_KEY_HEADER021=(Pt40C) Second stage notch filter frequency
+HIWIN_KEY_HEADER022=(Pt40D) Second stage notch filter Q value
+HIWIN_KEY_HEADER023=(Pt40E) Second stage notch filter depth
+HIWIN_KEY_HEADER024=(Pt40F) Second stage second torque command filter frequency
+HIWIN_KEY_HEADER025=(Pt410) Second stage second torque command filter Q value
+HIWIN_KEY_HEADER026=(Pt412) First stage second torque command filter time constant
+HIWIN_KEY_HEADER027=(Pt416) Torque related function selection 2
+HIWIN_KEY_HEADER028=(Pt417) Third stage notch filter frequency
+HIWIN_KEY_HEADER029=(Pt418) Third stage notch filter Q value
+HIWIN_KEY_HEADER030=(Pt419) Third stage notch filter depth
+HIWIN_KEY_HEADER031=(Pt41A) Fourth stage notch filter frequency
+HIWIN_KEY_HEADER032=(Pt41B) Fourth stage notch filter Q value
+HIWIN_KEY_HEADER033=(Pt41C) Fourth stage notch filter depth
+HIWIN_KEY_HEADER034=(Pt41D) Fifth notch filter frequency  
+HIWIN_KEY_HEADER035=(Pt41E) Fifth notch filter Q value
+HIWIN_KEY_HEADER036=(Pt41F) Fifth notch filter depth
+HIWIN_KEY_HEADER037=(Pt423) Velocity ripple compensation selection
+
+EC_HIWIN_BTN_NODE_CHECK=Check
+HIWIN_MSG_DOWNLOAD=Press Check button to enable Download button.
+
+[STATUS]
+
+[HELP]

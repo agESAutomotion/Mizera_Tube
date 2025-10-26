@@ -1,0 +1,25 @@
+
+[KEYS]
+TITLE=Lin. Focale
+
+[PROMPT]
+KEY_NODE=
+FOCLIN=Linearizzazione FOCALE
+PlotCapacitive=Funzione
+L_POW_REAL=NOMINALE
+L_NOMINAL=REALE
+L_TYPE_INTERP2=Modello
+LIST0=Lineare,Segmento,Smussato
+L_TYPE_INTERP1=Punti
+LabelEnLin=Abilita linearizzazione
+LabelMin=Min
+LabelMax=Max
+LabelX=X
+LabelY=Y
+LabelCV1=Tensione controllo focale  [v]
+Label1=Distanza focale -mm-
+
+[STATUS]
+PlotCapacitive=Y-NOMINALE,X-REALE
+
+[HELP]

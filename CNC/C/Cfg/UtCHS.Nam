@@ -1,0 +1,85 @@
+[PROMPT]
+KEY_UT        =刀具数据 (ver. 1.5)
+
+UT_TYPE    =刀具类型
+DU_DESC    =Description
+
+PT_LUNGZ   =刀具 Z 长度[mm]
+PT_USLUNGZ =Z 磨损长度 [mm]
+PT_PRES    =对刀仪
+PT_VITA    =刀具寿命
+PT_THDLUNGZ =THD 刀具 Z长度 [mm]
+
+FC_LUNGZ   =刀具 Z 长度[mm]
+FC_RAD     =刀具半径[mm]
+FC_PRES    =对刀仪
+FC_VITA    =刀具寿命
+FC_USLUNGZ =Z 磨损长度[mm]
+FC_USRAD   =磨损半径[mm]
+FC_THDLUNGZ =THD 刀具 Z 长度[mm]
+
+FA_LUNGZ   =刀具 Z 长度[mm]
+FA_LUNGX   =刀具 X 长度[mm]
+FA_RAD     =刀具半径[mm]
+FA_PRES    =对刀仪
+FA_VITA    =刀具寿命
+FA_USLUNGZ =Z 磨损长度[mm]
+FA_USLUNGX =X 磨损长度[mm]
+FA_USRAD   =半径磨损[mm]
+FA_THDLUNGZ =THD 刀具 Z 长度[mm]
+FA_THDLUNGX =THD 刀具 X 长度[mm]
+
+TN_LUNGZ   =刀具 Z 长度[mm]
+TN_LUNGX   =刀具 X 长度[mm]
+TN_RAD     =刀具半径[mm]
+TN_ANG_A   =角度空隙 A
+TN_ANG_B   =角度空隙 B
+TN_PRES    =对刀仪
+TN_VITA    =刀具寿命
+TN_USLUNGZ =Z 磨损长度[mm]
+TN_USLUNGX =X 磨损长度[mm]
+TN_USRAD   =半径磨损[mm]
+TN_THDLUNGZ =THD 刀具 Z 长度[mm]
+TN_THDLUNGX =THD 刀具 X 长度[mm]
+TN_THDLUNGY =THD 刀具 Y 长度[mm]
+
+VITA_PREAL =不使用刀具磨损报警
+
+[HELP]
+UT_TYPE       =Type of Tool: 1-Fluted Mill 2-Angular Mill 3-Lathe 4-Boring bit
+
+PT_LUNGZ   =Tool Z length: Tool length in the direction square to the selected plane
+PT_USLUNGZ =Z length wear
+PT_PRES    =Tool Preset
+PT_VITA    =Tool Life
+
+FC_LUNGZ   =Tool Z length: Tool length in the direction square to the selected plane
+FC_RAD     =Tool radius: The tool radius allows the real dimensions of the tool to be considered during the machining phase
+FC_PRES    =Tool Preset
+FC_VITA    =Tool Life
+FC_USLUNGZ =Z length wear
+FC_USRAD   =Radius wear
+
+FA_LUNGZ   =Tool Z length: Tool length in the direction square to the selected plane
+FA_LUNGX   =Tool X length: Tool offset on machining plane
+FA_RAD     =Tool radius:The tool radius allows the real dimension of the tool to be considered during the machining phase
+FA_PRES    =Tool Preset
+FA_VITA    =Tool Life
+FA_USLUNGZ =Z length wear
+FA_USLUNGX =X length wear
+FA_USRAD   =Radius wear
+
+TN_LUNGZ   =Tool Z length: Tool length in the direction square to the selected plane
+TN_LUNGX   =Tool X length: Tool offset on the machining plane
+TN_RAD     =Tool radius: The tool radius allows the real dimension of the tool to be considered during the machining phase
+TN_ANG_A   =Clearance angle A
+TN_ANG_B   =Clearance angle B
+TN_PRES    =Preset
+TN_VITA    =Tool life
+TN_USLUNGZ =Z length wear
+TN_USLUNGX =X length wear
+TN_USRAD   =Radius wear
+
+VITA_PREAL =Tool wearing out warning
+
+

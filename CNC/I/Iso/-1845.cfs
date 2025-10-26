@@ -1,0 +1,94 @@
+ [T]2 [L]0 : -1845         ; Posizionamento W Foratrice Fuori Ingombro
+
+DBL save_d
+DBL QtaSic = %gIso[15]                      ; Qta Risalita (DH) passata a G845 da cicli G81-G84
+
+IF (%cn[WHO()].rc[0].21 ) RET               ;Canale in test
+
+DBL sav_G70=XGET("@G70")
+G271
+
+IF (%PlcOp0.2) JMP .SoloSim                 ; Test se Simulaz. Attiva
+
+IF( gTravTech == 10 ) THEN                  ; Se selezionata testa foratrice
+    ;//XXX Courtesy G81
+    save_d = XGET("@D")
+    G161 L(ml_usr_origin)
+    G186 L(ml_usr_origin)
+    ERROR(55) ;non consistente con tubo (G845)
+
+    G179 C0
+    G182
+
+    SPC 30000,0
+    G16 XYW+
+    EP0 EQ0 ER0
+    RTCP=0
+    D(save_d)
+    ;//XXX Courtesy G81
+
+    VA0= XGET("@D")                         ; Decodifica correttore IN uso
+    VA1= (%ced[VA0].dLenZ)                  ; Lunghezza Utensile del correttore IN uso
+    VA2= (%TabPls[0].P_Tickness/1000)
+;$C.D.GOZZI (testare forature)
+    VA3= (VA1 + QtaSic)
+;    VA3= (VA1 + VA2 + QtaSic)               ;
+    IF(VA11==0) M5                          ; Spegnimento mandrino
+    SVL 0
+    TWI0 D0
+    COMMIT
+    SHF[W] = 0
+    G17
+    FDCDLE=0
+    G61           ;Per evitare che entrino tutti gli assi nella maschera cic SYS WIDE DIN
+    IF(VA19!=0) THEN
+      ;;;G0 W((%ax[9].pa[21] / 1000)+ VA3)  ; Richiamo W Foratrice a disimpegno parziale
+      G0 WVA3                               ; Richiamo W Foratrice a disimpegno parziale
+    ELSE
+      G0 W((%ax[9].pa[22] / 1000)- 10)   ; Richiamo W Foratrice Fuori ingombro
+
+      IF ( !%cn[WHO()].rc[0].21 ) THEN  ;Canale in test
+        AWAIT(%gPlc0.8)         ; M40000_CN4: Unit_2 in attesa
+      ENDIF
+      IF( !ISQNAN(QCALCQ(W)) ) THEN
+            G153 G0 W((%ax9.pa22 /1000))
+      ENDIF
+
+      ?%C18.6 = 1               ; Richiesta Fuori ingombro testa a  (cn4)
+
+      M600                      ; Sblocco M40000_CN4 per posizionare Y1
+      IF ( !%cn[WHO()].rc[0].21 ) THEN  ;Canale in test
+        SYN
+        AWAIT(%gPlc0.8)         ; M40000_CN4: Unit_2 in attesa
+      ENDIF
+    ENDIF
+    G64
+    FDCDLE=1
+
+    ;//XXX Courtesy G81
+    ;//XXX Attenzione, questo ripristino delle origini non funziona sul tubo.
+    ;//XXX Nota: Attualmente G81, ... non funzionano sul tubo.
+    G16 XYZ+
+
+    G161 L(ml_usr_origin) X(orig_x) Y(orig_y) Z(orig_z)
+    G186 L(ml_usr_origin) C(orig_c)
+    G179 C(orig_c)
+
+    D(save_d)
+    ;//XXX Courtesy G81
+ENDIF
+
+.SoloSim
+IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+
+    ; Se gestione start_track classica
+    IF( !%PlcOp0.31 ) THEN
+        ;Esecuzione
+        start_track=start_track+1
+        ?%R18=start_track
+    ENDIF
+
+ENDIF
+
+G(200+sav_G70)
+RET

@@ -1,0 +1,12 @@
+ : G732
+
+;// Fine sezione di attacco/distacco ad orientamento costante
+;// Vedi [Sintassi Cicli Opzione Bevel]
+;//
+;// G732
+;//
+
+G832
+
+gCurForce = 0
+RET

@@ -1,0 +1,970 @@
+*******************************************************************************
+*   IOCONFIG.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "res_ipg.plc"
+#funcdec "LsrGest.plc"
+#funcdec "CAP_Prec.plc"
+#funcdec "FocProco.plc"
+
+VAR
+#include "Cnc.inc"
+#include "Iof.inc"       * I/O Applicativo
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+#include "res_ipg.inc"
+#include "LsrGest.inc"
+#include "Cap_Prec.inc"
+#include "foc_prec.inc"
+#include "Aspiraz.inc"
+#include "nLight.inc"      
+
+*#include "zVar.inc"
+
+VAR
+TM_offLSR:                       TOF; 
+TM_OnLSR:                        TON; 
+TM_StartButton:                   TP;
+AppStartLSR:                    BOOL;
+GuardDoorAutoUp:                BOOL;
+GuardDoorAutoDwn:               BOOL;
+RTRIG_A1_LASER_REQ:           R_TRIG;
+TOF_A1_LASER_REQ:                TOF;
+  
+TP_Fence:                         TP;
+FTRIG_Fence:                  F_TRIG;
+R_TRIG_Door_Up_Gui_1:         R_TRIG;
+R_TRIG_Door_Down_Gui_1:       R_TRIG;
+R_TRIG_Door_Up_Gui_2:         R_TRIG;
+R_TRIG_Door_Down_Gui_2:       R_TRIG;     
+END_VAR
+
+
+*******************************************************************************
+*   I/O CONFIGURATION (INPUT)
+*******************************************************************************
+FUNCTION INP_CONFIG
+
+***************************************
+*   GENERIC
+***************************************
+LDN  I_EMERGENZA 
+S    I_I_EMERGENZA               * Machine OK (no EMERG.)
+
+LD   Pul_Reset
+R    I_I_EMERGENZA
+
+LD   I_CHILLER_ERR				* Chiller error 
+ANDN %LSRPlcOp0.8
+ST   I_I_CHILLER_ERR
+ST   %PLCerr6.0    
+
+LD   I_ASPIRATORE_OK
+ST   I_I_ASPIRATORE_OK
+  
+***
+*** *Comandi operatore
+*** *----------------------------
+LD  I_PUL_START
+ST  I_I_PUL_START               * Start
+LD  I_PUL_STOP 
+ST  I_I_PUL_STOP                * Stop
+LD  I_PUL_RESET
+ST  I_I_PUL_RESET               * Reset
+***
+*** *Hold macchina
+*** *----------------------------  
+***  LD  M_HoldAlarmMac              *Hold macchina per allarme
+***  ST  CMD_HOLD_MAC                * M206.0 Hold (CH0, CH3)
+***  
+*** *Hold assi
+*** *----------------------------
+***  LD  M_HoldAx_X
+***  ST  CMD_HOLDMOVING_CH3.0
+***  LD  M_HoldAx_Y
+***  ST  CMD_HOLDMOVING_CH3.1
+***  LD  M_HoldAx_Z
+***  ST  CMD_HOLDMOVING_CH3.2
+*** LD  M_HoldAx_U
+*** ST  CMD_HOLDMOVING_CH3.3
+***  LD  M_HoldAx_B
+***  ST  CMD_HOLDMOVING_CH3.7
+***  LD  M_HoldAx_Cm
+***  ST  CMD_HOLDMOVING_CH3.8
+***  
+***  LD  M_HoldAx_Cs
+***  ST  CMD_HOLDMOVING_CH5.8
+
+ *Drives ok
+ *----------------------------
+ 
+
+*************************************************
+*   GAS
+*************************************************
+ *Ingresso analogica
+ *----------------------------
+  LD  %ecat_ring0.EcatNode20.EcMDPIn1
+  ST  IA_FBACK_ECAT_TYPE0
+
+ *Ingresso digitale
+ *----------------------------
+  LD  I_PRESSIONE_ARIA_IMPIANTO 
+  ST  I_I_PRESSIONE_ARIA_IMPIANTO * Pressione aria Impianto OK
+  
+  LD  I_PRESSIONE_N2
+  ST  I_I_PRESSIONE_N2            * Pressione Azoto OK
+  
+  LD  I_PRESSIONE_O2 
+  ST  I_I_PRESSIONE_O2            * Pressione Ossigeno OK
+  
+  LD  I_PRESSIONE_ARIA
+  OR(
+   LD %rLsGui14
+   LE 0
+  )
+  ST  I_I_PRESSIONE_ARIA          * Pressione Aria di taglio OK
+  
+  LD  I_PRESSIONE_ARIA_BANCO      * PLCFLAGS.1  Flag sempre stato on
+  ST  I_I_PRESSIONE_ARIA_BANCO    * Pressione aria Banco OK
+  
+  
+* HOERBIGER VALVE
+  
+LD   I_IA_Feedb_HOERB_GAS_OUT  
+ST   IA_Feedb_HOERB_GAS_OUT       * Hoerbiger gas proportional valve feedback (OUTPUT)  
+
+LD   I_HOERBIGER_READY          * Hoerbiger ready on bus ecat
+ST   I_I_HOERBIGER_READY          * Hoerbiger ready on bus ecat
+
+*************************************************
+*   RESONATOR (IPG)
+*************************************************
+PATH %Resonator[0]
+PATH %LsrGest[0]
+
+* Gestione laser IPG YSL
+***************************************
+LD   %config_machine28
+EQ   0
+JMPCN NoLSR_IPG_YLS
+
+ *Ingressi digitali
+ *----------------------------
+  LD   I_LSR_READY
+  ST   I_B1_LASER_READY           ** IPG Laser internal main power supply ON (Aux Power ON)
+
+  LD   I_LSR_WARNING
+  ST   I_B13_AVVERTENZA           ** IPG WARNING OUT
+
+  LD   I_LSR_ERROR
+  ST   I_B4_LASER_ERROR           ** IPG YLS YLR Laser in Alarm status
+
+  LD   I_LSR_GUIDE_ON
+  ST   I_B5_LASER_GUIDE           ** IPG Laser guida ON
+
+  LD   I_LSR_EMISSION_ON
+  ST   I_B2_EMISSION_ON           ** IPG Emission ON
+
+  LD   ALWAYS_ONE
+  ST   I_B7_LASER_ASSIGNED        ** IPG Laser ASSIGNED
+
+  LD   ALWAYS_ONE
+  ST   I_B8_POWER_SUPPLY          ** IPG power supply status
+
+  LD   ALWAYS_ONE
+  ST   I_B6_ANALOG_CONTROL        ** IPG Controllo analogico ON
+
+***************************************
+NoLSR_IPG_YLS:
+
+
+*Gestione laser IPG YSR - RACK
+***************************************
+LD   %config_machine28
+EQ   1
+JMPCN NoLSR_IPG_YLR
+
+ *Ingressi digitali
+ *----------------------------
+  LD   %PLCFLAGS.1
+  ST   I_B1_LASER_READY              ** IPG Laser internal main power supply ON (Aux Power ON)
+
+  LDN  I_LSR_READY
+  AND  I_LSR_LASER_ON
+  ST   I_B4_LASER_ERROR              ** IPG YLS YLR Laser in Alarm status
+
+  LD   I_LSR_EMISSION_ON
+  ST   I_B2_EMISSION_ON              ** IPG Emission ON
+
+  LD   %PLCFLAGS.1
+  ST   I_B7_LASER_ASSIGNED           ** IPG Laser ASSIGNED
+
+  LD   ALWAYS_ONE
+  ST   I_B8_POWER_SUPPLY             ** IPG power supply status
+
+ *Ingressi simulati
+ *----------------------------
+  LD   %PLCFLAGS.0
+  ST   I_B13_AVVERTENZA              ** IPG WARNING OUT
+  
+  LD   O_A6_ANALOG_CONTROL
+  AND  I_B8_POWER_SUPPLY             ** IPG power supply status
+  ST   I_B6_ANALOG_CONTROL           ** IPG Controllo analogico ON
+  
+  LD   O_A5_GUIDE_LASER
+  AND  I_B8_POWER_SUPPLY             ** IPG power supply status
+  ST   I_B5_LASER_GUIDE              ** IPG Laser guida ON
+  
+ *SEGNALI NON GESTITI
+ *----------------------------
+  *I_B3_INT_CONTROL              ** IPG Controllo interno abilitato
+  
+***************************************
+NoLSR_IPG_YLR:
+
+LD   %config_machine28
+EQ   2
+JMPCN LSR_RAYCUS
+      LD   I_LSR_READY
+      ST   I_B1_LASER_READY              ** IPG Laser internal main power supply ON (Aux Power ON)
+
+      LD   %PLCFLAGS.1
+      ST   I_B7_LASER_ASSIGNED           ** IPG Laser ASSIGNED
+	  
+	  LD   I_LSR_EMISSION_ON
+      ST   I_B2_EMISSION_ON              ** IPG Emission ON
+    
+      LD   I_LSR_ASSIGNED
+      ST   I_B8_POWER_SUPPLY             ** IPG power supply status
+	  
+      LD   I_LSR_ERROR
+      ST   I_B4_LASER_ERROR           ** IPG YLS YLR Laser in Alarm status	  
+LSR_RAYCUS:
+
+**************************************************
+* nLight Resonator Management
+
+PATH %Resonator[1]
+PATH %LsrGest[0]
+
+LD   %config_machine28
+EQ   5
+JMPCN no_nlight_resonator
+
+LD   I_FW_READY_nLight
+ST   I_I_FW_READY_nLight                     * NLIGHT: nLight ready to recieve input   
+
+LD   I_EMISS_nLight
+ST   I_I_EMISS_nLight                        * NLIGHT: emiss nlight enable             
+
+LD   I_ERR_nLight
+ST   I_I_ERR_nLight                          * NLIGHT: nlight error                    
+
+LD   I_RDY_nLight
+ST   I_I_RDY_nLight                          * NLIGHT: laser nlight ready              
+
+LD   I_ExtCtr_Ready_nLight
+ST   I_I_ExtCtr_Ready_nLight                 * NLIGHT: nLight external control ready   
+
+no_nlight_resonator:
+
+
+*************************************************
+*   CAPACITIVE
+*************************************************
+PATH %Capacitive[0]
+
+* Ingressi analogica
+*----------------------------
+* mainfast.plc
+* LD   I_PREC_CAPACITIVO
+* ST   IA_A18_19_DIST_LINEAR      * Capacitive sensor 
+
+* Ingressi digitali
+*----------------------------
+
+LD   %config_machine26
+EQ   4
+JMPC PREC_IO_TYPE
+
+     LD   I_PREC_FAR
+     ST   I_FAR_A10                  ** Far away
+     
+     LD   I_PREC_COLLISION
+     ST   I_TIP_BODY_TOUCH_A11       ** Tip\Body Touch or Nozzle_Lost (TIP TOUCH:A11=1,A14=0,A15=0)      
+     
+     LD   I_PREC_BROKEN
+     ST   I_CABLE_CUT_A12            ** Cable cut
+     
+     LD   I_PREC_READY
+     ST   I_READY_A13                ** Ready                                                            
+     
+     LD   I_PREC_BODY_TOUCH
+     ST   I_BODY_TOUCH_A14           ** Body touch (A11=1,A14=1,A15=0)                                   
+     
+     LD   I_PREC_REACH
+     ST   I_NOZZLE_LOST_A15          ** Nozzle Lost/Pos reached (NOZZLE LOST:A11=1,A14=0,A15=1)
+  
+PREC_IO_TYPE:  
+
+LD   %config_machine26
+EQ   4
+JMPCN PREC_LIKE_ECAT
+
+     LD   I_ECAT_FAR
+     ST   I_FAR_A10                  ** Far away
+     
+     LD   I_ECAT_COLLISION
+     ST   I_TIP_BODY_TOUCH_A11       ** Tip\Body Touch or Nozzle_Lost (TIP TOUCH:A11=1,A14=0,A15=0)      
+     
+     LD   I_ECAT_BROKEN
+     ST   I_CABLE_CUT_A12            ** Cable cut
+     
+     LD   I_ECAT_READY
+     ST   I_READY_A13                ** Ready                                                            
+     
+     LD   I_ECAT_BODY_TOUCH
+     ST   I_BODY_TOUCH_A14           ** Body touch (A11=1,A14=1,A15=0)                                   
+     
+     LD   I_ECAT_REACH
+     ST   I_NOZZLE_LOST_A15          ** Nozzle Lost/Pos reached (NOZZLE LOST:A11=1,A14=0,A15=1)
+  
+PREC_LIKE_ECAT: 
+
+*************************************************
+*   LENS
+*************************************************
+PATH %Head_Laser[0]
+
+*Gestione focale PRECITEC
+***************************************
+LD   %config_machine25
+EQ   0
+JMPCN NoLENS_PREC
+
+  LDN  I_PREC_ERROR
+  ST   I_I_PREC_ERROR                ** precitec in error
+
+  LD   I_PREC_INPOS
+  ST   I_I_PREC_POSITION_REACHED     ** Position Reached 
+***************************************
+NoLENS_PREC:
+
+END_FUNCTION
+
+
+*******************************************************************************
+*   I/O CONFIGURATION (OUTPUT)
+*******************************************************************************
+FUNCTION OUT_CONFIG
+
+*************************************************
+*   GENERIC
+*************************************************
+ *Uscite digitali
+ *----------------------------
+  LD  O_O_CNC_OK                  * CNC OK
+  ST  O_CN_READY
+
+ * LD  ALARM_ACT		         ** M100.3  Allarme attivo
+ * ST  AlarmExt                    * Allarmi Esterno
+  
+* Hoerbiger Valve
+
+*LD   O_O_ENAB_VALVE_HOERB  
+*ST   O_ENAB_VALVE_HOERB 
+
+LD   O_O_PILOT_HOERB        
+ST   O_PILOT_HOERB
+
+LD   O_O_CALIB_REQ_HOERB    
+ST   O_CALIB_REQ_HOERB
+
+LD   O_O_EV_OPEN_N2_HOERB   
+ST   O_EV_OPEN_N2_HOERB
+
+LD   O_O_EV_OPEN_O2_HOERB   
+ST   O_EV_OPEN_O2_HOERB
+
+LD   O_O_EV_OPEN_ARIA_HOERB 
+ST   O_EV_OPEN_ARIA_HOERB
+
+*LD   O_O_GAS_ECAT_TYPE0_ENAB
+*ST   O_GAS_ECAT_TYPE0_ENAB
+
+LD   O_OA_GAS_HOERB
+ST   OA_GAS_HOERB
+
+*************************************************
+*   GAS
+*************************************************
+ *Uscite analogica
+ *----------------------------
+ * LD  OA_GAS_ECAT_TYPE0           * Uscita Valvola Proporzionale Gas di taglio
+ * ST  %ecat_ring0.EcatNode16.EcMDPOut1
+
+ * LD  O_O_GAS_ECAT_TYPE0_ENAB     * Abilita Valvola Proporzionale
+ * ST  %ecat_ring0.EcatNode16.EcMDPOut0.0
+
+ *Uscite digitali
+ *----------------------------
+  LD  O_O_EV_ARIA_UGELLO         * Elettrovalvola aria ugello
+  ST  O_EV_ARIA_UGELLO
+  
+  LD  O_O_EV_OPEN_ARIA           * Elettrovalvola apertura Aria taglio
+  ST  O_EVGAS_ARIA
+  
+  LD  O_O_EV_OPEN_N2             * Elettrovalvola apertura Azoto
+  ST  O_EVGAS_OAZOTO
+  
+  LD  O_O_EV_OPEN_O2             * Elettrovalvola apertura Ossigeno
+  ST  O_EVGAS_OSSIGENO
+  
+  LD  O_O_EV_AUX_GAS             * Elettrovalvola ausiliaria (a valle della proporzionale)
+  ST  O_EV_AUX_GAS
+  
+  LD  O_EVGAS_ARIA
+  OR  O_EVGAS_OAZOTO
+  OR  O_EVGAS_OSSIGENO
+  ST  O_EVGAS_PRES                * Output pressurizzazione gas
+  
+ *SEGNALI NON GESTITI
+ *----------------------------
+  *O_O_EV_ASSISTENZA_TAGLIO      * Elettrovalvola assistenza taglio
+
+*************************************************
+*   RESONATOR
+*************************************************
+PATH %Resonator[0]
+PATH %LsrGest[0]
+
+*Gestione laser IPG YSL
+***************************************
+LD   %config_machine28
+EQ   0
+JMPCN NoLSR_IPG_YLS
+
+ *Gestione yEmission direttamente su scheda PWM
+ *----------------------------
+ LD  OUT_isFlyCutModeON            * IN "FLYCUT" or M851 cannot write on this register
+ JMPC YLS_FlyCut
+  LD   O_A1_LASER_REQ             ** IPG Richiesta Laser
+  ST   %QW911.8
+  
+  CAL  RTRIG_A1_LASER_REQ(CLK:=O_A1_LASER_REQ)
+  CAL  TOF_A1_LASER_REQ(IN=RTRIG_A1_LASER_REQ.Q,PT=1000)
+  
+  LD   TOF_A1_LASER_REQ.Q
+  ST   O_LSR_REQUEST
+ YLS_FlyCut:
+
+ *Uscite digitali
+ *----------------------------
+  LD   O_C1_LASER_SWITCH          ** IPG Laser Switch ON
+  ST   O_LSR_LASER_ON
+
+  LD   O_A4_LASER_RESET           ** IPG Resetta errori
+  ST   O_LSR_RESET
+
+  LD   O_A5_GUIDE_LASER           ** IPG Laser spot guide ON
+  ST   O_LSR_GUIDE_ON
+
+  LD   O_A6_ANALOG_CONTROL        ** IPG Controllo analogico ON
+  ST   O_LSR_ANALOG_CONTROL
+
+***************************************
+NoLSR_IPG_YLS:
+
+
+
+*Gestione laser IPG YSR - RACK
+***************************************
+LD   %config_machine28
+EQ   1
+JMPCN NoLSR_IPG_YLR
+
+ *Gestione Remote start (solo IPG Rack)
+ *----------------------------
+  *Gestione fronte di salita
+  *I_LSR_WORNING è collegato Laser PS Active Pin 5-7 conn.EMG)
+*  CAL TM_OnLSR(IN=AuxOn,PT=500)
+*  LD   TM_OnLSR.Q
+*  AND  O_A1_LASER_REQ                ** IPG Richiesta Laser
+*  ST   AppStartLSR
+*  CAL  TM_StartButton(IN=AppStartLSR,PT=1500)
+  
+*  LD   TM_StartButton.Q
+*  ST   O_LSR_REMOTE_START
+
+ *Uscite digitali
+ *----------------------------
+  LD   O_A4_LASER_RESET           * IPG Resetta errori
+  ST   O_LSR_RESET
+
+  LD   O_A5_GUIDE_LASER           * IPG Laser spot guide ON
+  ST   O_LSR_GUIDE_ON
+
+***************************************
+NoLSR_IPG_YLR:
+
+LD   %config_machine28
+EQ   2
+JMPCN LSR_RAYCUS_OUT
+      LD   O_A5_GUIDE_LASER           * IPG Laser spot guide ON
+      ST   O_LSR_GUIDE_ON
+
+      LD   O_A1_LASER_REQ
+      ST   O_LSR_LASER_ON
+	  
+	  LD   O_C1_LASER_SWITCH
+	  ST   O_LSR_REMOTE_START
+	  
+	  LD   O_A4_LASER_RESET           ** IPG Resetta errori
+      ST   O_LSR_RESET
+	  
+	  * Some models of Raycus needs to add delay with fc-out (Laser Enable)
+	  * In such a case, it requires to use pure PWM control and FcOut always 1
+	  LD   PAR_combinedMode
+	  JMPCN RAY_PUREPWM
+	       LD   O_A1_LASER_REQ             ** IPG Richiesta Laser
+           ST   %QW911.8
+	  RAY_PUREPWM:
+LSR_RAYCUS_OUT:
+
+**************************************************
+* nLight Resonator Management
+
+PATH %Resonator[1]
+PATH %LsrGest[0]
+
+LD   %config_machine28
+EQ   5
+JMPCN no_nlight_resonator1
+
+LD   O_O_EXTEN_IN_nLight                   * NLIGHT: nlight exten in 
+ST   %M5.0
+
+LD   O_O_GUIDE_nLight                      * NLIGHT: Guide laser nlight 
+ST   O_LSR_GUIDE_ON
+
+*LD   O_O_SYSTEM_ON_nLight                  * NLIGHT: nlight system on
+*ST   %QW3.3
+
+LD   O_O_RESET_nLight                      * NLIGHT: reset error nlight
+ST   O_LSR_RESET
+
+LD   O_O_ExtCtr_ENABLE_nLight              * NLIGHT: Enable external control of nlight 
+ST   %M5.0
+
+no_nlight_resonator1:
+
+
+*************************************************
+*   CAPACITIVE 
+*************************************************
+PATH %Capacitive[0]
+ *Uscite digitali
+ *----------------------------
+ 
+LD   %config_machine26
+EQ   4
+JMPC PREC_IO_TYPE_OUT
+
+     LD  O_CALIBRA_REQ_A3            * Calibration request 
+     ST  O_PREC_CALIBRAZIONE
+     
+     LD  O_STROBE_A7                 * Strobe
+     ST  O_PREC_STROBE
+     
+     LD  O_SELCHAR_BIT0_A4           * Selecting the calibrated characteristic curve (1-8)
+     ST  O_PREC_SELCHAR_0
+     
+     LD  O_SELCHAR_BIT1_A5           * Selecting the calibrated characteristic curve (1-8)
+     ST  O_PREC_SELCHAR_1
+     
+     LD  O_SELCHAR_BIT2_A6           * Selecting the calibrated characteristic curve (1-8)
+     ST  O_PREC_SELCHAR_2
+	 
+PREC_IO_TYPE_OUT:
+
+LD   %config_machine26
+EQ   4
+JMPCN PREC_LIKE_ECAT_OUT
+
+     LD  O_CALIBRA_REQ_A3            * Calibration request 
+     ST  O_ECAT_CALIBRAZIONE
+     
+     LD  O_STROBE_A7                 * Strobe
+     ST  O_ECAT_STROBE
+     
+     LD  O_SELCHAR_BIT0_A4           * Selecting the calibrated characteristic curve (1-8)
+     ST  O_ECAT_SELCHAR_0
+     
+     LD  O_SELCHAR_BIT1_A5           * Selecting the calibrated characteristic curve (1-8)
+     ST  O_ECAT_SELCHAR_1
+     
+     LD  O_SELCHAR_BIT2_A6           * Selecting the calibrated characteristic curve (1-8)
+     ST  O_ECAT_SELCHAR_2     
+	 
+PREC_LIKE_ECAT_OUT:
+
+*************************************************
+*   LENS
+*************************************************
+PATH %Head_Laser[0]
+
+*Gestione focale PRECITEC
+***************************************
+LD   %config_machine25
+EQ   0
+JMPCN NoLENS_PREC
+
+  LD   O_O_PREC_AUTOMATIC         * Automatic request fo precitec head
+  ST   O_PREC_POSITION
+
+  LD   O_O_PREC_REFERENCE         * Reference signal for precitec head            
+  ST   O_PREC_REF
+
+  LD   OA_FOCALE                  * Focal analog out
+  ST   O_PREC_FOCALE
+
+***************************************
+NoLENS_PREC:
+
+*************************************************
+*   Clamp
+*************************************************
+
+LD   O_O_CLAMP_C_CLOSE           *AT %M62.9;
+ST   O_CLAMP_C_CLOSE
+
+LD   O_O_CLAMP_C_OPEN           *AT %M62.10;
+ST   O_CLAMP_C_OPEN
+
+LD   O_O_CLAMP_C1_CLOSE           *AT %M62.11;
+ST   O_CLAMP_C1_CLOSE
+
+LD   O_O_CLAMP_C1_OPEN           *AT %M62.12;
+ST   O_CLAMP_C1_OPEN
+
+*************************************************
+*   MACHINE LIGHT
+*************************************************
+LD   O_O_LUCE_CABINA          * AT %M60.0;
+ST   O_LUCE_CABINA
+
+LD   O_O_LAMPADA_ROSSA
+ST   O_LAMPADA_ROSSA
+
+LD   O_O_LAMPADA_ROSSA
+AND  %PLCFLAGS.10
+ANDN %LSRPlcOp1.27
+ST   O_BUZZER_ALARM
+
+LD   O_O_LAMPADA_ARANCIONE
+ST   O_LAMPADA_ARANCIONE
+
+LD   O_O_LAMPADA_VERDE
+ST   O_LAMPADA_VERDE
+
+LD   O_O_BUZZER_START_CIC
+ST   O_BUZZER_START_CIC
+
+*************************************************
+*   Lubrication
+*************************************************
+LD   I_LUB_LOW_LEVEL           
+ST   I_I_LUB_LOW_LEVEL        *AT %M55.5;
+
+LD   I_LUB_LOW_PRESSURE           
+ST   I_I_LUB_LOW_PRESSURE     *AT %M55.9;
+
+LD   I_OVER_PRES_LUB
+ST   I_I_OVER_PRES_LUB        *AT %M55.10
+
+LD   O_O_LUB                  *AT %M60.7;
+ST   O_LUB
+
+*************************************************
+*   ASPIRATORE
+*************************************************
+
+LD   O_START_ASPIRATORE        *AT %DigOutAspirator1.0  Command START for Aspiration system
+ST   START_ASPIRATORE
+ST   START_ASPIRATORE_FUMI
+
+*************************************************
+*   Limit Switch
+*************************************************
+
+LD   I_FC_Y1_POS           
+ST   I_I_FC_Y1_POS        *AT %M53.2;
+
+LD   I_FC_Y1_NEG           
+ST   I_I_FC_Y1_NEG        *AT %M53.3;
+
+LD   I_FC_X1_POS
+ST   I_I_FC_X1_POS        *AT %M53.0;
+
+LD   I_FC_X1_NEG
+ST   I_I_FC_X1_NEG        *AT %M53.1;
+
+LD   I_FC_Z1_POS
+ST   I_I_FC_Z1_POS        *AT %M53.4;
+
+LD   I_FC_Z1_NEG
+ST   I_I_FC_Z1_NEG        *AT %M53.5;
+
+LD   I_FC_UV_POS
+ST   I_I_FC_UV_POS        *AT %M53.6;
+
+LD   I_FC_UV_NEG
+ST   I_I_FC_UV_NEG        *AT %M53.7;
+
+LD   I_FC_W1_POS
+ST   I_I_FC_W1_POS        *AT %M53.8;          
+
+LD   I_FC_W1_NEG
+ST   I_I_FC_W1_NEG        *AT %M53.9; 
+
+LD   I_FC_V_POS           
+ST   I_I_FC_V_POS         *AT %M53.18;          
+
+LD   I_FC_V_NEG           
+ST   I_I_FC_V_NEG         *AT %M53.19;
+
+LD   I_FC_Z1_SUP_NEG          
+ST   I_I_FC_Z1_SUP_NEG
+
+LD   I_FC_Z2_SUP_NEG             
+ST   I_I_FC_Z2_SUP_NEG    
+
+LD   I_FC_Z3_SUP_NEG            
+ST   I_I_FC_Z3_SUP_NEG      
+
+LD   I_FC_Z4_SUP_NEG          
+ST   I_I_FC_Z4_SUP_NEG            
+
+LD   I_FC_Z1_SUP_POS          
+ST   I_I_FC_Z1_SUP_POS
+
+LD   I_FC_Z2_SUP_POS             
+ST   I_I_FC_Z2_SUP_POS   
+
+LD   I_FC_Z3_SUP_POS            
+ST   I_I_FC_Z3_SUP_POS      
+
+LD   I_FC_Z4_SUP_POS          
+ST   I_I_FC_Z4_SUP_POS  
+
+LD   I_FC_L1_NEG          
+ST   I_I_FC_L1_NEG
+
+LD   I_FC_L2_NEG             
+ST   I_I_FC_L2_NEG    
+
+LD   I_FC_L3_NEG            
+ST   I_I_FC_L3_NEG      
+
+LD   I_FC_L4_NEG          
+ST   I_I_FC_L4_NEG
+
+LD   I_FC_L5_NEG          
+ST   I_I_FC_L5_NEG
+
+LD   I_FC_L1_POS         
+ST   I_I_FC_L1_POS
+
+LD   I_FC_L2_POS             
+ST   I_I_FC_L2_POS    
+
+LD   I_FC_L3_POS            
+ST   I_I_FC_L3_POS      
+
+LD   I_FC_L4_POS          
+ST   I_I_FC_L4_POS
+
+LD   I_FC_L5_POS          
+ST   I_I_FC_L5_POS
+
+LD   I_FC_O4_POS
+ST   I_I_FC_O4_POS
+LD   I_FC_O3_POS
+ST   I_I_FC_O3_POS
+LD   I_FC_O2_POS
+ST   I_I_FC_O2_POS
+LD   I_FC_O1_POS
+ST   I_I_FC_O1_POS
+
+LD   I_FC_O4_NEG
+ST   I_I_FC_O4_NEG
+LD   I_FC_O3_NEG
+ST   I_I_FC_O3_NEG
+LD   I_FC_O2_NEG
+ST   I_I_FC_O2_NEG
+LD   I_FC_O1_NEG
+ST   I_I_FC_O1_NEG
+
+LD   I_FC_W_NEG
+ST   I_I_FC_W_NEG
+LD   I_FC_W_POS
+ST   I_I_FC_W_POS
+
+LD   I_FC_B1_POS 
+ST   I_I_FC_B1_POS 
+LD   I_FC_B1_NEG 
+ST   I_I_FC_B1_NEG 
+
+LDN  I_AntiColide_1
+ORN  I_AntiColide_2
+ST   I_I_AntiColide
+S    %PLCerr21.24 
+
+*****************************************************
+*   Proportional valves type 2 
+*   ---> N2, AIR share the same valve (0-10v,1-5v)
+*   ---> O2 (0-10v,1-5v)
+*   ---> Feedback to use always inputs on CNC (4095)
+*****************************************************
+LD   %config_machine29             ** Proportional valve manage only with OXYGEN
+EQ   2
+JMPCN AIRO2_O2_SMCS
+  
+LD   0
+ST   O_OA_GAS_2
+ST   O_OA_GAS
+
+LD   819
+ST   IA_Feedback_GAS_OUT
+
+LD   O_O_EV_OPEN_ARIA
+OR   O_O_EV_OPEN_N2
+JMPCN NO_HP_VALVE
+
+LD   OA_GAS
+ST   O_OA_GAS                    
+LD   0                     
+ST   O_OA_GAS_2     
+
+LD   I_IA_Feedback_GAS_OUT 
+ST   IA_Feedback_GAS_OUT
+          
+NO_HP_VALVE:
+
+LD   O_O_EV_OPEN_O2
+JMPCN NO_LP_VALVE
+
+LD   0                      
+ST   O_OA_GAS                    
+LD   OA_GAS
+ST   O_OA_GAS_2    
+
+LD   I_IA_Feedback_GAS_OUT_O2               
+ST   IA_Feedback_GAS_OUT
+
+NO_LP_VALVE:
+
+AIRO2_O2_SMCS:
+
+*************************************************
+* SAFETY DEVICE
+*************************************************
+LD   DoorSafety
+EQ   0
+JMPCN NOSFTDOOR
+LD   0
+ST   O_Unlock_Fence
+ST   O_O_Guard_Door_1
+ST   O_O_Guard_Door_2
+NOSFTDOOR:
+
+LD   DoorSafety
+EQ   1
+JMPCN SAFETYDOOR_1
+     LD   PRGRUN_CN0
+     ANDN PRGSTOP_CN0
+     STN   O_Lock_Safety_Door 
+     ST  O_Safety_Bypass
+     
+     LDN  I_SAFETY_DOOR                   
+     AND  PRGRUN_CN0
+     S    %PLCerr21.15            ** Machine Door Open 
+     
+    * LDN  I_Grating_Alm               
+    * AND  PRGRUN_CN0
+    * ANDN I_SafetyDevice_Bypass 
+    * S    %PLCerr21.16            ** Laser Safe Activated
+    * 
+    * CAL  TP_Fence(IN=I_UnlckFence_Btn,PT=3000)
+    * LD   TP_Fence.Q
+    * AND  %PLCFLAGS.10
+    * OR   O_Unlock_Fence
+    * ST   O_Unlock_Fence_LED
+    * 
+    * CAL  FTRIG_Fence(CLK=TP_Fence.Q)
+    * LD   FTRIG_Fence.Q
+    * S    O_Unlock_Fence
+    * 
+    * LD   O_Unlock_Fence
+    * OR   TP_Fence.Q
+    * AND   PRGRUN_CN0
+    * S    %PLCerr21.17
+SAFETYDOOR_1:
+
+LD   DoorSafety
+EQ   2
+JMPCN SAFETYDOOR_2
+     LD   EnAutoDoor
+     AND  %cn0.rc8.0
+	 ST   GuardDoorAutoUp
+	 
+	 LD   iso_G580_Running
+	 AND  %cn0.rc8.0
+	 ST   GuardDoorAutoDwn
+
+     CAL  R_TRIG_Door_Up_Gui_1(CLK=Door1_Up_Gui)
+	 LD   R_TRIG_Door_Up_Gui_1.Q          ** (LsGui0.17)
+	 OR   GuardDoorAutoUp
+     S 	  O_O_Guard_Door_1
+	 
+     CAL  R_TRIG_Door_Down_Gui_1(CLK=Door1_Down_Gui)       
+     LD   R_TRIG_Door_Down_Gui_1.Q
+	 OR   GuardDoorAutoDwn
+     R    O_O_Guard_Door_1
+     
+     CAL  R_TRIG_Door_Up_Gui_2(CLK=Door2_Up_Gui)
+	 LD   R_TRIG_Door_Up_Gui_2.Q          ** (LsGui0.19)
+	 OR   GuardDoorAutoUp
+     S 	  O_O_Guard_Door_2   
+    
+  	 CAL  R_TRIG_Door_Down_Gui_2(CLK=Door2_Down_Gui)        
+     LD   R_TRIG_Door_Down_Gui_2.Q
+	 OR   GuardDoorAutoDwn
+     R    O_O_Guard_Door_2
+SAFETYDOOR_2:
+
+LD   Pul_Reset              ** (gPlc0.3)Reset pushbutton
+ST   O_RESET_SAFETY_DEVICE  
+R    %PLCerr21.15           ** Machine Door Open 
+R    %PLCerr21.16            ** Laser Safe Activated
+R    %PLCerr21.17
+R    %PLCerr21.24 
+R    O_Unlock_Fence
+
+LD   O_O_Guard_Door_1
+ST   O_Guard_Door_1
+STN  O_Guard_Door_1_Dwn
+
+LD   O_O_Guard_Door_2
+ST   O_Guard_Door_2
+STN  O_Guard_Door_2_Dwn
+
+END_FUNCTION
+

@@ -1,0 +1,27 @@
+
+[KEYS]
+TITLE=QW2
+
+[PROMPT]
+KEY_NODE=Node
+QW2=Leaf
+PIN2=PIN1: Digital Output QW2.0
+PIN3=PIN2: Digital Output QW2.1
+PIN4=PIN3: Digital Output QW2.2
+PIN5=PIN4: Digital Output QW2.3
+PIN6=PIN5: Digital Output QW2.4
+PIN7=PIN6: Digital Output QW2.5
+PIN8=PIN7: Digital Output QW2.6
+PIN9=PIN8: Digital Output QW2.7
+PIN10=PIN9: Digital Output QW2.8
+PIN11=PIN10: Digital Output QW2.9
+PIN12=PIN11: Digital Output QW2.10
+PIN13=PIN12: Digital Output QW2.11
+PIN14=PIN13: Digital Output QW2.12
+PIN15=PIN14: Digital Output QW2.13
+PIN16=PIN15: Digital Output QW2.14
+PIN1=PIN16: Digital Output QW2.15
+
+[STATUS]
+
+[HELP]

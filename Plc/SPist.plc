@@ -1,0 +1,138 @@
+**********************************************
+********** SINGLE PISTON MANAGEMENT **********
+**********************************************
+
+VAR
+#include "Cnc.inc"
+END_VAR
+
+FUNCTION_BLOCK SINGLE_PISTON
+
+VAR_INPUT
+xEmerg:	                      BOOL;
+xAuto:	                      BOOL;
+xReset:                       BOOL;
+xManualPlus:	                BOOL;
+xManualMinus:                 BOOL;
+xAutoPlus:                    BOOL;
+xAutoMinus:                   BOOL;
+xAirPressure:                 BOOL;
+xSensorPlus:                  BOOL;
+xSensorMinus:                 BOOL;
+xSingleEffect:                BOOL;
+xTimeOut:                    DWORD;
+xPlusAtInit:                  BOOL;
+END_VAR
+
+VAR_OUTPUT
+yPistonPlus:                  BOOL;
+yPistonMinus:                 BOOL;   
+yWaitMFun:                    BOOL;
+yAlarm:                       BOOL;      * movement commanded but not executed
+yAlarm1:                      BOOL;      * movement request but not allowed
+END_VAR		            
+
+VAR                        
+St_Minus:                     BOOL;
+St_Plus:                      BOOL;
+Ton_Minus:                     TON;
+Ton_Plus:                      TON;
+
+END_VAR
+
+
+** IN STATE 
+LD  St_Plus
+AND(
+LD  xAuto
+AND xAutoMinus
+OR(
+LDN xAuto
+AND xManualMinus
+)
+)
+OR(
+LD   St_Minus
+ANDN St_Plus
+)
+OR(
+LD   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+ANDN xPlusAtInit
+)
+ST  St_Minus
+
+** OUT STATE
+LD  St_Minus
+AND(
+LD  xAuto
+AND xAutoPlus
+OR(
+LDN xAuto
+AND xManualPlus
+)
+)
+OR(
+LD   St_Plus
+ANDN St_Minus
+)
+OR(
+LD   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+AND  xPlusAtInit
+)
+ST  St_Plus
+
+** Outputs
+LD  St_Plus
+*AND xEmerg
+AND xAirPressure
+ST  yPistonPlus
+
+LD  St_Minus
+*AND xEmerg
+AND xAirPressure
+ST  yPistonMinus
+
+** Alarm
+CAL Ton_Plus(IN:=yPistonPlus, PT=xTimeOut)
+
+CAL  Ton_Minus(IN:=yPistonMinus, PT=xTimeOut)
+
+LD   Ton_Plus.Q
+ANDN xSensorPlus
+OR(
+LD   Ton_Minus.Q
+ANDN xSensorMinus
+ANDN xSingleEffect
+)
+S    yAlarm                        ** movement commanded but not executed
+
+LD   xReset
+R    yAlarm                        ** movement commanded but not executed
+
+*
+LD   xManualPlus
+OR   xAutoPlus
+ANDN xSensorPlus
+OR   (
+LD   xManualMinus
+OR   xAutoMinus
+ANDN xSensorMinus
+)
+ANDN xEmerg
+S    yAlarm1                       ** movement request but not allowed
+
+LD   xReset
+R    yAlarm1                       ** movement request but not allowed
+
+
+LD   St_Plus
+ANDN xSensorPlus
+OR(
+LD   St_Minus
+ANDN xSensorMinus
+ANDN xSingleEffect
+)
+OR   yAlarm                        ** movement commanded but not executed
+ST   yWaitMFun 
+  
+END_FUNCTION_BLOCK

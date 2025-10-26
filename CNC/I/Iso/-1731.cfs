@@ -1,0 +1,24 @@
+ [A] : G731
+
+;// Inizio sezione di attacco/distacco ad orientamento costante
+;// Vedi [Sintassi Cicli Opzione Bevel]
+;//
+;// G731 [A<tangente_iniziale>]
+;//
+DBL InitTan=VA0
+
+G831
+
+IF( ISQNAN(InitTan) ) THEN
+    ;//Attacco pezzo pendente
+    IF( gAttachState == 1 ) ERROR(3)    ;//Funzione non valida
+ELSE
+    ;//Converti in orientamento versore sx
+    gCurTan = MOD(InitTan+90,360)
+    IF( gCurTan < -0.0001 ) THEN
+        gCurTan = gCurTan + 360
+    ENDIF
+ENDIF
+
+gCurForce = 1
+RET

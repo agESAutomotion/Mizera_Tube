@@ -1,0 +1,16 @@
+[STRUCT]
+KEYWORD {
+    KEY_PARAX,ax,cg1;
+    KEY_CONFAX,ax,cg1;
+}
+
+#include "cnfax.str"
+#include "parax.str"
+
+[KEYS]
+CMD0  = DEFAULT
+CMD1  = DEFAULT
+CMD2  = DEFAULT
+CMD3  = DEFAULT
+CMD4  = DEFAULT
+CMD5  = DEFAULT

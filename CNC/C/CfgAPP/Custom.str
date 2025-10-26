@@ -1,0 +1,11 @@
+[STRUCT]
+
+KEY_CUSTOM {
+    KEY_USERPAR;
+    KEY_CUSTOM_INP;
+    KEY_CUSTOM_OUT;
+}
+
+#include "userpar.str"
+#include "custom_inp.str"
+#include "custom_out.str"

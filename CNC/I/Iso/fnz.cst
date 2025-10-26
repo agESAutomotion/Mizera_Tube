@@ -1,0 +1,10 @@
+
+//
+//  File configurazione Personalizzazione Eccezioni
+//
+
+Funzione    Flag    Filename        ; Commento
+
+$_BOOT      0       CSTboot.cfp     ; Custom BOOT
+$_START     2       CSTstart.cfp    ; Custom START
+$_RESET     0       CSTReset.cfp    ; Custom RESET

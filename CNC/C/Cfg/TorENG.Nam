@@ -1,0 +1,22 @@
+[PROMPT]
+KEY_TOR =Plasma Cut Torch
+
+REGIN =Input Register
+TDAT0 =Nominal voltage (V)
+TDAT1 =Max. deviation (V)
+TDAT2 =Max. derivative value (V/s)
+TDAT3 =Zero div.
+TDAT4 =Scaling factor (V)
+TDAT5 =Scaling factor (div)
+TDAT6 =FIR1 Cut-off frequency (Hz)
+KEY_REGOLATORE =
+TDAT7 =Freezing speed (%)
+TDAT8 =Max. adjustment [mm]
+TDAT9 =Min. adjustment [mm]
+TDAT10 =FIR2 Cut-off frequency (Hz)
+TDAT11 =a0 regulator
+TDAT12 =a1 regulator
+TDAT13 =Collision avoidance (ACA) (%)
+
+[HELP]
+

@@ -1,0 +1,174 @@
+: LoadInit
+
+; Semi-Loader Part 1: Park all components, allow the operator to load the pipe (Optional)
+
+DBL Debug_Loader = 0
+IF( %cn[WHO()].rc[0].21 ) RET
+
+SYN
+IF( (%ServiceMillePGM.12) || (%ServiceMillePGM.13) || (%ServiceMillePGM.14) ) RET
+
+IF( SelfLockSLoader == 0 ) THEN
+    SYN	   
+	;Page Pop Plc Command
+    ?%LsGui71.4 = 1
+    MSGOUT" Please select the mode to continue "
+    AWAIT((%LsGui71.2) || (%LsGui71.3))
+    SYN
+    MSGOUT""
+	
+	; [1] Before homing the chain then load the tube
+    IF( %LsGui71.2 ) THEN 
+	    IF( Debug_Loader ) M0
+	    M444   
+        SYN
+        MSGOUT "Chain Homming in process..."
+        ;I_I_HomeChain_E AT %USR_M13.21;  
+        WAITBIT("%USR_M13.21",1)
+		
+		IF( (%USR_M1.27) || (%USR_M1.28) ) THEN 
+            .FAULT_STATE_LOADER_0
+            SYN 
+            MSGOUT " Tube Already Exist in Machine "	   
+	        M0
+            JMP .FAULT_STATE_LOADER_0	   		   
+        ENDIF 
+		
+		%PROG_ONE.values11 = 0
+	ENDIF
+	
+	; [2] Continue mode, jump directly to the last step of loader
+    IF( %LsGui71.3 ) THEN         
+	    LstBreakPoint = %PROG_ONE.values11
+	ENDIF
+		   		   
+    SYN
+    ?%LsGui71.2 = 0
+    ?%LsGui71.3 = 0
+    ?%LsGui71.4 = 0
+ENDIF
+
+IF( LstBreakPoint != 0 ) JMPF .skiploadinit
+
+; Park all loader supports
+SYN
+IF ( Debug_Loader ) M0
+M725  
+G4 F0.1
+
+; Loader Supports Center needs to be open
+M452
+SYN
+;I_I_Centering_Open_1 AT %USR_M13.24;  
+;I_I_Centering_Open_2 AT %USR_M13.25;  
+;I_I_Centering_Open_3 AT %USR_M13.26;  
+;I_I_Centering_Open_4 AT %USR_M13.27; 
+WAITBIT("%USR_M13.24",1)
+WAITBIT("%USR_M13.25",1)
+WAITBIT("%USR_M13.26",1)
+WAITBIT("%USR_M13.27",1)
+
+; Here needs to check also if tube exsists signals ------------------->
+
+; ParkAllLoadSuppCmd AT %SUPPORTS_SYSTEM.values13.5;
+IF ( Debug_Loader ) M0
+?%SUPPORTS_SYSTEM.values13.5 = 1 
+SYN
+AWAIT( ABS((%ax51.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
+AWAIT( ABS((%ax52.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
+AWAIT( ABS((%ax53.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
+AWAIT( ABS((%ax54.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
+SYN
+?%SUPPORTS_SYSTEM.values13.5 = 0 
+
+IF( SelfLockSLoader == 1 ) JMPF .skiploadinit
+
+; Support G not fully down 
+
+; I_I_CylinderDwn_G AT %USR_M13.16;
+IF( !%USR_M13.16 ) THEN
+
+    IF( Debug_Loader ) M0
+    M334
+    SYN
+    MSGOUT "Support G going up"
+    ;I_I_CylinderUp_G AT %USR_M13.15; 	
+	WAITBIT("%USR_M13.15",1)
+    
+	IF( Debug_Loader ) M0	
+    M435
+    SYN
+    MSGOUT "Support G going back (F)"	
+    ;I_I_CylinderBack_F AT %USR_M13.20;
+	WAITBIT("%USR_M13.20",1)
+    
+    IF( Debug_Loader ) M0
+    M335
+    SYN
+    MSGOUT "Support G going down"	 
+    ;I_I_CylinderDwn_G AT %USR_M13.16;	
+    WAITBIT("%USR_M13.16",1)
+  
+	IF( Debug_Loader ) M0   
+    ; Park Loader Arms Back (Fast)
+    M330
+    SYN
+    MSGOUT "Arm J Going Back Fast"	
+    ;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
+    ;I_I_Loader_Slow  AT %USR_M13.17; 
+    AWAIT( (%USR_M13.10) || (%USR_M13.17) )
+    
+    ; Park Loader Arms Back (Slow)
+    M431
+    SYN
+    MSGOUT "Arm J Going Back Slow"	
+    ; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
+    ; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
+    AWAIT( (!%USR_M13.11) && (%USR_M13.10) )
+	
+ELSE
+
+    ;Arm J Going Back Fast
+	IF( Debug_Loader ) M0
+    ; Park Loader Arms Back (Fast)
+    M330
+    SYN
+    MSGOUT "Arm J Going Back Fast"	
+    ;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
+    ;I_I_Loader_Slow  AT %USR_M13.17; 
+    AWAIT( (%USR_M13.10) || (%USR_M13.17) )
+    
+    ; Park Loader Arms Back (Slow)
+    M431
+    SYN
+    MSGOUT "Arm J Going Back Slow"	
+    ; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
+    ; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
+    AWAIT( (!%USR_M13.11) && (%USR_M13.10) )
+	
+    ;The whole loader returns to the origin (Except the chain)
+    IF( Debug_Loader ) M0
+	M445
+    SYN
+    MSGOUT "The whole loader homing in process ..."
+    ;I_I_CylinderBack_F AT %USR_M13.20;
+	WAITBIT("%USR_M13.20",1)
+	;I_I_CylinderDwn_G AT %USR_M13.16;
+	WAITBIT("%USR_M13.16",1)
+	;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
+    WAITBIT("%USR_M13.10",1)
+	
+ENDIF
+
+SYN
+IF( %USR_M13.18 ) THEN
+    ;I_I_TubeOnSup_C AT %USR_M13.18;  
+    SYN 
+    MSGOUT "Tube detected On Arms M, Safe? START to continue"	      	
+    M0	
+ENDIF
+
+.skiploadinit
+SelfLockSLoader = 1
+
+RET

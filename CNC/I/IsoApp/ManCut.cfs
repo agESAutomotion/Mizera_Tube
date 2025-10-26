@@ -1,0 +1,77 @@
+:LASER MANUAL CUT
+
+DBL qCut_X_start = %rLsGui48/1000
+DBL qCut_X_end   = %rLsGui49/1000
+DBL qCut_Y_start = %rLsGui50/1000
+DBL qCut_Y_end   = %rLsGui51/1000
+DBL qBorder      = %rLsGui52/1000
+DBL xPos
+DBL yPos
+DBL zPos=100
+
+G64
+G90
+G168
+
+G254 O0
+
+G650 T3 W(%rLsGui42)
+G806 T3 N1 H1 D1
+gOptimEnableG806 = 0
+
+SYN
+IF( %rLsGui29.1 ) THEN
+    xPos = QTA(X)
+    yPos = qCut_Y_start
+ELSE
+    xPos = qCut_X_start
+    yPos = QTA(Y)
+ENDIF
+
+G180 X(xPos) Y(yPos) Z(zPos)
+G153 G0 X(kine_x) Y(kine_y)
+G800 K0 D1 X(xPos) Y(yPos) Z0 F(feed1*1) T1 P1 R1 U0 V0 W1
+;
+SYN
+M82    ;Freeze VRTC
+
+;along Y
+IF( %rLsGui29.1 ) THEN
+    G1 Y(qCut_Y_start)
+    G1 Y(qCut_Y_start-qBorder)
+    ;M411
+    ?%TstP15.2 = 1                   ;  (LASER_OFF) Turn off laser from Iso
+    G1 Y(qCut_Y_start)
+    ?%TstP[15].3 = 1           ; (LASER_ON)
+    M83       ; Unfreeze VRTC
+    IF (%LsGui3.1)   M4001     ; M4001 request to enable height threshold detection
+    G1 Y(qCut_Y_end)
+    IF (%LsGui3.1)   M4002     ; M4002 request to disable height threshold detection
+    M82     ;Freeze VRTC
+    G1 Y(qCut_Y_end+qBorder)
+?%TstP15 = 0       ; reset word for laser on/off
+;along X
+ELSE
+    G1 X(qCut_X_start)    
+    G1 X(qCut_X_start-qBorder)
+    ;M411 
+    ?%TstP15.2 = 1                   ;  (LASER_OFF) Turn off laser from Iso 
+    G1 X(qCut_X_start)  
+    ?%TstP[15].3 = 1           ; (LASER_ON)    
+    M83     ;Unfreeze VRTC
+	  IF (%LsGui3.1)   M4001     ; M4001 request to enable height threshold detection
+    G1 X(qCut_X_end)
+	  IF (%LsGui3.1)   M4002     ; M4002 request to disable height threshold detection
+    M82     ;Freeze VRTC
+    G1 X(qCut_X_end+qBorder)
+?%TstP15 = 0       ; reset word for laser on/off
+ENDIF
+
+
+G840 L0
+G153 G0 Z(trav_safe_z)
+G169
+
+G254        ; Restore the origins
+
+RET

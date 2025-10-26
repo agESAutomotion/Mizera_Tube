@@ -1,0 +1,41 @@
+ [I]0 [J]0 [K]0 [X]0 [Y]0 [Z]0 [L] [M]0 :G162
+;//
+;// G162    [I<mir_x>]   [J<mir_y>]   [K<mir_z>]
+;//         [X<org_x>]   [Y<org_y>]   [Z<org_z>]
+;//         [L<ml_index>][M<inc_flag>]
+;//
+;//Specularita' sistema di riferimento
+;//Scrive sui coefficienti mx_...
+DBL ml = VA11
+DBL inc = VA12
+DBL or_x=CTOMM(VA23)
+DBL or_y=CTOMM(VA24)
+DBL or_z=CTOMM(VA25)
+DBL sav_G70=XGET("@G70")
+G71
+
+IF(ISQNAN(ml)) ml = ml_curr
+IF(ml < 0) ERROR(61)  ;//Valore troppo elevato
+IF(ml > ml_curr) ERROR(61)  ;//Valore troppo elevato
+
+IF( inc ) THEN
+    ;//Specularita'
+    IF(VA8 ) ml_mf1[ml]=SUB(1,ml_mf1[ml])
+    IF(VA9 ) ml_mf2[ml]=SUB(1,ml_mf2[ml])
+    IF(VA10) ml_mf3[ml]=SUB(1,ml_mf3[ml])
+ELSE
+    ;//Specularita'
+    ml_mf1[ml]=VA8
+    ml_mf2[ml]=VA9
+    ml_mf3[ml]=VA10
+
+    ;//Centro di inversione
+    ml_mo1[ml]=or_x
+    ml_mo2[ml]=or_y
+    ml_mo3[ml]=or_z
+ENDIF
+
+G1152
+G152
+G(sav_G70)
+RET

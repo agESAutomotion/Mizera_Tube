@@ -1,0 +1,18 @@
+ [U] [V] [W] [A] [B] [C] :G178
+;//Gestione origine additiva 1 assi polari ed ausiliari (persistente)
+;//Scrive sulle variabili pl_add1_ ed aggiorna pl_orig_
+DBL qou=CTOMM(VA20)
+DBL qov=CTOMM(VA21)
+DBL qow=CTOMM(VA22)
+DBL sav_G70=XGET("@G70")
+G71
+IF(!ISQNAN(qou)) pl_add1_u = qou
+IF(!ISQNAN(qov)) pl_add1_v = qov
+IF(!ISQNAN(qow)) pl_add1_w = qow
+IF(!ISQNAN(VA0)) pl_add1_a = VA0
+IF(!ISQNAN(VA1)) pl_add1_b = VA1
+IF(!ISQNAN(VA2)) pl_add1_c = VA2
+G1158
+G152
+G(sav_G70)
+RET

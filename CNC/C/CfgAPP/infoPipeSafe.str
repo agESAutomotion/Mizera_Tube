@@ -1,0 +1,38 @@
+
+[KEYS]
+
+[STRUCT]
+
+KEY_NODE {
+    INFOPIPESAFE,(1,1,1280,1024);
+
+}
+
+
+INFOPIPESAFE <0> {
+    Image,<0>,(10,15,245,104);
+
+}
+
+
+[INFOPIPESAFE]
+BKG=RGB(239,239,239)
+TMR=-1
+STB=1
+VSB=1
+HIDE_HOR_KEYS=0
+HIDE_VERT_KEYS=0
+FIRST_VIRT_KEY=40
+
+
+
+
+[Image]
+FNM=Arial
+FSZ=10
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+PIC=Safe_dist_pipe.png

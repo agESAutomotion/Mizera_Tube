@@ -1,0 +1,1800 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--Fault/Warning fieldbus messages-->
+<Fieldbus>
+    <Levels>
+		<Level LevelId="0" LevelName="Fault">
+			<Color>255,0,0</Color>
+		</Level>
+		<Level LevelId="1" LevelName="Warning">
+			<Color>1,50,32</Color>
+		</Level>
+		<Level LevelId="2" LevelName="Warning 2">
+			<Color>233,120,73</Color>
+		</Level>		
+    </Levels>
+		
+    <Devices>
+        <!--ByStorm-->
+		<Device Id="6689" ProductCode="#x00000001" ExternalLink="">EBS-BYSTORM</Device>
+		<Device Id="6689" ProductCode="#x10003101" ExternalLink="">EBS-BYSTORM</Device>
+
+        <!--YASKAWA SGD7W e SGD7S-->
+		<Device Id="1337" ProductCode="#x02200401" ExternalLink="">YASKAWA-SGD7</Device>
+		<Device Id="1337" ProductCode="#x02200402" ExternalLink="">YASKAWA-SGD7</Device>
+
+        <!--LENZE i750-->
+		<!--<Device Id="#x0000003B" ProductCode="#x69075001" ExternalLink="">LENZE_I700SERIES</Device>-->
+		<!--<Device Id="#x0000003B" ProductCode="#x69075003" ExternalLink="">LENZE_I700SERIES</Device>-->
+		<!--<Device Id="#x0000003B" ProductCode="#x69075005" ExternalLink="">LENZE_I700SERIES</Device>-->
+
+        <!--SCHNEIDER LXM32M EtherCAT-->
+		<Device Id="#x0800005A" ProductCode="#x00016440" ExternalLink="">LXM32M</Device>
+
+        <!--Drives Danaher-Kollmorgen Ethercat-->
+		<Device Id="106" ProductCode="#x00414B44" ExternalLink="">AKD</Device>
+		<Device Id="106" ProductCode="#x03000600" ExternalLink="">DANAHER</Device>
+
+        <!--Drives Harmonic Drives-->
+		<Device Id="583" ProductCode="#x1000" ExternalLink="">HDRel</Device>
+
+		<!--Drives QDRIVEi3-->
+		<Device Id="136" ProductCode="#x10000" ExternalLink="">QDRIVEi3</Device>
+		<Device Id="136" ProductCode="#x20000" ExternalLink="">QDRIVEi3</Device>
+		
+		<!--Drives QDRIVEi7-->
+		<Device Id="136" ProductCode="#x88710000" ExternalLink="">QDRIVEi7</Device>
+		<Device Id="136" ProductCode="#x88720000" ExternalLink="">QDRIVEi7</Device>
+
+		<!--ORIENTAL MOTOR-->
+		<!--<Device Id="#x000002BE" ProductCode="#x000013AF" ExternalLink="">ORIENTAL_MOTOR</Device>-->
+
+		<!--Drives INTEC - Motion Systems-->
+		<!--<Device Id="#x00000029" ProductCode="#x00000000" ExternalLink="">INTEC_MOTION_SYSTEM</Device>-->
+
+		<!--Drives TDE_MACNO-->
+		<Device Id="#x00000205" ProductCode="#x00000001" ExternalLink="">TDE_MACNO</Device>
+		<Device Id="#x00000205" ProductCode="#x00001400" ExternalLink="">TDE_MACNO</Device>
+
+        <!--ESAUTOMOTION KUNBUS/HILSCHER-->
+		<Device Id="#x00000A05" ProductCode="#x00007452" ExternalLink="">ESA_DIGIT_IO</Device>
+		<Device Id="#x00000A05" ProductCode="#x00019462" ExternalLink="">ESA_DIGIT_IO</Device>
+		<Device Id="#x00000A05" ProductCode="#x00019463" ExternalLink="">ESA_DIGIT_IO</Device>
+		<Device Id="#x00000A05" ProductCode="#x00007453" ExternalLink="">ESA_DIGIT_IO</Device>
+		<Device Id="#x00000A05" ProductCode="#x00007456" ExternalLink="">ESA_DIGIT_IO</Device>
+
+        <!--Generic modules ETG5001-->
+		<Device Id="#x0000006C" ProductCode="#x0000AC23" ExternalLink="">GENERIC_IO</Device> <!--IO B&R-->
+
+        <!--DIWAL-->
+		<Device Id="#x1111" ProductCode="#x0E0B2502" ExternalLink="">DIWAL_IO</Device>
+		<Device Id="#x1111" ProductCode="#x0E0B2802" ExternalLink="">DIWAL_IO</Device>
+		<Device Id="#x1111" ProductCode="#x3E0B2502" ExternalLink="">DIWAL_IO</Device>
+		<Device Id="#x1111" ProductCode="#x070B2502" ExternalLink="">DIWAL_IO</Device>
+
+        <!--ISAC-->
+		<Device Id="#x00000101" ProductCode="#xBC000000" ExternalLink="">ISAC_IO</Device>
+
+        <!--Nodi Beckhoff ETG5001-->
+		<Device Id="#x00000002" ProductCode="#x07113052" ExternalLink="">BECKHOFF_IO</Device> <!--IO Beckhoff EL1809 Digital Input-->
+		<Device Id="#x00000002" ProductCode="#x0AF93052" ExternalLink="">BECKHOFF_IO</Device> <!--IO Beckhoff EL2809 Digital Output-->
+		<Device Id="#x00000002" ProductCode="#x10263052" ExternalLink="">BECKHOFF_IO</Device> <!--IO Beckhoff EL4134 Analog output-->
+
+        <!--Nodi WAGO ETG5001-->
+		<!--<Device Id="33" ProductCode="#x07500354" ExternalLink="">WAGO_IO</Device>--> <!--IO MITROL modulari-->
+
+        <!--Nodi MITROL FASTCAT ETG5001-->
+		<Device Id="#x000000C6" ProductCode="#x0000FACA" ExternalLink="">MITROL_IO</Device> <!--IO MITROL modulari-->
+		
+		<!--Nodo XPR300 Ethercat-->
+		<Device Id="#x0000076E" ProductCode="#x00022809" ExternalLink="">XPR300</Device> <!--XPR300 Ethercat-->
+
+        <!--Nodi RTA-->
+		<Device Id="#x0000017F" ProductCode="#x0000003A" ExternalLink="">RTA_DRIVES</Device> <!--RTA Drives-->
+
+        <!--Nodi RTA SanyoDenki-->
+		<Device Id="#x000001B9" ProductCode="#x0000000B" ExternalLink="">RTA_SANYODENKI_DRIVES</Device> <!--RTA Drives-->
+
+        <!--Nodi BOSCH REXROTH CtrlXDrive-->
+		<Device Id="#x00000024" ProductCode="#x20000111" ExternalLink="">BOSCH_REXROTH</Device> <!--XMS-->
+		<Device Id="#x00000024" ProductCode="#x20000121" ExternalLink="">BOSCH_REXROTH</Device> <!--XMD 1-->
+		<Device Id="#x00000024" ProductCode="#x20000122" ExternalLink="">BOSCH_REXROTH</Device> <!--XMD 2-->
+		<Device Id="#x00000024" ProductCode="#x20000311" ExternalLink="">BOSCH_REXROTH</Device> <!--XCS-->
+		<Device Id="#x00000024" ProductCode="#x20000321" ExternalLink="">BOSCH_REXROTH</Device> <!--XCD 1-->
+		<Device Id="#x00000024" ProductCode="#x20000322" ExternalLink="">BOSCH_REXROTH</Device> <!--XCD 2-->
+
+        <!--Nodi BOSCH REXROTH Indradrive-->
+		<Device Id="#x00000024" ProductCode="#x00242C06" ExternalLink="">BOSCH_REXROTH_INDRADRIVE</Device> <!--BOSCH-->
+
+        <!--Nodi HIWIN-->
+		<!--<Device Id="#x0000AAAA" ProductCode="#x00000005" ExternalLink="">HIWIN</Device>--> <!--HIWIN-->
+
+        <!--Nodi EVER-->
+		<!--<Device Id="#x0000004B" ProductCode="#x00000628" ExternalLink="">EVER</Device>--> <!--EVER-->
+
+        <!--Nodi Balluff-->
+		<!--<Device Id="#x010000E8" ProductCode="#x0000508A" ExternalLink="">BALLUFF</Device>--> <!--Balluff-->
+
+        <!--Nodi Drives Inovance-->
+		<Device Id="#x00100000" ProductCode="#x000C0108" ExternalLink="">INOVANCE</Device> <!--IS620N-->
+		<Device Id="#x00100000" ProductCode="#x000C0112" ExternalLink="">INOVANCE</Device> <!--SV630N-->
+		<Device Id="#x00100000" ProductCode="#x000C010D" ExternalLink="">INOVANCE</Device> <!--SV660N-->
+
+        <!--Nodi Drives SKD-->
+		<Device Id="#x0000FFFF" ProductCode="#x00000001" ExternalLink="">SKD_DRIVES</Device> <!--IS620N-->
+	</Devices>
+			
+	<MessagesSet>
+        <!--BYSTORM EBS-->
+		<EBS-BYSTORM>
+			<Message LevelId="0" Code="#x00000001">F00 Flash failure</Message>                                                         
+			<Message LevelId="0" Code="#x00000002">F01 Loaded default param.</Message>	                                                 
+			<Message LevelId="0" Code="#x00000004">F02 Loaded default protected</Message>	                                                 
+			<Message LevelId="0" Code="#x00000008">F03 N.A.</Message>                                           
+			<Message LevelId="0" Code="#x00000010">F04 I2t Drive</Message>	                                                             
+			<Message LevelId="0" Code="#x00000020">F05 Over voltage</Message>	                                                             
+			<Message LevelId="0" Code="#x00000040">F06 Under voltage</Message>	                                                         
+			<Message LevelId="0" Code="#x00000080">F07 Power fail</Message>	                                                             
+			<Message LevelId="0" Code="#x00000100">F08 Heatsink temperature</Message>	                                                     
+			<Message LevelId="0" Code="#x00000200">F09 Motor temperature</Message>	                                                     
+			<Message LevelId="0" Code="#x00000400">F10 Regenerative resistence overload</Message>	                                         
+			<Message LevelId="0" Code="#x00000800">F11 Internal temperature</Message>	                                                     
+			<Message LevelId="0" Code="#x00001000">F12 Overcurrent Regenerative Circuit</Message>	                                         
+			<Message LevelId="0" Code="#x00002000">F13 Over Voltage 24V</Message>	                                                         
+			<Message LevelId="0" Code="#x00004000">F14 Under Voltage 24V</Message>	                                                     
+			<Message LevelId="0" Code="#x00008000">F15 N.A.</Message>	                                                                     
+			<Message LevelId="0" Code="#x00010000">F16 Brake</Message>	                                                                 
+			<Message LevelId="0" Code="#x00020000">F17 Fan	</Message>                                                                     
+			<Message LevelId="0" Code="#x00040000">F18 Phase Loss</Message>	                                                             
+			<Message LevelId="0" Code="#x00080000">F19 Feedback</Message>	                                                                 
+			<Message LevelId="0" Code="#x00100000">F20 Feedback initialization</Message>	                                                 
+			<Message LevelId="0" Code="#x00200000">F21 Current Over Range</Message>	                                                     
+			<Message LevelId="0" Code="#x00400000">F22 error</Message>	                                                                 
+			<Message LevelId="0" Code="#x00800000">F23 OverSpeed</Message>	                                                                 
+			<Message LevelId="0" Code="#x01000000">F24 Battery low voltage</Message>	                                                                 
+			<Message LevelId="0" Code="#x02000000">F25 error</Message>                                                                     
+			<Message LevelId="0" Code="#x04000000">F26 error</Message>	                                                                 
+			<Message LevelId="0" Code="#x08000000">F27 error</Message>	                                                                 
+			<Message LevelId="0" Code="#x10000000">F28 error</Message>	                                                                 
+			<Message LevelId="0" Code="#x20000000">F29 error</Message>	                                                                 
+			<Message LevelId="0" Code="#x40000000">F30 STO</Message>	                                                                     
+			<Message LevelId="0" Code="#x80000000">F31 STO-SLS-SOS-SBC-safety</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</EBS-BYSTORM>
+
+        <!--SCHNEIDER LXM32M EtherCAT-->
+		<LXM32M>
+			<Message LevelId="0" Code="#x1000">"(%04X) Drive Fault",EcAlarmCode,</Message> 
+
+			<Message LevelId="0" Code="#x2300">"(%04X) Sovracorrente stadio finale",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x2301">"(%04X) Sovracorrente resistenza di frenatura",EcAlarmCode,</Message> 
+											 
+			<Message LevelId="0" Code="#x3100">"(%04X) Sottotensione alimentazione rete",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x3200">"(%04X) Sovratensione bus DC",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x3201">"(%04X) Sottotensione bus DC",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x3202">"(%04X) Sottotensione bus DC",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x3206">"(%04X) Sottotensione bus DC",EcAlarmCode,</Message> 
+											 
+			<Message LevelId="0" Code="#x4100">"(%04X) Sovratemperatura stadio finale",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x4102">"(%04X) Sovraccarico I2t",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x4200">"(%04X) Sovratemperatur apparecchio",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x4300">"(%04X) Sovratemperatura motore",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x4302">"(%04X) Sovraccarico motore I2t",EcAlarmCode,</Message> 
+											 
+			<Message LevelId="0" Code="#x4402">"(%04X) Sovraccarico resistenza frenatura I2t>75%",EcAlarmCode,</Message> 
+			<Message LevelId="0" Code="#x4403">"(%04X) Sovraccarico resistenza frenatura I2t>100%",EcAlarmCode,</Message> 
+
+			<Message LevelId="0" Code="#x733F">"(%04X) Encoder non collegato",EcAlarmCode,</Message> 
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</LXM32M>
+        
+		<!--LENZE I700 SERIES-->
+		<LENZE_I700SERIES>
+			<Message LevelId="0" Code="#x2320">"(%04X) Short circuit or earth leakage on motor side",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2340">"(%04X) Short circuit on motor side",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2351">"(%04X) Motor utilisation (I²xt) > [value] %",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2380">"(%04X) Fault - utilisation of the power section (Ixt) too high",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2381">"(%04X) Warning - Utilisation of the power section (Ixt) too high",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2382">"(%04X) Fault - device utilisation (Ixt) too high",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2383">"(%04X) Warning - device utilisation (Ixt) too high",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2384">"(%04X) Ultimate motor current reached",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2385">"(%04X) Output current > [value] A (maximum device current)",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2386">"(%04X) Clamp is active",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2387">"(%04X) Clamp responded too often",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x3210">"(%04X) DC link circuit - overvoltage [value] V",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x3220">"(%04X) DC link circuit - undervoltage [value] V",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x4210">"(%04X) Module temperature too high, [value]",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x4280">"(%04X) Internal fault - module temperature monitoring",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x4310">"(%04X) Motor temperature too high, [value]",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x4380">"(%04X) Motor temperature sensor",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x5112">"(%04X) 24-V supply",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x6010">"(%04X) Watchdog reset",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x6310">"(%04X) Incorrect parameter set download",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x6320">"(%04X) Parameter error in object [value]",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x7121">"(%04X) PLI - motor blocked",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x7303">"(%04X) Error in feedback system",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x7380">"(%04X) Hiperface communication error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x7381">"(%04X) Hiperface: Invalid absolute value - motor speed too high",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8180">"(%04X) ECAT DC - synchronisation required",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8181">"(%04X) EtherCAT communication",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8280">"(%04X) Sync Manager - address [value]",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8281">"(%04X) Sync Manager - actual size [value]",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8282">"(%04X) Sync Manager - settings [value]",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8283">"(%04X) PDO Mapping: Object unknown (index [value])",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8284">"(%04X) No PDO mapping object (index [value])",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8285">"(%04X) Too many mapped objects (max. number = [value])",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8286">"(%04X) PDO mapping - error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8700">"(%04X) Sync controller",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x8701">"(%04X) Time-out during synchronisation with EtherCAT Sync signal",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF00">"(%04X) Fatal internal error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF01">"(%04X) Fatal internal communication error, cycle [value]",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF02">"(%04X) Brake",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF03">"(%04X) Fatal internal error - overflow task [value]",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF04">"(%04X) PLI - motor movement too large",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF05">"(%04X) STO inhibited",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF06">"(%04X) Max. speed reached",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF07">"(%04X) Impermissible during identification or in the test mode",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF08">"(%04X) Impossible during identification",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF09">"(%04X) Motor phase failure",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF0A">"(%04X) Motor phase failure - phase U",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF0B">"(%04X) Motor phase failure - phase V",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF0C">"(%04X) Motor phase failure - phase W",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF0D">"(%04X) No resolver connected --> command cannot be executed.",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF0E">"(%04X) Speed too low --> command cannot be executed.",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF0F">"(%04X) No resolver connected --> command cannot be executed.",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF10">"(%04X) Time-out",EcAlarmCode,</Message>
+											 
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</LENZE_I700SERIES>
+
+        <!--YASKAWA SGD7W e SGD7S-->
+		<YASKAWA-SGD7>
+            <Message LevelId="0" Code="#x020">"(%04X) Parameter Checksum",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x021">"(%04X) Parameter Format Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x022">"(%04X) System Checksum Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x025">"(%04X) System alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x030">"(%04X) Main Circuit Detector Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x040">"(%04X) Parameter Setting Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x042">"(%04X) Parameter Combination Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x050">"(%04X) Combination Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x051">"(%04X) Unsupported Device Alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x070">"(%04X) Motor Type Change Detected",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x080">"(%04X) Linear Encoder Pitch Setting Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x0b0">"(%04X) Invalid Servo ON Command Alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x100">"(%04X) Overcurrent Detected",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x101">"(%04X) Motor Overcurrent Detected",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x231">"(%04X) Built-in Brake Relay Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x232">"(%04X) Built-in Brake Relay Life",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x300">"(%04X) Regeneration Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x320">"(%04X) Regenerative Overload",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x330">"(%04X) Main Circuit Power Supply Wiring Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x400">"(%04X) Overvoltage The main circuit DC voltage is too high.",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x410">"(%04X) Undervoltage The main circuit DC voltage is too low.",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x510">"(%04X) Overspeed The motor exceeded the maximum speed.",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x520">"(%04X) Vibration alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x521">"(%04X) Autotuning Alarm Vibration was detected",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x550">"(%04X) Maximum Speed Setting Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x710">"(%04X) Instantaneous Overload",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x720">"(%04X) Continuous Overload",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x730">"(%04X) Dynamic Brake Overload",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x731">"(%04X) Continued on next page.",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x740">"(%04X) Inrush Current Limiting",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x7A1">"(%04X) Internal Temperature Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x7A2">"(%04X) Internal Temperature Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x7A3">"(%04X) Internal Temperature Sensor Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x7A4">"(%04X) Power Transistor Overheated",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x7Ab">"(%04X) SERVOPACK Built-in Fan",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x810">"(%04X) Encoder Backup Alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x820">"(%04X) Encoder Checksum Alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x830">"(%04X) Encoder Battery Alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x840">"(%04X) Encoder Data Alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x850">"(%04X) Encoder Overspeed",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x860">"(%04X) Encoder Overheated",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x861">"(%04X) Motor Overheated",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x890">"(%04X) Encoder Scale Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x891">"(%04X) Encoder Module Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA10">"(%04X) EtherCAT DC Synchronization Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA11">"(%04X) EtherCAT State Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA12">"(%04X) EtherCAT Outputs Data",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA20">"(%04X) Parameter Setting Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA40">"(%04X) System Initialization Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA41">"(%04X) Communication Device",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA47">"(%04X) Loading Servo Information Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA48">"(%04X) EEPROM Parameter Data Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xA53">"(%04X) Axis detect error Object",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xb33">"(%04X) Current Detection Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xbF0">"(%04X) System Alarm 0",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xbF1">"(%04X) System Alarm 1",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xbF2">"(%04X) System Alarm 2",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xbF3">"(%04X) System Alarm 3",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xbF4">"(%04X) System Alarm 4",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC10">"(%04X) Servomotor Out of Control",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC20">"(%04X) Phase Detection Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC21">"(%04X) Polarity Sensor Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC22">"(%04X) Phase Information Disagreement",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC50">"(%04X) Polarity Detection Failure",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC51">"(%04X) Overtravel Detected during Polarity Detection",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC52">"(%04X) Polarity Detection Not Completed",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC53">"(%04X) Out of Range of Motion for Polarity Detection",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC54">"(%04X) Polarity Detection Failure 2",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC80">"(%04X) Encoder Clear Error or Multiturn Limit Setting Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC90">"(%04X) Encoder Communications Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC91">"(%04X) Encoder Communications Position Data Acceleration Rate Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xC92">"(%04X) Encoder Communications Timer Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xCA0">"(%04X) Encoder Parameter Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xCb0">"(%04X) Encoder Echoback Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xCC0">"(%04X) Multiturn Limit Disagreement",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xd00">"(%04X) Position Deviation Overflow",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xd01">"(%04X) Position Deviation Overflow",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xd02">"(%04X) Position Deviation Overflow",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xd10">"(%04X) Motor-Load Position Deviation Overflow",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xd30">"(%04X) Position Data Overflow",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xE00">"(%04X) EtherCAT Module Interface",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xE02">"(%04X) MECHATROLINK Internal",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xE03">"(%04X) EtherCAT Module Interface",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xEA0">"(%04X) Command-Option IF Servo Unit Initial Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xEA1">"(%04X) Command-Option IF Memory Check Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xEA2">"(%04X) Command-Option IF Servo Synchronization Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xEA3">"(%04X) Command-Option IF Servo Data Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xEb1">"(%04X) Safety Function Signal Input Timing Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xF10">"(%04X) Power Supply Line Open Phase",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xF50">"(%04X) Servomotor Main Circuit Cable Disconnection",EcAlarmCode,</Message>
+
+            <Message LevelId="1" Code="#x900">"(%04X) Position",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x901">"(%04X) Position Deviation Overflow",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x910">"(%04X) Overload",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x911">"(%04X) Vibration",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x912">"(%04X) Internal Temperature",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x913">"(%04X) Internal Temperature",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x920">"(%04X) Regenerative Overload",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x921">"(%04X) Dynamic Brake Overload",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x923">"(%04X) SERVOPACK Built-in Fan",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x930">"(%04X) Absolute Encoder Battery Error",EcAlarmCode,</Message> 
+            <Message LevelId="1" Code="#x942">"(%04X) Speed Ripple Compensation",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x971">"(%04X) Undervoltage",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x9A0">"(%04X) Overtravel Overtravel was detected while the servo was ON. Required.",EcAlarmCode,</Message>
+            <Message LevelId="1" Code="#x9b0">"(%04X) Preventative Maintenance Warning",EcAlarmCode,</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+        </YASKAWA-SGD7>
+
+        <!--Drives Kollmorgen-->
+		<AKD>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</AKD>
+
+        <!--Drives Danaher-->
+		<DANAHER>
+            <Message LevelId="1" Code="#x00000001">"F01 Heatsink overtemperature</Message>                                                  
+            <Message LevelId="1" Code="#x00000002">"F02 DC-Link overvoltage</Message>
+            <Message LevelId="1" Code="#x00000004">"F03 Contouring error of the external trajectory</Message>
+            <Message LevelId="1" Code="#x00000008">"F04 Feedback error</Message>
+            <Message LevelId="1" Code="#x00000010">"F05 Undervoltage protection</Message>
+            <Message LevelId="1" Code="#x00000020">"F06 Motor overtemperature</Message>
+            <Message LevelId="1" Code="#x00000040">"F07 Internal electronic supply is faulty</Message>
+            <Message LevelId="1" Code="#x00000080">"F08 Overspeed</Message>                                                                 
+            <Message LevelId="1" Code="#x00000100">"F09 EEPROM Checksum error</Message>                                                     
+            <Message LevelId="1" Code="#x00000200">"F10 Signal failure digital encoder input</Message>                                      
+            <Message LevelId="1" Code="#x00000400">"F11 Brake error</Message>                                                               
+            <Message LevelId="1" Code="#x00000800">"F12 -----</Message>                                                                     
+            <Message LevelId="1" Code="#x00001000">"F13 Ambient overtemperature</Message>                                                   
+            <Message LevelId="1" Code="#x00002000">"F14 Output stage fault</Message>                                                        
+            <Message LevelId="1" Code="#x00004000">"F15 I2t max override.</Message>                                                         
+            <Message LevelId="1" Code="#x00008000">"F16 Mains BTB</Message>                                                                 
+            <Message LevelId="1" Code="#x00010000">"F17 A/D converter error</Message>                                                       
+            <Message LevelId="1" Code="#x00020000">"F18 Regen error</Message>                                                               
+            <Message LevelId="1" Code="#x00040000">"F19 DC bus breakdown</Message>                                                          
+            <Message LevelId="1" Code="#x00080000">"F20 Slot error</Message>                                                                
+            <Message LevelId="1" Code="#x00100000">"F21 PROFIBUS handling error</Message>                                                   
+            <Message LevelId="1" Code="#x00200000">"F22 -----</Message>                                                                     
+            <Message LevelId="1" Code="#x00400000">"F23 CANopen Bus-Off</Message>                                                           
+            <Message LevelId="1" Code="#x00800000">"F24 Warning generates a error message</Message>                                         
+            <Message LevelId="1" Code="#x01000000">"F25 Commutation Error</Message>                                                         
+            <Message LevelId="1" Code="#x02000000">"F26 Hardware limit switch error at homing move</Message>                                
+            <Message LevelId="1" Code="#x04000000">"F27 "-AS-Option" error</Message>                                                        
+            <Message LevelId="1" Code="#x08000000">"F28 EtherCAT Error synchronisation</Message>                                            
+            <Message LevelId="1" Code="#x10000000">"F29 Slotcard Error</Message>                                                            
+            <Message LevelId="1" Code="#x20000000">"F30 Emergency stop time out</Message>                                                   
+            <Message LevelId="1" Code="#x40000000">"F31 -----</Message>                                                                     
+            <Message LevelId="1" Code="#x80000000">"F32 System error</Message>                                                              
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</DANAHER>
+
+        <!--Harmonic Drives-->
+		<HDRel>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</HDRel>
+
+        <!--QDRIVEi3-->
+		<QDRIVEi3>
+            <Message LevelId="0" Code="#xFA27">"(%04X) Bus Encoder Battery Alarm",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFB27">"(%04X) Bus Encoder Battery Alarm",EcAlarmCode,</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</QDRIVEi3>
+		
+		<!--QDRIVEi7-->
+		<QDRIVEi7>
+            <Message LevelId="0" Code="#xF020">"(%04X) Parameter Checksum Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xF021">"(%04X) Parameter Format Error",EcAlarmCode,</Message>
+		    <Message LevelId="0" Code="#xF022">"(%04X) System Checksum Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xF030">"(%04X) Main Circuit Detector Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF040">"(%04X) Parameter Setting Error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xF042">"(%04X) Parameter Combination Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF050">"(%04X) Combination Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF051">"(%04X) Unsupported Device Alarm",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF0b0">"(%04X) Invalid Servo On Command Alarm",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF100">"(%04X) Overcurrent Detected",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF101">"(%04X) Motor Overcurrent Detected",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF300">"(%04X) Regenerative Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF320">"(%04X) Regenerative Overload",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF330">"(%04X) Main Circuit Power Supply Wiring Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF400">"(%04X) Overvoltage",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF410">"(%04X) Undervoltage",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF510">"(%04X) Overspeed",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF520">"(%04X) Vibration Alarm",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF521">"(%04X) Autotuning Alarm",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF600">"(%04X) Inaccurate ESM Demand Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF601">"(%04X) ESM Undefined Request Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF602">"(%04X) Bootstrap Request Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF603">"(%04X) Incomplete PLL Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF604">"(%04X) PDO Watchdog Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF605">"(%04X) EtherCAT Module Initialization Failed",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF606">"(%04X) PLL Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF607">"(%04X) Synchronization Signal Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF610">"(%04X) Synchronization Cycle Error Protection ",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF611">"(%04X) Mailbox Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF614">"(%04X) PDO Watchdog Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF615">"(%04X) DC Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF616">"(%04X) SM Event Mode Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF617">"(%04X) SM2/3 Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF620">"(%04X) CAN Module Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF621">"(%04X) Timeout of Hearthbeat Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF622">"(%04X) Synchronization of CANopen Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF650">"(%04X) TxPDO Assignement Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF651">"(%04X) RxPDO Assignment Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF652">"(%04X) Lost Link Detection Error Protection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF710">"(%04X) Instantaneous Overload",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF720">"(%04X) Continuous Overload",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF730">"(%04X) Dynamic Brake Overload",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF740">"(%04X) Inrush Current Limiting Resistor Overload",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF810">"(%04X) Encoder Backup Alarm",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF820">"(%04X) Encoder Checksum Alarm",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF830">"(%04X) Encoder Battery Alarm",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF840">"(%04X) Encoder Dat Alarm",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xF850">"(%04X) Encoder Overspeed",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFB6A">"(%04X) MECHATROLINK Communications ASIC Error 1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFB6B">"(%04X) MECHATROLINK Communications ASIC Error 2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC10">"(%04X) Servomotor Out Of Control",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC20">"(%04X) Phase Detection Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC21">"(%04X) Polarity Sensor Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC22">"(%04X) Phase Information Disagreement",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC50">"(%04X) Polarity Detection Failure",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC51">"(%04X) Overtravel Detected During Polarity Detection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC52">"(%04X) Polarity Detection Not Completed",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC53">"(%04X) Out Of Range Of Motion For Polarity Detection",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC54">"(%04X) Polarity Detection Failure 2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC80">"(%04X) Encoder Clear Error Or Multiturn Limit Setting Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC90">"(%04X) Encoder Communications Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC91">"(%04X) Encoder Communication Position Data Acceleration Rate Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFC92">"(%04X) Encoder Communication Time Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFCA0">"(%04X) Encoder Parameter Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFCB0">"(%04X) Encoder Echoback Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFD00">"(%04X) Position Deviation Overflow",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFD01">"(%04X) Position Deviation Overflow Alarm At Servo ON",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFD02">"(%04X) Position Deviation Overflow Alarm For Speed Limit At Servo ON",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFD10">"(%04X) Motor-Load Position Deviation Overflow",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFD30">"(%04X) Position Data Overflow",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFE02">"(%04X) MECHATROLINK Internal Synchronization Error 1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFE40">"(%04X) MECHATROLINK Transmission Cycle Setting Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFE42">"(%04X) MECHATROLINK Station Address Setting Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFE50">"(%04X) MECHATROLINK Synchronization Error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFE51">"(%04X) MECHATROLINK Synchronization Failed",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFE60">"(%04X) Reception Error in MECHATROLINK Communication ",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFE61">"(%04X) Synchronization Interval Error in MECHATROLINK Transmission Cycle",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFE63">"(%04X) MECHATROLINK Synchronization Frame Not Received",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFED1">"(%04X) Command Execution Timeout",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#xFF10">"(%04X) Power Supply Line Open Phase",EcAlarmCode,</Message>
+			
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</QDRIVEi7>
+
+        <!--ORIENTAL MOTOR-->
+		<ORIENTAL_MOTOR>
+            <Message LevelId="0" Code="#xFF10">"(%04X) Eccessive position deviation",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF23">"(%04X) Main power off",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF25">"(%04X) Undervoltage",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF26">"(%04X) Motor overheat",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF29">"(%04X) CPU peripheral circuit error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF34">"(%04X) Command pulse error",EcAlarmCode,</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</ORIENTAL_MOTOR>
+
+        <!--INTEC - Motion Systems-->
+		<INTEC_MOTION_SYSTEM>
+            <Message LevelId="0" Code="#x3110">"(%04X) U-Logic overvoltage",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x3120">"(%04X) U-Logic undervoltage",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x3210">"(%04X) U-DcLink overvoltage",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x3220">"(%04X) U-DcLink undervoltage",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x3221">"(%04X) Under voltage",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x4310">"(%04X) Overtemperature",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x4311">"(%04X) Overtemperature",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x5111">"(%04X) U-Driver",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x5530">"(%04X) Storage error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x7121">"(%04X) Blockfail event",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x7300">"(%04X) Encoder error",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#x7501">"(%04X) Leaving OP while switched on",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF01">"(%04X) IN1 active",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF02">"(%04X) IN2 active",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF03">"(%04X) IN3 Active",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF04">"(%04X) STOB active",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF08">"(%04X) STOA active",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF14">"(%04X) Hardware error: STOB Feedback",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF18">"(%04X) Hardware error: STOA Feedback",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF1C">"(%04X) Hardware error: STO Mismatch",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF22">"(%04X) Drive not referenced",EcAlarmCode,</Message>
+            <Message LevelId="0" Code="#xFF32">"(%04X) Runtime data loss",EcAlarmCode,</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</INTEC_MOTION_SYSTEM>
+
+        <!--TDE_MACNO Drives-->
+		<TDE_MACNO>
+            <Message LevelId="0" Code="#x00010000">A0.0 Over current alarm</Message>
+            <Message LevelId="0" Code="#x00010001">A0.1 Motor in stall</Message>
+            <Message LevelId="0" Code="#x00020000">A1.0 Load default parameters</Message>
+            <Message LevelId="0" Code="#x00020001">A1.1 EEPROM read failure</Message>
+            <Message LevelId="0" Code="#x00020002">A1.2 EEPROM Write failure</Message>
+            <Message LevelId="0" Code="#x00020003">A1.3 EEPROM read and write fauilure</Message>
+            <Message LevelId="0" Code="#x00020004">A1.4 Data storing not completed</Message>
+            <Message LevelId="0" Code="#x00040000">A2.0 Motore not fluxed</Message>
+            <Message LevelId="0" Code="#x00040001">A2.1 SinCos absolute channels problems</Message>
+            <Message LevelId="0" Code="#x00040002">A2.2 Encoder and Hall sensors problems during C41 test</Message>
+            <Message LevelId="0" Code="#x00040003">A2.3 Encoder and Hall sensors problems</Message>
+            <Message LevelId="0" Code="#x00080000">A3.0 Power fault/IGBT Low legs overcurrent(XS)</Message>
+            <Message LevelId="0" Code="#x00080001">A3.1 IGBT High Legs overcurrent</Message>
+            <Message LevelId="0" Code="#x00080002">A3.2 IGBT Brake overcurrent</Message>
+            <Message LevelId="0" Code="#x00080003">A3.3 IGBT Brake Short Circuit</Message>
+            <Message LevelId="0" Code="#x00100000">A4.0 Node Guarding error</Message>
+            <Message LevelId="0" Code="#x00100001">A4.1 SYNC Period too much different from theoretical value</Message>
+            <Message LevelId="0" Code="#x00100002">A4.2 Following error alarm</Message>
+            <Message LevelId="0" Code="#x00100003">A4.3 Excessive indexing speed</Message>
+            <Message LevelId="0" Code="#x00100004">A4.4 Zero TOP missing</Message>
+            <Message LevelId="0" Code="#x00100005">A4.5 Speed difference greather than Threshold (Sens1 - Sens2)</Message>
+            <Message LevelId="0" Code="#x00200000">A5.0 Motor temperature too high</Message>
+            <Message LevelId="0" Code="#x00200001">A5.1 Radiator temperature too high</Message>
+            <Message LevelId="0" Code="#x00200002">A5.2 Brake resistance adiabatic energy protection</Message>
+            <Message LevelId="0" Code="#x00200003">A5.3 Brake resistance dissipated power</Message>
+            <Message LevelId="0" Code="#x00200004">A5.4 Motor thermal probe not connected</Message>
+            <Message LevelId="0" Code="#x00200005">A5.5 Run with T.radiator too high</Message>
+            <Message LevelId="0" Code="#x00200006">A5.6 IGBT module temperature too high</Message>
+            <Message LevelId="0" Code="#x00400000">A6.0 Motor I²t thermal alarm</Message>
+            <Message LevelId="0" Code="#x00800000">A7.0 Autotuning test unfinished</Message>
+            <Message LevelId="0" Code="#x00800001">A7.1 Speed not reached during autotuning</Message>
+            <Message LevelId="0" Code="#x01000000">A8.0 Missing enable logic input from the field</Message>
+            <Message LevelId="0" Code="#x01000001">A8.1 Watchdog alarm LogicLab </Message>
+            <Message LevelId="0" Code="#x01000002">A8.2 Fast task LogicLab too long</Message>
+            <Message LevelId="0" Code="#x01000003">A8.3 Application out of service</Message> 
+            <Message LevelId="0" Code="#x02000000">A9.0 Hardware board and firmware are incompatible</Message>
+            <Message LevelId="0" Code="#x02000001">A9.1 Sensor presence</Message>
+            <Message LevelId="0" Code="#x02000002">A9.2 Overspeed (more than 10 consecutive Tpwm)</Message>
+            <Message LevelId="0" Code="#x02000003">A9.3 Missing Zero Top</Message>
+            <Message LevelId="0" Code="#x02000004">A9.4 Incremental sensor without IPP</Message>
+            <Message LevelId="0" Code="#x02000005">A9.5 SinCos incremental channels problems</Message>
+            <Message LevelId="0" Code="#x02000006">A9.6 Loose Speed Control</Message>
+            <Message LevelId="0" Code="#x02000008">A9.8 IPP not completed</Message>
+            <Message LevelId="0" Code="#x02000009">A9.9 Alarm from digital encoder</Message>
+            <Message LevelId="0" Code="#x04000000">A10.0 DC Bus under minimum threshold admitted</Message>
+            <Message LevelId="0" Code="#x04000001">A10.1 Emergency bracking on main supply lost</Message>
+            <Message LevelId="0" Code="#x08000001">A11.1 HW detection</Message>
+            <Message LevelId="0" Code="#x08000002">A11.2 Intermediate drive circuit voltage has exceeded the maximum value</Message>
+            <Message LevelId="0" Code="#x08000003">A11.3 HW + SW detection</Message>
+            <Message LevelId="0" Code="#x10000000">A12.0 Software alarm: C29 different from 1</Message>
+            <Message LevelId="0" Code="#x10000001">A12.1 Run whitout power soft start</Message>
+            <Message LevelId="0" Code="#x20000000">A13.0 Rectifier bridge problem</Message>
+            <Message LevelId="0" Code="#x20000001">A13.1 Safe Torque Off / Power board fault</Message>
+            <Message LevelId="0" Code="#x20000002">A13.2 Excessive Ripple on DC Bus</Message>
+            <Message LevelId="0" Code="#x20000003">A13.3 New STO: only one STO channel activated</Message>
+            <Message LevelId="0" Code="#x20000004">A13.4 New STO: Fault on at least one safety channel</Message>
+            <Message LevelId="0" Code="#x20000005">A13.5 New STO: monitor failure</Message>
+            <Message LevelId="0" Code="#x40000000">A14.0 Motor phase inverted</Message>
+            <Message LevelId="0" Code="#x40000001">A14.1 Motor not connected</Message>
+            <Message LevelId="0" Code="#x80000000">A15.0 Wrong number of Motor/Sensor poles</Message>
+            <Message LevelId="0" Code="#x80020001">A15.1 Simulated encoder pulses</Message>
+            <Message LevelId="0" Code="#x80020002">A15.2 Excessive magnetizing current measured</Message>
+            <Message LevelId="0" Code="#x80020003">A15.3 Wrong Sensor pulses number read in Autotest</Message>
+            <Message LevelId="0" Code="#x80020004">A15.4 Sensor tune failed</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</TDE_MACNO>
+
+        <!--RTA Drives-->
+		<RTA_DRIVES>
+            <Message LevelId="0" Code="#x8611">0x8611 Motor following error</Message>
+            <Message LevelId="0" Code="#x8600">0x8600 Absolute Encoder error</Message>
+            <Message LevelId="0" Code="#x5100">0x5100 Error supply</Message>
+            <Message LevelId="0" Code="#x4310">0x4310 Error excess temperature drive</Message>
+            <Message LevelId="0" Code="#x2130">0x2130 Error short circuit</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</RTA_DRIVES>
+
+        <!--RTA Drives-->
+		<RTA_SANYODENKI_DRIVES>
+            <Message LevelId="0" Code="#x7300">"(%04X) Encoder error",EcAlarmCode,</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</RTA_SANYODENKI_DRIVES>
+
+
+        <!--Schede DIWAL-->
+		<DIWAL_IO>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</DIWAL_IO>
+
+        <!--Schede ISAC-->
+		<ISAC_IO>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</ISAC_IO>
+		
+        <!--Schede ESAUTOMOTION da terminare l'implementazione-->
+		<ESA_DIGIT_IO>
+			<Message LevelId="0" Code="20">I/O Err: 24 VOLT NOT PRESENT</Message>
+			<Message LevelId="0" Code="21">I/O Err: OUTPUT PROTECTED</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</ESA_DIGIT_IO>
+
+        <!--Schede ESAUTOMOTION da terminare l'implementazione-->
+		<GENERIC_IO>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</GENERIC_IO>
+
+        <!-- BECKHOFF I/O -->
+		<BECKHOFF_IO>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</BECKHOFF_IO>
+
+        <!-- WAGO I/O -->
+		<WAGO_IO>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</WAGO_IO>
+
+
+        <!-- MITROL I/O -->
+		<MITROL_IO>
+			<Message LevelId="0" Code="#x01000000">"(slot%02d) Module changed",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x02000000">"(slot%02d) Module not detected",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x03000000">"(slot%02d) Unknown module answer",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x04000000">"(slot%02d) Missing module answer",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x05000000">"(slot%02d) Internal CRC module",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x06000000">"(slot%02d) Internal CRC module",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x07000000">"(slot%02d) Internal CRC module",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x08000000">"(slot%02d) Internal CRC module",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x09000000">"(slot%02d) Address node not OK",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x0A000000">"(slot%02d) Coupler SDO error",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x0B000000">"(slot%02d) Coupler SDO error",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x0C000000">"(slot%02d) Coupler SDO error",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x0D000000">"(slot%02d) Coupler SDO error",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x0E000000">"(slot%02d) Coupler SDO error",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x0F000000">"(slot%02d) Firmware master not ok",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x10000000">"(slot%02d) No module detect",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x11000000">"(slot%02d) Save in flash error",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x12000000">"(slot%02d) Master address not ok",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x13000000">"(slot%02d) Link lost",EcAlarm,</Message>
+			<Message LevelId="0" Code="#x14000000">"(slot%02d) Module not matching",EcAlarm,</Message>
+			
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</MITROL_IO>
+
+		<!-- ETHERCAT XPR300 -->
+		<XPR300>
+            <!--Generic message-->
+			<Message LevelId="0" Code="523">"(%02d) XPR300: Preflow purge t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="719">"(%02d) XPR300: Mix pwm 100%",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="500">"(%02d) XPR300: GCC->Main CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="501">"(%02d) XPR300: Mix->Main CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="503">"(%02d) XPR300: TCC->Main CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="504">"(%02d) XPR300: Ch1->Main CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="505">"(%02d) XPR300: Ch2->Main CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="507">"(%02d) XPR300: Main no CAN",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="508">"(%02d) XPR300: CAN Busy",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="510">"(%02d) XPR300: Main->GCC CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="511">"(%02d) XPR300: Main->Mix CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="513">"(%02d) XPR300: Main->TCC CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="514">"(%02d) XPR300: Main->Ch1 CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="515">"(%02d) XPR300: Main->Ch2 CAN t/o",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="520">"(%02d) XPR300: Ignite t/o (no pilot arc)",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="521">"(%02d) XPR300: Pilot arc t/o (no arc transfer)",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="522">"(%02d) XPR300: Preflow t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="523">"(%02d) XPR300: Preflow purge t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="524">"(%02d) XPR300: Cutflow purge t/o",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="525">"(%02d) XPR300: Inert gas purge t/o",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="530">"(%02d) XPR300: Low psi-Line A",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="531">"(%02d) XPR300: Low psi-Line B",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="532">"(%02d) XPR300: Low psi-H2O",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="533">"(%02d) XPR300: Low psi-F5",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="534">"(%02d) XPR300: Low psi-Shield",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="540">"(%02d) XPR300: Low flow 1-Coolant",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="541">"(%02d) XPR300: Low flow 2-Coolant",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="542">"(%02d) XPR300: Low flow-Coolant",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="543">"(%02d) XPR300: High flow 1-Coolant",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="544">"(%02d) XPR300: High flow-Coolant",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="550">"(%02d) XPR300: No plasma arc",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="552">"(%02d) XPR300: DC below limit-Ch1",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="553">"(%02d) XPR300: DC below limit-Ch2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="555">"(%02d) XPR300: DC exceeds limit-Ch1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="556">"(%02d) XPR300: DC exceeds limit-Ch2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="560">"(%02d) XPR300: Over temp-Ch1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="561">"(%02d) XPR300: Over temp-Ch2",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="570">"(%02d) XPR300: Start on Powerup",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="571">"(%02d) XPR300: Start on wait-start",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="574">"(%02d) XPR300: Start removed preflow",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="575">"(%02d) XPR300: Start removed ignite",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="576">"(%02d) XPR300: Start removed pilot",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="577">"(%02d) XPR300: Start removed rampup",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="580">"(%02d) XPR300: Over temp-Ind1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="581">"(%02d) XPR300: Over temp-Ind2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="582">"(%02d) XPR300: Over temp-Ind3",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="583">"(%02d) XPR300: Over temp-Ind4",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="586">"(%02d) XPR300: Over temp-Xfmr",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="587">"(%02d) XPR300: Over temp-Coolant",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="588">"(%02d) XPR300: Fan timeout",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="600">"(%02d) XPR300: No TCC found",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="601">"(%02d) XPR300: No chopper found",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="602">"(%02d) XPR300: No GCC found",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="604">"(%02d) XPR300: No Chopper 2 found",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="610">"(%02d) XPR300: Ch1 Torch Protect ChA",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="611">"(%02d) XPR300: Ch1 Torch Protect ChB",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="612">"(%02d) XPR300: Ch2 Torch Protect ChA",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="613">"(%02d) XPR300: Ch2 Torch Protect ChB",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="620">"(%02d) XPR300: Rampdown error (arc stretch) detected",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="621">"(%02d) XPR300: Over voltage-DC bus",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="622">"(%02d) XPR300: Under voltage-DC bus",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="623">"(%02d) XPR300: Ch1 DC at Idle",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="624">"(%02d) XPR300: Ch2 DC at Idle",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="626">"(%02d) XPR300: No DC output-Ch1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="627">"(%02d) XPR300: No DC output-Ch2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="631">"(%02d) XPR300: DC at wait-start",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="640">"(%02d) XPR300: No error",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="642">"(%02d) XPR300: System powered",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="643">"(%02d) XPR300: No process loaded",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="645">"(%02d) XPR300: System is off",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="646">"(%02d) XPR300: System turned off",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="647">"(%02d) XPR300: Process selected",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="654">"(%02d) XPR300: CH1ArcOnTimeout",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="655">"(%02d) XPR300: Current (DC) preflow",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="660">"(%02d) XPR300: Thermistor Fault-Ind 1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="661">"(%02d) XPR300: Thermistor Fault-Ind 2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="662">"(%02d) XPR300: Thermistor Fault-Ind 3",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="663">"(%02d) XPR300: Thermistor Fault-Ind 4",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="666">"(%02d) XPR300: Thermistor Fault-Xfmr",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="667">"(%02d) XPR300: Thermistor Fault-Ch1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="668">"(%02d) XPR300: Thermistor Fault-Ch2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="670">"(%02d) XPR300: Thermistor Fault-Coolant",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="671">"(%02d) XPR300: No Thermistor-Ind 1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="672">"(%02d) XPR300: No Thermistor-Ind 2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="673">"(%02d) XPR300: No Thermistor-Ind 3",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="674">"(%02d) XPR300: No Thermistor-Ind 4",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="677">"(%02d) XPR300: No Thermistor-Xfmr",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="678">"(%02d) XPR300: No Thermistor-Ch1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="679">"(%02d) XPR300: No Thermistor-Ch2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="681">"(%02d) XPR300: No Thermistor- Coolant",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="691">"(%02d) XPR300: Node reset",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="695">"(%02d) XPR300: Low Inlet H2-Mix",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="696">"(%02d) XPR300: Low Inlet Ar-Mix",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="697">"(%02d) XPR300: Low Inlet N2-Mix",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="699">"(%02d) XPR300: Mix Fault",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="700">"(%02d) XPR300: Gas Inlet F5-GCC",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="701">"(%02d) XPR300: Low Inlet H2O GCC",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="702">"(%02d) XPR300: Shield Gas Inlet N2 TCC",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="703">"(%02d) XPR300: Shield Gas Inlet O2 TCC",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="704">"(%02d) XPR300: Shield Gas Inlet Air TCC",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="705">"(%02d) XPR300: Shield Gas Inlet Ar-TCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="706">"(%02d) XPR300: No sensor P1-TCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="707">"(%02d) XPR300: No sensor P2-TCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="708">"(%02d) XPR300: No sensor P3-TCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="709">"(%02d) XPR300: No sensor P4-TCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="710">"(%02d) XPR300: No sensor P5-TCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="711">"(%02d) XPR300: No sensor P14-TCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="712">"(%02d) XPR300: No sensor P6-GCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="713">"(%02d) XPR300: No sensor P7-GCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="714">"(%02d) XPR300: No sensor P8-GCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="715">"(%02d) XPR300: No sensor P9-GCC",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="716">"(%02d) XPR300: Process Invalid",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="717">"(%02d) XPR300: Low voltage-mix",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="718">"(%02d) XPR300: High voltage-mix",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="719">"(%02d) XPR300: Mix pwm 100%",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="720">"(%02d) XPR300: Mix Pout>Pin",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="721">"(%02d) XPR300: Mix param checksum",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="722">"(%02d) XPR300: Mix flow cal",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="723">"(%02d) XPR300: Mix pressure cal",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="724">"(%02d) XPR300: Mix I2C1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="725">"(%02d) XPR300: Mix I2C2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="726">"(%02d) XPR300: Mix system clock",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="730">"(%02d) XPR300: Solenoid error V1",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="733">"(%02d) XPR300: Solenoid error V4",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="734">"(%02d) XPR300: Solenoid error V5",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="735">"(%02d) XPR300: Solenoid error V6",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="736">"(%02d) XPR300: Solenoid error V7",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="737">"(%02d) XPR300: Solenoid error V8",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="738">"(%02d) XPR300: Solenoid error V9",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="739">"(%02d) XPR300: Solenoid error V10",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="740">"(%02d) XPR300: Solenoid error V11",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="741">"(%02d) XPR300: Solenoid error V12",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="742">"(%02d) XPR300: Mix I2C1 Alert",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="743">"(%02d) XPR300: Mix I2C2 Alert",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="744">"(%02d) XPR300: Low SpeedMAGFAN 1",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="745">"(%02d) XPR300: Low Speed- MAGFAN 2",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="748">"(%02d) XPR300: Low Speed- HXFAN 1",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="749">"(%02d) XPR300: Low SpeedHXFAN 2",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="750">"(%02d) XPR300: Low speed CAB FAN 1 (Control Side)",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="751">"(%02d) XPR300: Low speed CAB FAN 2 (Control Side)",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="752">"(%02d) XPR300: Phase Fault Ch1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="753">"(%02d) XPR300: Phase Fault Ch2",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="755">"(%02d) XPR300: Low level-Coolant",EcAlarmCode,</Message>
+			<Message LevelId="1" Code="756">"(%02d) XPR300: Leak test results",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="757">"(%02d) XPR300: DC work exceeds limits",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="758">"(%02d) XPR300: Main 24 V dip",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="759">"(%02d) XPR300: Main 24 V bus low",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="763">"(%02d) XPR300: Coolant solenoid fault",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="764">"(%02d) XPR300: Main contactor fault",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="765">"(%02d) XPR300: Inrush contactor fault",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="766">"(%02d) XPR300: Pump enable fault",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="767">"(%02d) XPR300: Remote relay fault",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="768">"(%02d) XPR300: Gas inlet - O2 Line A",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="769">"(%02d) XPR300: Gas Inlet - Argon Line B",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="770">"(%02d) XPR300: Gas Inlet - N2 Line B",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="771">"(%02d) XPR300: Gas Inlet - Air Line A",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="772">"(%02d) XPR300: High Inlet - Line A",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="774">"(%02d) XPR300: P5 >=P2",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="775">"(%02d) XPR300: Node update",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="776">"(%02d) XPR300: Wifi reset",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="777">"(%02d) XPR300: Pilot relay fault",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="778">"(%02d) XPR300: Hv relay fault",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="779">"(%02d) XPR300: Ch1 15V bus",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="780">"(%02d) XPR300: Ch2 15V bus",EcAlarmCode,</Message>
+			<Message LevelId="2" Code="782">"(%02d) XPR300: Mix low psi-P2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="784">"(%02d) XPR300: Main 24 V high",EcAlarmCode,</Message>
+		</XPR300>
+
+		<BOSCH_REXROTH>
+			<!--Non fatal errors--> 
+			<Message LevelId="0" Code="#x0002007">F2007 Switching to non-allowed operation mode</Message>
+			<Message LevelId="0" Code="#x0002008">F2008 RL The motor type has changed</Message>
+			<Message LevelId="0" Code="#x0002010">F2010 Error when initializing I/O assembly</Message>
+			<Message LevelId="0" Code="#x0002018">F2018 Device overtemperature shutdown</Message>
+			<Message LevelId="0" Code="#x0002019">F2019 Motor overtemperature shutdown</Message>
+			<Message LevelId="0" Code="#x0002021">F2021 Motor temperature monitor defective</Message>
+			<Message LevelId="0" Code="#x0002022">F2022 Device temperature monitor defective</Message>
+			<Message LevelId="0" Code="#x0002023">F2023 Device temperature model error</Message>
+			<Message LevelId="0" Code="#x0002025">F2025 Drive not ready for control</Message>
+			<Message LevelId="0" Code="#x0002026">F2026 Undervoltage in power section</Message>
+			<Message LevelId="0" Code="#x0002028">F2028 Excessive deviation</Message>
+			<Message LevelId="0" Code="#x0002032">F2032 Validation error during commutation fine adjustment</Message>
+			<Message LevelId="0" Code="#x0002036">F2036 Excessive position feedback difference</Message>
+			<Message LevelId="0" Code="#x0002042">F2042 Encoder 2: Encoder signals incorrect</Message>
+			<Message LevelId="0" Code="#x0002047">F2047 Low encoder battery voltage encoder 2</Message>
+			<Message LevelId="0" Code="#x0002050">F2050 Overflow of target position preset memory</Message>
+			<Message LevelId="0" Code="#x0002051">F2051 No sequential block in target position preset memory</Message>
+			<Message LevelId="0" Code="#x0002056">F2056 Overload at I/O assembly</Message>
+			<Message LevelId="0" Code="#x0002057">F2057 Target position out of travel range</Message>
+			<Message LevelId="0" Code="#x0002067">F2067 Synchronization to master communication incorrect</Message>
+			<Message LevelId="0" Code="#x0002068">F2068 Brake error</Message>
+			<Message LevelId="0" Code="#x0002074">F2074 Actual pos. value 1 outside absolute encoder window</Message>
+			<Message LevelId="0" Code="#x0002075">F2075 Actual pos. value 2 outside absolute encoder window</Message>
+			<Message LevelId="0" Code="#x0002077">F2077 Current measurement trim wrong</Message>
+			<Message LevelId="0" Code="#x0002088">F2088 24 V error at the I/O assembly</Message>
+			<Message LevelId="0" Code="#x0002099">F2099 F2 test error, axis reaction</Message>
+			<Message LevelId="0" Code="#x0002100">F2100 Incorrect access to command value memory</Message>
+			<Message LevelId="0" Code="#x0002104">F2104 Commutation offset invalid</Message>
+			<Message LevelId="0" Code="#x0002107">F2107 Incorrect commutation angle</Message>
+			<Message LevelId="0" Code="#x0002110">F2110 Internal access to memory area</Message>
+			<Message LevelId="0" Code="#x0002131">F2131 Incorrect switching state of probe 1 input signal</Message>
+			<Message LevelId="0" Code="#x0002174">F2174 Loss of encoder 1 reference</Message>
+			<Message LevelId="0" Code="#x0002175">F2175 Loss of encoder 2 reference</Message>
+			<Message LevelId="0" Code="#x0002177">F2177 Encoder 1 modulo limitation error</Message>
+			<Message LevelId="0" Code="#x0002178">F2178 Encoder 2 modulo limitation error</Message>
+			<Message LevelId="0" Code="#x0002190">F2190 Incorrect Ethernet configuration</Message>
+			<Message LevelId="0" Code="#x0002211">F2211 Non-fatal PLC error no. 1</Message>
+			<Message LevelId="0" Code="#x0002212">F2212 Non-fatal PLC error no. 2</Message>
+			<Message LevelId="0" Code="#x0002213">F2213 Non-fatal PLC error no. 3</Message>
+			<Message LevelId="0" Code="#x0002214">F2214 Non-fatal PLC error no. 4</Message>
+			<Message LevelId="0" Code="#x0002215">F2215 Non-fatal PLC error no. 5</Message>
+			<Message LevelId="0" Code="#x0002216">F2216 Non-fatal PLC error no. 6</Message>
+			<Message LevelId="0" Code="#x0002217">F2217 Non-fatal PLC error no. 7</Message>
+			<Message LevelId="0" Code="#x0002218">F2218 Non-fatal PLC error no. 8</Message>
+			<Message LevelId="0" Code="#x0002270">F2270 Analog input, wire break</Message>
+			<Message LevelId="0" Code="#x0002802">F2802 Error in mains synchronization</Message>
+			<Message LevelId="0" Code="#x0002803">F2803 Black start impossible</Message>
+			<Message LevelId="0" Code="#x0002804">F2804 Error, power section heat sink fan</Message>
+			<Message LevelId="0" Code="#x0002805">F2805 Error, power section capacitors fan</Message>
+			<Message LevelId="0" Code="#x0002806">F2806 Error, braking resistor fan</Message>
+			<Message LevelId="0" Code="#x0002807">F2807 Switching to non-initialized power supply operation mode</Message>
+			<Message LevelId="0" Code="#x0002808">F2808 Error in fan monitoring</Message>
+			<Message LevelId="0" Code="#x0002809">F2809 Error, mains connection fan</Message>
+			<Message LevelId="0" Code="#x0002811">F2811 Overtemp. in mains connection</Message>
+			<Message LevelId="0" Code="#x0002812">F2812 Mains frequency out of extended range</Message>
+			<Message LevelId="0" Code="#x0002814">F2814 Mains voltage out of extended range</Message>
+			<Message LevelId="0" Code="#x0002815">F2815 Overvoltage in mains</Message>
+			<Message LevelId="0" Code="#x0002816">F2816 Softstart fault power supply unit</Message>
+			<Message LevelId="0" Code="#x0002818">F2818 Phase failure</Message>
+			<Message LevelId="0" Code="#x0002819">F2819 Mains failure</Message>
+			<Message LevelId="0" Code="#x0002820">F2820 Braking resistor overload</Message>
+			<Message LevelId="0" Code="#x0002821">F2821 Error in control of braking resistor</Message>
+			<Message LevelId="0" Code="#x0002822">F2822 Device temperature monitor defective</Message>
+			<Message LevelId="0" Code="#x0002823">F2823 Device temperature model error</Message>
+			<Message LevelId="0" Code="#x0002826">F2826 Undervoltage in DC bus</Message>
+			<Message LevelId="0" Code="#x0002827">F2827 Excessive oscillation in DC bus</Message>
+			<Message LevelId="0" Code="#x0002834">F2834 Contactor control error</Message>
+			<Message LevelId="0" Code="#x0002860">F2860 Overcurrent in mains-side power section</Message>
+			<Message LevelId="0" Code="#x0002877">F2877 Current measurement trim wrong</Message>
+			<Message LevelId="0" Code="#x0002898">F2898 F2 test error, axis and supply unit reaction</Message>
+			<Message LevelId="0" Code="#x0002899">F2899 F2 test error, supply unit reaction</Message>
+			<Message LevelId="0" Code="#x0002901">F2901 Communication failure: Check connection and network settings</Message>
+			<Message LevelId="0" Code="#x0002902">F2902 File system corrupted: Contact service</Message>
+			<Message LevelId="0" Code="#x0002903">F2903 Panel base parameters invalid: Contact service</Message>
+			<!--Non-fatal safety technology errors-->
+			<Message LevelId="0" Code="#x0003010">F3010 SMO: IO mapper inputs error</Message>
+			<Message LevelId="0" Code="#x0003011">F3011 Supply voltage faulty</Message>
+			<Message LevelId="0" Code="#x0003100">F3100 F3 test error during machine acceptance test</Message>
+			<Message LevelId="0" Code="#x0003101">F3101 Axis validation missing</Message>
+			<Message LevelId="0" Code="#x0003115">F3115 Brake check time interval exceeded</Message>
+			<Message LevelId="0" Code="#x0003119">F3119 Error in initialization of P-0-3212</Message>
+			<Message LevelId="0" Code="#x0003134">F3134 Dynamization time interval incorrect</Message>
+			<Message LevelId="0" Code="#x0003140">F3140 SVM - DC bus voltage monitoring error</Message>
+			<Message LevelId="0" Code="#x0003141">F3141 Operating status selection validation error</Message>
+			<Message LevelId="0" Code="#x0003142">F3142 Activation time of enabling control exceeded</Message>
+			<Message LevelId="0" Code="#x0003360">F3360 SMO: Safe local outputs system control error</Message>
+			<Message LevelId="0" Code="#x0003363">F3363 SMO: Safe local inputs system control error</Message>
+			<Message LevelId="0" Code="#x0003364">F3364 SMO: Local inputs system error</Message>
+			<Message LevelId="0" Code="#x0003365">F3365 SMO: Overvoltage error local inputs</Message>
+			<Message LevelId="0" Code="#x0003366">F3366 SMO: Local inputs system error after overvoltage</Message>
+			<Message LevelId="0" Code="#x0003460">F3460 PROFIsafe error</Message>
+			<Message LevelId="0" Code="#x0003461">F3461 PROFIsafe connection error</Message>
+			<Message LevelId="0" Code="#x0003462">F3462 PROFIsafe: F-destination address mismatch</Message>
+			<Message LevelId="0" Code="#x0003463">F3463 PROFIsafe: F-source address mismatch or not valid</Message>
+			<Message LevelId="0" Code="#x0003464">F3464 PROFIsafe: F-parameter block inconsistent (CRC1 error)</Message>
+			<Message LevelId="0" Code="#x0003465">F3465 PROFIsafe: iParameters inconsistent (iParCRC error)</Message>
+			<Message LevelId="0" Code="#x0003466">F3466 PROFIsafe: transmission data inconsistent (CRC2 error)</Message>
+			<Message LevelId="0" Code="#x0003467">F3467 PROFIsafe: transmission timeout (Watchdog elapsed)</Message>
+			<Message LevelId="0" Code="#x0003470">F3470 Safe CAN communication: general error</Message>
+			<Message LevelId="0" Code="#x0003471">F3471 Safe CAN communication: error connection #1</Message>
+			<Message LevelId="0" Code="#x0003472">F3472 Safe CAN communication: error connection #2</Message>
+			
+			<!--Interface errors-->
+			<Message LevelId="0" Code="#x0004001">F4001 Bus synchronization failure</Message>
+			<Message LevelId="0" Code="#x0004002">F4002 Failure of a consumer connection</Message>
+			<Message LevelId="0" Code="#x0004003">F4003 Invalid communication phase shutdown</Message>
+			<Message LevelId="0" Code="#x0004004">F4004 Error during phase progression</Message>
+			<Message LevelId="0" Code="#x0004005">F4005 Error during phase regression</Message>
+			<Message LevelId="0" Code="#x0004006">F4006 Phase switching without ready signal</Message>
+			<Message LevelId="0" Code="#x0004009">F4009 Bus failure</Message>
+			<Message LevelId="0" Code="#x0004017">F4017 Incorrect sequence during phase switch</Message>
+			<Message LevelId="0" Code="#x0004019">F4019 Incorrect sequence upon phase start</Message>
+			<Message LevelId="0" Code="#x0004020">F4020 Communication bus cable break</Message>
+			<Message LevelId="0" Code="#x0004034">F4034 Emergency-Stop activated</Message>
+			<Message LevelId="0" Code="#x0004036">F4036 Disturbed internal communication with communication module</Message>
+			<Message LevelId="0" Code="#x0004037">F4037 Excessive position command difference</Message>
+			<Message LevelId="0" Code="#x0004039">F4039 Communication return with enable signal set</Message>
+			<Message LevelId="0" Code="#x0004040">F4040 DRIVElink: consumer connection failure</Message>
+			<Message LevelId="0" Code="#x0004041">F4041 DRIVElink: Communication failure</Message>
+			<Message LevelId="0" Code="#x0004072">F4072 EtherCAT: EoE Invalid Mac Address</Message>
+			<Message LevelId="0" Code="#x0004090">F4090 EtherCAT: Invalid mailbox configuration</Message>
+			<Message LevelId="0" Code="#x0004091">F4091 EtherCAT: Invalid output configuration</Message>
+			<Message LevelId="0" Code="#x0004092">F4092 EtherCAT: Invalid input configuration</Message>
+			<Message LevelId="0" Code="#x0004093">F4093 EtherCAT: Invalid watchdog configuration</Message>
+			<Message LevelId="0" Code="#x0004099">F4099 F4 test error; axis and supply unit reaction</Message>
+			<Message LevelId="0" Code="#x0004200">F4200 VPI: consumer connection failure</Message>
+			
+			<!--Errors of category F6xxx-->
+			<Message LevelId="0" Code="#x0006001">F6001 Non-fatal system error</Message>
+			<Message LevelId="0" Code="#x0006007">F6007 Switching to non-initialized operation mode</Message>
+			<Message LevelId="0" Code="#x0006010">F6010 PLC runtime error</Message>
+			<Message LevelId="0" Code="#x0006024">F6024 Maximum braking time exceeded</Message>
+			<Message LevelId="0" Code="#x0006028">F6028 Position limit value exceeded (overflow)</Message>
+			<Message LevelId="0" Code="#x0006029">F6029 Positive position limit exceeded</Message>
+			<Message LevelId="0" Code="#x0006030">F6030 Negative position limit exceeded</Message>
+			<Message LevelId="0" Code="#x0006034">F6034 Emergency-Stop activated</Message>
+			<Message LevelId="0" Code="#x0006042">F6042 Both travel range limit switches activated</Message>
+			<Message LevelId="0" Code="#x0006043">F6043 Positive travel range limit switch activated</Message>
+			<Message LevelId="0" Code="#x0006044">F6044 Negative travel range limit switch activated</Message>
+			<Message LevelId="0" Code="#x0006058">F6058 Internal overflow by positioning input</Message>
+			<Message LevelId="0" Code="#x0006059">F6059 Incorrect command value direction when positioning</Message>
+			<Message LevelId="0" Code="#x0006099">F6099 F6 test error, axis reaction</Message>
+			<Message LevelId="0" Code="#x0006200">F6200 Velocity command value > standstill window in SOS</Message>
+			<Message LevelId="0" Code="#x0006644">F6644 Device-internal I/O assembly connection disturbed</Message>
+			<Message LevelId="0" Code="#x0006801">F6801 Non-fatal system error</Message>
+			<Message LevelId="0" Code="#x0006899">F6899 F6 test error, axis and supply unit reaction</Message>
+
+			<!--Safety technology errors-->
+			<Message LevelId="0" Code="#x0007010">F7010 Safely-limited increment exceeded</Message>
+			<Message LevelId="0" Code="#x0007013">F7013 Velocity threshold exceeded</Message>
+			<Message LevelId="0" Code="#x0007014">F7014 Timeout in safely-monitored transient oscillation</Message>
+			<Message LevelId="0" Code="#x0007020">F7020 Safe maximum speed exceeded</Message>
+			<Message LevelId="0" Code="#x0007030">F7030 Position window for safe operating stop exceeded</Message>
+			<Message LevelId="0" Code="#x0007031">F7031 Incorrect direction of motion</Message>
+			<Message LevelId="0" Code="#x0007032">F7032 Forced zone safety</Message>
+			<Message LevelId="0" Code="#x0007035">F7035 SAFETYlink error</Message>
+			<Message LevelId="0" Code="#x0007050">F7050 Maximum transition time exceeded</Message>
+			<Message LevelId="0" Code="#x0007051">F7051 Safely-monitored deceleration exceeded</Message>
+			<Message LevelId="0" Code="#x0007052">F7052 Selected target velocity exceeded</Message>
+			<Message LevelId="0" Code="#x0007059">F7059 Scaling-dependent maximum velocity exceeded</Message>
+			<Message LevelId="0" Code="#x0007100">F7100 F7 test error during machine acceptance test</Message>
+
+			<!--Fatal errors-->
+			<Message LevelId="0" Code="#x0008008">F8008 Autom. commutation: Axis blocked</Message>
+			<Message LevelId="0" Code="#x0008009">F8009 Autom. commutation timeout: Axis in motion</Message>
+			<Message LevelId="0" Code="#x0008010">F8010 Autom. commutation: Max. motion range when moving back</Message>
+			<Message LevelId="0" Code="#x0008011">F8011 Commutation offset could not be determined</Message>
+			<Message LevelId="0" Code="#x0008012">F8012 Autom. commutation: Max. motion range</Message>
+			<Message LevelId="0" Code="#x0008013">F8013 Automatic commutation: Current too low</Message>
+			<Message LevelId="0" Code="#x0008014">F8014 Automatic commutation: Overcurrent</Message>
+			<Message LevelId="0" Code="#x0008015">F8015 Automatic commutation: Timeout</Message>
+			<Message LevelId="0" Code="#x0008016">F8016 Automatic commutation: Iteration without result</Message>
+			<Message LevelId="0" Code="#x0008018">F8018 Device overtemperature shutdown</Message>
+			<Message LevelId="0" Code="#x0008019">F8019 Impossible to determine commutation offset</Message>
+			<Message LevelId="0" Code="#x0008022">F8022 Encoder 1: Encoder signals incorrect</Message>
+			<Message LevelId="0" Code="#x0008024">F8024 Maximum braking time exceeded</Message>
+			<Message LevelId="0" Code="#x0008025">F8025 Overvoltage in power section</Message>
+			<Message LevelId="0" Code="#x0008026">F8026 HV discharge while drive enabled</Message>
+			<Message LevelId="0" Code="#x0008027">F8027 STO while drive enabled</Message>
+			<Message LevelId="0" Code="#x0008035">F8035 Communication error, encoder interface modules</Message>
+			<Message LevelId="0" Code="#x0008036">F8036 Communication error, onboard encoder modules</Message>
+			<Message LevelId="0" Code="#x0008055">F8055 Incorrect processing of diagnostic message</Message>
+			<Message LevelId="0" Code="#x0008060">F8060 Overcurrent in power section</Message>
+			<Message LevelId="0" Code="#x0008064">F8064 Interruption of motor phase</Message>
+			<Message LevelId="0" Code="#x0008072">F8072 Device carrier internal voltage error</Message>
+			<Message LevelId="0" Code="#x0008078">F8078 Speed loop error</Message>
+			<Message LevelId="0" Code="#x0008079">F8079 Velocity limit value exceeded</Message>
+			<Message LevelId="0" Code="#x0008080">F8080 Frequency > 599Hz</Message>
+			<Message LevelId="0" Code="#x0008098">F8098 F8 test error, F8022 error reaction</Message>
+			<Message LevelId="0" Code="#x0008099">F8099 F8 test error, axis reaction</Message>
+			<Message LevelId="0" Code="#x0008100">F8100 Error when initializing the parameter handling</Message>
+			<Message LevelId="0" Code="#x0008102">F8102 Error when initializing power section</Message>
+			<Message LevelId="0" Code="#x0008105">F8105 Runtime error firmware</Message>
+			<Message LevelId="0" Code="#x0008106">F8106 SMO: Internal communication error</Message>
+			<Message LevelId="0" Code="#x0008110">F8110 Firmware update incompatible</Message>
+			<Message LevelId="0" Code="#x0008115">F8115 Firmware inconsistent</Message>
+			<Message LevelId="0" Code="#x0008118">F8118 Invalid power section/firmware combination</Message>
+			<Message LevelId="0" Code="#x0008122">F8122 Control section defective</Message>
+			<Message LevelId="0" Code="#x0008130">F8130 Mains connection module (XLI) not ready for operation</Message>
+			<Message LevelId="0" Code="#x0008131">F8131 Exception on the option module</Message>
+			<Message LevelId="0" Code="#x0008132">F8132 Subsystem of encoder not ready for operation</Message>
+			<Message LevelId="0" Code="#x0008211">F8211 Fatal PLC error no. 1</Message>
+			<Message LevelId="0" Code="#x0008212">F8212 Fatal PLC error no. 2</Message>
+			<Message LevelId="0" Code="#x0008213">F8213 Fatal PLC error no. 3</Message>
+			<Message LevelId="0" Code="#x0008214">F8214 Fatal PLC error no. 4</Message>
+			<Message LevelId="0" Code="#x0008215">F8215 Fatal PLC error no. 5</Message>
+			<Message LevelId="0" Code="#x0008216">F8216 Fatal PLC error no. 6</Message>
+			<Message LevelId="0" Code="#x0008217">F8217 Fatal PLC error no. 7</Message>
+			<Message LevelId="0" Code="#x0008218">F8218 Fatal PLC error no. 8</Message>
+			<Message LevelId="0" Code="#x0008300">F8300 Dynamization pulse width incorrect</Message>
+			<Message LevelId="0" Code="#x0008301">F8301 Error when checking selection signals</Message>
+			<Message LevelId="0" Code="#x0008303">F8303 STO system error</Message>
+			<Message LevelId="0" Code="#x0008312">F8312 SMO: Invalid scaling setting</Message>
+			<Message LevelId="0" Code="#x0008316">F8316 SMO: Incorrect change of system state</Message>
+			<Message LevelId="0" Code="#x0008319">F8319 SMO: INIT system error</Message>
+			<Message LevelId="0" Code="#x0008320">F8320 SMO: Invalid module/firmware combination</Message>
+			<Message LevelId="0" Code="#x0008321">F8321 SMO: Invalid circuit board/firmware combination</Message>
+			<Message LevelId="0" Code="#x0008323">F8323 SMO: Error in deactivation</Message>
+			<Message LevelId="0" Code="#x0008324">F8324 SMO: Error in activation</Message>
+			<Message LevelId="0" Code="#x0008330">F8330 SMO: Configuration data record has not been activated</Message>
+			<Message LevelId="0" Code="#x0008350">F8350 Maximum transition time exceeded</Message>
+			<Message LevelId="0" Code="#x0008351">F8351 Safely-monitored deceleration exceeded</Message>
+			<Message LevelId="0" Code="#x0008352">F8352 Drive enable set in STO</Message>
+			<Message LevelId="0" Code="#x0008353">F8353 SBC system error</Message>
+			<Message LevelId="0" Code="#x0008354">F8354 Error when checking interrupting circuits</Message>
+			<Message LevelId="0" Code="#x0008356">F8356 SMO: Incorrect parameter processing</Message>
+			<Message LevelId="0" Code="#x0008359">F8359 SMO: Encoder evaluation error</Message>
+			<Message LevelId="0" Code="#x0008360">F8360 Torque reset timeout</Message>
+			<Message LevelId="0" Code="#x0008399">F8399 SMO: Test error for enabling test</Message>
+			<Message LevelId="0" Code="#x0008811">F8811 Device overtemperature shutdown</Message>
+			<Message LevelId="0" Code="#x0008812">F8812 Mains frequency out of extended range</Message>
+			<Message LevelId="0" Code="#x0008813">F8813 Connection error mains choke</Message>
+			<Message LevelId="0" Code="#x0008814">F8814 mains voltage out of extended range</Message>
+			<Message LevelId="0" Code="#x0008815">F8815 Overvoltage in mains</Message>
+			<Message LevelId="0" Code="#x0008816">F8816 Overvoltage in power section, Mains</Message>
+			<Message LevelId="0" Code="#x0008817">F8817 Overvoltage in power section</Message>
+			<Message LevelId="0" Code="#x0008820">F8820 Braking resistor overload</Message>
+			<Message LevelId="0" Code="#x0008821">F8821 Transistor short circuit of braking resistor control</Message>
+			<Message LevelId="0" Code="#x0008822">F8822 Error in control of braking resistor</Message>
+			<Message LevelId="0" Code="#x0008833">F8833 Mains supply ground fault current</Message>
+			<Message LevelId="0" Code="#x0008834">F8834 Ground fault current inverter</Message>
+			<Message LevelId="0" Code="#x0008836">F8836 DC bus balancing monitor</Message>
+			<Message LevelId="0" Code="#x0008844">F8844 Device-internal module communication disturbed</Message>
+			<Message LevelId="0" Code="#x0008855">F8855 Incorrect processing of diagnostic message</Message>
+			<Message LevelId="0" Code="#x0008860">F8860 Overcurrent in power section (does not decay)</Message>
+			<Message LevelId="0" Code="#x0008861">F8861 Overcurrent in power section (does not decay, mains)</Message>
+			<Message LevelId="0" Code="#x0008891">F8891 Power section defective</Message>
+			<Message LevelId="0" Code="#x0008892">F8892 Defective power section device carrier</Message>
+			<Message LevelId="0" Code="#x0008893">F8893 I/O module defective</Message>
+			<Message LevelId="0" Code="#x0008899">F8899 F8 test error, axis and supply unit reaction</Message>
+			<Message LevelId="0" Code="#x0008901">F8901 Panel fatal error: Contact service</Message>
+
+			<!--Non-fatal warnings-->
+			<Message LevelId="1" Code="#x0002111">E2111 DC bus voltage command value has exceeded limit value</Message>
+			<Message LevelId="1" Code="#x0002110">E2110 DC bus voltage command value has exceeded limit value</Message>
+			<Message LevelId="1" Code="#x0002001">E2001 Diagnostic trace S-0-1303.0.10 overflow warning</Message>
+			<Message LevelId="1" Code="#x0002002">E2002 Parameter exceeds valid value range</Message>
+			<Message LevelId="1" Code="#x0002004">E2004 Performance load prewarning threshold exceeded</Message>
+			<Message LevelId="1" Code="#x0002010">E2010 Position control with encoder 2 not possible</Message>
+			<Message LevelId="1" Code="#x0002021">E2021 Motor temperature outside of measuring range</Message>
+			<Message LevelId="1" Code="#x0002025">E2025 Device carrier undervoltage</Message>
+			<Message LevelId="1" Code="#x0002026">E2026 Undervoltage in power section</Message>
+			<Message LevelId="1" Code="#x0002032">E2032 Switch-off not possible</Message>
+			<Message LevelId="1" Code="#x0002047">E2047 Low battery voltage (encoder 2)</Message>
+			<Message LevelId="1" Code="#x0002049">E2049 Positioning velocity >= limit value</Message>
+			<Message LevelId="1" Code="#x0002050">E2050 Device overtemp. prewarning</Message>
+			<Message LevelId="1" Code="#x0002051">E2051 Motor overtemp. prewarning</Message>
+			<Message LevelId="1" Code="#x0002052">E2052 Coolant temperature outside of range</Message>
+			<Message LevelId="1" Code="#x0002053">E2053 Target position out of travel range</Message>
+			<Message LevelId="1" Code="#x0002054">E2054 Not homed</Message>
+			<Message LevelId="1" Code="#x0002055">E2055 Feedrate override S-0-0108 = 0</Message>
+			<Message LevelId="1" Code="#x0002056">E2056 Torque limit = 0</Message>
+			<Message LevelId="1" Code="#x0002058">E2058 Selected positioning block has not been programmed</Message>
+			<Message LevelId="1" Code="#x0002059">E2059 Velocity command value limit active</Message>
+			<Message LevelId="1" Code="#x0002061">E2061 Device overload prewarning</Message>
+			<Message LevelId="1" Code="#x0002063">E2063 Velocity command value > limit value</Message>
+			<Message LevelId="1" Code="#x0002070">E2070 Acceleration limit active</Message>
+			<Message LevelId="1" Code="#x0002074">E2074 Encoder 1: Encoder signals disturbed</Message>
+			<Message LevelId="1" Code="#x0002075">E2075 Encoder 2: Encoder signals disturbed</Message>
+			<Message LevelId="1" Code="#x0002084">E2084 Reference mark not detected (cogging reference)</Message>
+			<Message LevelId="1" Code="#x0002092">E2092 Internal synchronization defective</Message>
+			<Message LevelId="1" Code="#x0002132">E2132 Probe 1, input bounces</Message>
+			<Message LevelId="1" Code="#x0002133">E2133 Probe 2, input bounces</Message>
+			<Message LevelId="1" Code="#x0002160">E2160 Max. number of activatable firmware functions exceeded</Message>
+			<Message LevelId="1" Code="#x0002161">E2161 Increased scope of functions to be activated -> restart requ</Message>
+			<Message LevelId="1" Code="#x0002165">E2165 B-Sample function enabled</Message>
+			<Message LevelId="1" Code="#x0002184">E2184 Reference mark not detected (commutation)</Message>
+			<Message LevelId="1" Code="#x0002211">E2211 PLC warning no. 1 without drive reaction</Message>
+			<Message LevelId="1" Code="#x0002212">E2212 PLC warning no. 2 without drive reaction</Message>
+			<Message LevelId="1" Code="#x0002213">E2213 PLC warning no. 3 without drive reaction</Message>
+			<Message LevelId="1" Code="#x0002214">E2214 PLC warning no. 4 without drive reaction</Message>
+			<Message LevelId="1" Code="#x0002215">E2215 PLC warning no. 5 without drive reaction</Message>
+			<Message LevelId="1" Code="#x0002216">E2216 PLC warning no. 6 without drive reaction</Message>
+			<Message LevelId="1" Code="#x0002217">E2217 PLC warning no. 7 without drive reaction</Message>
+			<Message LevelId="1" Code="#x0002218">E2218 PLC warning no. 8 without drive reaction</Message>
+			<Message LevelId="1" Code="#x0002270">E2270 Analog input, wire break</Message>
+			<Message LevelId="1" Code="#x0002804">E2804 Warning, power section heat sink fan</Message>
+			<Message LevelId="1" Code="#x0002805">E2805 Warning, power section capacitors fan</Message>
+			<Message LevelId="1" Code="#x0002806">E2806 Warning, braking resistor fan</Message>
+			<Message LevelId="1" Code="#x0002809">E2809 Warning, mains connection fan</Message>
+			<Message LevelId="1" Code="#x0002811">E2811 Over load in mains connection module /soft start module</Message>
+			<Message LevelId="1" Code="#x0002814">E2814 Undervoltage in mains</Message>
+			<Message LevelId="1" Code="#x0002815">E2815 Overvoltage in mains</Message>
+			<Message LevelId="1" Code="#x0002818">E2818 Phase failure</Message>
+			<Message LevelId="1" Code="#x0002819">E2819 Mains failure</Message>
+			<Message LevelId="1" Code="#x0002820">E2820 Braking resistor overload prewarning</Message>
+			<Message LevelId="1" Code="#x0002823">E2823 Unbalanced phase current</Message>
+			<Message LevelId="1" Code="#x0002825">E2825 Braking resistor switch-on voltage > configured value</Message>
+			<Message LevelId="1" Code="#x0002834">E2834 Switching off via OFF input</Message>
+			<Message LevelId="1" Code="#x0002861">E2861 Device overload prewarning</Message>
+			<Message LevelId="1" Code="#x0002890">E2890 Unknown power section diagnostics</Message>
+			<Message LevelId="1" Code="#x0002901">E2901 Flash memory full: Connect panel to Win PC and free memory</Message>
+			<Message LevelId="1" Code="#x0002902">E2902 File system operation failed: Reboot the panel</Message>
+			<Message LevelId="1" Code="#x0002903">E2903 Communication with panel disabled</Message>
+			<Message LevelId="1" Code="#x0002904">E2904 Incompatible language version: Update language files</Message>
+
+			<!--Warnings of category E3xxx-->
+			<Message LevelId="1" Code="#x0003115">E3115 Prewarning, end of brake check time interval</Message>
+			<Message LevelId="1" Code="#x0003130">E3130 SMO: Warning safe torque/force evaluation</Message>
+			<Message LevelId="1" Code="#x0003133">E3133 SMO: Safe Calibration Warning</Message>
+			<Message LevelId="1" Code="#x0003151">E3151 Safely-monitored deceleration exceeded</Message>
+
+			<!--Warnings of category E4xxx-->
+			<Message LevelId="1" Code="#x0004001">E4001 Bus synchronization failure</Message>
+			<Message LevelId="1" Code="#x0004002">E4002 Failure of a consumer connection</Message>
+			<Message LevelId="1" Code="#x0004007">E4007 Communication bus cable break</Message>
+			<Message LevelId="1" Code="#x0004008">E4008 Invalid addressing command value data container A</Message>
+			<Message LevelId="1" Code="#x0004009">E4009 Invalid addressing actual value data container A</Message>
+			<Message LevelId="1" Code="#x0004010">E4010 Slave not scanned</Message>
+			<Message LevelId="1" Code="#x0004013">E4013 DRIVElink: Incorrect addressing</Message>
+			<Message LevelId="1" Code="#x0004020">E4020 Communication bus ring break</Message>
+			<Message LevelId="1" Code="#x0004037">E4037 Excessive position command difference</Message>
+			<Message LevelId="1" Code="#x0004040">E4040 Sercos: Hot plug error</Message>
+			<Message LevelId="1" Code="#x0004041">E4041 Sercos: HP0 Cycle Time invalid</Message>
+			<Message LevelId="1" Code="#x0004042">E4042 Sercos: HP0 MDT length invalid</Message>
+			<Message LevelId="1" Code="#x0004043">E4043 Sercos: HP0 AT length invalid</Message>
+			<Message LevelId="1" Code="#x0004044">E4044 Sercos: HP0 MTU size invalid</Message>
+			<Message LevelId="1" Code="#x0004045">E4045 Sercos: HP0 UC window invalid</Message>
+			<Message LevelId="1" Code="#x0004046">E4046 Sercos: HP supported removed</Message>
+			<Message LevelId="1" Code="#x0004047">E4047 Sercos: HP enabled removed</Message>
+			<Message LevelId="1" Code="#x0004070">E4070 EtherCAT Mailbox error</Message>
+			<Message LevelId="1" Code="#x0004071">E4071 EtherCAT SoE Mailbox error</Message>
+			<Message LevelId="1" Code="#x0004072">E4072 EtherCAT EoE Mailbox error</Message>
+			<Message LevelId="1" Code="#x0004073">E4073 EtherCAT CoE Mailbox error</Message>
+			<Message LevelId="1" Code="#x0004074">E4074 EtherCAT: FoE Mailbox Error</Message>
+			<Message LevelId="1" Code="#x0004280">E4280 PROFINET: Reset to Factory</Message>
+			<Message LevelId="1" Code="#x0004281">E4281 PROFINET: Configuration error at slot / subslot</Message>
+
+			<!--Fatal warnings-->
+			<Message LevelId="2" Code="#x0008022">E8022 Encoder 1: Encoder signals incorrect</Message>
+			<Message LevelId="2" Code="#x0008023">E8023 Encoder 2: Encoder signals incorrect</Message>
+			<Message LevelId="2" Code="#x0008025">E8025 Overvoltage in power section</Message>
+			<Message LevelId="2" Code="#x0008026">E8026 Undervoltage in power section</Message>
+			<Message LevelId="2" Code="#x0008027">E8027 STO while drive enabled</Message>
+			<Message LevelId="2" Code="#x0008028">E8028 Overcurrent in power section</Message>
+			<Message LevelId="2" Code="#x0008029">E8029 Positive position limit exceeded</Message>
+			<Message LevelId="2" Code="#x0008030">E8030 Negative position limit exceeded</Message>
+			<Message LevelId="2" Code="#x0008034">E8034 Emergency-Stop activated</Message>
+			<Message LevelId="2" Code="#x0008040">E8040 Actual torque/force value limit active</Message>
+			<Message LevelId="2" Code="#x0008041">E8041 Current limit active</Message>
+			<Message LevelId="2" Code="#x0008042">E8042 Both travel range limit switches activated</Message>
+			<Message LevelId="2" Code="#x0008043">E8043 Positive travel range limit switch activated</Message>
+			<Message LevelId="2" Code="#x0008044">E8044 Negative travel range limit switch activated</Message>
+			<Message LevelId="2" Code="#x0008055">E8055 Motor overload, current limit active</Message>
+			<Message LevelId="2" Code="#x0008057">E8057 Device overload, current limit active</Message>
+			<Message LevelId="2" Code="#x0008211">E8211 PLC warning no. 1 with drive reaction</Message>
+			<Message LevelId="2" Code="#x0008212">E8212 PLC warning no. 2 with drive reaction</Message>
+			<Message LevelId="2" Code="#x0008213">E8213 PLC warning no. 3 with drive reaction</Message>
+			<Message LevelId="2" Code="#x0008214">E8214 PLC warning no. 4 with drive reaction</Message>
+			<Message LevelId="2" Code="#x0008215">E8215 PLC warning no. 5 with drive reaction</Message>
+			<Message LevelId="2" Code="#x0008216">E8216 PLC warning no. 6 with drive reaction</Message>
+			<Message LevelId="2" Code="#x0008217">E8217 PLC warning no. 7 with drive reaction</Message>
+			<Message LevelId="2" Code="#x0008218">E8218 PLC warning no. 8 with drive reaction</Message>
+			<Message LevelId="2" Code="#x0008260">E8260 Torque/force command value limit active</Message>
+			<Message LevelId="2" Code="#x0008300">E8300 SMO: Error within the safety zone</Message>
+			<Message LevelId="2" Code="#x0008825">E8825 Overvoltage in power section</Message>
+			<Message LevelId="2" Code="#x0008828">E8828 Overcurrent in power section</Message>
+		
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</BOSCH_REXROTH>
+
+		<BOSCH_REXROTH_INDRADRIVE>
+			<!--Non fatal errors--> 
+			<Message LevelId="0" Code="#x0003222">F2026 Undervoltage in power section</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</BOSCH_REXROTH_INDRADRIVE>
+		
+		<HIWIN>
+			<!--Non fatal errors--> 
+			<Message LevelId="0" Code="#x0000820">AL820 Encoder communication error</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</HIWIN>
+
+		<EVER>
+			<Message LevelId="1" Code="#xFF01">Division by zero</Message>
+			<Message LevelId="1" Code="#xFF08">Value Out of range</Message>
+			<Message LevelId="0" Code="#xFF15">Thermal protection</Message>
+			<Message LevelId="0" Code="#xFF16">Voltage Protection</Message>
+			<Message LevelId="0" Code="#xFF17">Current Protection</Message>
+			<Message LevelId="0" Code="#xFF1A">Watch dog</Message>
+			<Message LevelId="0" Code="#xFF28">Missing Calibration</Message>
+			<Message LevelId="0" Code="#xFF33">Open Phase : verify motor connections</Message>
+			<Message LevelId="0" Code="#xFF4A">Internal Software</Message>
+			<Message LevelId="0" Code="#xFF59">EEprom Fail</Message>
+			<Message LevelId="0" Code="#xFF5B">Motor current regulation out of range</Message>
+			<Message LevelId="0" Code="#xFF5F">Feedback Error (closed loop)</Message>
+			<Message LevelId="0" Code="#xFF62">EEprom write overrun</Message>
+			<Message LevelId="1" Code="#xFF63">Reserved</Message>
+			<Message LevelId="1" Code="#xFF64">Sync not received (ip / csp / csv / cst modes)</Message>
+			<Message LevelId="1" Code="#xFF65">Forward Limit switch reached</Message>
+			<Message LevelId="1" Code="#xFF66">Backward Limit switch reached</Message>
+			<Message LevelId="1" Code="#x8130">Guarding Fail</Message>
+			<Message LevelId="0" Code="#xFF68">Missing Torque Enable</Message>
+			<Message LevelId="0" Code="#xFF69">I2T Protection</Message>
+			<Message LevelId="1" Code="#xFF6A">Heartbeat Monitoring Fail</Message>
+			<Message LevelId="1" Code="#xFF7F">Bus Off</Message>
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</EVER>
+
+		<BALLUFF>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</BALLUFF>
+
+		<INOVANCE>
+			<Message LevelId="0" Code="#x0101">"(%04X) Parameter abnormal",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0102">"(%04X) Programmable logic configuration fault",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0103">"(%04X) FPGA software version too early",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0104">"(%04X) Programmable logic interruption fault",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0105">"(%04X) Internal program abnormal",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0108">"(%04X) Parameter storage fault",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0120">"(%04X) Product model matching fault",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0121">"(%04X) Invalid S-ON command",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0122">"(%04X) Product matching fault in absolute position mode",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0130">"(%04X) Different DIs allocated with the same function",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0131">"(%04X) DO function No. exceeding the number of functions",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0136">"(%04X) Data check error or no parameter stored in the motor ROM",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0200">"(%04X) Overcurrent 1",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0201">"(%04X) Overcurrent 2",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0207">"(%04X) Shaft D/Q current overflow",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0208">"(%04X) FPGA sampling operation timeout",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0210">"(%04X) Output to-ground short-circuit",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0220">"(%04X) Phase sequence incorrect",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0234">"(%04X) Runaway",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0400">"(%04X) Main circuit overvoltage",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0410">"(%04X) Main circuit undervoltage",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0420">"(%04X) Main circuit phase loss",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0430">"(%04X) Control power undervoltage",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0500">"(%04X) Motor overspeed",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0510">"(%04X) Pulse output overspeed",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0602">"(%04X) Angle auto-tuning failure",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0610">"(%04X) Servo drive overload",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0620">"(%04X) Motor overload",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0650">"(%04X) Headsink overheat",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0731">"(%04X) Encoder battery failed",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0733">"(%04X) Encoder multi-turn counting error",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0735">"(%04X) Encoder multi-turn counting overflow",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0740">"(%04X) Encoder interface",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0770">"(%04X) External encoder scale fault",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0A33">"(%04X) Encoder data abnormal",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0A34">"(%04X) Encoder communication check abnormal",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0A34">"(%04X) Encoder communication check abnormal",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0A35">"(%04X) Z signal lost",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0B00">"(%04X) Position deviation excess",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0B01">"(%04X) Position reference excess",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0B02">"(%04X) Position deviation exceeding threshold in fully closed-loop",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0B03">"(%04X) Electronic gear ratio setting exceeding limit",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0B04">"(%04X) Parameter setting error with fully closed-loop function",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0110">"(%04X) Setting error of frequency-division pulse output",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0601">"(%04X) Homing timeout",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0730">"(%04X) Encoder battery warning",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0900">"(%04X) DI emergency braking",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0909">"(%04X) Motor overload warning",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0920">"(%04X) Regenerative resistor overload",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0939">"(%04X) Motor power cable breaking",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0941">"(%04X) Parameter modification taking effect only after power-on again",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0942">"(%04X) Parameter storage too frequent",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0950">"(%04X) Positive limit switch warning",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0952">"(%04X) Negative limit switch warning",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x0980">"(%04X) Encoder internal fault",EcAlarmCode,,</Message>
+			<Message LevelId="0" Code="#x0990">"(%04X) Power input phase loss warning,EcAlarmCode,</Message>			
+			<Message LevelId="0" Code="#x0998">"(%04X) Homing mode setting incorrect,EcAlarmCode,</Message>	
+
+			<Message LevelId="0" Code="#x0602">"(%04X) Angle auto-tuning failure,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0220">"(%04X) Phase sequence incorrect,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0A40">"(%04X) Motor auto-tuning failure,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0111">"(%04X) Servo drive internal parameter abnormal,EcAlarmCode,</Message>	
+
+
+			<Message LevelId="0" Code="#x0D09">"(%04X) Software upper/lower limit setting incorrect,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0D10">"(%04X) Homing mode setting incorrect,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0E08">"(%04X) Synchronization loss,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0E11">"(%04X) The XML configuration file is not burnt,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0E12">"(%04X) Network iniitalization failure,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0E13">"(%04X) Synchronization cycle setting incorrect,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0E15">"(%04X) Synchronization cycle error being large,EcAlarmCode,</Message>	
+			<Message LevelId="0" Code="#x0770">"(%04X) External encoder scale fault,EcAlarmCode,</Message>	
+
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</INOVANCE>
+
+        <!--SKD Drives-->
+		<SKD_DRIVES>
+            <!--Generic message-->
+			<Message LevelId="0" Code="#xFFFF5A5A">Generic Error</Message>
+			<Message LevelId="0" Code="#xFFFE5A5A">Node guarding error</Message>
+			<Message LevelId="0" Code="#xFFFD5A5A">Drive Fault</Message>
+			<Message LevelId="0" Code="#xFFFC5A5A">Drive Warning</Message>
+			<Message LevelId="0" Code="#xFFFB5A5A">Bootup error</Message>
+			<Message LevelId="0" Code="#xFFFA5A5A">Device error</Message>
+			<Message LevelId="0" Code="#xFFF95A5A">Config error</Message>
+			<Message LevelId="0" Code="#xFFF85A5A">SDO Abort</Message>
+			<Message LevelId="0" Code="#xFFF75A5A">Node status error</Message>
+			<Message LevelId="0" Code="#xFFF65A5A">Max speed demand exceeded</Message>
+			<Message LevelId="0" Code="#xFFF55A5A">Slave state is different as the set one</Message>
+			<Message LevelId="0" Code="#xFFF45A5A">Slave is not configured</Message>
+			<Message LevelId="0" Code="#xFFF35A5A">Slave conf. doesn't match master conf.</Message>
+			<Message LevelId="0" Code="#xFFF25A5A">Error init command</Message>
+            <!--Generic message-->
+		</SKD_DRIVES>
+		
+	</MessagesSet>
+        
+	
+</Fieldbus>
+
+
+

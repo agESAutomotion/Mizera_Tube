@@ -1,0 +1,15 @@
+[KEYS]
+TITLE = Applicazione
+
+#include "setup?.nam"
+#include "keyboard?.nam"
+#include "CutMenu?.nam"
+#include "Bocche?.nam"
+#include "userpar?.nam"
+#include "setlaser?.nam"
+#include "setloader?.nam"
+#include "AxRef?.nam"
+#include "PipeCalibration?.nam"
+
+[PROMPT]
+KEY_APPLPAR = Applicazione

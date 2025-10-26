@@ -1,0 +1,26 @@
+ :G1019
+;//
+;// JUMP ACROSS TUBE FACES SUPPORT:
+;// MARK ORIGIN FRAME
+;//
+
+Jmx_a11 = mx_a11
+Jmx_a21 = mx_a21
+Jmx_a31 = mx_a31
+Jmx_a12 = mx_a12
+Jmx_a22 = mx_a22
+Jmx_a32 = mx_a32
+Jmx_a13 = mx_a13
+Jmx_a23 = mx_a23
+Jmx_a33 = mx_a33
+Jmx_o1 = mx_o1
+Jmx_o2 = mx_o2
+Jmx_o3 = mx_o3
+Jpl_orig_u = pl_orig_u
+Jpl_orig_v = pl_orig_v
+Jpl_orig_w = pl_orig_w
+Jpl_orig_a = pl_orig_a
+Jpl_orig_b = pl_orig_b
+Jpl_orig_c = pl_orig_c
+
+RET

@@ -1,0 +1,56 @@
+
+[KEYS]
+TITLE=Service 1
+MSG40=SPINDLE ALIGMENT: Are you sure ?
+
+[PROMPT]
+KEY_NODE=
+MAINTENANCE=Leaf
+GroupBoxlJogRTCP1=Autoload
+GroupBoxGeneralPar=GENERAL PARAMETERS
+GroupBoxlINC=INC / SPINDLE ALIGMENT
+GroupBoxlTest2=Axes service position
+lbDato2=X quota [mm]
+lbDato1=Z quota [mm]
+lbDato4=Y quota [mm]
+LabelVelXYService1=X/Y speed [mm/min]
+Button=START TO SERVICE POSITION
+GroupBoxlJogRTCP=JOG RTCP
+ButtonEnabJogRtcp=JOG RTCP ON/OFF
+LabelJogRTCP1=JOG RTCP
+LabelPar2=Quota offset zero asse U 2D [mm]
+LabelPar1=Coordinata Z portautensile [mm]
+LabelPar4=Coordinata Z primo pivot [mm]
+LabelPar3=RTCP Coordinata Y portautensile [mm]
+AxesLaserCH1=Axes1
+AxesLaserCH2=Axes1
+GroupBoxlRefAbs=Absolute reference
+lbDatoActualRefQuota=Actual axis REF quota [mm]
+LIST0=GENERAL REF,SINGLE REF
+LabelParK48=Z axis safety quota for moving X/U [mm]
+LabelParMaxDis=Spindles maximum misaligment [mm]
+LabelSelQtaINC1=INC QUOTA [mm]
+lbDatoServiceB=B quota [mm]
+ButtonSpindleAlig=SPINDLE ALIGMENT
+LabelParLunette=Support parking quota [mm]
+GroupBoxWelding=PIPE WELDING
+LabelWeldingPar1=Sensor X offset [mm]
+LabelWeldingPar2=Sensor Y offset [mm]
+LabelWeldingPar3=Sensor Z offset [mm]
+LabelWeldingPar4=Sensor - tube distance [mm]
+LabelWeldingPar5=X coordinate  [mm]
+LabelWeldingPar6=U coordinate  [mm]
+LabelWeldingPar7="C" axis position found
+AxesLaserCH3=Axes1
+LabelWeldingPar9=Pick Pipe Offset
+LabelWeldingPar10=Push Pipe Offset
+P_REF1=Feed +
+Label1=%
+P_REF4=Feed -
+Label2=%
+AxesLaserCH5=Axes1
+AxesLaserCH4=Axes1
+
+[STATUS]
+
+[HELP]

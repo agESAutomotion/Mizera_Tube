@@ -1,0 +1,41 @@
+#funcdec "FBAux.plc"
+
+VAR_IN_OUT
+BLDFEED_72_85_Percent    AT %UNLOADER.values44;
+BLDFEED_73_86_Percent    AT %UNLOADER.values45;
+BLDFEED_74_87_Percent    AT %UNLOADER.values46;
+BLDFEED_75_88_Percent    AT %UNLOADER.values47;
+END_VAR
+
+VAR
+BLDFEED_72_85:    CALC_BLD_FEED;
+BLDFEED_73_86:    CALC_BLD_FEED;
+BLDFEED_74_87:    CALC_BLD_FEED;
+BLDFEED_75_88:    CALC_BLD_FEED;
+END_VAR
+
+FUNCTION BLEND_FEEDRATE
+
+*//=============================================================================
+*// Unloading Flaps On Each Support
+*//=============================================================================
+CAL BLDFEED_72_85(xEn:=%cn7.cc1.2 ,xH:=85 ,xV:=72 ,xVPercent:=80)
+CAL BLDFEED_73_86(xEn:=%cn7.cc1.3 ,xH:=86 ,xV:=73 ,xVPercent:=80)
+CAL BLDFEED_74_87(xEn:=%cn7.cc1.4 ,xH:=87 ,xV:=74 ,xVPercent:=80)
+CAL BLDFEED_75_88(xEn:=%cn7.cc1.5 ,xH:=88 ,xV:=75 ,xVPercent:=80)
+
+LD  BLDFEED_72_85.yPercent
+ST  BLDFEED_72_85_Percent
+
+LD  BLDFEED_73_86.yPercent
+ST  BLDFEED_73_86_Percent
+
+LD  BLDFEED_74_87.yPercent
+ST  BLDFEED_74_87_Percent
+
+LD  BLDFEED_75_88.yPercent
+ST  BLDFEED_75_88_Percent
+
+END_FUNCTION
+
+

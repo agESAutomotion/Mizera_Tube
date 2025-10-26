@@ -1,0 +1,151 @@
+ X Y Z [A] [B] [C] : G1193
+
+;//
+;// G1193   X Y Z [A] [B] [C]
+;//
+;// Acquire cylindrical sensor flat surface center.
+;// Current frame Z must be normal to sensor flat surface (1 point acquire).
+;// Tool frame Z is used to choose acquire points.
+;// Returns acq_x, acq_y, acq_z.
+;//
+
+DBL cx = VA23, cy = VA24, cz = VA25
+DBL a = VA0, b = VA1, c = VA2
+DBL lf_a11, lf_a12      ;//local frame with X as tool Z projection
+DBL lf_a21, lf_a22
+DBL p1_x, p1_y, p1_z
+DBL p2_x, p2_y, p2_z
+DBL x, y, z
+DBL d
+DBL enable4Pts = 1      ;//enable 4 points when tool Z is colinear to frame Z
+DBL sn, cs
+;//XXX $APP
+DBL fPartGraphics = %cn[WHO()].pc[14].25
+;//XXX $APP
+
+G64
+
+G180 P1 D1 A(a) B(b) C(c)
+
+;//lf_a_1 = norm(mx_a__^T * tf_a_3)
+lf_a11 = mx_a11 * tf_a13 + mx_a21 * tf_a23 + mx_a31 * tf_a33
+lf_a21 = mx_a12 * tf_a13 + mx_a22 * tf_a23 + mx_a32 * tf_a33
+
+d = SQRT(lf_a11 * lf_a11 + lf_a21 * lf_a21)
+
+IF (d < SIN(5)) THEN
+    lf_a11 = 1.0
+    lf_a21 = 0.0
+    d = 1.0
+ELSE
+    enable4Pts = 0
+ENDIF
+
+lf_a11 = lf_a11 / d
+lf_a21 = lf_a21 / d
+
+;//lf_a_2 = rot(0,0,90) * lf_a_1
+lf_a12 = -lf_a21
+lf_a22 = lf_a11
+
+G168
+G160 I(lf_a11) J(lf_a21) K(0.0) P(lf_a12) Q(lf_a22) R(0.0) U(0.0) V(0.0) W(1.0)
+G161 X(cx) Y(cy) Z(cz)
+
+sn = IFEXP(enable4Pts, 0.0, toolSphAllowCurv)/cylSensorRadius
+cs = SQRT(1.0-sn*sn)
+
+;//Z+ upper flat surface
+x = 0.0
+y = 0.0
+z = 0.0
+G180 X(x) Y(y) Z(z+toolSphRadius) A(a) B(b) C(c)
+G153 G0 X(kine_x) Y(kine_y) A(kine_a) B(kine_b) C(kine_c)
+
+G1 Z(z+toolSphRadius+cylSensorProxy) F(sensorRapidF)
+G1 Z(z+toolSphRadius+cylSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) Z(z+toolSphRadius-touchOt) U(x) V(y) W(z) G(toolSphRadius)
+p1_z = acq_z
+G1 Z(z+toolSphRadius+cylSensorProxy) F(sensorRapidF)
+
+G1893 N1 X0 Y0 Z(p1_z) U1 V0 W(p1_z) P0 Q1 R(p1_z)
+
+;//Y+ cyl surface
+x = +sn*cylSensorRadius
+y = +cs*cylSensorRadius
+z = uf_o3 - MIN(cylSensorHeight/2, toolSphAllow)
+G1 X(x+sn*toolSphRadius) Y(y+cs*toolSphRadius+cylSensorProxy) F(sensorRapidF)
+G1 Z(z) F(sensorProxyF)
+G1 Y(y+cs*toolSphRadius+cylSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) Y(y+cs*toolSphRadius-touchOt) I(sn) J(+cs) K(0) U(x) V(y) W(z) G(toolSphRadius)
+p2_x = acq_x
+p2_y = acq_y
+G1 Y(y+cs*toolSphRadius+cylSensorProxy) F(sensorRapidF)
+z = 0.0
+G1 Z(z+toolSphRadius+cylSensorProxy) F(sensorRapidF)
+
+;//Y- cyl surface
+y = -cs*cylSensorRadius
+z = uf_o3 - MIN(cylSensorHeight/2, toolSphAllow)
+G1 Y(y-cs*toolSphRadius-cylSensorProxy) F(sensorRapidF)
+G1 Z(z) F(sensorProxyF)
+G1 Y(y-cs*toolSphRadius-cylSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) Y(y-cs*toolSphRadius+touchOt) I(sn) J(-cs) K(0) U(x) V(y) W(z) G(toolSphRadius)
+p1_x = acq_x
+p1_y = acq_y
+G1 Y(y-cs*toolSphRadius-cylSensorProxy) F(sensorRapidF)
+z = 0.0
+G1 Z(z+toolSphRadius+cylSensorProxy) F(sensorRapidF)
+
+G1893 N2 X(p1_x) Y(p1_y) Z0 U(p2_x) V(p2_y) W0
+
+;//X+ cyl surface
+x = cylSensorRadius
+y = uf_o2
+z = uf_o3 - MIN(cylSensorHeight/2, toolSphAllow)
+G1 X(x+toolSphRadius+cylSensorProxy) Y(y) F(sensorRapidF)
+G1 Z(z) F(sensorProxyF)
+G1 X(x+toolSphRadius+cylSensorTdist) F(sensorProxyF)
+G1190 T(touchDev) X(x+toolSphRadius-touchOt) U(x) V(y) W(z) G(toolSphRadius)
+p2_x = acq_x
+p2_y = acq_y
+G1 X(x+toolSphRadius+cylSensorProxy) F(sensorRapidF)
+
+IF (!enable4Pts) THEN
+    G1893 N3 H(-cylSensorRadius) X(p2_x) Y(p2_y) Z0
+ELSE
+    z = 0.0
+    G1 Z(z+toolSphRadius+cylSensorProxy) F(sensorRapidF)
+
+    ;//X- cyl surface
+    x = -cylSensorRadius
+    y = uf_o2
+    z = uf_o3 - MIN(cylSensorHeight/2, toolSphAllow)
+    G1 X(x-toolSphRadius-cylSensorProxy) Y(y) F(sensorRapidF)
+    G1 Z(z) F(sensorProxyF)
+    G1 X(x-toolSphRadius-cylSensorTdist) F(sensorProxyF)
+    G1190 T(touchDev) X(x-toolSphRadius+touchOt) U(x) V(y) W(z) G(toolSphRadius)
+    p1_x = acq_x
+    p1_y = acq_y
+    G1 X(x-toolSphRadius-cylSensorProxy) F(sensorRapidF)
+    z = 0.0
+    G1 Z(z+toolSphRadius+cylSensorProxy) F(sensorRapidF)
+
+    G1893 N3 X(p1_x) Y(p1_y) Z0 U(p2_x) V(p2_y) W0
+ENDIF
+
+G169
+
+;//acq = lf_a__ * uf_o + c
+acq_x = lf_a11 * uf_o1 + lf_a12 * uf_o2 + cx
+acq_y = lf_a21 * uf_o1 + lf_a22 * uf_o2 + cy
+acq_z = uf_o3 + cz
+
+IF (fPartGraphics) G2805 C15 X(acq_x) Y(acq_y) Z(acq_z)
+
+;//$APP
+?%EBK[460] = acq_x
+?%EBK[461] = acq_y
+?%EBK[462] = acq_z
+
+RET

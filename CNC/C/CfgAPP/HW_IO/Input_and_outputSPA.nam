@@ -1,0 +1,36 @@
+
+[KEYS]
+TITLE=S500 Description
+
+[PROMPT]
+KEY_NODE=Node
+INPUT_AND_OUTPUT=Leaf
+CAN1 Interface=CAN1 Interface
+CAN2 Interface10=CAN2 Interface
+24 VDC terminal input=24 VDC terminal input
+LAN 1 EtherCAT=LAN 1 EtherCAT
+PS2 Keyboard interface=PS2 Keyboard interface
+PS2 Mouse interface=PS2 Mouse interface
+USB Interfaces=USB Interfaces
+LAN 2 interface=LAN 2 interface
+VGA Interface=VGA Interface
+Link I/O Tx connector=Link I/O Tx connector
+Link I/O Rx connector=Link I/O Rx connector
+QW1=QW6
+0-10 VDC output=0-10 VDC output
+PWM=PWM
+Fly Cut output=Fly Cut output
+QW3=QW3
+QW7=QW7
+IW0=IW0
+IW4=IW4
+IW1=IW1
+IW5=IW5
+QW2=QW2
+12 bit resolution analog inputs=12 bit resolution analog inputs
+12 bit resolution analog output=12 bit resolution analog output
+24 VDC output=24 VDC output
+
+[STATUS]
+
+[HELP]

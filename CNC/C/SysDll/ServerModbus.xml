@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--Generic Server version: 1.0 licensed to ESAutomotion-->
+<!--Copyright (c) 2013-2014 Esautomotion. All rights reserved.-->
+<ServerModbus>
+	<Server>
+		<IPAddr>192.168.1.70</IPAddr>
+		<Port>502</Port>
+	</Server>
+	<InputRegister>
+    <StandardISO>
+      <RefreshTime>100</RefreshTime>
+    </StandardISO>
+	</InputRegister>
+	<HoldingRegister Size="200">
+		<InputArea>
+			<Field Priority="0" Size="2">
+				<Comment><![CDATA[Tube Lenght]]></Comment>
+				<MbAddr>0</MbAddr>
+				<ShAddr>LOADER.values0</ShAddr>
+			</Field>
+		</InputArea>
+		<OutputArea>
+		</OutputArea>
+	</HoldingRegister>
+</ServerModbus>
+

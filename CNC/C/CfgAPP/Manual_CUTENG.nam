@@ -1,0 +1,39 @@
+
+[KEYS]
+TITLE=Manual CUT
+TXT10=Dry Run
+TXT12=Tables Data Base
+TXT13=Slow Feed
+TXT14=Clear Alarm
+MSG42=Are you sure
+
+[PROMPT]
+KEY_NODE=Node
+MANUAL_CUT=Leaf
+grpManCut=Manual Cut parameters
+AxesLaser1=Axes1
+lbCutDistance_X=X absolute quota [mm]
+lbCutDistance_Y=Y absolute quota [mm]
+lbCutTable=Cut data parameter line
+btt_Cut_X=X cut sel.
+btt_Cut_Y=Y cut sel.
+bttManualCut=Start Manual Cut
+lbBorder=Border distance [mm]
+Label1=Laser On Request
+Label2=B2. Emission On
+Label3=Height Distance Regulator
+bttFstMin1=<<<<
+bttFstMax1=>>>>
+LabelStartMc=START
+LabelEndtMc=END
+ButtonXs=Acq
+ButtonXe=Acq
+ButtonYs=Acq
+ButtonYe=Acq
+LabelDryRun2=DRY RUN Active
+LabelINCQta1=INC (mm)
+lbBorder1=Manual cut advanced
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,70 @@
+:
+;//
+;// Predisposizione grafica run-time
+;// Origine pezzo
+;//
+
+IF( gTravE != 0 ) THEN
+    ;tubo
+    ;//XXX rotazione tavola intorno ad X, annulla origini Y e Z e la rotazione
+    ?%matPrg[0].a[0]  = 1
+    ?%matPrg[0].a[1]  = 0
+    ?%matPrg[0].a[2]  = 0
+    IF( tube_y ) THEN
+        ?%matPrg[0].a[3]  = 0.0 * 1000
+    ELSE
+        IF (!%cn3.cc1.5) ?%matPrg[0].a[3]  = orig_x * 1000
+		IF (%cn3.cc1.5)  ?%matPrg[0].a[3]  = (orig_x - (%tab1.t_ttab.t_oart.t_dX)) * 1000
+    ENDIF
+    ?%matPrg[0].a[4]  = 0
+    ?%matPrg[0].a[5]  = 1
+    ?%matPrg[0].a[6]  = 0
+    IF( tube_y ) THEN
+        IF (!%cn3.cc1.5) ?%matPrg[0].a[7]  = orig_y * 1000
+		IF (%cn3.cc1.5)  ?%matPrg[0].a[7] = (orig_y - (%tab1.t_ttab.t_oart.t_dY)) * 1000
+    ELSE
+        ?%matPrg[0].a[7]  = 0.0 * 1000
+    ENDIF
+    ?%matPrg[0].a[8]  = 0
+    ?%matPrg[0].a[9]  = 0
+    ?%matPrg[0].a[10] = 1
+    ?%matPrg[0].a[11] = 0.0 * 1000
+ELSE
+IF( gTravTech != 10 ) THEN
+    ;piano
+    ?%matPrg[0].a[0]  = COS(orig_c)
+    ?%matPrg[0].a[1]  = -SIN(orig_c)
+    ?%matPrg[0].a[2]  = 0
+    ?%matPrg[0].a[3]  = orig_x * 1000
+    ?%matPrg[0].a[4]  = SIN(orig_c)
+    ?%matPrg[0].a[5]  = COS(orig_c)
+    ?%matPrg[0].a[6]  = 0
+    ?%matPrg[0].a[7]  = orig_y * 1000
+    ?%matPrg[0].a[8]  = 0
+    ?%matPrg[0].a[9]  = 0
+    ?%matPrg[0].a[10] = 1
+    ?%matPrg[0].a[11] = orig_z * 1000
+ELSE
+    ;//gTravTech == 10
+    ;foratura, ... su piano
+    ;//La Z delle lavorazioni propriamente da centro di lavoro sono riferite al piano
+    ?%matPrg[0].a[0]  = COS(orig_c)
+    ?%matPrg[0].a[1]  = -SIN(orig_c)
+    ?%matPrg[0].a[2]  = 0
+    ?%matPrg[0].a[3]  = orig_x * 1000
+    ?%matPrg[0].a[4]  = SIN(orig_c)
+    ?%matPrg[0].a[5]  = COS(orig_c)
+    ?%matPrg[0].a[6]  = 0
+    ?%matPrg[0].a[7]  = orig_y * 1000
+    ?%matPrg[0].a[8]  = 0
+    ?%matPrg[0].a[9]  = 0
+    ?%matPrg[0].a[10] = 1
+    ?%matPrg[0].a[11] = 0 * 1000
+ENDIF
+ENDIF
+
+gMatCount=gMatCount+1
+IF( gMatCount >= 200 ) gMatCount=0
+?%matPrg[0].MatCount = gMatCount
+
+RET

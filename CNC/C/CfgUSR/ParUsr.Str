@@ -1,0 +1,212 @@
+[STRUCT]
+KEY_USR {
+
+ SPINDLE;
+ SP_TIMEOUT;
+ SP_ANAL_MOBILE_OPEN;
+ SP_ANAL_FIX_OPEN;
+ SP_PULSE_MM_Y;
+ SP_PULSE_MM_Z;
+ SP_OFF_U_CLAMP;
+ SP_MAX_SIDE;
+ SP_ANAL_PRESS_RES;
+ 
+ 
+ SUPPORT;
+ SUP_TIMEOUT;
+ SUP_U;
+ SUP_U1;
+ SUP_U2;
+ SUP_U3;
+ SUP_U4;
+ SUP_U5;
+ SUP_U6;
+ SUP_TUBE1;
+ SUP_TUBE2;
+ SUP_TUBE3;
+ SUP_TUBE4;
+ SUP_TUBE5;
+ SUP_TUBE6;
+ SUP_TUBE7;
+ SUP_DELAY_TIME;
+ 
+ LOADER;
+ LOAD1;
+ LOAD2;
+ LOAD3;
+ LOAD4;
+ LOAD5;
+ LOAD6;
+ LOAD7;
+ 
+ UNLOADER;
+ UNLOAD1;
+ UNLOAD2;
+ UNLOAD3;
+ UNLOAD4;
+ UNLOAD5;
+ UNLOAD6;
+ UNLOAD7;
+ 
+}          
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+
+[SP_TIMEOUT]
+ADR = SPINDLE_SYSTEM.values5
+FRM = DEC, 3
+
+[SP_ANAL_MOBILE_OPEN]
+ADR = SPINDLE_SYSTEM.values10
+FRM = DEC, 0
+
+[SP_ANAL_FIX_OPEN]
+ADR = SPINDLE_SYSTEM.values11
+FRM = DEC, 0
+
+[SP_PULSE_MM_Y]
+ADR = SPINDLE_SYSTEM.values6
+FRM = DEC, 0
+ 
+[SP_PULSE_MM_Z]
+ADR = SPINDLE_SYSTEM.values7
+FRM = DEC, 0
+
+[SP_OFF_U_CLAMP]
+ADR = SPINDLE_SYSTEM.values9
+FRM = DEC, 3
+
+[SP_MAX_SIDE]
+ADR = SPINDLE_SYSTEM.values8
+FRM = DEC, 0
+
+[SP_ANAL_PRESS_RES]
+ADR = SPINDLE_SYSTEM.values12
+FRM = DEC, 0
+
+[SUP_TIMEOUT]
+ADR = SUPPORTS_SYSTEM.values21
+FRM = DEC, 3
+
+[SUP_U]
+ADR = SUPPORTS_SYSTEM.values0
+FRM = DEC, 3
+
+[SUP_U1]
+ADR = SUPPORTS_SYSTEM.values1
+FRM = DEC, 3
+
+[SUP_U2]
+ADR = SUPPORTS_SYSTEM.values2
+FRM = DEC, 3
+
+[SUP_U3]
+ADR = SUPPORTS_SYSTEM.values3
+FRM = DEC, 3
+
+[SUP_U4]
+ADR = SUPPORTS_SYSTEM.values4
+FRM = DEC, 3
+
+[SUP_U5]
+ADR = SUPPORTS_SYSTEM.values5
+FRM = DEC, 3
+
+[SUP_U6]
+ADR = SUPPORTS_SYSTEM.values6
+FRM = DEC, 3
+
+[SUP_TUBE1]
+ADR = SUPPORTS_SYSTEM.values14
+FRM = DEC, 3
+
+[SUP_TUBE2]
+ADR = SUPPORTS_SYSTEM.values15
+FRM = DEC, 3
+
+[SUP_TUBE3]
+ADR = SUPPORTS_SYSTEM.values16
+FRM = DEC, 3
+
+[SUP_TUBE4]
+ADR = SUPPORTS_SYSTEM.values17
+FRM = DEC, 3
+
+[SUP_TUBE5]
+ADR = SUPPORTS_SYSTEM.values18
+FRM = DEC, 3
+
+[SUP_TUBE6]
+ADR = SUPPORTS_SYSTEM.values19
+FRM = DEC, 3
+
+[SUP_TUBE7]
+ADR = SUPPORTS_SYSTEM.values20
+FRM = DEC, 3
+
+[SUP_DELAY_TIME]
+ADR = SUPPORTS_SYSTEM.values21
+FRM = DEC, 3
+
+[LOADER]
+
+[LOAD1]
+ADR = LOADER.values1
+FRM = DEC, 3
+
+[LOAD2]
+ADR = LOADER.values2
+FRM = DEC, 3
+
+[LOAD3]
+ADR = LOADER.values3
+FRM = DEC, 3
+
+[LOAD4]
+ADR = LOADER.values4
+FRM = DEC, 3
+
+[LOAD5]
+ADR = LOADER.values5
+FRM = DEC, 3
+
+[LOAD6]
+ADR = LOADER.values6
+FRM = DEC, 3
+
+[LOAD7]
+ADR = LOADER.values7
+FRM = DEC, 3                
+
+[UNLOADER]                    
+                            
+[UNLOAD1]                     
+ADR = UNLOADER.values1        
+FRM = DEC, 3                
+                            
+[UNLOAD2]                     
+ADR = UNLOADER.values2        
+FRM = DEC, 3                
+                            
+[UNLOAD3]                     
+ADR = UNLOADER.values3        
+FRM = DEC, 3                
+                            
+[UNLOAD4]                     
+ADR = UNLOADER.values4        
+FRM = DEC, 3                
+                            
+[UNLOAD5]                     
+ADR = UNLOADER.values5        
+FRM = DEC, 3                
+                            
+[UNLOAD6]                     
+ADR = UNLOADER.values6        
+FRM = DEC, 3                
+                            
+[UNLOAD7]                     
+ADR = UNLOADER.values7        
+FRM = DEC, 3                

@@ -1,0 +1,595 @@
+*******************************************************************************
+*   MAC_FUNC.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "cnc.inc"
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+#include "RemContr.inc"
+END_VAR
+
+#include "iol.inc"
+
+*******************************************************************************
+* function block to manage the override 
+*******************************************************************************
+FUNCTION_BLOCK OVERRIDE
+
+VAR_INPUT
+xAnalInput:          DWORD;     * input for potentiometer
+xForceLowFeed:       BOOL;      * force the feed to SlowFeed
+END_VAR
+
+VAR_OUTPUT
+y_Value:             DWORD;
+END_VAR
+
+VAR 
+feedVal:             DWORD;
+TON_guiJOG_Min:        TON;   *TON for GUI button JOG to Minus
+TON_guiJOG_Max:        TON;   *TON for GUI button JOG to Maximum
+TON_BlinkAux_A:	       TON;   *TON Blinking Auxiliar Step A
+TON_BlinkAux_B:	       TON;   *TON Blinking Auxiliar Step B
+RTRG_guiJOG_Min:    R_TRIG;   *RTRIG for GUI button JOG to Minus
+RTRG_guiJOG_Max:    R_TRIG;   *RTRIG for GUI button JOG to Maximum
+RTRG_auxBlinkAux:   R_TRIG;
+ValOvrr:             DWORD;   *DWORD Calculated value for Override from EncAPos
+auxBlinkAux_A:        BOOL;   *BOOL Auxiliar Blinking 150 mseg Step A
+auxBlinkAux_B:        BOOL;   *BOOL Auxiliar Blinking 150 mseg Step B
+FeedGuiMem:          DWORD;   * support memory for hmi feedrate management
+FEED_Minus:           BOOL;
+FEED_Plus:            BOOL;
+
+END_VAR
+*******************************************************************************
+
+LD   %Type
+EQ   0
+JMPCN no_analogue_sig
+
+LD   xAnalInput                    ** input for potentiometer
+MUL  %MaxPercent          
+DIV  4095                 *  (16 bit = 32767) [ se 12 bit usare 4095 ]
+ST   feedVal              * DWORD Calculated value for Override  
+
+JMP  end    
+no_analogue_sig:
+
+*-----------------------------------------------------------------
+* FEED Override by GUI pushbuttons 
+
+LD   %Type
+EQ   1
+JMPCN no_HMI_sig
+
+LD   %PulMinus             ** RTRIG for GUI button JOG to Minus
+OR   RemContrFeedMinus     ** Xhc_Puls.13 Feed minus
+ST   FEED_Minus
+
+LD   %PulPlus              ** RTRIG for GUI button JOG to Maximum
+OR   RemContrFeedPlus      ** Xhc_Puls.9  Feed plus
+ST   FEED_Plus
+
+CAL  RTRG_guiJOG_Min(CLK=FEED_Minus) ** RTRIG for GUI button JOG to Minus
+CAL  RTRG_guiJOG_Max(CLK=FEED_Plus) ** RTRIG for GUI button JOG to Maximum
+     
+CAL  TON_guiJOG_Min(IN=FEED_Minus, PT=%CostK30) ** TON for GUI button JOG to Minus
+CAL  TON_guiJOG_Max(IN=FEED_Plus, PT=%CostK30) ** TON for GUI button JOG to Maximum
+     
+LDN  TON_BlinkAux_B.Q           ** TON Blinking Auxiliar Step A
+ST   auxBlinkAux_A                 ** BOOL Auxiliar Blinking 150 mseg Step A
+     
+CAL  TON_BlinkAux_A(IN=auxBlinkAux_A,PT=40) ** TON Blinking Auxiliar Step A
+CAL  TON_BlinkAux_B(IN=TON_BlinkAux_A.Q,PT=20) ** TON Blinking Auxiliar Step B
+     
+LD   TON_BlinkAux_A.Q           ** TON Blinking Auxiliar Step B
+ST   auxBlinkAux_B                 ** BOOL Auxiliar Blinking 150 mseg Step B
+     
+CAL  RTRG_auxBlinkAux(CLK=auxBlinkAux_B) ** BOOL Auxiliar Blinking 150 mseg Step B
+  
+*
+LD   RTRG_guiJOG_Min.Q          ** RTRIG for GUI button JOG to Minus
+OR   (
+LD   TON_guiJOG_Min.Q           ** TON for GUI button JOG to Minus
+AND  RTRG_auxBlinkAux.Q         ** RTRG Auxiliary user asimetric blinking
+)
+AND  (
+LD   FeedGuiMem                    ** support memory for hmi feedrate management
+GT   %MinPercent
+)
+JMPCN No_RTRG_guiJOG_Min
+LD   FeedGuiMem                    ** support memory for hmi feedrate management
+SUB  %IncStep
+ST   FeedGuiMem                    ** support memory for hmi feedrate management
+No_RTRG_guiJOG_Min:
+*
+
+LD   RTRG_guiJOG_Max.Q          ** RTRIG for GUI button JOG to Maximum
+OR   (
+LD   TON_guiJOG_Max.Q         ** TON for GUI button JOG to Maximum
+AND  RTRG_auxBlinkAux.Q       ** RTRG Auxiliary user asimetric blinking
+)
+AND  (
+LD   FeedGuiMem                    ** support memory for hmi feedrate management
+LT   %MaxPercent
+)
+JMPCN  No_RTRG_guiJOG_Max
+LD   FeedGuiMem                    ** support memory for hmi feedrate management
+ADD  %IncStep
+ST   FeedGuiMem                    ** support memory for hmi feedrate management
+No_RTRG_guiJOG_Max:
+
+LD   FeedGuiMem                    ** support memory for hmi feedrate management
+ST   feedVal
+  
+JMP  end
+no_HMI_sig:               
+
+end:
+*---------------------------------------------------------------------
+LD   feedVal
+LT   %MinPercent
+JMPCN min_feed_limit 
+
+LD   %MinPercent
+ST   feedVal
+
+min_feed_limit:
+LD   xForceLowFeed                 ** force the feed to SlowFeed
+JMPCN low_feed
+LD   %SlowFeed
+ST   feedVal
+
+low_feed:
+LD   feedVal
+ST   y_Value
+
+END_FUNCTION_BLOCK             
+
+
+*******************************************************************************
+* from potentiometer or from HMI 
+*******************************************************************************
+FUNCTION_BLOCK OP_MODE        
+
+VAR_INPUT
+xSelRef:        BOOL;
+xSelSingRef:    BOOL;
+xSelJog:        BOOL;
+xSelAut:        BOOL;
+xSelInc:        BOOL;
+xSelMdi:        BOOL;
+END_VAR
+
+VAR_OUTPUT
+ySelRef:        BOOL; 
+ySelSingRef:    BOOL;
+ySelJog:        BOOL;
+ySelAut:        BOOL;
+ySelInc:        BOOL;
+ySelMdi:        BOOL;
+END_VAR
+
+VAR 
+RTRG_SEL_REF:   R_TRIG;   *Ref state trigger
+RTRG_SEL_REF_S: R_TRIG;   *Ref single state trigger
+RTRG_SEL_JOG:   R_TRIG;   *Jog state trigger
+RTRG_SEL_AUT:   R_TRIG;   *Aut state trigger
+RTRG_SEL_INC:   R_TRIG;   *Inc state trigger
+RTRG_SEL_MDI:   R_TRIG;   *Mdi state trigger
+END_VAR
+
+
+
+*******************************************************************************
+LD   %rc8.0
+JMPC no_change
+
+CAL  RTRG_SEL_REF(CLK=xSelRef)     ** Ref state trigger
+CAL  RTRG_SEL_REF_S(CLK=xSelSingRef) ** Ref single state trigger
+CAL  RTRG_SEL_JOG(CLK=xSelJog)     ** Jog state trigger
+CAL  RTRG_SEL_AUT(CLK=xSelAut)     ** Aut state trigger
+CAL  RTRG_SEL_INC(CLK=xSelInc)     ** Inc state trigger
+CAL  RTRG_SEL_MDI(CLK=xSelMdi)     ** Mdi state trigger
+
+
+* Ref
+LD   RTRG_SEL_REF.Q
+JMPCN no_ref        
+
+LD   1
+ST   ySelRef
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   PLC_SEL_REF                   ** ui16.1 Selezione Modo REF da Plc
+
+LD   0     
+ST   ySelJog  
+ST   ySelAut
+ST   ySelInc
+ST   ySelMdi 
+ST   ySelSingRef
+
+no_ref:
+LD   RTRG_SEL_REF_S.Q
+JMPCN no_refs        
+
+LD   1
+ST   ySelSingRef
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   PLC_SEL_REF                   ** ui16.1 Selezione Modo REF da Plc
+
+LD   0     
+ST   ySelJog  
+ST   ySelAut
+ST   ySelInc
+ST   ySelMdi 
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   PLC_SEL_SINGREF               ** ui16.28 Selezione REF singolo
+
+no_refs:
+
+* Jog
+LD   RTRG_SEL_JOG.Q
+JMPCN no_jog        
+
+LD   1
+ST   ySelJog
+
+LD   0     
+ST   ySelRef
+ST   ySelAut
+ST   ySelInc
+ST   ySelMdi 
+ST   ySelSingRef
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   PLC_SEL_REF                   ** ui16.1 Selezione Modo REF da Plc
+ST   PLC_SEL_SINGREF               ** ui16.28 Selezione REF singolo
+
+no_jog:
+* Auto
+LD   RTRG_SEL_AUT.Q
+JMPCN no_aut        
+
+LD   1
+ST   ySelAut
+
+LD   0     
+ST   ySelRef
+ST   ySelInc
+ST   ySelJog
+ST   ySelMdi 
+ST   ySelSingRef
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   PLC_SEL_REF                   ** ui16.1 Selezione Modo REF da Plc
+ST   PLC_SEL_SINGREF               ** ui16.28 Selezione REF singolo
+
+no_aut:
+* Inc
+LD   RTRG_SEL_INC.Q
+JMPCN no_Inc        
+
+LD   1
+ST   ySelInc
+
+LD   0     
+ST   ySelRef
+ST   ySelAut
+ST   ySelJog
+ST   ySelMdi 
+ST   ySelSingRef
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   PLC_SEL_REF                   ** ui16.1 Selezione Modo REF da Plc
+ST   PLC_SEL_SINGREF               ** ui16.28 Selezione REF singolo
+
+no_Inc:
+
+* Mdi
+LD   RTRG_SEL_MDI.Q
+JMPCN no_Mdi        
+
+LD   1
+ST   ySelMdi
+
+LD   0     
+ST   ySelRef
+ST   ySelAut
+ST   ySelJog
+ST   ySelInc
+ST   ySelSingRef
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   PLC_SEL_REF                   ** ui16.1 Selezione Modo REF da Plc
+ST   PLC_SEL_SINGREF               ** ui16.28 Selezione REF singolo
+
+no_Mdi:
+no_change:
+
+END_FUNCTION_BLOCK
+
+
+*******************************************************************************
+
+
+VAR
+TON_PULRESET_EMERG: TON;            *
+TON_START_BTN:      TON;            * Filter
+RTRIG_START_BTN:    R_TRIG;         * Trig 
+TP_START_BTN:       TP;             * Command
+RTRIG_STOP_BTN:     R_TRIG;         * Trig 
+TP_STOP_BTN:        TP;             * Command
+RTRIG_RES_BTN:      R_TRIG;         * Trig 
+TP_RES_BTN:         TP;             * Command
+TP_STSERV:          TP;
+RTRIG_STSERV:       R_TRIG;
+appoggio:           BOOL;           * force the feed to SlowFeed
+Jog_X_MENO:         BOOL;           * temp
+Jog_X_PIU:          BOOL;           * temp
+Jog_Y_MENO:         BOOL;           * temp
+Jog_Y_PIU:          BOOL;           * temp
+END_VAR
+
+*******************************************************************************
+*   Gestione pulsanti e relativi input associati
+*******************************************************************************
+FUNCTION GEN_BUTTONS
+
+***************************************
+* START
+***************************************
+LD   %ServiceMillePGM.3
+OR   %ServiceMillePGM.12
+OR   %ServiceMillePGM.13
+OR   %ServiceMillePGM.14
+OR   ReqCapacitveTest
+ST   appoggio
+CAL  RTRIG_STSERV(CLK=appoggio)
+CAL  TP_STSERV(IN=RTRIG_STSERV.Q,PT=100)
+
+LD   %FUNCBTN.0
+OR   I_I_PUL_START                 ** Start
+OR   I_I_HW_START                  ** Start (handwheel)
+OR   RemContrStart                 ** Xhc_Puls.3  Start push-button
+ST   appoggio                      ** force the feed to SlowFeed
+
+CAL  TON_START_BTN(IN=appoggio, PT=100) ** Filter
+CAL  RTRIG_START_BTN(CLK=TON_START_BTN.Q) ** Trig 
+CAL  TP_START_BTN(IN=RTRIG_START_BTN.Q,PT=100) ** Command
+
+LD   TP_START_BTN.Q
+OR   TP_STSERV.Q
+ST   Pul_Start                     ** (gPlc0.1)Start pushbutton
+S    StartButtonPressed
+R    HoldButtonPressed
+
+***************************************
+* STOP
+***************************************
+LD   %FUNCBTN.1                    * [Stop]
+OR   I_I_PUL_STOP                  ** Stop
+OR   I_I_HW_STOP                   ** Stop (handwheel)
+OR   RemContrStop                  ** Xhc_Puls.4  Stop push button   *
+ST   appoggio                      ** force the feed to SlowFeed
+
+CAL  RTRIG_STOP_BTN(CLK=appoggio)  ** Trig 
+CAL  TP_STOP_BTN(IN=RTRIG_STOP_BTN.Q,PT=100) ** Command
+
+LD   TP_STOP_BTN.Q
+ST   Pul_Stop                      ** (gPlc0.2)Stop pushbutton
+S    HoldButtonPressed
+R    StartButtonPressed
+
+***************************************
+* RESET
+***************************************
+LD   %FUNCBTN.4
+OR   I_I_PUL_RESET                 ** Reset
+OR   I_I_HW_RESET                  ** Reset (handwheel)
+OR   RemContrReset                 ** Xhc_Puls.5  Reset Push Button
+ST   appoggio                      ** force the feed to SlowFeed
+
+CAL  TON_PULRESET_EMERG(IN=appoggio, PT=4000)
+LD   TON_PULRESET_EMERG.Q
+ST   Pul_Reset_EMERG
+
+CAL  RTRIG_RES_BTN(CLK=appoggio)   ** Trig 
+LD   RTRIG_RES_BTN.Q
+OR   iso_ResetCmd
+ST   appoggio
+
+CAL  TP_RES_BTN(IN=appoggio,PT=100) ** Command
+LD   TP_RES_BTN.Q
+ST   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+
+LDN  %cn0.rc8.0
+ANDN %cn3.rc8.0
+JMPCN CLR_RESET
+     LD   0
+     ST   iso_ResetCmd
+CLR_RESET:
+
+***************************************
+* [+]
+***************************************
+LD   %FUNCBTN.2          * [+]
+OR(
+LD   I_I_HW_JOGPLUS                ** Jog+ (handwheel)
+AND  PulsAuxComand                 ** (gPlc2.28)Comando abilitazione da pulsantiera ausiliaria
+)
+ST   Pul_Jogp                      ** (gPlc0.4)jog+ pushbutton
+
+***************************************
+* [-]
+***************************************
+LD   %FUNCBTN.3          * [-]
+OR(
+LD   I_I_HW_JOGMINUS               ** jog- (handwheel)
+AND  PulsAuxComand                 ** (gPlc2.28)Comando abilitazione da pulsantiera ausiliaria
+)
+ST   Pul_Jogm                      ** (gPlc0.5)jog- pushbutton
+
+
+***************************************
+*   JOYSTICK MANAGEMENT
+*   By keyboard or external inputs
+*   %PlcOp0.3 = abilitazione tastiera qwerty
+***************************************
+LD   %PlcOp0.3                     ** Qwerty keyboard enabled
+ST   %ENABFBTN.2           * abilitazioni da PLC Per gestire i tasti movim.Assi(QWERTY)
+
+LD   %PLCFLAGS.0
+ST   Jog_X_MENO                    ** temp
+ST   Jog_X_PIU                     ** temp
+ST   Jog_Y_MENO                    ** temp
+ST   Jog_Y_PIU                     ** temp
+
+LD   XxEsaJoy_JOG_Yplus            ** ARRWBTN.1 Pulsanti Jog Joystick
+OR   XxEsaJoy_XY_plus              ** ARRWBTN.2 Pulsanti Jog Joystick
+OR   XxEsaJoy_XminYpl              ** ARRWBTN.0 Pulsanti Jog Joystick
+AND  XxCTRL_ENAB_JOG               ** CTRLBTN.1  CTRL che abilita i pulsanti joystick
+JMPCN Next1
+
+LD   UpArrow                       ** (gGui2)Up arrow management
+EQ   0
+S    Jog_X_MENO                    ** temp
+
+LD   UpArrow                       ** (gGui2)Up arrow management
+EQ   1
+S    Jog_X_PIU                     ** temp
+
+LD   UpArrow                       ** (gGui2)Up arrow management
+EQ   2
+S    Jog_Y_MENO                    ** temp
+
+LD   UpArrow                       ** (gGui2)Up arrow management
+EQ   3
+S    Jog_Y_PIU                     ** temp
+
+Next1:
+LD   XxEsaJoy_JOG_Xminus           ** ARRWBTN.3 Pulsanti Jog Joystick
+OR   XxEsaJoy_XY_minus             ** ARRWBTN.5 Pulsanti Jog Joystick
+OR   XxEsaJoy_XminYpl              ** ARRWBTN.0 Pulsanti Jog Joystick
+AND  XxCTRL_ENAB_JOG               ** CTRLBTN.1  CTRL che abilita i pulsanti joystick
+JMPCN Next2
+
+LD   LeftArrow                     ** (gGui3)Left arrow management
+EQ   0
+S    Jog_X_MENO                    ** temp
+
+LD   LeftArrow                     ** (gGui3)Left arrow management
+EQ   1
+S    Jog_X_PIU                     ** temp
+
+LD   LeftArrow                     ** (gGui3)Left arrow management
+EQ   2
+S    Jog_Y_MENO                    ** temp
+
+LD   LeftArrow                     ** (gGui3)Left arrow management
+EQ   3
+S    Jog_Y_PIU                     ** temp
+
+Next2:
+LD   XxEsaJoy_JOG_Yminus           ** ARRWBTN.6 Pulsanti Jog Joystick
+OR   XxEsaJoy_XY_minus             ** ARRWBTN.5 Pulsanti Jog Joystick
+OR   XxEsaJoy_XplYmin              ** ARRWBTN.7 Pulsanti Jog Joystick
+AND  XxCTRL_ENAB_JOG               ** CTRLBTN.1  CTRL che abilita i pulsanti joystick
+JMPCN Next3
+
+LD   DownArrow                     ** (gGui4)Down arrow management
+EQ   0
+S    Jog_X_MENO                    ** temp
+
+LD   DownArrow                     ** (gGui4)Down arrow management
+EQ   1
+S    Jog_X_PIU                     ** temp
+
+LD   DownArrow                     ** (gGui4)Down arrow management
+EQ   2
+S    Jog_Y_MENO                    ** temp
+
+LD   DownArrow                     ** (gGui4)Down arrow management
+EQ   3
+S    Jog_Y_PIU                     ** temp
+
+Next3:
+LD   XxEsaJoy_JOG_Xplus            ** ARRWBTN.4 Pulsanti Jog Joystick
+OR   XxEsaJoy_XY_plus              ** ARRWBTN.2 Pulsanti Jog Joystick
+OR   XxEsaJoy_XplYmin              ** ARRWBTN.7 Pulsanti Jog Joystick
+AND  XxCTRL_ENAB_JOG               ** CTRLBTN.1  CTRL che abilita i pulsanti joystick
+JMPCN Next4
+
+LD   RightArrow                    ** (gGui5)Right arrow management
+EQ   0
+S    Jog_X_MENO                    ** temp
+
+LD   RightArrow                    ** (gGui5)Right arrow management
+EQ   1
+S    Jog_X_PIU                     ** temp
+
+LD   RightArrow                    ** (gGui5)Right arrow management
+EQ   2
+S    Jog_Y_MENO                    ** temp
+
+LD   RightArrow                    ** (gGui5)Right arrow management
+EQ   3
+S    Jog_Y_PIU                     ** temp
+
+Next4:
+LD   Jog_X_PIU                     ** temp
+OR   I_I_JOY_X_P                   ** X+ (Joystick)
+OR   RemContrXPlus                 ** Xhc_Puls.24 Jog X axis plus         *
+ST   JOY_X_P                       ** (gPlc0.14)Joystik X + selezionato
+
+LD   Jog_Y_PIU                     ** temp
+OR   I_I_JOY_Y_P                   ** Y+ (Joystick)
+OR   RemContrYPlus                 ** Xhc_Puls.22 Jog Y axis plus
+ST   JOY_Y_P                       ** (gPlc0.16)Joystik Y + selezionato
+
+LD   Jog_X_MENO                    ** temp
+OR   I_I_JOY_X_M                   ** X- (Joystick)
+OR   RemContrXMinus                ** Xhc_Puls.22 Jog X axis minus        *
+ST   JOY_X_M                       ** (gPlc0.15)Joystik X - selezionato
+
+LD   Jog_Y_MENO                    ** temp
+OR   I_I_JOY_Y_M                   ** Y- (Joystick)
+OR   RemContrYMinus                ** Xhc_Puls.24 Jog Y axis minus
+ST   JOY_Y_M                       ** (gPlc0.17)Joystik Y - selezionato
+
+LD   RemContrUMinus                ** Xhc_Puls.19 Jog U axis minus
+ANDN Rem_Combination
+OR   Gui_Pul_X_M
+ST   JOY_U_M					   **(gPlc2.8)Joystik U - selezionato
+
+LD   RemContrUPlus                 ** Xhc_Puls.27 Jog U axis plus
+ANDN Rem_Combination
+OR   Gui_Pul_X_P
+ST   JOY_U_P                       **(gPlc2.7)Joystik U + selezionato
+
+LD   RemContrCMinus                ** Xhc_Puls.18 Jog C axis minus 
+ANDN Rem_Combination
+ANDN RemContrStop
+ST   JOY_C_M                       **(gPlc2.10)Joystik C - selezionato
+LD   RemContrCPlus                 ** Xhc_Puls.26 Jog C axis plus   
+ANDN Rem_Combination
+ANDN RemContrStop
+ST   JOY_C_P					   **(gPlc2.9)Joystik C + selezionato
+
+LD   RemContrZMinus                ** Xhc_Puls.28 Jog Z axis minus 
+ANDN Rem_Combination
+ST   JOY_Z_M                       **(gPlc19.4)Joystik Z - selezionato
+
+LD   RemContrZPlus                 ** Xhc_Puls.20 Jog Z axis plus   
+ANDN Rem_Combination
+ST   JOY_Z_P					   **(gPlc19.3)Joystik Z + selezionato
+
+END_FUNCTION
+

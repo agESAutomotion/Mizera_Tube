@@ -1,0 +1,267 @@
+Reset in corso                              PLCmsg0.0
+Blocco Avanzam.Attivo X-Y                   PLCmsg0.1
+2                                           PLCmsg0.2
+3                                           PLCmsg0.3
+Reset CNC corso,no abilitazione drive       PLCmsg0.4
+5                                           PLCmsg0.5
+Antishock                                   PLCmsg0.6
+Fotocellule                                 PLCmsg0.7
+Probing Target Out of Range                 PLCmsg0.8
+Attesa Start                                PLCmsg0.9
+10                                          PLCmsg0.10
+11                                          PLCmsg0.11
+12                                          PLCmsg0.12
+13                                          PLCmsg0.13
+14                                          PLCmsg0.14
+15                                          PLCmsg0.15
+Rofin in pre-allarme                        PLCmsg0.16
+17                                          PLCmsg0.17
+18                                          PLCmsg0.18
+Feedrate a zero                             PLCmsg0.19
+20                                          PLCmsg0.20
+Jog in corso                                PLCmsg0.21
+Ricerca zero in corso                       PLCmsg0.22
+Pos. incrementale in corso                  PLCmsg0.23
+Aggiornamento dati in corso                 PLCmsg0.24
+25                                          PLCmsg0.25
+Assi non azzerati                           PLCmsg0.26
+27                                          PLCmsg0.27
+28                                          PLCmsg0.28
+29                                          PLCmsg0.29
+30                                          PLCmsg0.30
+31                                          PLCmsg0.31
+Ciclo automatico sospeso                    PLCmsg1.0
+33                                          PLCmsg1.1
+34                                          PLCmsg1.2
+35                                          PLCmsg1.3
+36                                          PLCmsg1.4
+37                                          PLCmsg1.5
+CN_COMMAND FUNCT.BLOCK ERROR                PLCmsg1.6
+39                                          PLCmsg1.7
+40                                          PLCmsg1.8
+41                                          PLCmsg1.9
+42                                          PLCmsg1.10
+43                                          PLCmsg1.11
+44                                          PLCmsg1.12
+45                                          PLCmsg1.13
+46                                          PLCmsg1.14
+Mandrini non agganciati                     PLCmsg1.15
+Attesa START                                PLCmsg1.16
+49                                          PLCmsg1.17
+50                                          PLCmsg1.18
+51                                          PLCmsg1.19
+52                                          PLCmsg1.20
+53                                          PLCmsg1.21
+Lubrificazione in corso                     PLCmsg1.22
+55                                          PLCmsg1.23
+56                                          PLCmsg1.24
+57                                          PLCmsg1.25
+58                                          PLCmsg1.26
+59                                          PLCmsg1.27
+60                                          PLCmsg1.28
+61                                          PLCmsg1.29
+62                                          PLCmsg1.30
+63                                          PLCmsg1.31
+64                                          PLCmsg2.0
+65                                          PLCmsg2.1
+66                                          PLCmsg2.2
+67                                          PLCmsg2.3
+68                                          PLCmsg2.4
+69                                          PLCmsg2.5
+70                                          PLCmsg2.6
+71                                          PLCmsg2.7
+72                                          PLCmsg2.8
+73                                          PLCmsg2.9
+74                                          PLCmsg2.10
+75                                          PLCmsg2.11
+76                                          PLCmsg2.12
+77                                          PLCmsg2.13
+78                                          PLCmsg2.14
+79                                          PLCmsg2.15
+80                                          PLCmsg2.16
+81                                          PLCmsg2.17
+82                                          PLCmsg2.18
+83                                          PLCmsg2.19
+84                                          PLCmsg2.20
+85                                          PLCmsg2.21
+86                                          PLCmsg2.22
+87                                          PLCmsg2.23
+88                                          PLCmsg2.24
+89                                          PLCmsg2.25
+90                                          PLCmsg2.26
+91                                          PLCmsg2.27
+92                                          PLCmsg2.28
+93                                          PLCmsg2.29
+94                                          PLCmsg2.30
+95                                          PLCmsg2.31
+96                                          PLCmsg3.0
+97                                          PLCmsg3.1
+98                                          PLCmsg3.2
+99                                          PLCmsg3.3
+100                                         PLCmsg3.4
+101                                         PLCmsg3.5
+102                                         PLCmsg3.6
+103                                         PLCmsg3.7
+104                                         PLCmsg3.8
+105                                         PLCmsg3.9
+106                                         PLCmsg3.10
+107                                         PLCmsg3.11
+108                                         PLCmsg3.12
+109                                         PLCmsg3.13
+110                                         PLCmsg3.14
+111                                         PLCmsg3.15
+112                                         PLCmsg3.16
+113                                         PLCmsg3.17
+114                                         PLCmsg3.18
+115                                         PLCmsg3.19
+116                                         PLCmsg3.20
+117                                         PLCmsg3.21
+118                                         PLCmsg3.22
+119                                         PLCmsg3.23
+120                                         PLCmsg3.24
+121                                         PLCmsg3.25
+122                                         PLCmsg3.26
+123                                         PLCmsg3.27
+124                                         PLCmsg3.28
+125                                         PLCmsg3.29
+Laser in simulazione                        PLCmsg3.30
+127                                         PLCmsg3.31
+
+#128    *PLCmsg4
+Calibrazione in corso                       PLCmsg4.0
+129                                         PLCmsg4.1
+130                                         PLCmsg4.2
+131                                         PLCmsg4.3
+Spurgo gas in corso                         PLCmsg4.4
+133                                         PLCmsg4.5
+134                                         PLCmsg4.6
+Attesa accensione Gas e Laser               PLCmsg4.7
+136                                         PLCmsg4.8
+137                                         PLCmsg4.9
+138                                         PLCmsg4.10
+139                                         PLCmsg4.11
+Blocco asse X: Z non in posizione sicura    PLCmsg4.12
+141                                         PLCmsg4.13
+142                                         PLCmsg4.14
+143                                         PLCmsg4.15
+Blocco asse Y: Z non in posizione sicura    PLCmsg4.16
+145                                         PLCmsg4.17
+146                                         PLCmsg4.18
+147                                         PLCmsg4.19
+148                                         PLCmsg4.20
+149                                         PLCmsg4.21
+150                                         PLCmsg4.22
+151                                         PLCmsg4.23
+152                                         PLCmsg4.24
+153                                         PLCmsg4.25
+154                                         PLCmsg4.26
+Livello basso olio lubrificazione           PLCmsg4.27
+156                                         PLCmsg4.28
+157                                         PLCmsg4.29
+158                                         PLCmsg4.30
+159                                         PLCmsg4.31
+
+#160    *PLCmsg5
+Precitec-Cassetto lente non presente (SW1)  PLCmsg5.0
+Precitec-Lente protettiva non presente (SW4)PLCmsg5.1
+Precitec-Azzeramento testa completato       PLCmsg5.2
+163                                         PLCmsg5.3
+Tip touch (A11=1, A14=0, A15=0)             PLCmsg5.4
+Body touch (A11=1, A14=1, A15=0)            PLCmsg5.5
+Nozzle lost (A11=1, A14=0, A15=1)           PLCmsg5.6
+167                                         PLCmsg5.7
+168                                         PLCmsg5.8
+169                                         PLCmsg5.9
+Errata selezione gas di taglio              PLCmsg5.10
+171                                         PLCmsg5.11
+172                                         PLCmsg5.12
+173                                         PLCmsg5.13
+174                                         PLCmsg5.14
+IPG:Laser nello stato di preallarme (B13)   PLCmsg5.15
+176                                         PLCmsg5.16
+177                                         PLCmsg5.17
+178                                         PLCmsg5.18
+179                                         PLCmsg5.19
+180                                         PLCmsg5.20
+181                                         PLCmsg5.21
+182                                         PLCmsg5.22
+183                                         PLCmsg5.23
+184                                         PLCmsg5.24
+185                                         PLCmsg5.25
+186                                         PLCmsg5.26
+187                                         PLCmsg5.27
+188                                         PLCmsg5.28 
+189                                         PLCmsg5.29
+190                                         PLCmsg5.30
+191                                         PLCmsg5.31
+
+#192    *PLCmsg6
+barriera lato sarico                        PLCmsg6.0
+barriera lato carico                        PLCmsg6.1
+194                                         PLCmsg6.2
+195                                         PLCmsg6.3
+196                                         PLCmsg6.4
+197                                         PLCmsg6.5
+198                                         PLCmsg6.6
+199                                         PLCmsg6.7
+Ripristinare barriera lato pulsantiera      PLCmsg6.8
+201                                         PLCmsg6.9
+202                                         PLCmsg6.10
+203                                         PLCmsg6.11
+204                                         PLCmsg6.12
+205                                         PLCmsg6.13
+206                                         PLCmsg6.14
+207                                         PLCmsg6.15
+208                                         PLCmsg6.16
+209                                         PLCmsg6.17
+210                                         PLCmsg6.18
+211                                         PLCmsg6.19
+212                                         PLCmsg6.20
+213                                         PLCmsg6.21
+214                                         PLCmsg6.22
+215                                         PLCmsg6.23
+216                                         PLCmsg6.24
+217                                         PLCmsg6.25
+218                                         PLCmsg6.26
+219                                         PLCmsg6.27
+220                                         PLCmsg6.28
+221                                         PLCmsg6.29
+222                                         PLCmsg6.30
+223                                         PLCmsg6.31
+
+#224    *PLCmsg7
+CAPACITIVO in simulato !                    PLCmsg7.0
+FOCALE in simulato !                        PLCmsg7.1
+GENERATORE in simulato  !                   PLCmsg7.2
+227                                         PLCmsg7.3
+228                                         PLCmsg7.4
+229                                         PLCmsg7.5
+230                                         PLCmsg7.6
+231                                         PLCmsg7.7
+232                                         PLCmsg7.8
+Errore generale precitec                    PLCmsg7.9
+234                                         PLCmsg7.10
+235                                         PLCmsg7.11
+236                                         PLCmsg7.12
+ATTENZIONE controllare ingresso FAR o CAPACITIVO            PLCmsg7.13
+238                                         PLCmsg7.14
+239                                         PLCmsg7.15
+249                                         PLCmsg7.16
+241                                         PLCmsg7.17
+242                                         PLCmsg7.18
+243                                         PLCmsg7.19
+244                                         PLCmsg7.20
+245                                         PLCmsg7.21
+246                                         PLCmsg7.22
+247                                         PLCmsg7.23
+248                                         PLCmsg7.24
+249                                         PLCmsg7.25
+250                                         PLCmsg7.26
+251                                         PLCmsg7.27
+252                                         PLCmsg7.28
+253                                         PLCmsg7.29
+254                                         PLCmsg7.30
+255                                         PLCmsg7.31
+
+
+#include "userita.msg"

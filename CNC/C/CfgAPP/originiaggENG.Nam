@@ -1,0 +1,62 @@
+
+[KEYS]
+TITLE=ORIGIN
+TXT2=Set Tube Length
+TXT3=Acquire origin
+TXT4=Sets XY
+TXT5=Sets rotate
+TXT9=INC / ABS
+
+[PROMPT]
+KEYWORD=
+KEY_ORIGINIAGGIUNTIVE=
+GroupBox4=APA Options
+GroupBox1=Options
+GroupBoxManSet=Manual setting
+GroupBoxActualO=Actual origin
+LIST0=ABSOLUTE,INCREMENTAL
+LabelAPA2=Automatic Acquire Origin
+LabelX=X
+LabelY1=Y
+LabelRor=ROT
+LabelX1=X
+LabelY2=Y
+LabelRor1=ROT
+LabelActualOrigN=N.
+LabelAPA1=Automatic APA Origin
+LabelAPA3=Along X Start Offset [mm]
+Button=Acquire Origin Tube APA
+Label1=____________________________________________________________________________________________________________________________________________________________________
+Label2=____________________________________________________________________________________________________________________________________________________________________
+AxesLaserCH1=Axes1
+GroupBox2=Tube In Machine
+LabelActualOrigin2=Tube In machine [mm] :
+LabelActualOrigin1=Last Heading [mm] :
+LabelAPA4=Clear Tube Length After Acquire Origin
+P_REF1=Feed -
+P_REF3=Feed +
+Label4=%
+LabelTrack1=Track Num
+LabelExeTime1=Execution time
+LabelExeTime2=Feed [m/min]
+lbDiagPar1=Total / Curr. Pieces
+LabelAPA5=Automatic CAP Calibration On Tube (Origin)
+GroupBox3=Weldseam Detection
+Button1=Camera Piston
+Button2=WeldDetec Enable
+LabelAPA6=Detected
+LabelAPA7=Pictured
+LIST2=0 Degree,90 Degree,180 Degree,-90 Degree
+LabelAPA8=Result of C rotation offset:
+LabelAPA9=Automatic Weldseam Detection
+GroupBox5=ISO Info
+ErrorHandler1=Alarms / Messages
+GroupBox6=Alarms / Messages
+LabelAPA10=Round tube C axis Inc [deg]
+Label3=Tube Length From Graph
+P_REF5=INC / ABS
+LabelAPA11=Automatic Spindle Calibration (Origin)
+
+[STATUS]
+
+[HELP]

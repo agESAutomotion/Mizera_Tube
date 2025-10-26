@@ -1,0 +1,10 @@
+: G4099
+;Sincronizza con assi agganciati/sganciati
+_wait_bit( 0,"%rg17.0",0) ;attendi fine busy
+;;;?%rg17.1 = 0 ;fine test tempo ciclo completo
+
+;//RELEASE(conn_super_lock)
+?%rg[20] = -1
+vax_c_pend = 0
+
+RET

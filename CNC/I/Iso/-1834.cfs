@@ -1,0 +1,145 @@
+ W [Y]0 :@@FAST@@ ;834
+;-----------------------------------------------------------------------------
+; Run-time working table selection
+; Equivalent to G650 T_ W_ Y_ outside G800-G840
+; (see Macro Instructions G650 G651 and G659.pdf for details)
+;
+; W (VA22) = Table index
+; Y (VA24) = Optional data Subset (technology dependent)
+;-----------------------------------------------------------------------------
+
+DBL ind  = VA22
+DBL subset = VA24
+DBL EnabVal = 0
+
+;//To avoid same database loading multi times
+IF( (gTechLastIndex == ind) && (subset == 0) ) RET
+
+;//Disable G834 ( W11 W12 W13 BEVEL CUTTING )
+IF( (%PlcOp[0].8) && (ind >= 11) && (ind <= 13) ) RET  
+
+;//Disable G834 ( W14 Straight Corner )
+IF( (%PlcOp[0].28) && (ind == 14) ) RET  
+
+?%LsIso11 = ind                 ; to make sure that this line is used in G840
+IF( %cn[WHO()].pc[14].25 ) %HMI_ONE.value[ind] = ind
+DBL sav_G70=XGET("@G70")
+G271
+
+IF (%LsGui26.0) THEN
+VA22 = 5
+VL22 = 5
+ind = 5
+ENDIF
+
+IF (%cn[WHO()].pc[14].25 == 1 ) THEN      ; solo esecuzione grafica
+;$APPLICATION
+SWITCH (ind)
+    CASE 1
+        tabColor = 1
+    CASE 2
+        tabColor = 4
+    CASE 3
+        tabColor = 11
+    CASE 4
+        tabColor = 3
+    CASE 5
+        tabColor = 5
+    CASE 6
+        tabColor = 2
+     CASE 7
+        tabColor = 6
+    CASE 9
+        tabColor = 13
+    CASE 10
+        tabColor = 15
+    OTHERWISE
+        tabColor = 0   ;same as flycut disable
+    ENDSWITCH
+
+;CALL phGraphUnadjPathColorChange(tabColor)
+; Al momento NON cambiamo colore per i singoli utensili (assuminamo SOLO utensile=0)
+CALL phGraphColorChange(0,tabColor)
+GRAPH 999
+ENDIF
+
+IF (ind == 0) ERROR(777)                ;//Wrong work table number
+IF ((ind < 0) || (ind > 15)) ERROR(777) ;//Wrong work table number
+
+G(200+sav_G70)
+;//Canale in test
+IF( %cn[WHO()].rc[0].21 ) RET
+;//XXX serve?
+IF (%PlcOp[0].4) RET                    ;//Disable G65x
+G271
+
+SPC 30099,1
+	
+;//Laser
+IF( subset == 0 ) THEN    
+    ?%TabLsr[0].L_FeedA          = %TabLsr[ind].L_FeedA          ; Usata sempre solo Feed1   
+    ?%TabLsr[0].L_CutDistance    = gL_CutDistance                ; for retrace
+    ?%TabLsr[0].L_CutDistance    = %TabLsr[ind].L_CutDistance
+    gL_CutDistance = %TabLsr[ind].L_CutDistance
+    rtCutDist = %TabLsr[ind].L_CutDistance
+    cutDistRtChg = 1
+    ?%TabLsr[0].L_CutPower       = %TabLsr[ind].L_CutPower
+    ?%TabLsr[0].L_CutFreq        = %TabLsr[ind].L_CutFreq
+    ?%TabLsr[0].L_CutDuty        = %TabLsr[ind].L_CutDuty
+    ?%TabLsr[0].L_CutGas         = %TabLsr[ind].L_CutGas
+    ?%TabLsr[0].L_CutPressure    = %TabLsr[ind].L_CutPressure
+    ?%TabLsr[0].L_CutFocal       = %TabLsr[ind].L_CutFocal  
+    
+    ?%LsIso[83] = %TabLsr[ind].L_SourceInt16.2               ; Enable Duty management by speed     
+    ?%LsIso[84] = %TabLsr[ind].L_SourceInt16.3               ; Enable Power management by speed    
+    ?%LsIso[85] = %TabLsr[ind].L_SourceInt16.4               ; Enable Frequency management by speed
+ENDIF	
+
+;M841 Laser OFF on track
+IF( subset == 1 ) THEN 
+    ?%TabLsr[0].L_CutPower       = 0
+    ?%TabLsr[0].L_CutDuty        = 0
+ENDIF
+
+;M851 Laser ON on track
+IF( subset == 2 ) THEN 
+    ?%TabLsr[0].L_CutPower       = %TabLsr[ind].L_CutPower
+    ?%TabLsr[0].L_CutDuty        = %TabLsr[ind].L_CutDuty
+ENDIF
+    
+?%LsIso11 = ind                 ; to make sure that this line is used in G840, must be after the duty,freq,power manag selection
+gLcutId = ind	 
+?%LsIso[86] = 1                 ; (Start Focal)
+
+IF( %PlcOp0.2 ) THEN
+    feed1 = (%LSRCostK[53])
+ELSE
+    feed1 = %TabLsr[ind].L_FeedA
+ENDIF
+
+Cir_circle = SQRT( %gIso23 * %gIso23 + %gIso24 * %gIso24 )
+IF( (%LSRPlcOp[1].31) && (!%PlcOp0.2) ) THEN		
+    IF( feed1 > (Cir_circle * 200) ) feed1 = Cir_circle * 200
+ENDIF
+
+F(feed1)
+
+laserChg0_834 = !laserChg0_834
+laserChg1_834 = !laserChg1_834
+
+?%C19 = ind             ;//Tabella di lavoro selezionata
+;//disabilita ottimizzazione: la G650 prima della successiva traccia potrebbe
+;//fare qualcosa di diverso da questo ciclo anche con lo stesso indice
+gTechLastIndex = ind
+
+IF (laserChg0_834) EnabVal=EnabVal|0x4000
+IF (laserChg1_834) EnabVal=EnabVal|0x8000
+;?%TstP[14] = EnabVal
+
+?%TstP[11] = EnabVal
+
+SPC 30099,1
+
+G(200+sav_G70)
+
+RET

@@ -1,0 +1,38 @@
+
+[KEYS]
+TITLE=WORK LIST
+TXT0=LOAD LIST
+TXT1=SAVE LIST
+TXT2=NEW LIST
+MSG2=Actual worklist will be delete. Are you sure ?
+TXT16=Reset worklist
+TXT17=Reset actual TIME
+MSG17=Are you sure ?
+TXT18=Reset all TIMERs
+MSG18=Are you sure ?
+TXT114=Load List
+TXT115=Save Data
+TXT116=New List
+MSG116=Delete list Are you sure?
+TXT117=Reset All Timers
+MSG117=Are you sure?
+TXT118=Reset timer selected
+MSG118=Are you sure?
+
+[PROMPT]
+KEY_NODE=Node
+WORKLIST=Leaf
+LabelListName=LIST NAME
+Button=SelVis
+LabelProgName=PROGRAM
+LabelRip=REP.
+LabelTempoExe=CUT TIME
+LabelTempoLista=LIST CUT TIME
+LabelRip1=End
+LabelTempoExe1=Vis Pgm
+ButtonMainWlist1=List MENU
+Graphic1=Graphic1
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,109 @@
+[PROMPT]
+KEY_TWI       =Daten Spindeln
+
+TWI_KINELIST =0-Nullo, 1=Rotary Hd, 2=Fork Hd, 3=Nutator
+TWI_KINE      =Getriebetyp
+TWI_DSC       =Description
+
+RH_X0         =Koordinate X erstes Pivot
+RH_Y0         =Koordinate Y erstes Pivot
+RH_Z0         =Koordinate Z erstes Pivot
+RH_ORIENT     =Ausrichtung Z-Achse Kopf
+RH_FRAME_C    =Reference frame Z (Y) rotation
+RH_FRAME_B    =Reference frame Y (P) rotation
+RH_FRAME_A    =Reference frame X (R) rotation
+RH_ORIENTLST  =6: X+, 8: Y+, 9: Z+
+RH_EC         =Rotation um Z-Achse
+RH_ECREV      =Inversion zu Rotationssteller
+RH_ECAX       =Steller Rotation um Z-Achse
+RH_AXLST      =0-NC, 7-A axis, 8-B axis, 9-C axis, 10-Spindle, 127-Pursuit
+
+FRH_X0        =Koordinate X erstes Pivot
+FRH_Y0        =Koordinate Y erstes Pivot
+FRH_Z0        =Koordinate Z erstes Pivot
+FRH_ORIENT    =Ausrichtung Z-Achse Kopf
+FRH_FRAME_C   =Reference frame Z (Y) rotation
+FRH_FRAME_B   =Reference frame Y (P) rotation
+FRH_FRAME_A   =Reference frame X (R) rotation
+FRH_EC        =Rotation um Z-Achse
+FRH_ECREV     =Inversion zu Rotationssteller
+FRH_ECAX      =Steller Rotation um Z-Achse
+FRH_X1        =Koordinate X zweiter Pivot
+FRH_Y1        =Koordinate Y zweiter Pivot
+FRH_EB        =Rotation um Y-Achse
+FRH_EBREV     =Inversion zu Rotationssteller
+FRH_EBAX      =Steller Rotation um Y-Achse
+FRH_X2        =Koordinate X Werkzeugträger
+FRH_Z2        =Koordinate Z Werkzeugträger
+
+OARH_X0       =Coordinata X primo pivot
+OARH_Y0       =Coordinata Y primo pivot
+OARH_Z0       =Coordinata Z primo pivot
+OARH_ORIENT   =Orientamento asse Z testa
+OARH_FRAME_C  =Reference frame Z (Y) rotation
+OARH_FRAME_B  =Reference frame Y (P) rotation
+OARH_FRAME_A  =Reference frame X (R) rotation
+OARH_EC       =Rotazione intorno all'asse Z
+OARH_ECREV    =Inversione  verso attuatore rotazione
+OARH_ECAX     =Attuatore rotazione intorno all'asse Z
+OARH_X1       =Coordinata X secondo pivot
+OARH_Y1       =Coordinata Y secondo pivot
+OARH_TILT     =Angolo di basculamento
+OARH_EB       =Rotazione intorno all'asse Y
+OARH_EBREV    =Inversione  verso attuatore rotazione
+OARH_EBAX     =Attuatore rotazione intorno all'asse Y
+OARH_X2       =Coordinata X portautensile
+OARH_Y2       =Coordinata Y portautensile
+OARH_Z2       =Coordinata Z portautensile
+OARH_CAMBER   =Camber angle
+
+TWI_MINRPM    =Kleinste Drehzahl U/min
+TWI_MAXRPM    =Größte Drehzahl U/min
+TWI_CCW       =Nenndrehrichtung linksläufig
+
+[HELP]
+TWI_KINE      =Getriebetyp: 1 =ROTARY_HEAD, 2 =FORK_ROTARY_HEAD
+
+RH_X0         =Koordinate X erstes Pivot im Bezug zum Nullpunkt des Kopfs
+RH_Y0         =Koordinate Y erstes Pivot im Bezug zum Nullpunkt des Kopfs
+RH_Z0         =Koordinate Z erstes Pivot im Bezug zum Nullpunkt des Kopfs
+RH_ORIENT     =Ausrichtung Z-Achse Kopf: 6 =X+ 8 =Y+ 9 =Z+
+RH_EC1        =Rotation rings um die Achse Z des Bezugssystems mit Ursprung im ersten Pivot
+RH_ECREV      =Umkehr in Richtung auf Stellantrieb Rotation rings um die Achse  Z:  1 - Freigegeben;  0 - Gesperrt
+RH_ECAX       =Steller Rotation um Z-Achse: 0 =NC 7 =A 8 =B 9 =C 10 =Spindel achse 127 =mit mechanischem Schleppbetrieb
+
+FRH_X0        =Koordinate X erstes Pivot im Bezug zum Nullpunkt des Kopfs
+FRH_Y0        =Koordinate Y erstes Pivot im Bezug zum Nullpunkt des Kopfs
+FRH_Z0        =Koordinate Z erstes Pivot im Bezug zum Nullpunkt des Kopfs
+FRH_ORIENT    =Ausrichtung Z-Achse Kopf: 6 =X+ 8 =Y+ 9 =Z+
+FRH_EC        =Rotation rings um die Achse Z des Bezugssystems mit Ursprung im ersten Pivot
+FRH_ECREV     =Umkehr in Richtung auf Stellantrieb Rotation rings um die Achse Z:  1 - Freigegeben;  0 - Gesperrt
+FRH_ECAX      =Steller Rotation um Z-Achse: 0 =NC 7 =A 8 =B 9 =C 10 =Spindel achse 127 =mit mechanischem Schleppbetrieb
+FRH_X1        =Koordinate X zweites Pivot im Bezug zum Bezugssystem mit Ursprung im ersten Pivot
+FRH_Y1        =Koordinate Y zweites Pivot im Bezug zum Bezugssystem mit Ursprung im ersten Pivot
+FRH_EB        =Rotation rings um die Achse Y', die zum Bezugssystem gehört, mit Ursprung im zweiten Pivot
+FRH_EBREV     =Umkehr in Richtung auf Stellantrieb Rotation rings um die Achse Y':  1 - Freigegeben;  0 - Gesperrt
+FRH_EBAX      =Steller Rotation um Y'-Achse: 0 =NC 7 =A 8 =B 9 =C 10 =Spindel achse 127 =mit mechanischem Schleppbetrieb
+FRH_X2        =Koordinate X Werkzeugträger im Bezug zum Bezugssystem mit Ursprung im zweiten Pivot
+FRH_Z2        =Koordinate Z Werkzeugträger im Bezug zum Bezugssystem mit Ursprung im zweiten Pivot
+
+OARH_X0       =Coordinata X primo pivot rispetto allo zero testa
+OARH_Y0       =Coordinata Y primo pivot rispetto allo zero testa
+OARH_Z0       =Coordinata Z primo pivot rispetto allo zero testa
+OARH_ORIENT   =Orientamento asse Z testa: 6 =X+ 8 =Y+ 9 =Z+
+OARH_EC       =Rotazione intorno all’ asse Z del sistema di riferimento con origine nel primo pivot
+OARH_ECREV    =Inversione verso attuatore rotazione intorno all'asse Z:  1 - Abilita;  0 - Disabilita
+OARH_ECAX     =Attuatore rotazione intorno all'asse Z: 0 =NC 7 =A 8 =B 9 =C 10 =Asse mandrino 127 =Ad inseguimento meccanico
+OARH_X1       =Coordinata X secondo pivot rispetto al sistema di riferimento con origine nel primo pivot
+OARH_Y1       =Coordinata Y secondo pivot rispetto al sistema di riferimento con origine nel primo pivot
+OARH_TILT     =Angolo tra l'asse Y testa e la normale del piano di basculamento
+OARH_EB       =Rotazione intorno all'asse Y' appartente al sistema di riferimento con origine nel secondo pivot
+OARH_EBREV    =Inversione verso attuatore rotazione intorno all'asse Y':  1 - Abilita;  0 - Disabilita
+OARH_EBAX     =Attuatore rotazione intorno all'asse Y': 0 =NC 7 =A 8 =B 9 =C 10 =Asse mandrino 127 =Ad inseguimento meccanico
+OARH_X2       =Coordinata X portautensile rispetto al sistema di riferimento con origine nel secondo pivot
+OARH_Y2       =Coordinata Y portautensile rispetto al sistema di riferimento con origine nel secondo pivot
+OARH_Z2       =Coordinata Z portautensile rispetto al sistema di riferimento con origine nel secondo pivot
+
+TWI_MINRPM    =Kleinste Drehzahl U/min
+TWI_MAXRPM    =Größte Drehzahl U/min
+TWI_CCW       =Nenndrehrichtung linksläufig

@@ -1,0 +1,64 @@
+: VARS_INC
+
+IF(DEFINED("vars_included")) RET
+DBL vars_included = 1
+
+IF (%cg[3].26 == 0) ERROR(55) ;//CN_ENAB_G10_EXCLUDE_UNGRP
+IF (%cg[3].17 == 0) ERROR(55) ;//CN_ENABLE_G16_AUX
+IF (%cn[WHO()].pc14.4 == 0) ERROR(55) ;//Explicitely prog'd axes motion
+IF ((%cn[WHO()].cc1.6) && (%ax[%cn[WHO()].cc8 ].pa33 != 360)) ERROR(55) ;//MODULO
+IF ((%cn[WHO()].cc1.7) && (%ax[%cn[WHO()].cc9 ].pa33 != 360)) ERROR(55) ;//MODULO
+IF ((%cn[WHO()].cc1.8) && (%ax[%cn[WHO()].cc10].pa33 != 360)) ERROR(55) ;//MODULO
+
+;//Utilizzate da G154..157, 158 e 159, G160, ..., G153 e G152
+;//Interne
+DBL ori_x=0, ori_y=0, ori_z=0, ori_no=154, ori_gorg=0
+DBL add1_x=0, add1_y=0, add1_z=0
+DBL add2_x=0, add2_y=0, add2_z=0
+DBL mx_a11=1, mx_a12=0, mx_a13=0, mx_o1=0
+DBL mx_a21=0, mx_a22=1, mx_a23=0, mx_o2=0
+DBL mx_a31=0, mx_a32=0, mx_a33=1, mx_o3=0
+DBL pl_add1_u=0, pl_add1_v=0, pl_add1_w=0, pl_add1_a=0, pl_add1_b=0, pl_add1_c=0
+DBL pl_add2_u=0, pl_add2_v=0, pl_add2_w=0, pl_add2_a=0, pl_add2_b=0, pl_add2_c=0
+DBL pl_orig_u=0, pl_orig_v=0, pl_orig_w=0, pl_orig_a=0, pl_orig_b=0, pl_orig_c=0
+DBL pl_tool_c = 0, pl_tool_b = 0, pl_tool_a = 0
+DBL f_ortho=1
+DBL f_G153=0
+DBL t_comp=0
+DBL mx_force_dyn=0  ;//1: always get TCP measure with AO_QUOTCP (but during G0)
+;//livelli
+DBL ml_max=5, ml_curr=-1, ml_peak=-1
+;//traslazione
+DBL ml_to1[ml_max]
+DBL ml_to2[ml_max]
+DBL ml_to3[ml_max]
+;//rotazione
+DBL ml_a11[ml_max], ml_a12[ml_max], ml_a13[ml_max], ml_ro1[ml_max]
+DBL ml_a21[ml_max], ml_a22[ml_max], ml_a23[ml_max], ml_ro2[ml_max]
+DBL ml_a31[ml_max], ml_a32[ml_max], ml_a33[ml_max], ml_ro3[ml_max]
+;//specularita'
+DBL ml_mf1[ml_max], ml_mo1[ml_max]
+DBL ml_mf2[ml_max], ml_mo2[ml_max]
+DBL ml_mf3[ml_max], ml_mo3[ml_max]
+;//altre
+DBL rtcp_on=0, rtcp_oritrans=0, rtcp_iclnut=0, rtcp_padsid=0
+DBL tool_cosx=0, tool_cosy=0, tool_cosz=0, cut_edge_no=0, cut_edge_svl=0
+DBL twist_head_no=0, tool_holder_no=0, rtcp_cut_edge_no=0, rtcp_cut_edge_svl=0, twist_table_no=0
+;//Utilizzate da G180
+;//Output
+DBL kine_x=0, kine_y=0, kine_z=0
+DBL kine_a=0, kine_b=0, kine_c=0
+DBL tf_a11=1, tf_a12=0, tf_a13=0
+DBL tf_a21=0, tf_a22=1, tf_a23=0
+DBL tf_a31=0, tf_a32=0, tf_a33=1
+DBL ef_a11=1, ef_a12=0, ef_a13=0
+DBL ef_a21=0, ef_a22=1, ef_a23=0
+DBL ef_a31=0, ef_a32=0, ef_a33=1
+;//Output by G189x acquire cycles (and former G196)
+DBL uf_a11=1, uf_a12=0, uf_a13=0, uf_o1=0
+DBL uf_a21=0, uf_a22=1, uf_a23=0, uf_o2=0
+DBL uf_a31=0, uf_a32=0, uf_a33=1, uf_o3=0
+;//Output by G119x acquire cycles
+DBL acq_x=0, acq_y=0, acq_z=0
+
+RET

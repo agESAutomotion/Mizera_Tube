@@ -1,0 +1,33 @@
+ : aidEngageUn
+
+DBL lifter_z
+DBL osr1, osr2
+DBL initComplete
+
+IF (%cn[WHO()].rc[0].21) RET
+
+;//XXX //posiziona il joint Z all'interno del range (OBBLIGATORIO)
+;//XXX G0 Z_
+
+;//attiva trasformazione
+G153
+;// Z = selezione tabella fz dell'equazione z'=fz(z)
+;// K = slave z' 
+G11033 Z(2) K(AXIDX(8,Z))
+_taraim(0x01,AXIDX(8,X),lifter_z)                    ;//PRS[X]=lifter_z
+G4011 T35 S(AXIDX(8,Z)) M-1 A(1) N(AXIDX(8,X))
+G152
+G4099
+
+;//attendi caricamento tabelle prima di movimentare
+REPEAT
+    initComplete = 1
+    G4026 S(AXIDX(8,Z))
+    ;//CF35_ASY_STS_INITIALIZATION_ERROR
+    IF ((osr1 & 0x00010000) != 0) ERROR(55)
+    ;//CF35_ASY_STS_INITIALIZATION_COMPLETE
+    IF ((osr1 & 0x00000001) == 0) initComplete = 0
+    IF(!initComplete) PAUSE
+UNTIL(initComplete)
+
+RET

@@ -1,0 +1,14 @@
+
+[KEYS]
+TITLE=Funzione Distanza ProCut
+
+[PROMPT]
+KEY_NODE=Nodo
+PROCUTDISTANCEFUNC=Foglia
+LabelPerr1=Distanza di Lavoro [mm]
+LabelPerr2=Prossima Posizione di Calibrazione [mm]
+LabelPerr3=Setpoint Velocita' PID
+
+[STATUS]
+
+[HELP]

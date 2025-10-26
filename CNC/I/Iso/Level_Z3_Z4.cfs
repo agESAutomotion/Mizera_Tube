@@ -1,0 +1,52 @@
+:
+;//
+;// Livellamento Z Testa Z3+Z4
+;//
+DBL qMainZ, qOtherZ
+
+;//
+;// Predisponi interasse teste, aggancia testa Z3 e Z4
+;//
+
+;//Sgancia tutti gli assi
+G4005 S(AXIDX(3,Z))
+G4005 S(AXIDX(4,Z))
+G4099
+
+;//Usata da cicliche parcheggio Z
+SYN
+qMainZ = %ax[AXIDX(3,Z)].ra[24] / 1000	;//QCALC(AXIDX(3,Z))
+qOtherZ = %ax[AXIDX(4,Z)].ra[24] / 1000 ;//QCALC(AXIDX(4,Z))
+
+IF ( qMainZ < (qOtherZ + %twi[2].htwi.oarh.dZ) ) THEN
+    ;//Aggancia asse Z3 acquisendo le quote
+    G153
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+    G152
+    G4099
+    ;//Parcheggia
+    G153 G0 Z(qOtherZ + %twi[2].htwi.oarh.dZ)
+    ;//Sgancia
+    G4005 S(AXIDX(3,Z))
+    G4099
+ELSE
+    ;//Aggancia asse Z4 acquisendo le quote
+    G153
+    G4010 M(AXIDX(Z)) S(AXIDX(4,Z)) I1
+    G152
+    G4099
+    ;//Parcheggia
+    G153 G0 Z(qMainZ - %twi[2].htwi.oarh.dZ)
+    ;//Sgancia
+    G4005 S(AXIDX(4,Z))
+    G4099
+ENDIF
+
+;//Aggancia assi Z3 e Z4 acquisendo le quote di Z3
+G153
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+G4010 M(AXIDX(Z)) S(AXIDX(4,Z))
+G152
+G4099
+
+RET

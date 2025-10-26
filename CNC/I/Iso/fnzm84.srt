@@ -1,0 +1,32 @@
+:  
+; Set spegnimento anticipato
+
+;;; Draw a small circle where the laser is tuned off
+
+DBL xposa, yposa;
+?%TstP15 = 0       ; reset word for laser on/off
+
+IF ( %cn[WHO()].rc[0].21 ) THEN
+
+ IF (%LSRPlcOp1.22) THEN
+  xposa = XGET("@X")
+  yposa = XGET("@Y")
+  G2803  R(0.05) W5  X(xposa) Y(yposa) C8        ;Channel in test
+ ENDIF
+ 
+ENDIF
+
+IF (gTechType == 3) THEN 
+
+ IF ((%LSRPlcOp1.22) && (!%PlcOp0.2)) THEN
+   SPC 30099,1  ;Preprocessor sync
+   ?%TstP15.2 = 1             ;  (LASER_OFF) Turn off laser from Iso         
+   _wait_bit( 1," %LsPlc1.25",0) ; wait laser off
+   ?%TstP[15].3 = 0           ; (LASER_ON)
+   SPC 30099,1  ;Preprocessor sync
+ ENDIF  
+
+ENDIF 
+?%TstP15 = 0       ; reset word for laser on/off
+
+RET

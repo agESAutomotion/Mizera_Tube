@@ -1,0 +1,17 @@
+
+[KEYS]
+TITLE=PWM DATA
+
+[PROMPT]
+KEY_NODE=PWM lin
+PWMLIN=Linearizzazione PWM
+Plot1=Funzione linearizzazione PWM
+L_TYPE_INTERP2=Modello
+L_Pwm_usec1=PWM usec
+L_Pwm1=Focale [mm]
+LIST0=Lineare,Segmento,Smussata
+L_TYPE_INTERP1=Punti
+
+[STATUS]
+
+[HELP]

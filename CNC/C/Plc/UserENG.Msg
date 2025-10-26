@@ -1,0 +1,33 @@
+#256    *PLCmsg8
+Support L1 Not Allow to go Up               PLCmsg8.0
+Support L2 Not Allow to go Up               PLCmsg8.1
+Support L3 Not Allow to go Up               PLCmsg8.2
+Support L4 Not Allow to go Up               PLCmsg8.3
+Support L5 Not Allow to go Up               PLCmsg8.4
+Loader Arms Not Back, Spindle Stop          PLCmsg8.5
+Main Spindle Open Cm External Button PRESSED! PLCmsg8.6 
+Main Spindle Close Cm External Button PRESSED! PLCmsg8.7
+Main Spindle Chuck Open / Close Inverted!   PLCmsg8.8
+Unsafe Zone Between Bevel Head B and 2nd Spindle(+) PLCmsg8.9
+Unsafe Zone Between Bevel Head B and 2nd Spindle(-) PLCmsg8.10
+267                                         PLCmsg8.11
+268                                         PLCmsg8.12
+269                                         PLCmsg8.13
+270                                         PLCmsg8.14
+271                                         PLCmsg8.15
+272                                         PLCmsg8.16
+273                                         PLCmsg8.17
+274                                         PLCmsg8.18
+275                                         PLCmsg8.19
+276                                         PLCmsg8.20
+277                                         PLCmsg8.21
+278                                         PLCmsg8.22
+279                                         PLCmsg8.23
+280                                         PLCmsg8.24
+281                                         PLCmsg8.25
+282                                         PLCmsg8.26
+283                                         PLCmsg8.27
+284                                         PLCmsg8.28
+285                                         PLCmsg8.29
+286                                         PLCmsg8.30
+287                                         PLCmsg8.31

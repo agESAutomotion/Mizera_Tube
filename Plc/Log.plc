@@ -1,0 +1,342 @@
+*******************************************************************************
+*   Log                                                     
+*   ESAutomotion                                                               
+*   LASER machine                                                              
+*   Time Logger                                                  
+*******************************************************************************
+
+#include "Iol.inc" 
+#include "LsrGest.inc"
+
+VAR
+
+R_TRIG_COUNT:               R_TRIG; 
+R_TRIG_COUNT1:              R_TRIG; 
+R_TRIG_COUNT2:              R_TRIG; 
+R_TRIG_COUNT4:              R_TRIG; 
+
+RTRIG_1:                    R_TRIG; 
+RTRIG_2:                    R_TRIG; 
+RTRIG_3:                    R_TRIG;
+FTRIG_4:                    F_TRIG;
+RTRIG_5:                    R_TRIG;
+RTRIG_6:                    R_TRIG;
+RTRIG_7:                    R_TRIG;
+RTRIG_8:                    R_TRIG;
+RTRIG_9:                    R_TRIG;
+RTRIG_10:                   R_TRIG;
+RTRIG_11:                   R_TRIG;
+RTRIG_12:                   R_TRIG;
+RTRIG_13:                   R_TRIG;
+RTRIG_14:                   R_TRIG;
+RTRIG_15:                   R_TRIG;
+RTRIG_16:                   R_TRIG;
+RTRIG_17:                   R_TRIG;
+RTRIG_18:                   R_TRIG;
+RTRIG_19:                   R_TRIG;
+RTRIG_20:                   R_TRIG;
+FTRIG_21:                   F_TRIG;
+RTRIG_22:                   R_TRIG;
+FTRIG_23:                   F_TRIG;
+FTRIG_24:                   F_TRIG;
+RTRIG_25:                   R_TRIG;
+FTRIG_26:                   F_TRIG;
+RTRIG_27:                   R_TRIG;
+FTRIG_28:                   F_TRIG;
+
+
+FTRIG_DEL_LOGCNC:           F_TRIG;
+
+jogp:                       BOOL;            * Positive command movement
+jogm:                       BOOL;            * Negative command movement
+jog_mov:                    BOOL;            * Jog in progress
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+FUNCTION  LOG
+
+* Function for diary ***
+
+* Total Machine Time
+
+CAL R_TRIG_COUNT2 (CLK:=%PLCFLAGS.10)
+
+LD   R_TRIG_COUNT2.Q
+JMPCN no_inc1
+
+LD  Count_sec_tot                  ** (rLsPlc46) Counter for second, total time
+ADD 1
+ST  Count_sec_tot                  ** (rLsPlc46) Counter for second, total time
+
+no_inc1:
+
+LD   Count_sec_tot                 ** (rLsPlc46) Counter for second, total time
+EQ   86400
+JMPCN no_update_day_tot
+LD   0  
+ST   Count_sec_tot                 ** (rLsPlc46) Counter for second, total time
+
+LD   Count_day_tot                 ** (rLsPlc44) Counter for day, total time 
+ADD  1
+ST   Count_day_tot                 ** (rLsPlc44) Counter for day, total time 
+no_update_day_tot:
+
+LD   Count_day_tot                 ** (rLsPlc44) Counter for day, total time 
+EQ   365
+JMPCN no_update_year
+
+LD   0
+ST   Count_day_tot                 ** (rLsPlc44) Counter for day, total time 
+
+LD   Count_year_tot                ** (rLsPlc45) Counter for years, total time
+ADD  1
+ST   Count_year_tot                ** (rLsPlc45) Counter for years, total time
+
+no_update_year:
+*
+
+* Time from last switch-on
+
+CAL R_TRIG_COUNT (CLK:=%PLCFLAGS.8)
+
+LD  R_TRIG_COUNT.Q
+JMPCN no_reset_timer
+
+LD  0
+ST  Count_sec_day                  ** (rLsPlc40) Counter for second, last switch on
+ST  Count_day_day                  ** (rLsPlc41) Counter for day, last switch on 
+
+no_reset_timer:
+
+
+CAL R_TRIG_COUNT1 (CLK:=%PLCFLAGS.10)
+
+LD   R_TRIG_COUNT1.Q
+JMPCN no_inc
+
+LD  Count_sec_day                  ** (rLsPlc40) Counter for second, last switch on
+ADD 1
+ST  Count_sec_day                  ** (rLsPlc40) Counter for second, last switch on
+
+no_inc:
+
+LD   Count_sec_day                 ** (rLsPlc40) Counter for second, last switch on
+EQ   86400
+JMPCN no_update_day
+LD   0  
+ST   Count_sec_day                 ** (rLsPlc40) Counter for second, last switch on
+
+LD   Count_day_day                 ** (rLsPlc41) Counter for day, last switch on 
+ADD  1
+ST   Count_day_day                 ** (rLsPlc41) Counter for day, last switch on 
+no_update_day:
+*
+
+* Total time laser On
+
+
+CAL  R_TRIG_COUNT4 (CLK:=%PLCFLAGS.10)
+
+LD   R_TRIG_COUNT4.Q
+AND  (
+LD   HW_PWM_CFG_FC                           ** Laser I/F board PWM_CFG register: FC
+OR   INP_flyCutModeON                        ** application turn flyCut mode ON
+)
+JMPCN no_inc2
+
+LD   Count_sec_lson                ** (rLsPlc47) Counter for second, Laser on
+ADD  1
+ST   Count_sec_lson                ** (rLsPlc47) Counter for second, Laser on
+
+no_inc2:
+
+LD   Count_sec_lson                ** (rLsPlc47) Counter for second, Laser on
+EQ   86400
+JMPCN no_day_inc
+
+LD   0
+ST   Count_sec_lson                ** (rLsPlc47) Counter for second, Laser on
+
+LD   Count_day_lason               ** (rLsPlc48) Counter for day, laser on
+ADD  1
+ST   Count_day_lason               ** (rLsPlc48) Counter for day, laser on
+no_day_inc:
+
+*
+******************************************************************************************
+* Log Log.cfs
+
+LD   %ax27.ra0.8                             * Positive command movement
+OR   %ax28.ra0.8                             * Positive command movement
+OR   %ax29.ra0.8                             * Positive command movement
+OR   %ax30.ra0.8                             * Positive command movement
+OR   %ax51.ra0.8                             * Positive command movement
+OR   %ax52.ra0.8                             * Positive command movement
+OR   %ax53.ra0.8                             * Positive command movement
+AND  ch0_InJOG                     ** %cn0.rc0.9 CH0 en Modo JOG
+ST   jogp                          ** Positive command movement
+ 
+CAL  RTRIG_1(CLK:=jogp)            ** Positive command movement
+LD   RTRIG_1.Q
+S    LogVarPlc.0                             * Jog + Command 
+
+LD   %ax27.ra0.9                             * Negative command movement
+OR   %ax28.ra0.9                             * Negative command movement
+OR   %ax29.ra0.9                             * Negative command movement
+OR   %ax30.ra0.9                             * Negative command movement
+OR   %ax51.ra0.9                             * Negative command movement
+OR   %ax52.ra0.9                             * Negative command movement
+OR   %ax53.ra0.9                             * Negative command movement
+AND  ch0_InJOG                     ** %cn0.rc0.9 CH0 en Modo JOG
+ST   jogm                          ** Negative command movement
+
+CAL  RTRIG_2(CLK:=jogm)            ** Negative command movement
+
+LD   RTRIG_2.Q
+S    LogVarPlc.1                             * Jog - Command 
+
+CAL  RTRIG_3(CLK:=Pul_Start)       ** (gPlc0.1)Start pushbutton
+
+LD   RTRIG_3.Q
+S    LogVarPlc.2                             * Program Start
+
+CAL  FTRIG_4(CLK:=ch0_InRun)       ** %cn0.rc8.0 CH0 Programa RUN activo
+
+LD   FTRIG_4.Q
+S    LogVarPlc.3                             * Program Fineshed
+
+CAL  RTRIG_5(CLK:=ch0_InRun)       ** %cn0.rc8.0 CH0 Programa RUN activo
+
+LD   RTRIG_5.Q
+S    LogVarPlc.4                             * Program in Run
+
+CAL  RTRIG_6(CLK:=Pul_Stop)        ** (gPlc0.2)Stop pushbutton
+
+LD   RTRIG_6.Q
+S    LogVarPlc.5                             * Stop button pushed
+
+CAL  RTRIG_7(CLK:=ch0_InHold)      ** %cn0.rc8.1 CH0 Programa RUN con HOLD activo
+
+LD   RTRIG_7.Q
+S    LogVarPlc.6                             * Program in hold
+
+CAL  RTRIG_8(CLK:=Pul_Reset)       ** (gPlc0.3)Reset pushbutton
+
+LD   RTRIG_8.Q
+S    LogVarPlc.7                             * Reset button pushed
+
+CAL  RTRIG_9(CLK:=SparoMan_On)     ** (LsGui0.10) Sparo Manuale Start
+
+LD   RTRIG_9.Q
+S    LogVarPlc.8                             * Manual Laser Shot Start Button
+
+CAL  RTRIG_10(CLK:=SparoMan_Stop)  ** (LsGui0.11) Sparo Manuale Stop
+
+LD   RTRIG_10.Q
+S    LogVarPlc.9                             * Manual Laser Shot Stop Button
+
+CAL  RTRIG_11(CLK:=GAS_test)       	 ** M107.0 Test gas in progress for prop. valve
+
+LD   RTRIG_11.Q
+S    LogVarPlc.10                            * Start gas test
+
+CAL  RTRIG_12(CLK:=O_O_EV_OPEN_N2)		 ** Elettrovalvola apertura Azoto
+
+LD   RTRIG_12.Q
+S    LogVarPlc.11                            * N2 Open
+
+CAL  RTRIG_13(CLK:=O_O_EV_OPEN_O2) ** Elettrovalvola apertura Ossigeno
+
+LD   RTRIG_13.Q
+S    LogVarPlc.12                            * O2 Open
+
+CAL  RTRIG_14(CLK:=O_O_EV_OPEN_ARIA)		 ** Elettrovalvola apertura Aria taglio
+
+LD   RTRIG_14.Q
+S    LogVarPlc.13                            * Air Open
+
+CAL  RTRIG_15(CLK:=PLC_SEL_REF)    ** ui16.1 Selezione Modo REF da Plc
+
+LD   RTRIG_15.Q
+S    LogVarPlc.14                            * Reference mode
+
+CAL  RTRIG_16 (CLK:=PLC_SEL_JOG)   ** ui16.2 Selezione Modo JOG da Plc
+
+LD   RTRIG_16.Q
+S    LogVarPlc.15                            * Jog Mode 
+
+CAL  RTRIG_17 (CLK:=PLC_SEL_INC)   ** ui16.3 Selezione Modo INC da Plc
+
+LD   RTRIG_17.Q
+S    LogVarPlc.16                            * Incremental Mode
+
+CAL  RTRIG_18 (CLK:=PLC_SEL_MDI)   ** ui16.4 Selezione Modo MDI da Plc
+
+LD   RTRIG_18.Q
+S    LogVarPlc.17                            * MDI Mode
+
+CAL  RTRIG_19 (CLK:=PLC_SEL_AUT)   ** ui16.5 Selezione Modo AUT da Plc
+
+LD   RTRIG_19.Q
+S    LogVarPlc.18                            * Auto Mode
+
+CAL  RTRIG_20 (CLK:=%PlcOp0.2)     ** DryRun
+
+LD   RTRIG_20.Q
+S    LogVarPlc.19                            * Dry Run Enable
+
+CAL  FTRIG_21 (CLK:=%PlcOp0.2)     ** DryRun
+
+LD   FTRIG_21.Q
+S    LogVarPlc.20                            * Dry Run Disable
+
+
+CAL  RTRIG_22 (CLK:=%LSRPlcOp0.6)            ** Macchina in modo Dry Run
+
+LD   RTRIG_22.Q
+S    LogVarPlc.21                            * Force Z Up Enable 
+
+CAL  FTRIG_23 (CLK:=%LSRPlcOp0.6)            ** Macchina in modo Dry Run
+
+LD   FTRIG_23.Q
+S    LogVarPlc.22                            * Force Z up Disable
+
+LD   jogp                          ** Positive command movement
+OR   jogm                          ** Negative command movement
+ST   jog_mov                       ** Jog in progress
+
+CAL  FTRIG_24 (CLK:=jog_mov)       ** Jog in progress
+
+LD   FTRIG_24.Q
+S    LogVarPlc.23                            * Jog Movement Stop
+
+CAL  RTRIG_25 (CLK:=%LSRPlcOp0.8)  ** Z axis in simulation (always in UP position)
+
+LD   RTRIG_25.Q
+S    LogVarPlc.24                            * No Z axis movement Enable  
+
+CAL  FTRIG_26 (CLK:=%LSRPlcOp0.8)  ** Z axis in simulation (always in UP position)
+
+LD   FTRIG_26.Q
+S    LogVarPlc.25                            * No Z axis movement disable 
+
+CAL  RTRIG_27 (CLK:=EnableSheetCont) ** (gGui0.6) Enable sheet control dimension
+
+LD   RTRIG_27.Q
+S    LogVarPlc.26                            * Enable sheet control dimension 
+
+CAL  FTRIG_28 (CLK:=EnableSheetCont) ** (gGui0.6) Enable sheet control dimension
+
+LD   FTRIG_28.Q
+S    LogVarPlc.27                            * Disable sheet control dimension
+
+CAL  FTRIG_DEL_LOGCNC (CLK:=IntCopyLogg) ** ui39.0 interface signal for log transfer from cnc to pc folder 
+
+LD   FTRIG_DEL_LOGCNC.Q
+S    LogVarPlc.31                            * Delete log file content                         
+
+*******************************************************************************************
+END_FUNCTION

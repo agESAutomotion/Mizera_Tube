@@ -1,0 +1,258 @@
+% .PipeCutting_RectPart_Tilted_Heading_B_A2
+;// Cylindrical tube tilted plane heading with (A)B head and A2 table.
+
+DBL debug_pgm = 0x03
+DBL rectW = 50/2        ;//rect half width
+DBL rectH = 30/2        ;//rect half height
+DBL rectR = 5           ;//rect rounding
+DBL thAngle = -35       ;//tilted heading section plane angle
+DBL thStep = 2          ;//tilted heading section angular step
+DBL cirRad = 12         ;//top circle radius
+DBL cirDist = 20        ;//top circle center distance from tilted heading
+DBL cirBevel = 30       ;//top circle bevel
+DBL cirStep = 3         ;//top circle angular step
+DBL bhDist = 40         ;//distance from tilted heading to bottom heading
+DBL bhBevel = -0        ;//bottom heading bevel angle
+DBL lead = 5            ;//lead-ins length
+DBL lead2 = 10          ;//lead-ins length for B angle orientation
+DBL border_pgm = 2          ;//corner processing start-end points
+
+DBL thRotation = 90     ;//tilted heading section rotation along X axis
+DBL thBase = rectH*ABS(TAN(thAngle))
+
+G2292 U(-100) Y(-rectW) Z(-rectH) X(0.0) V(rectW) W(rectH) I(rectR)
+
+DBL rot
+DBL sn, cs
+DBL x, y, z
+DBL cy, cz
+DBL rx
+DBL b
+DBL c
+DBL Ox, Oy, Oz
+DBL Oyz
+
+G64
+G90
+G94
+G168
+
+; Gearing axes ignoring 3 Chucks management
+
+GRPQ[V] = 0
+G153
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+IF (AEXISTS(3,V)) G4005 S(AXIDX(3,V))    
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+G152
+G4099
+
+G153
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+IF (AEXISTS(3,A)) G4010 M(AXIDX(A)) S(AXIDX(3,A)) I1  
+IF (AEXISTS(3,B)) G4010 M(AXIDX(B)) S(AXIDX(3,B)) I1   
+IF (AEXISTS(3,C)) G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1    
+G152
+G4099
+
+G806 A11 T3 N1 H1 D1 E1 S(workpiece_safe_dist) Q0
+
+;//*********************
+;// TILTED HEADING
+;//*********************
+N1
+G186 A(thRotation)
+G161 X(-thBase)
+G180 X(+lead) Y0 Z(rectW+workpiece_safe_dist) B0 C(-thRotation)
+G153 G0 X(kine_x) Y(kine_y) B(kine_b) C(kine_c)
+G153 G0 Z(kine_z)
+G800 K0 D1 G11 X(+lead) Y0 Z(rectW) F(feed1) T1 R1 U0 V0 W1 Q0
+IF (debug_pgm) G888 F(debug_pgm)
+G832
+G1 X0
+IF (debug_pgm) G888 F(debug_pgm)
+G19
+y = -rectH+rectR+border_pgm
+x = y*TAN(thAngle)
+G1 X(x) Y(y)
+IF (debug_pgm) G888 F(debug_pgm)
+M82
+y = -rectH+rectR
+x = y*TAN(thAngle)
+G1 X(x) Y(y)
+IF (debug_pgm) G888 F(debug_pgm)
+FOR rot = -thStep TO -90.01 BY thStep
+    cy = -rectH+rectR
+    cz = +rectW-rectR
+.th_out_a
+    sn = SIN(rot)
+    cs = COS(rot)
+    y = cy + rectR*sn
+    z = cz + rectR*cs
+    x = y*TAN(thAngle)
+    rx = (y-cy)*TAN(thAngle)
+    b = ATANXY(rx, rectR)
+    G1 X(x) Y(y) Z(z) J(cy) K(cz) B(b) C(rot-thRotation) EI(0) EJ(sn) EK(cs)
+    IF (debug_pgm) G888 F(debug_pgm)
+.th_out_z
+ENDFOR
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Z(+rectW-rectR-border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M83
+G1 Z(-rectW+rectR+border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M82
+G1 Z(-rectW+rectR)
+IF (debug_pgm) G888 F(debug_pgm)
+FOR rot = -90-thStep TO -180.01 BY thStep
+    cy = -rectH+rectR
+    cz = -rectW+rectR
+    RPT .th_out_a, .th_out_z, 1
+ENDFOR
+IF (debug_pgm) G888 F(debug_pgm)
+y = -rectH+rectR+border_pgm
+x = y*TAN(thAngle)
+G1 X(x) Y(y)
+IF (debug_pgm) G888 F(debug_pgm)
+M83
+y = +rectH-rectR-border_pgm
+x = y*TAN(thAngle)
+G1 X(x) Y(y)
+IF (debug_pgm) G888 F(debug_pgm)
+M82
+y = +rectH-rectR
+x = y*TAN(thAngle)
+G1 X(x) Y(y)
+IF (debug_pgm) G888 F(debug_pgm)
+FOR rot = -180-thStep TO -270.01 BY thStep
+    cy = +rectH-rectR
+    cz = -rectW+rectR
+    RPT .th_out_a, .th_out_z, 1
+ENDFOR
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Z(-rectW+rectR+border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M83
+G1 Z(+rectW-rectR-border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M82
+G1 Z(+rectW-rectR)
+IF (debug_pgm) G888 F(debug_pgm)
+FOR rot = -270-thStep TO -360.01 BY thStep
+    cy = +rectH-rectR
+    cz = +rectW-rectR
+    RPT .th_out_a, .th_out_z, 1
+ENDFOR
+IF (debug_pgm) G888 F(debug_pgm)
+y = +rectH-rectR-border_pgm
+x = y*TAN(thAngle)
+G1 X(x) Y(y)
+IF (debug_pgm) G888 F(debug_pgm)
+M83
+G1 X0 Y0
+IF (debug_pgm) G888 F(debug_pgm)
+G17
+G840
+G153 G0 Z(trav_safe_z)
+G186 A0
+
+;//*********************
+;// TOP BEVELED CIRCLE
+;//*********************
+N2
+G161 X(-thBase*2-cirDist)
+G180 X(cirRad-lead2) Y0 Z(rectH+workpiece_safe_dist) B0 C(-360)
+G153 G0 X(kine_x) Y(kine_y) B(kine_b) C(kine_c)
+G153 G0 Z(kine_z)
+G800 K0 D1 G13 X(cirRad-lead2) Y0 Z(rectH) F(feed1) T1 R1 U0 V0 W1 Q0
+IF (debug_pgm) G888 F(debug_pgm)
+G832
+G1 X(cirRad) B(cirBevel)
+IF (debug_pgm) G888 F(debug_pgm)
+FOR rot = cirStep TO 360.01 BY cirStep
+    sn = SIN(rot)
+    cs = COS(rot)
+    x = cirRad*cs
+    y = cirRad*sn
+    Ox = SIN(cirBevel) * COS(rot)
+    Oy = SIN(cirBevel) * SIN(rot)
+    Oz = COS(cirBevel)
+    c = ATANXY(Oy,Oz)
+    Oyz = SQRT(Oy*Oy+Oz*Oz)
+    b = ATANXY(Ox,Oyz)
+    G1 X(x) Y(y) I0 J0 B(b) C(c-360)
+    IF (debug_pgm) G888 F(debug_pgm)
+ENDFOR
+G840
+G153 G0 Z(trav_safe_z)
+
+;//*********************
+;// BOTTOM HEADING
+;//*********************
+N3
+G161 X(-thBase*2-bhDist)
+G180 X(-lead) Y0 Z(rectH+workpiece_safe_dist) B(bhBevel) C(-360)
+G153 G0 X(kine_x) Y(kine_y) B(kine_b) C(kine_c)
+G153 G0 Z(kine_z)
+G800 K0 D1 G11 X(-lead) Y0 Z(rectH) F(feed1) T1 R1 U0 V0 W1 Q0
+IF (debug_pgm) G888 F(debug_pgm)
+G832
+G1 X0
+IF (debug_pgm) G888 F(debug_pgm)
+G19
+G1 Y(+rectW-rectR-border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M82
+G1 Y(+rectW-rectR)
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Y(+rectW) Z(+rectH-rectR) J(+rectW-rectR) K(+rectH-rectR) C-270 EI0 EJ+1 EK0
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Z(+rectH-rectR-border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M83
+G1 Z(-rectH+rectR+border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M82
+G1 Z(-rectH+rectR)
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Y(+rectW-rectR) Z(-rectH) J(+rectW-rectR) K(-rectH+rectR) C-180 EI0 EJ0 EK-1
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Y(+rectW-rectR-border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M83
+G1 Y(-rectW+rectR+border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M82
+G1 Y(-rectW+rectR)
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Y(-rectW) Z(-rectH+rectR) J(-rectW+rectR) K(-rectH+rectR) C-90 EI0 EJ-1 EK0
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Z(-rectH+rectR+border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M83
+G1 Z(+rectH-rectR-border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M82
+G1 Z(+rectH-rectR)
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Y(-rectW+rectR) Z(+rectH) J(-rectW+rectR) K(+rectH-rectR) C0 EI0 EJ0 EK-1
+IF (debug_pgm) G888 F(debug_pgm)
+G1 Y(-rectW+rectR+border_pgm)
+IF (debug_pgm) G888 F(debug_pgm)
+M83
+G1 Y0
+IF (debug_pgm) G888 F(debug_pgm)
+G17
+G840
+
+G169
+M30
+M2

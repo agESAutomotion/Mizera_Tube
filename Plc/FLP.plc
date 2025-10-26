@@ -1,0 +1,42 @@
+
+FUNCTION_BLOCK FF * Gestione Flip Flop di un ingresso
+
+VAR_INPUT
+xPulsante:      BOOL;
+xResetState:    BOOL;
+END_VAR
+
+VAR_OUTPUT
+yComandOn:      BOOL;
+END_VAR
+
+VAR
+StepDueExec_A:  BOOL;
+PulsOn_A:       BOOL;
+RETAIN Comando: BOOL;
+END_VAR
+
+**********************************************************
+* ---                         
+LD   xPulsante     * Ingresso pulsante
+AND  Comando       * stato interno del passo passo
+ANDN PulsOn_A      * Mem.Pulsante Premuto
+ANDN xResetState   * Forzatura Reset stato del Filp Flop
+ST   StepDueExec_A * mem.Secondo step eseguito
+
+LD   StepDueExec_A * mem.Secondo step eseguito
+OR   xResetState   * Forzatura Reset stato del Filp Flop
+R    Comando       * stato interno del passo passo
+                      
+LD   xPulsante     * Ingresso pulsante
+ANDN PulsOn_A      * Mem.Pulsante Premuto
+ANDN StepDueExec_A * mem.Secondo step eseguito
+S    Comando       * stato interno del passo passo
+                      
+LD   xPulsante     * Ingresso pulsante
+ST   PulsOn_A      * Mem.Pulsante Premuto
+
+LD   Comando       * stato interno del passo passo
+ST   yComandOn     * Comando On
+
+END_FUNCTION_BLOCK

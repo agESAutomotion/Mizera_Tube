@@ -1,0 +1,22 @@
+[STRUCT]
+KEYWORD {
+    KEY_APPLPAR;
+    KEY_PLCOPT1;
+    KEY_COSTK;
+    KEY_LSROPT;
+    KEY_LSRCOSTK;
+}
+
+#include "aCFGpar.str"
+#include "lsrCFGpar.str"
+#include "lsrKuser.str"
+#include "Applpar.str";
+
+[KEYS]
+CMD0  = DEFAULT
+CMD1  = DEFAULT
+CMD2  = DEFAULT
+CMD3  = DEFAULT
+CMD4  = DEFAULT
+CMD5  = DEFAULT
+

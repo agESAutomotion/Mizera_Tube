@@ -1,0 +1,124 @@
+[PROMPT]
+KEY_MAG       =Datos Almacén Herramientas
+
+KEY_REV0      =Revólver(0)
+KEY_REV1      =Revólver(1)
+KEY_REV2      =Revólver(2)
+KEY_REV3      =Revólver(3)
+KEY_REV4      =Revólver(4)
+KEY_REV5      =Revólver(5)
+
+KEY_RV        =Configurar Revólver
+KEY_TPMAP     =Asociación Tool-Pocket
+KEY_KINPOCKET =Datos Cinemáticos Revólver
+KEY_DYNTOOL   =Datos Dinámicos Mandril
+
+RV_AXTYPE     =Tipo
+RV_TURRETS    =Número torreta revólver (1-12)
+RV_GIRISP     =Giros mandril
+RV_GIRIRV     =Giros revólver
+RV_VELLIM     =Velocidad límite Revolver (rpm)
+RV_ACCTIME    =Tiempo aceleración (s)
+RV_DECTIME    =Tiempo desacelerac. (s)
+RV_DELAYS     =Tempo di rampa ad S
+RV_GAINP      =Ganancia P
+RV_FWERR      =Máx. error seguimiento (impulsos)
+RV_TOLLERF    =Cota de toler. fina (grados)
+RV_TARQUOTA   =Cota de calibr. (grados)
+RV_PARKQTA    =Cota de estacionam. (grados)
+RV_VELPOS     =Velocidad en orientación(rpm)
+RV_VELJOG     =Velocidad en JOG
+RV_VELCYCLE   =Velocidad en SINGLE CYCLE
+
+TP_PROMPT0     =Numero
+TP_PROMPT1     =Tipo
+TP_PROMPT2     =Pocket
+TP_PROMPT3     =Dinámica
+TP_TOOL1       =T 1
+TP_TOOL2       =T 2
+TP_TOOL3       =T 3
+TP_TOOL4       =T 4
+TP_TOOL5       =T 5
+TP_TOOL6       =T 6
+
+PKIN_COMPX     =Compensación Mecánica X
+PKIN_COMPY     =Compensación Mecánica Y
+PKIN_COMPZ     =Compensación Mecánica Z
+
+TDYN_VELLIM    =Velocidad límite (rpm)
+TDYN_ACCTIME   =Tiempo aceleración (s)
+TDYN_DECTIME   =Tiempo desacelerac. (s)
+TDYN_DELAYS    =Tempo di Rampa ad S
+TDYN_GAINP     =Ganancia P
+TDYN_FWERR     =Máx. error seguimiento (impulsos)
+TDYN_TOLLERF   =Cota de toler. fina (grados)
+TDYN_VELPOS    =Veloc. mandril en orient. (rpm)
+
+
+[HELP]
+
+KEY_MAG       =Datos Almacén Herramientas
+
+KEY_REV0      =Revólver(0)
+KEY_REV1      =Revólver(1)
+KEY_REV2      =Revólver(2)
+KEY_REV3      =Revólver(3)
+KEY_REV4      =Revólver(4)
+KEY_REV5      =Revólver(5)
+
+KEY_RV        =Configurar Revólver
+KEY_TPMAP     =Asociación Tool-Pocket
+KEY_KINPOCKET =Datos Cinemáticos Revólver
+KEY_DYNTOOL   =Datos Dinámicos Mandril
+
+RV_AXTYPE     =Tipo
+RV_TURRETS    =Datos para describir el modelo de Revolver: Número torretas revolver (1-12)
+RV_GIRISP     =Relación de reducción mandril: numerador de la fracción q=n/d, donde q es el número de revoluciones mandril necesario para obtener un giro de revolver
+RV_GIRIRV     =Relación de reducción revolver: denominador de la fracción q=n/d, donde q es el número de revoluciones mandril necesario para obtener un giro de revolver
+RV_VELLIM     =Velocidad límite Revolver (rpm)
+RV_ACCTIME    =Tiempo aceleración (s)
+RV_DECTIME    =Tiempo desacelerac. (s)
+RV_DELAYS     =Tempo di rampa ad S
+RV_GAINP      =Ganancia P
+RV_FWERR      =Máx. error seguimiento (impulsos)
+RV_TOLLERF    =Cota de toler. fina (grados)
+RV_TARQUOTA   =Cota de calibr. (grados)
+RV_PARKQTA    =Cota de estacionam. (grados)
+RV_VELPOS     =Velocidad en orientación(rpm)
+RV_VELJOG     =Velocidad en JOG
+RV_VELCYCLE   =Velocidad en SINGLE CYCLE
+
+TP_PROMPT0     =Numero
+TP_PROMPT1     =Tipo
+TP_PROMPT2     =Pocket
+TP_PROMPT3     =Dinámica
+
+TP_MAP1        =Esta columna permite variar la asociación entre herramienta y respectiva posición en la numeración de las estaciones revolver (default herramienta 1 en pocket 1 )
+TP_MAP2        =
+TP_MAP3        =
+TP_MAP4        =
+TP_MAP5        =
+TP_MAP6        =
+
+TP_DYN1        =Esta columna permite diferenciar la dinámica de cada elaboración. El valor introducido es el índice a la tabla Datos Dinámicos Mandril (default herramienta 1 en dinámica 1 )
+TP_DYN2        =
+TP_DYN3        =
+TP_DYN4        =
+TP_DYN5        =
+TP_DYN6        =
+
+
+PKIN_COMPX     =Datos Cinemáticos Revolver: cada torreta del revolver para estar alineada con la primera debe estar compensada en los 3 componentes dx,dy,dz (valores suministrados por el fabricante del Revolver )
+PKIN_COMPX     =Compensación Mecánica X
+PKIN_COMPY     =Compensación Mecánica Y
+PKIN_COMPZ     =Compensación Mecánica Z
+
+TDYN_VELLIM    =Datos Dinámicos Mandril: estos datos permiten personalizar la dinámica del mandril luego de haber seleccionado la herramienta del almacén. Velocidad límite del mandril
+TDYN_ACCTIME   =Tiempo aceleración (s)
+TDYN_DECTIME   =Tiempo desacelerac. (s)
+TDYN_DELAYS    =Tempo di Rampa ad S
+TDYN_GAINP     =Ganancia P
+TDYN_FWERR     =Máx. error seguimiento (impulsos)
+TDYN_TOLLERF   =Cota de toler. fina (grados)
+TDYN_VELPOS    =Veloc. mandril en orient. (rpm)
+

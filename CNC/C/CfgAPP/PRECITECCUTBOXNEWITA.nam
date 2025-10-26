@@ -1,0 +1,52 @@
+[KEYS]
+TITLE=PROCON
+TXT0=Controllo Altezza
+TXT4=Verifica Calibrazione
+TXT5=Linearizzazione CAPACITIVA
+TXT6=Linearizzazione PWM
+TXT7=Parametri
+TXT8=Controllo Altezza
+TXT16=Servizio 1
+TXT17=Servizio 2 (MDI)
+TXT18=Servizio 3
+
+[PROMPT]
+KEY_NODE=
+CAPFOC_PROCON=Leaf
+GroupBox4=Info Rapide Testina
+LabelTrack2=Numero Traccia
+LabelExeTime2=Tempo di esecuzione
+LabelExeTime1=Avanzamento [m/min]
+lbDiagPar5=Totale / Corrente Pezzi
+GroupBox2=Informazioni ISO
+P_REF2=Avanzamento +
+Label1=%
+P_REF3=Avanzamento -
+Label2=%
+GroupBox1=Allarmi / Messaggi
+ErrorHandler1=Allarmi / Messaggi
+GroupBox3=Informazioni Precitec CutBox
+Button2=Stato Diagnostico CutBox
+Button1=Impostazioni Controllo
+Button3=Leggi Impostazioni
+Button4=Funzioni Distanza
+Button5=Valori Sensore
+Button6=Impostazioni Controllo Funzione Distanza
+LabelPerr1=Lontano
+LabelPerr2=Tip Touch
+LabelPerr4=Cavo Interrotto
+LabelPerr3=Contatto Corpo
+LabelPerr5=Viaggio di Riferimento Attivo
+LabelPerr7=Distanza dal pezzo [mm]
+LabelPerr8=Umidità nella Testina di Taglio [%]
+LabelPerr9=Pressione Attuale del Gas di Taglio [Bar]
+LabelPerr10=Fuoco Attuale [mm]
+Calibration page1=Segui calibrazione
+Calibration page2=Controllo altezza
+ButtonCleanHead1=Impostazioni Pulizia
+GroupBox5=Comando
+Label3=Distanza Focale [mm]
+
+[STATUS]
+
+[HELP]

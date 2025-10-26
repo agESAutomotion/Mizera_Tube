@@ -1,0 +1,38 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+SPINDLES=Leaf
+GroupBox2=Settings
+GroupBox=Mobile Spindle
+GroupBox1=Fixed Spindle
+Button=Open
+Button1=Close
+Label=Open Pressure [bar]
+Button2=Graph D - P
+LabelWorkListTotalTime1=TOTAL TIME
+Button3=Graph P - V (manufacturer)
+Label1=Test- Manual Close Diameter [mm]
+LIST0=12 bit,16 bit
+Label2=Analog Out Resolution
+Button4=Open
+Button5=Close
+Button6=Graph D - P
+Button7=Graph P - V (manufacturer)
+Label3=Analog Out Resolution
+LIST1=12 bit,16 bit
+Label4=Diameter [mm]
+Label5=Threshold on Analog Feedback [Bar]
+Label6=Time-Out [s]
+Label7=Feedback Max Pressure [Bar]
+Label8=Pressure Feedback [Bar]
+Label9=Pressure Feedback [Bar]
+Label10=Close Pressure Command [Bar]
+Label12=Keep Pressure stable Time [s]
+Label13=Close Pressure Command [Bar]
+
+[STATUS]
+
+[HELP]

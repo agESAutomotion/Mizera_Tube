@@ -1,0 +1,82 @@
+
+[KEYS]
+TITLE=TP6022-6 Spindles
+
+[PROMPT]
+KEY_NODE=Node
+SPINDLE_WAR=TP6022-6 Spindles
+AxesLaserCH1=Axes1
+AxesLaserCH2=Axes1
+Button=Disable Gearing Cm - C1
+Button1=Open Mobile Cm Spindle
+Button2=Close Mobile Cm Spindle
+Button3=Open Mobile C2 Spindle
+Button4=Close Mobile C2 Spindle
+Label1=Main Mobile Spindle Cm Clamp Open
+Label2=Main Mobile Spindle Cm Clamp Closed
+Label3=Mobile Spindle C2 Open
+Label4=Mobile Spindle C2 Closed
+Label9=Time - Out Open/Close command [s]
+Label12=Fixed Spindle C1 Open
+Label13=Fixed Spindle C1 Closed
+Label17=[mm]
+Label19=[mm]
+Label25=[mm]
+Label26=[mm]
+Label27=[mm]
+Label28=[mm]
+Label29=Offset Clamp Tube Cm, C2 [mm]
+Label33=[Bar]
+Label34=[Bar]
+GroupBox7=Analog Output
+Label35=Press Mobile Close
+Label36=Press Fix close
+Label37=[Bar]
+Label38=[Bar]
+Button9=Invert Mob Spindle Direction
+AxesLaserCH3=Axes1
+Label5=Main Mobile Spindle Cm Clamp Open
+Label6=Main Mobile Spindle Cm Clamp Closed
+Label7=Mobile Spindle C2 Open
+Label8=Mobile Spindle C2 Closed
+Label10=Fixed Spindle C1 Open
+Label39=Fixed Spindle C1 Closed
+Label40=Note: No Feedback Sensors
+Button10=Open C1 Fixed Spindle
+Button11=Close C1 Fixed Spindle
+Button12=Disable Gearing Cm - C2
+ButtonSpindleAlig1=SPINDLE ALIGMENT C1 C2 -> Cm
+Label41=Parameters
+Label42=Options
+Label43=Inputs
+Label44=Outputs
+P_REF1=Feed +
+Label45=%
+P_REF2=Feed -
+Label47=X axis Position [mm]
+Not used2=X1 axis Position [mm]
+Label48=X3 axis Position [mm]
+Button14=Send Pos
+Button13=Send Pos
+Button16=Send Pos
+Label49=Anti-Colision Spindles
+Label50=Safe Distance X - X3 (Hold) [mm]
+Label51=Safe Distance X3 - X1 (Hold) [mm]
+Label52=Safe Distance X - X3 (Emergency) [mm]
+Label53=Safe Distance X3 - X1 (Emergency) [mm]
+Label54=Invert Mobile Clamp Output
+Label55=X limit when X3 at positive during cutting
+Label56=Safe X3 - L1  [X3 Quota]
+Label57=Safe X3 - Dustbin  [X3 Quota]
+Label58=Note: M4 to unload related
+Label59=Chucks Open / Close Timer (Auto Cycle) [S]
+Label60=2nd and 3rd Spindles
+Label61=Main Spindle
+Label62=- 3
+Label63=+ 3
+Label64=Dynamic BW safety distance according to the current B-axis angle
+AxesLaserCH4=Axes1
+
+[STATUS]
+
+[HELP]

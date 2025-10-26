@@ -1,0 +1,28 @@
+[PROMPT]
+KEY_GEOCHAN   =几何通道
+
+GC_GEOTYPE    = 几何类型
+GC_MODE       = 方式 (0=禁止 1=允许)
+GC_X_ANG_SGN  = 反向 Ang(B)
+GC_X_ANG      = 角度(B) X 轴
+GC_X_DST_SGN  = 反向 轴(X)
+GC_X_DST      = X 到 中心 距离
+GC_Y_ANG_SGN  = 反向 Ang(A)
+GC_Y_ANG      = 角度(A) Y轴
+GC_Y_DST_SGN  = 反向 (Y)轴
+GC_Y_DST      = Y 到中心距离
+GC_Z_ANG_SGN  = 反向 Ang(xx)
+GC_Z_ANG      = 角度  Z轴
+GC_Z_DST_SGN  = 反向 (Z)轴
+GC_Z_DST      = Z 到中心的距离
+GC_EA_DEF_SGN = 反向 Ang(EA)
+GC_EA_DEF     = 刀具角度 (EA)
+GC_EB_DEF_SGN = 反向 Ang(EB)
+GC_EB_DEF     = 刀具角度 (EB)
+GC_EC_DEF_SGN = 反向 Ang(EC)
+GC_EC_DEF     = 刀具角度 (EC)
+
+
+[HELP]
+
+

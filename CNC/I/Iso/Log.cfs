@@ -1,0 +1,588 @@
+: Log
+;*%LsIso81.0 = 1     Start to origin
+;*%LsIso81.1 = 1     Acquire One Point Origin
+;*%LsIso81.2 = 1     Capacitive Sensor Calibration Start 
+;*%LsIso81.3 = 1     Capacitive test run
+;*%LsIso81.4 = 1     Capacitive test finished
+;*%LsIso81.5 = 1     ----------------------------------
+;*%LsIso81.6 = 1     Pallet change start
+;*%LsIso81.7 = 1     Pallet change finished
+;*%LsIso81.8 = 1     Head cleaning Start
+;*%LsIso81.9 = 1     Head cleaning finished
+;*%LsIso81.10 = 1    Graphic refresh
+;*%LsIso81.11 = 1    Manual APA start
+;*%LsIso81.12 = 1    Manual APA finished  
+;*%LsIso81.13 = 1    Go to Brack point start
+;*%LsIso81.14 = 1    Go to Break point finished
+;*%LsIso81.15 = 1    Go to Service Position Start
+;*%LsIso81.16 = 1    Go to Service Position Finished
+;*%LsIso81.17 = 1    Pallet Change Start 
+;*%LsIso81.18 = 1    Pallet Change Finished   
+;*%LsIso81.19 = 1    Manual Cut Start  
+;*%LsIso81.20 = 1    Manual cut Finished
+;*%LsIso81.21 = 1    Capacitive Sensor Calibration Finished
+
+;*%LsPlc65.0 = 1     Jog + Command
+;*%LsPlc65.1 = 1     Jog - Command
+;*%LsPlc65.2 = 1     Program Start
+;*%LsPlc65.3 = 1     Program Finished
+;*%LsPlc65.4 = 1     Program in run
+;*%LsPlc65.5 = 1     Stop Button Pushed
+;*%LsPlc65.6 = 1     Program in hold
+  
+                                     
+IF  (!%ui39.0) THEN                  ; graphic signal to allow logger
+                     
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Log Start          
+                     
+  IF  (%LsIso81.0) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Start to Origin;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.0 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.1) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Acquire One Point Origin;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.1 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.2) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Capacitive Sensor Calibration Start;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.2 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.3) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Capacitive Test Run;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.3 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.4) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Capacitive Test Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.4 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.5) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Start to Origin;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.5 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.6) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Pallet Change Start;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.6 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.7) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Pallet Change Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.7 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.8) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Head Cleaning Start;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.8 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.9) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Head Cleaning Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.9 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.10) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Graphic Refresh;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.10 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.11) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Manual APA Start;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.11 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.12) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Manual APA Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.12 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.13) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Go to Break Point Start;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.13 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.14) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Go to Break Point Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.14 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.15) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Go to Service Position Start;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.15 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.16) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Go to Service Position Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.16 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.17) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Pallet Change Start;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.17 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.18) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Pallet Change Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.18 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.19) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Manual Cut Start;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.19 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.20) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Manual Cut Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.20 = 0
+  ENDIF 
+  
+  IF  (%LsIso81.21) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0002","; ", "Capacitive Sensor Calibration Finished;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   ?%LsIso81.21 = 0
+  ENDIF 
+  
+  ;**********************************************************************************
+  ; Log from PLC
+  
+  IF  (%LsPlc65.0) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Jog + Command;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.0 = 0
+  ENDIF 
+  
+  IF  (%LsPlc65.1) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Jog - Command;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.1 = 0
+  ENDIF 
+  
+  IF  (%LsPlc65.2) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Start Button pushed;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.2 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.3) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   ;;;;;CALL filePutItems(0, "0003","; ", "Program finished;")
+   sProgram = %cn0.StrPgm
+   CALL filePutItems(0, "0010","; ", sProgram, "; " )
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.3 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.4) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Program in Run;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.4 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.5) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Stop Button Pushed;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.5 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.6) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Program in Hold;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.6 = 0
+  ENDIF
+ 
+  IF  (%LsPlc65.7) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Reset;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.7 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.8) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Manual Laser Shot Start Button;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.8 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.9) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Manual Laser Shot Stop Button;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.9 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.10) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Gas Test;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.10 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.11) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Open Nitrogen Valve;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.11 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.12) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Open Oxygen Valve;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.12 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.13) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Open Air Valve;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.13 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.14) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Reference Mode;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.14 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.15) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Jog Mode;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.15 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.16) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Inc Mode;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.16 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.17) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "MDI Mode;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.17 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.18) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Auto Mode;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.18 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.19) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Dry Run Enable;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.19 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.20) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Dry Run Disable;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.20 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.21) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Force Z Up Enable [L0];")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.21 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.22) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Force Z Up Disable [L0];")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.22 = 0
+  ENDIF
+
+  IF  (%LsPlc65.23) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Jog Stop;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.23 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.24) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "No Z axis movement enable;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.24 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.25) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "No Z axis movement disable;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.25 = 0
+  ENDIF
+
+  IF  (%LsPlc65.26) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Enable sheet control dimension;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.26 = 0
+  ENDIF
+  
+  IF  (%LsPlc65.27) THEN 
+   CALL timeGetCurrentTZ(^bYY,^bMM,^bDD,^bhh,^bmm,^bss)
+   RPT .format_a, .format_z, 1
+   CALL fileOpenAsAppend(0, path1, 0)
+   CALL filePutItems(0, sYY , "/", sMM, "/", sDD, "; ", shh, ":", smm, "; ")
+   CALL filePutItems(0, "0003","; ", "Disable sheet control dimension;")
+   CALL fileWriteLine(0)
+   CALL fileClose(0)
+   %LsPlc65.27 = 0
+  ENDIF
+
+ENDIF 
+
+IF (%LsPlc65.31) THEN                                ; Delete all content
+   CALL fileOpenAsWrite(0, path1, 0)
+   CALL fileClose(0)
+   %LsPlc65.31 = 0
+ENDIF
+
+RET
+
+.format_a                                                          
+    CALL stringFormatInteger32(^sYY, 4, 4, 10, 0x2, bYY, ^overflow)
+    CALL stringFormatInteger32(^sMM, 2, 2, 10, 0x2, bMM, ^overflow)
+    CALL stringFormatInteger32(^sDD, 2, 2, 10, 0x2, bDD, ^overflow)
+    CALL stringFormatInteger32(^shh, 2, 2, 10, 0x2, bhh, ^overflow)
+    CALL stringFormatInteger32(^smm, 2, 2, 10, 0x2, bmm, ^overflow)
+    CALL stringFormatInteger32(^sss, 2, 2, 10, 0x2, bss, ^overflow)
+.format_z                                                          

@@ -1,0 +1,118 @@
+ : pcsEvalFace
+;// pipe calibration cycles:
+;// helper to find complete data about a polygon face.
+;// INPUT:
+;//     pcFaceToEval        face first vertex
+;// OUTPUT:
+;//     pcAngleBC           face angle
+;//     pcLengthBC          face length
+;//     pcPb[2], pcPc[2]    face vertices
+;//     pcPbr, pcPcr        face vertices rounding radius
+;//     pcLb, pcLc          face vertices rounding center projection length
+;//     pcSignB, pcSignC    face vertices not-convexity
+
+DBL pi = tubePI
+DBL i = pcFaceToEval
+
+DBL ax, ay
+DBL bx, by, br
+DBL cx, cy, cr
+DBL dx, dy
+DBL lx, ly
+DBL lengthBC, flatLength
+DBL angleAB, angleBC, angleCD
+DBL angleABC, angleBCD
+DBL signB, signC
+DBL length
+DBL delta
+DBL lb, lc
+DBL n, ti
+
+n = %gmaPolygons[pi].gmanVertices
+IF (n < 3) ERROR(55) ;// at least 3p for a polygon
+
+;// load data for ABCD, where current segment is BC and polygon is closed
+ti = i - 1
+IF (ti < 0) ti = ti + n
+ax = %gmaPolygons[pi].gmaVertices[ti].gma_u
+ay = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+ti = i
+bx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+by = %gmaPolygons[pi].gmaVertices[ti].gma_v
+br = %gmaPolygons[pi].gmaVertices[ti].gma_r
+
+ti = i + 1
+IF (ti >= n) ti = ti - n
+cx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+cy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+cr = %gmaPolygons[pi].gmaVertices[ti].gma_r
+
+ti = i+2
+IF (ti >= n) ti = ti - n
+dx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+dy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+
+;// obtain AB, BC, CD orientations and BC length
+lx = bx - ax
+ly = by - ay
+length = SQRT(lx * lx + ly * ly)
+IF (length < 0.1) ERROR(55) ;// null segment
+angleAB = ATANXY(ly, lx)
+
+lx = cx - bx
+ly = cy - by
+length = SQRT(lx * lx + ly * ly)
+IF (length < 0.1) ERROR(55) ;// null segment
+angleBC = ATANXY(ly, lx)
+lengthBC = length
+
+lx = dx - cx
+ly = dy - cy
+length = SQRT(lx * lx + ly * ly)
+IF (length < 0.1) ERROR(55) ;// null segment
+angleCD = ATANXY(ly, lx)
+
+;// obtain ABC and BCD angles.
+    ;// modulo difference algorithm => [+180..-180)
+delta = angleBC - angleAB
+delta = MOD(delta, 360.0)
+IF (delta < 0.0)   delta = delta + 360.0
+IF (delta > 180.0) delta = delta - 360.0
+IF ((delta > +175.0) || (delta < -175.0)) THEN
+    ERROR(55) ;// vertex too sharp
+ENDIF
+signB = SGN(delta)
+angleABC = 180.0 - ABS(delta)
+
+    ;// modulo difference algorithm => [+180..-180)
+delta = angleCD - angleBC
+delta = MOD(delta, 360.0)
+IF (delta < 0.0)   delta = delta + 360.0
+IF (delta > 180.0) delta = delta - 360.0
+IF ((delta > +175.0) || (delta < -175.0)) THEN
+    ERROR(55) ;// vertex too sharp
+ENDIF
+signC = SGN(delta)
+angleBCD = 180.0 - ABS(delta)
+
+lb = br / TAN(angleABC/2)
+lc = cr / TAN(angleBCD/2)
+
+flatLength = lengthBC - lb - lc;
+IF (flatLength < -0.001) ERROR(55) ;//degenerate side
+
+pcAngleBC = angleBC
+pcLengthBC = lengthBC
+pcPb[0] = bx
+pcPb[1] = by
+pcPc[0] = cx
+pcPc[1] = cy
+pcPbr = br
+pcPcr = cr
+pcLb = lb
+pcLc = lc
+pcSignB = signB
+pcSignC = signC
+
+RET

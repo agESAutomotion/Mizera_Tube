@@ -1,0 +1,22 @@
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Nodo
+ANTICOLISION=Anticollisione
+Label1=Distanza di Sicurezza X - X3 (Mantenimento) [mm]
+Label2=Distanza di Sicurezza X3 - X1 (Mantenimento) [mm]
+Label3=Distanza di Sicurezza X - X3 (Emergenza) [mm]
+Label4=Distanza di Sicurezza X3 - X1 (Emergenza) [mm]
+Label5=Limite X quando X3 è negativo durante il taglio
+Label6=Sicurezza X3 - L1  [Quota X3]
+Label7=Sicurezza X3 - Contenitore Scarti  [Quota X3]
+Label8=Nota: M4 relativo allo scarico
+Label9=Anticollisione Mandrini
+Label10=- 3
+Label11=+ 3
+Label12=Distanza di sicurezza dinamica BW in base all’angolo corrente dell’asse B
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,23 @@
+: JUMP_INC
+
+IF(DEFINED("jump_included")) RET
+DBL jump_included = 1
+
+;// Origin frame
+DBL Jmx_a11=1, Jmx_a12=0, Jmx_a13=0, Jmx_o1=0
+DBL Jmx_a21=0, Jmx_a22=1, Jmx_a23=0, Jmx_o2=0
+DBL Jmx_a31=0, Jmx_a32=0, Jmx_a33=1, Jmx_o3=0
+DBL Jpl_orig_u=0, Jpl_orig_v=0, Jpl_orig_w=0
+DBL Jpl_orig_a=0, Jpl_orig_b=0, Jpl_orig_c=0
+
+;// Shape data
+DBL JminR = 0
+
+DBL JshowBoundingRing = 0
+DBL JstateAvail = 0
+;// Programmed surface normal in the table frame (G180 does not handle n)
+DBL Jfi, Jfj, Jfk
+;// Actual surface normal in the origin frame
+DBL Jni, Jnj, Jnk
+
+RET

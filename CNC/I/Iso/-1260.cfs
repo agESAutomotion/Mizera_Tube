@@ -1,0 +1,33 @@
+ [P] :G260
+;//Gestione pezzo e geometria per versione LISTE
+DBL num=VA15
+DBL change_piece = 0
+
+IF( !%cn[WHO()].rc[0].21 ) THEN
+
+    ; In quanto il post lantek mette una G260 P1
+    IF( num > 1000 ) THEN
+        ; Se gestione PEZZO e GEOMETRIA
+        IF( %PlcOp0.31 ) THEN
+            ; (%PEZZO * 1000) + (%GEOMETRIA)
+            start_track = num
+            ?%R18=start_track
+
+            IF( (%PEZZO != 0) && (%PEZZO != FLOOR(num / 1000)) )  change_piece = 1
+
+            SYN
+            ; Se opzione abilitata (fine geometria o fine pezzo) forza una pausa
+            IF( (%LSRPlcOp0.19) && (change_piece == 1) ) THEN
+                G153 G0 Z((MaxQta_Z) - 10)      ;Posizione "Z" al finecorsa Software - 10 mm
+                $ FINE PEZZO: premi START per continuare...
+                M0
+                $
+            ENDIF
+
+            %PEZZO = num / 1000
+            %GEOMETRIA = num - (%PEZZO * 1000)
+        ENDIF
+    ENDIF
+ENDIF
+
+RET

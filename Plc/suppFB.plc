@@ -1,0 +1,490 @@
+*******************************************************************************
+*   suppFB.plc
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "assi.plc"
+
+*******************************************************************************
+*   Support axis management (Cascading Blend Switch, G.D)
+*******************************************************************************
+
+VAR_IN_OUT
+AxPos             AT  %ra4;      * Axis position
+Go_Follow         AT  %rgau0;    * Force down by blending algh.
+AddFollow         AT  %rgau1;    * Add value during following
+BldState          AT  %rgau2;    * Blend switch output, (0->1000) (parking -> following)
+ParkingSet        AT  %rgau3;    * Real time parking position (input)
+AddFollow_Out     AT  %rgau4;    * Add value during following (output)
+ParkingSet_Out    AT  %rgau5;    * Real time parking position (output)
+
+filterT1Rate      AT  %rgdau0;   * Blendswitch filter rate [0.001/min]
+addValueVel       AT  %rgdau1;   * Following add value speed [um/min]
+addValueVelM      AT  %rgdau2;   * Parking speed [um/min]
+
+ProbeThreshold    AT  %gIso30;   *(gIso30) probe threshold (G2292)
+
+LatCenterToCloseRun AT %SUPPORTS_SYSTEM.values13.17;
+END_VAR
+
+FUNCTION_BLOCK    SUPPORT
+
+VAR_INPUT
+xUaxDir:          BOOL;          * 1 - if spindle move towards the 0 of the machine decreasing its quota  
+                                 * 0 - if spindle move towards the 0 of the machine increasing its quota     
+xHoldExem:        BOOL;          * Support Hold Exemption (in case of initialization)								 
+xUaxStill:        BOOL;          * U axis is not moving (%ra3.0)
+xReset:           BOOL;          * Emergency and Reset for PosAx
+xEnabAutoDwn:     BOOL;          * Enable Auto Support Down
+xEnabAutoUp:      BOOL;          * Enable Auto Support Up (Blend)
+xBlendSwitchEn:   BOOL;          * blendswitch enable
+xParkCmd:         BOOL;          * JOG / Auto Cmd to park
+xSensSafePos:     BOOL;          * Safety sensor to be sure the support is parked
+xEnSecFollow:     BOOL;          * Enable addvalue during support following 
+xG520VSup:        BOOL;          * In G520 using V support unloading (Parking Target by ISO)
+xEnCyComSup:      BOOL;          * Enable motor cylinder composite support
+xEnBldFeed:       BOOL;          * Blend switch feedrate management
+
+xSupervisePos:   DWORD;          * Position of the U axis -> start autodown
+xSuperviseOft:   DWORD;          * Offset of position U to be closer to the support
+xLimitSuppDwn:   DWORD;          * U axis limit position for support down
+xParkingPos:     DWORD;          * Support Parking position 
+xUnSupQta:       DWORD;          * Support Parking position to Unload
+xAddFollPos:     DWORD;          * Added following targets
+xCyComOft:       DWORD;          * Motor cylinder composite support blend switch offset
+xM700_M704:      DWORD;          * M700, M704 executing
+xBlendId:        DWORD;          * Blend ID for speed reset ([lv, lat, ulv, uhor]=[0,1,2,3])
+xBldFeed:        DWORD;          * Blend switch feedrate % (0-100) 
+END_VAR
+
+VAR_OUTPUT
+yReqGrant:        BOOL;
+yHoldMovSupp:     BOOL;
+yHoldMovSuperv:   BOOL; 
+yAxInParkPos:     BOOL;
+yCenterOpen:      BOOL; 
+yCyComDwn:        BOOL;
+yCyComOft:       DWORD;
+END_VAR
+
+VAR
+resReq:           BOOL;
+Req_Parking:      BOOL;
+HoldSuppAxis:     BOOL;
+HoldSuperviAxis:  BOOL;
+appoggio:         BOOL; 
+GoUpSuppAuto:     BOOL;   
+M700Running:      BOOL;
+M704Running:      BOOL;
+CenterOpen:       BOOL;
+
+OuterPlusOne:     DWORD;
+Supervise_Oft:    DWORD;
+ProbeThrsTmp:     DWORD;
+
+TON_CLOSE_LOOP:    TON;
+TRIG_PRKCON:      TRIG;
+R_TRIG_BLD:     R_TRIG;
+R_RES_REQ:      R_TRIG;
+RTRIG_REQ_PARK: R_TRIG;
+RTRIG_PARK:     R_TRIG;
+RTRIG_RES_PARK: R_TRIG;
+RTRIG_SAFE_DWN: R_TRIG;
+RTRIG_REQ_UP:   R_TRIG;
+RTRIG_RES_UP:   R_TRIG;
+FTRIG_PRGRUN:   F_TRIG;
+PosSupp:      AX_POSIZ;
+END_VAR
+
+LD   xM700_M704
+EQ   700
+AND  %cn0.rc8.0
+ST   M700Running
+
+LD   xM700_M704
+EQ   704
+AND  %cn0.rc8.0
+ST   M704Running
+
+LD   ProbeThreshold
+ST   ProbeThrsTmp
+
+* Motor cylinder composite support type
+LD   xEnCyComSup
+JMPCN _CYCOMEN
+     LD   xCyComOft
+     ADD  ProbeThreshold
+     ST   ProbeThrsTmp
+_CYCOMEN:
+
+* ProbeThreshold = Optimized_lift = OuterPlusOne + 20
+LD   ProbeThrsTmp
+SUB  19000           *19mm
+ST   OuterPlusOne
+
+LDN  xEnSecFollow
+JMPCN CLRFOFFSET
+     LD   0
+	 ST   AddFollow
+CLRFOFFSET:
+
+* Added offset within safely down distance
+LD   xSuperviseOft
+ABS
+ST   Supervise_Oft
+
+LD   xSuperviseOft
+ABS
+GT   200000
+JMPCN OUTRNGOFT
+     LD   xSuperviseOft
+	 ABS
+     ST   Supervise_Oft
+OUTRNGOFT: 
+
+CAL  TON_CLOSE_LOOP (IN:=%ra0.0,PT:=300)
+
+LDN  xUaxDir
+JMPCN  no_check
+     * Supervisor
+     LD   xSupervisePos
+     GT   xLimitSuppDwn
+     AND  TON_CLOSE_LOOP.Q
+     ANDN (
+     LD   AxPos
+     ADD  1000
+     GT   xParkingPos
+     *AND  xSensSafePos
+     )
+     ST   HoldSuperviAxis
+     
+     LD   xSupervisePos
+     ADD  200000                       * safety
+	 SUB  Supervise_Oft
+     GT   xLimitSuppDwn
+     AND  TON_CLOSE_LOOP.Q
+     ANDN HoldSuperviAxis
+     ST   HoldSuppAxis
+	 
+	 LD   xSupervisePos
+	 ADD  350000
+	 GT   xLimitSuppDwn
+	 ANDN (
+     LD   AxPos
+     ADD  1000
+     GT   xParkingPos
+     )
+	 ANDN xUaxStill
+	 OR(
+	 LDN  %ra3.0
+	 ANDN LatCenterToCloseRun
+	 )
+	 ST   CenterOpen
+no_check:
+
+LD   xUaxDir
+JMPCN  no_check1
+     * Supervisor
+     LD   xSupervisePos
+     LT   xLimitSuppDwn
+     AND  TON_CLOSE_LOOP.Q
+     ANDN (
+     LD   AxPos
+     ADD  1000
+     GT   xParkingPos
+     *AND  xSensSafePos
+     )
+     ST   HoldSuperviAxis
+     
+     LD   xSupervisePos
+     SUB  200000                       * safety
+	 ADD  Supervise_Oft
+     LT   xLimitSuppDwn
+     AND  TON_CLOSE_LOOP.Q
+     ANDN HoldSuperviAxis
+     ST   HoldSuppAxis
+	 
+	 LD   xSupervisePos
+	 SUB  350000
+	 LT   xLimitSuppDwn
+	 ANDN (
+     LD   AxPos
+     ADD  1000
+     GT   xParkingPos
+     )
+	 ANDN xUaxStill
+	 OR(
+	 LDN  %ra3.0
+	 ANDN LatCenterToCloseRun
+	 )
+	 ST   CenterOpen
+no_check1:
+
+LD   HoldSuppAxis
+OR(
+     LD   HoldSuperviAxis
+     ANDN HoldSuppAxis 
+)
+ANDN %cn0.rc8.0
+ST   appoggio
+CAL  RTRIG_SAFE_DWN(CLK:=appoggio)
+
+CAL  RTRIG_REQ_PARK (CLK:=HoldSuppAxis)
+CAL  RTRIG_PARK (CLK:=xParkCmd)
+LD   RTRIG_REQ_PARK.Q
+OR   RTRIG_SAFE_DWN.Q
+AND  xEnabAutoDwn
+OR   RTRIG_PARK.Q
+ANDN %rc0.8                 *in ref
+AND  TON_CLOSE_LOOP.Q   
+S    Req_Parking  
+
+*//============================================================================                 	  
+*// JOG Mode Supports Parking		
+*//============================================================================		  
+LDN   %cn0.rc8.0 
+OR(
+LD    xParkCmd
+OR    Req_Parking
+ANDN  xBlendSwitchEn 
+AND   %cn0.rc8.0 
+)                   
+JMPCN Jog_management 
+      LD   Req_Parking   
+      AND  TON_CLOSE_LOOP.Q  
+      ANDN PosSupp.yax_ENDERR	  
+      ST   PosSupp.xax_ENABLE
+	  CAL  TRIG_PRKCON(CLK=PosSupp.xax_ENABLE)
+      
+      LDN  PosSupp.xax_ENABLE
+	  OR   TRIG_PRKCON.Q
+      ST   PosSupp.xax_CLEAR
+      
+      LD   PosSupp.xax_ENABLE
+      AND  PosSupp.yax_READY
+      ANDN PosSupp.yax_ENDERR
+      ST   PosSupp.xax_START
+      
+      LD   xParkingPos
+      ST   PosSupp.xax_QUOTA  
+      
+      LD   %pa9
+      ST   PosSupp.xax_VEL
+      
+      CAL  PosSupp
+      
+      LD   PosSupp.yax_ENDOK
+      OR   xReset
+      ST   resReq
+      
+      CAL  R_RES_REQ (CLK:=resReq)
+      LD   R_RES_REQ.Q
+      R    Req_Parking
+Jog_management:
+
+CAL   FTRIG_PRGRUN (CLK:=%cn0.rc8.0)
+LD    FTRIG_PRGRUN.Q
+R     Req_Parking
+
+*//============================================================================
+*// Blendswitch Veladdval / Hold / Feedrate Condition initialization
+*//============================================================================
+LD   %BLEND_VEL.filTRate[xBlendId]
+ST   filterT1Rate
+   
+LD   %BLEND_VEL.velAddVal[xBlendId]
+ST   addValueVel 
+ST   addValueVelM
+
+LD   xEnBldFeed
+JMPCN _BLENDFEED	  
+	  LD   xBldFeed
+	  MULDIV(M=filterT1Rate,D=100)
+	  ST   filterT1Rate
+	  
+	  LD   xBldFeed
+	  MULDIV(M=addValueVel,D=100)
+	  ST   addValueVel 
+      ST   addValueVelM
+_BLENDFEED:	  
+	  
+LD    %cn0.rc8.1  
+AND   xBlendSwitchEn
+JMPCN _BLENDHOLD
+      LD   0
+      ST   filterT1Rate
+      ST   addValueVel 
+      ST   addValueVelM
+_BLENDHOLD:
+
+*//============================================================================
+*// Auto Mode Supports (Bi-State CMD)
+*//============================================================================
+LD    %cn0.rc8.0  
+AND   xBlendSwitchEn
+AND   xEnabAutoDwn
+JMPCN AUTO_MANAGEMENT
+      LD   HoldSuppAxis
+	  OR(
+	       LD   HoldSuperviAxis
+           ANDN HoldSuppAxis 
+	  )
+      OR   xParkCmd
+	  OR   Req_Parking
+      JMPCN BLEND_PARK_STATUS             *++++++
+           LD   0
+           ST   Go_Follow
+		   LD   0
+		   ST   AddFollow
+		   
+		   * Cascading Movement after bld = 0
+		   LD   BldState
+		   EQ   0
+		   ANDN M700Running
+		   ANDN M704Running
+		   ANDN xG520VSup
+		   JMPCN PARKLVL0
+		         LD   xParkingPos
+		         ST   ParkingSet
+		   PARKLVL0:
+		   
+		   * V support leveling in G520 -> xG520VSup
+		   * At the moment, ParkingSet given by ISO only
+		   LD   BldState
+		   EQ   0
+		   ANDN M700Running
+		   ANDN M704Running
+		   AND  xG520VSup
+		   JMPCN PARKUNLOAD
+		         LD   xUnSupQta
+		         ST   ParkingSet
+		   PARKUNLOAD:
+		   
+		   * During G0 and M700
+		   LD   BldState
+		   EQ   0
+		   AND  M700Running
+		   AND (
+				LD   OuterPlusOne
+				ADD  200                 *0.2mm
+				GT   AxPos
+		   )	
+           ANDN (
+		   		LD   HoldSuperviAxis
+                ANDN HoldSuppAxis
+		   )		   
+		   JMPCN PARKLVL1
+		        LD   ProbeThrsTmp
+		        ST   ParkingSet
+		   PARKLVL1:
+		   
+		   * In case of X moves causes hold in M700
+		   LD   HoldSuperviAxis
+           ANDN HoldSuppAxis
+		   AND  M700Running
+		   JMPCN OPTPRKHOLD
+				 LD   xParkingPos
+		         ST   ParkingSet
+		   OPTPRKHOLD:
+		   	   
+      JMP  BLEND_SKIP_FOLLOW              *//////
+      BLEND_PARK_STATUS:                  *++++++
+	  
+	       LD   xEnabAutoUp
+		   JMPCN STATUS_ENUP
+		         LD   OuterPlusOne
+		         ST   ParkingSet 
+		   
+                 LD   1
+				 AND(
+				 LD   ParkingSet
+				 EQ   ParkingSet_Out
+				 )  
+                 ST   Go_Follow							
+		   STATUS_ENUP:	
+		   
+		   * Added value management following
+		   LD    BldState
+		   EQ    1000
+		   AND   xEnSecFollow
+		   JMPCN STATUS_FOFFSET
+		         LD   xAddFollPos
+			     ST   AddFollow
+		   STATUS_FOFFSET: 
+		    
+      BLEND_SKIP_FOLLOW:                  *//////
+	  	  
+      LD   %PLCFLAGS.0
+      ST   Req_Parking 
+AUTO_MANAGEMENT:
+
+LDN   %cn0.rc8.0  
+JMPCN RSTBLEND
+      LD    0
+      ST    Go_Follow
+RSTBLEND:
+
+*//============================================================================
+*// Output
+*//============================================================================
+LD    AxPos
+SUB   xParkingPos
+ABS   
+LT    1000
+ST    yAxInParkPos
+	  
+LD    Req_Parking
+ANDN  %cn0.rc8.0  
+OR(
+LD    xParkCmd
+OR    Req_Parking
+ANDN  xBlendSwitchEn 
+AND   %cn0.rc8.0 
+)   
+AND   TON_CLOSE_LOOP.Q
+ANDN (
+LD    xHoldExem
+ANDN  xBlendSwitchEn 
+AND   %cn0.rc8.0   
+)
+ST    yReqGrant
+	  
+LD    HoldSuppAxis
+ANDN (
+LD    xHoldExem
+ANDN  xBlendSwitchEn 
+AND   %cn0.rc8.0   
+)
+ANDN  yReqGrant
+OR(
+LD    %cn0.rc9                * Registro funzioni M canale 0
+EQ    30
+AND   %cn0.rc8.4              * Strobe funzioni M canale 0
+)
+ST    yHoldMovSupp
+	  
+LD    HoldSuperviAxis   
+ST    yHoldMovSuperv
+
+LD    CenterOpen
+OR(
+LD    xM700_M704
+NE    0
+)
+ST    yCenterOpen
+
+LD    xCyComOft
+EQ    0
+AND   xEnCyComSup   
+ST    yCyComDwn
+
+LD    0
+ST    yCyComOft
+
+LD   xEnCyComSup
+JMPCN _CYCOMENOFT
+     LD   xCyComOft
+     ST   yCyComOft
+_CYCOMENOFT:
+
+END_FUNCTION_BLOCK

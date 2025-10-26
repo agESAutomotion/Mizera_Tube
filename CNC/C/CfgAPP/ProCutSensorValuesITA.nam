@@ -1,0 +1,23 @@
+
+[KEYS]
+TITLE=Valori Sensori ProCut
+
+[PROMPT]
+KEY_NODE=Nodo
+PROCUTSENSORVALUES=Foglia
+LabelPerr1=Temperatura Lente di Messa a Fuoco [°C]
+LabelPerr2=Temperatura Finestra Protettiva Processo [°C]
+LabelPerr3=Temperatura Testina di Taglio [°C]
+LabelPerr4=Temperatura Sensore di Distanza [°C]
+LabelPerr5=Luce Parassita Percorso Fascio [%]
+LabelPerr6=Luce Parassita Finestra Protettiva Lente Collimante [%]
+LabelPerr7=Luce Parassita Finestra Protettiva Processo [%]
+LabelPerr8=Pressione di Tenuta Finestra Protettiva Processo [mbar]
+LabelPerr9=Pressione Attuale Gas di Taglio [mbar]
+LabelPerr10=Umidita Interna Testina di Taglio [%]
+LabelPerr11=Temperatura Lente Collimante [°C]
+LabelPerr12=Plasma
+
+[STATUS]
+
+[HELP]

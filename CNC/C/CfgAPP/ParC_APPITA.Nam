@@ -1,0 +1,12 @@
+[PROMPT]
+KEYWORD =Parameters
+
+#include "Applpar?.nam"
+#include "aCFGpar?.nam"
+#include "lsrCFGpar?.nam"
+#include "lsrKuser?.nam"
+
+
+[HELP]
+
+[KEYS]

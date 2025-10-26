@@ -1,0 +1,12 @@
+[KEYS]
+TITLE=0-10 VDC 輸出
+
+[PROMPT]
+KEY_NODE=Node
+0-10_VDC_OUTPUT=Leaf
+PIN1=PIN1: 輸出信號
+PIN2=PIN2: 接地參考
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,20 @@
+
+[KEYS]
+TITLE=Smusso 15°
+
+[PROMPT]
+KEY_NODE=Nodo
+GRAPH2=Aspirazione
+Plot1.2=Smusso 15°
+L_TYPE_INTERP1=Punti
+L_Height2=Altezza [mm]
+L_Voltage2=Tensione [DAC]
+L_TYPE_INTERP2=Profilo
+LIST0=Lineare,Segmento,Smussatura
+Button2=>
+Button1=<
+
+[STATUS]
+Plot1.2=Altezza (mm), Tensione (DAC)
+
+[HELP]

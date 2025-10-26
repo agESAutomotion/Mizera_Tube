@@ -1,0 +1,55 @@
+
+[KEYS]
+TITLE=Test uscite
+TXT0=IW0-IW1
+TXT1=IW4-IW5
+TXT2=IW510-IW500
+TXT4=QW2-QW3
+TXT5=QW6-QW7
+TXT6=QW410
+TXT12=Help IO
+TXT14=Forza uscite
+MSG14=Vuoi forzare le uscite ?
+TXT15=Ripristina uscite
+
+[PROMPT]
+KEY_NODE=
+OUTPUTS02=Leaf
+lbForcedOut=Uscite forzate
+lbOut2=Uscite digitali (QW6-QW7)
+lb1=QW6.2 Maifold aria
+lb2=QW6.0 Maifold ossigeno
+lb3=QW6.3 Cambio pallet in esecuzione
+lb4=QW6.4 Raffreddamento ugello
+lb5=QW6.5 Aria assistenza piercing
+lb6=QW6.6
+lb7=QW6.7
+lb8=QW6.8 STOP aspiratore
+lb9=QW6.9 START aspiratore
+lb10=QW6.10 Rich. apertura porta posteriore
+lb11=QW6.11 Rich. chiusura porta posteriore
+lb12=QW6.12
+lb13=QW6.13 Selettore pallet in manuale
+lb14=QW6.14 Selettore pallet in automatico
+lb15=QW6.1 Maifold azoto
+lb16=QW6.15 Selettore pallet in carico/scarico
+lb17=QW7.2 Luci cabina
+lb18=QW7.0 Chiudi pannello frontale
+lb19=QW7.3 Semaforo verde
+lb20=QW7.4 Semaforo arancio
+lb21=QW7.5 Semaforo rosso
+lb22=QW7.6 Motore pompa lubrificazione
+lb23=QW7.7 Raffreddamento motori XU
+lb24=QW7.8 Evacuatore sfridi avanti
+lb25=QW7.9 Evacuatore sfridi indietro
+lb26=QW7.10
+lb27=QW7.11
+lb28=QW7.12
+lb29=QW7.13
+lb30=QW7.14 Abilitaz. apertura porte
+lb31=QW7.1 Apri pannello frontale
+lb32=QW7.15 CNC OK
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,32 @@
+: Laser Cooling Point Func 
+DBL ind;
+DBL xposa, yposa;
+
+; Cooling point FUNCTION is enabled from user interface
+IF( (%LSRPlcOp1.22) && (%TabLsr[ind].L_UserInt19 != 0) ) THEN
+
+    SPC 30099,1  ;Preprocessor sync
+    ind = VL22;
+
+    ?%TstP15 = 0       ; reset word for laser on/off
+
+    IF ( %cn[WHO()].rc[0].21 ) THEN
+        xposa = XGET("@X")
+        yposa = XGET("@Y")
+        G2803  R(0.2) W5  X(xposa) Y(yposa) C3        ;Channel in test
+    ENDIF
+
+    ?%TstP15.2 = 1                  ; LASER_OFF request
+    _wait_bit( 1," %LsPlc1.25",0)   ; wait laser off
+    ?%TstP[15].3 = 0                ; LASER_ON request = OFF
+    G4 F(%TabLsr[ind].L_UserInt19/1000)
+    ?%TstP[15].3 = 1                ; LASER_ON request = ON
+    IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+
+    ?%TstP15 = 0       ; reset word for laser on/off
+	
+	SPC 30099,1  ;Preprocessor sync
+ENDIF
+
+
+RET

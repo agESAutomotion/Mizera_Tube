@@ -1,0 +1,28 @@
+:G1160
+;//(Interna)
+;//Invocata da G160, ... per risolvere le matrici di rotazione incrementali.
+;//usa ml_a__[ml] e mt_a__
+DBL tmp1, tmp2, tmp3
+
+tmp1 = ml_a11[ml]
+tmp2 = ml_a21[ml]
+tmp3 = ml_a31[ml]
+ml_a11[ml] = mt_a11 * tmp1 + mt_a12 * tmp2 + mt_a13 * tmp3
+ml_a21[ml] = mt_a21 * tmp1 + mt_a22 * tmp2 + mt_a23 * tmp3
+ml_a31[ml] = mt_a31 * tmp1 + mt_a32 * tmp2 + mt_a33 * tmp3
+
+tmp1 = ml_a12[ml]
+tmp2 = ml_a22[ml]
+tmp3 = ml_a32[ml]
+ml_a12[ml] = mt_a11 * tmp1 + mt_a12 * tmp2 + mt_a13 * tmp3
+ml_a22[ml] = mt_a21 * tmp1 + mt_a22 * tmp2 + mt_a23 * tmp3
+ml_a32[ml] = mt_a31 * tmp1 + mt_a32 * tmp2 + mt_a33 * tmp3
+
+tmp1 = ml_a13[ml]
+tmp2 = ml_a23[ml]
+tmp3 = ml_a33[ml]
+ml_a13[ml] = mt_a11 * tmp1 + mt_a12 * tmp2 + mt_a13 * tmp3
+ml_a23[ml] = mt_a21 * tmp1 + mt_a22 * tmp2 + mt_a23 * tmp3
+ml_a33[ml] = mt_a31 * tmp1 + mt_a32 * tmp2 + mt_a33 * tmp3
+
+RET

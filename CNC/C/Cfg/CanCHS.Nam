@@ -1,0 +1,449 @@
+[PROMPT]
+
+#include "CanEBSdrive?.nam"
+#include "CanQDrive?.nam"
+#include "CanQDrivesSeven?.nam"
+#include "CanTDEdrive?.nam"
+#include "CanERLdrive?.nam"
+#include "CanLXdrive?.nam"
+#include "CanYAdrive?.nam"
+#include "CanCAX1122?.nam"
+#include "CanBusDiag?.nam"
+#include "CanBusRing?.nam"
+#include "CanBusService?.nam"
+#include "CanBusMonitor?.nam"
+#include "CanBusDriveStatus?.nam"
+
+
+KEY_CAN     =CanOpen
+KEY_CAN0    =环0
+KEY_CAN1    =环1
+KEY_CAN2    =环2
+KEY_CAN3    =环3          
+KEY_CANEXPORT0 =Diagnostica
+KEY_CANEXPORT1 =Diagnostica
+
+KEY_RNODES  =Config
+KEY_ND      =Node
+KEY_CANPARAM =Param
+KEY_SERVICE =Service
+KEY_NODEMONITOR=Monitor
+KEY_NODEDRIVESTATUS=Drives Status
+KEY_CANDIAG=Bus Diag.
+
+KEY_NODEOUTPUT =Node Output
+
+ND_PROFLIST =None,301-Generic,401-InOut,402-Driver,406-Enc,408-Valve,900-Kvara,ETG.5001-MDP
+ND_GUARDLIST=None,Guarding,Heartbeat,PdoWatchDog
+ND_NODE     =Node address
+ND_MDPNUM   =Multidevice internal number
+ND_PROFILE  =CIA profile
+ND_GUARD    =Guarding
+ND_LIFE     =Guard time
+ND_NUMDEV   =NumPdo
+ND_NUMOBJS  =Set Command
+ND_OUTOFORDER=Out of order
+
+DR_TYPELIST =Danaher, KebServo, Erl/Lahr, CiA-DS402, CiA-DS402X, Inverter, ED-Drive, OSAI, EBS-DRIVE, CMZ-DRIVE, TDE-DRIVE, MAXTON-DRIVE, ERL_DRIVE, RTA_DRIVE, LEXIUM_DRIVE, HSD_SM137, QDrive, QDriveSeven
+DV_TYPELIST =NULL,WILA Smart Locator
+VL_TYPELIST =None
+DR_TYPE0    =Drive type
+DV_TYPE0    =Device type
+VL_TYPE0    =Device type
+DR_SWIDE0   =Sys wide ax0
+DR_SWIDE1   =Sys wide ax1
+DR_REGTY0   =Regol.trajectory
+DR_FEED0    =Feed constant
+DR_SHAFT0   =Shaft revolutions
+DR_FEEDDELAY=Feedback delay
+
+DR_ENABGEARBOX=Enable GearBox Function
+DR_GEARMODULEREV=GearBox Module (rev)
+
+EN_TYPELIST =0-Temposonics, 1-R Series Temposonics, 2-ENC GIVI Misure, 3-RIGA GIVI Misure, 4-TRElectronic, 5-ELGO-CA0, 6-DS406
+EN_TYPE0    =编码器类型
+EN_SWIDE0   =系统侧
+EN_FEED0    =反馈常数
+EN_SHAFT0   =转换轴
+EN_TYPE1    =编码器类型
+EN_SWIDE1   =系统侧
+EN_FEED1    =反馈常数
+EN_SHAFT1   =转换轴
+
+EDT_NODE_REPORT=Report
+
+kRPDO1      =RxPDO1
+kRPDO1o1    =Offset
+kRPDO2      =RxPDO2
+kRPDO2o1    =Offset
+kRPDO3      =RxPDO3
+kRPDO3o1    =Offset
+kRPDO4      =RxPDO4
+kRPDO4o1    =Offset
+kRPDOLIST   =Disab,Enab
+kTPDO1      =TxPDO1
+kTPDO1TX    =Type
+kTPDO1o1    =Offset
+kTPDO2      =TxPDO2
+kTPDO2TX    =Type
+kTPDO2o1    =Offset
+kTPDO3      =TxPDO3
+kTPDO3TX    =Type
+kTPDO3o1    =Offset
+kTPDO4      =TxPDO4
+kTPDO4TX    =Type
+kTPDO4o1    =Offset
+
+PDO_LIST=Disab,Inp(Tx),Out(Rx)
+PDO1TY =PDO1
+PDO1ID =CobID
+PDO1TX =类型
+PDO1TM =项目时间
+PDO1IW1=IO1
+PDO1IW2=IO2
+PDO1IW3=IO3
+PDO1IW4=IO4
+PDO1IW5=IO5
+PDO1IW6=IO6
+PDO1IW7=IO7
+PDO1IW8=IO8
+
+PDO1MP1=目标 IO1
+PDO1MP2=目标 IO2
+PDO1MP3=目标 IO3
+PDO1MP4=目标 IO4
+PDO1MP5=目标 IO5
+PDO1MP6=目标 IO6
+PDO1MP7=目标 IO7
+PDO1MP8=目标 IO8
+
+PDO2MP1=目标 IO1
+PDO2MP2=目标 IO2
+PDO2MP3=目标 IO3
+PDO2MP4=目标 IO4
+PDO2MP5=目标 IO5
+PDO2MP6=目标 IO6
+PDO2MP7=目标 IO7
+PDO2MP8=目标 IO8
+
+PDO3MP1=目标 IO1
+PDO3MP2=目标 IO2
+PDO3MP3=目标 IO3
+PDO3MP4=目标 IO4
+PDO3MP5=目标 IO5
+PDO3MP6=目标 IO6
+PDO3MP7=目标 IO7
+PDO3MP8=目标 IO8
+
+PDO4MP1=目标 IO1
+PDO4MP2=目标 IO2
+PDO4MP3=目标 IO3
+PDO4MP4=目标 IO4
+PDO4MP5=目标 IO5
+PDO4MP6=目标 IO6
+PDO4MP7=目标 IO7
+PDO4MP8=目标 IO8
+
+//PDO5MP1=Object IO1
+//PDO5MP2=Object IO2
+//PDO5MP3=Object IO3
+//PDO5MP4=Object IO4
+//PDO5MP5=Object IO5
+//PDO5MP6=Object IO6
+//PDO5MP7=Object IO7
+//PDO5MP8=Object IO8
+
+//PDO6MP1=Object IO1
+//PDO6MP2=Object IO2
+//PDO6MP3=Object IO3
+//PDO6MP4=Object IO4
+//PDO6MP5=Object IO5
+//PDO6MP6=Object IO6
+//PDO6MP7=Object IO7
+//PDO6MP8=Object IO8
+
+//PDO7MP1=Object IO1
+//PDO7MP2=Object IO2
+//PDO7MP3=Object IO3
+//PDO7MP4=Object IO4
+//PDO7MP5=Object IO5
+//PDO7MP6=Object IO6
+//PDO7MP7=Object IO7
+//PDO7MP8=Object IO8
+
+//PDO8MP1=Object IO1
+//PDO8MP2=Object IO2
+//PDO8MP3=Object IO3
+//PDO8MP4=Object IO4
+//PDO8MP5=Object IO5
+//PDO8MP6=Object IO6
+//PDO8MP7=Object IO7
+//PDO8MP8=Object IO8
+
+PDO2TY =PDO2
+PDO2ID =CobID
+PDO2TX =类型
+PDO2TM =项目时间
+PDO2IW1=IO1
+PDO2IW2=IO2
+PDO2IW3=IO3
+PDO2IW4=IO4
+PDO2IW5=IO5
+PDO2IW6=IO6
+PDO2IW7=IO7
+PDO2IW8=IO8
+
+PDO3TY =PDO3
+PDO3ID =CobID
+PDO3TX =类型
+PDO3TM =项目时间
+PDO3IW1=IO1
+PDO3IW2=IO2
+PDO3IW3=IO3
+PDO3IW4=IO4
+PDO3IW5=IO5
+PDO3IW6=IO6
+PDO3IW7=IO7
+PDO3IW8=IO8
+
+PDO4TY =PDO4
+PDO4ID =CobID
+PDO4TX =类型
+PDO4TM =项目时间
+PDO4IW1=IO1
+PDO4IW2=IO2
+PDO4IW3=IO3
+PDO4IW4=IO4
+PDO4IW5=IO5
+PDO4IW6=IO6
+PDO4IW7=IO7
+PDO4IW8=IO8
+
+PDO5TY =PDO5
+PDO5ID =CobID
+PDO5TX =Type
+PDO5TM =Time
+PDO5IW1=IO1
+PDO5IW2=IO2
+PDO5IW3=IO3
+PDO5IW4=IO4
+PDO5IW5=IO5
+PDO5IW6=IO6
+PDO5IW7=IO7
+PDO5IW8=IO8
+
+PDO6TY =PDO6
+PDO6ID =CobID
+PDO6TX =Type
+PDO6TM =Time
+PDO6IW1=IO1
+PDO6IW2=IO2
+PDO6IW3=IO3
+PDO6IW4=IO4
+PDO6IW5=IO5
+PDO6IW6=IO6
+PDO6IW7=IO7
+PDO6IW8=IO8
+
+PDO7TY =PDO7
+PDO7ID =CobID
+PDO7TX =Type
+PDO7TM =Time
+PDO7IW1=IO1
+PDO7IW2=IO2
+PDO7IW3=IO3
+PDO7IW4=IO4
+PDO7IW5=IO5
+PDO7IW6=IO6
+PDO7IW7=IO7
+PDO7IW8=IO8
+
+PDO8TY =PDO8
+PDO8ID =CobID
+PDO8TX =Type
+PDO8TM =Time
+PDO8IW1=IO1
+PDO8IW2=IO2
+PDO8IW3=IO3
+PDO8IW4=IO4
+PDO8IW5=IO5
+PDO8IW6=IO6
+PDO8IW7=IO7
+PDO8IW8=IO8
+
+KEY_PARSET1 =参数设置1
+KEY_PARSET2 =参数设置2
+KEY_PARSET3 =参数设置3
+KEY_PARSET4 =参数设置4
+
+IXOBJ0 = 参数1 Ix
+IXOBJ1 = 参数2 Ix
+IXOBJ2 = 参数3 Ix
+IXOBJ3 = 参数4 Ix
+IXOBJ4 = 参数5 Ix
+IXOBJ5 = 参数6 Ix
+IXOBJ6 = 参数7 Ix
+IXOBJ7 = 参数8 Ix
+IXOBJ8 = 参数9 Ix
+IXOBJ9 = 参数10 Ix
+IXOBJ10 = 参数11 Ix
+IXOBJ11 = 参数12 Ix
+IXOBJ12 = 参数13 Ix
+IXOBJ13 = 参数14 Ix
+IXOBJ14 = 参数15 Ix
+IXOBJ15 = 参数16 Ix
+IXOBJ16 = 参数17 Ix
+IXOBJ17 = 参数18 Ix
+IXOBJ18 = 参数19 Ix
+IXOBJ19 = 参数20 Ix
+IXOBJ20 = 参数21 Ix
+IXOBJ21 = 参数22 Ix
+IXOBJ22 = 参数23 Ix
+IXOBJ23 = 参数24 Ix
+IXOBJ24 = 参数25 Ix
+IXOBJ25 = 参数26 Ix
+IXOBJ26 = 参数27 Ix
+IXOBJ27 = 参数28 Ix
+IXOBJ28 = 参数29 Ix
+IXOBJ29 = 参数30 Ix
+IXOBJ30 = 参数31 Ix
+IXOBJ31 = 参数32 Ix
+
+VXOBJ0 = 参数1 Vx
+VXOBJ1 = 参数2 Vx
+VXOBJ2 = 参数3 Vx
+VXOBJ3 = 参数4 Vx
+VXOBJ4 = 参数5 Vx
+VXOBJ5 = 参数6 Vx
+VXOBJ6 = 参数7 Vx
+VXOBJ7 = 参数8 Vx
+VXOBJ8 = 参数9 Vx
+VXOBJ9 = 参数10 Vx
+VXOBJ10 = 参数11 Vx
+VXOBJ11 = 参数12 Vx
+VXOBJ12 = 参数13 Vx
+VXOBJ13 = 参数14 Vx
+VXOBJ14 = 参数15 Vx
+VXOBJ15 = 参数16 Vx
+VXOBJ16 = 参数17 Vx
+VXOBJ17 = 参数18 Vx
+VXOBJ18 = 参数19 Vx
+VXOBJ19 = 参数20 Vx
+VXOBJ20 = 参数21 Vx
+VXOBJ21 = 参数22 Vx
+VXOBJ22 = 参数23 Vx
+VXOBJ23 = 参数24 Vx
+VXOBJ24 = 参数25 Vx
+VXOBJ25 = 参数26 Vx
+VXOBJ26 = 参数27 Vx
+VXOBJ27 = 参数28 Vx
+VXOBJ28 = 参数29 Vx
+VXOBJ29 = 参数30 Vx
+VXOBJ30 = 参数31 Vx
+VXOBJ31 = 参数32 Vx
+
+BTN_NODE_LOAD       = 载入参数.
+BTN_NODE_SAVE       = 保存参数.
+BTN_NODE_UPLOAD     = 上传
+BTN_NODE_DOWNLOAD   = 下载
+BTN_NODE_SAVE_FLASH = 保存/闪存
+
+SRV_ENABLE  =启用
+SRV_RESET   =复位
+SRV_LINE    =服务
+DIAG_LINE   =诊断
+PAR_LINE    =参数设置
+PAR_OPTIONS =选项
+PAR_PDO1    =PDO1----------
+PAR_PDO2    =PDO2----------
+PAR_PDO3    =PDO3----------
+PAR_PDO4    =PDO4----------
+PAR_PDO5    =PDO5----------
+PAR_PDO6    =PDO6----------
+PAR_PDO7    =PDO7----------
+PAR_PDO8    =PDO8----------
+PAR_COMMAND=命令
+
+ND_FBLIST=0-Service,1-NMT_Command,2-SdoRead,3-SdoWrite,4-PdoSend,5-PdoRead,6-PdoRegister,7-SyncCycle,8-RTR,9-SdoReadStr, 10-AlarmHist
+DR_REGTYLIST=(PP)Position Profile, (VL)Velocity Mode, (PV)Velocity Profile, (TM)Torque Mode, (IP)Interpolated Mode, (CSP)CS Position, (CSV)CS Velocity
+SRV_HEADER1 =Command
+SRV_HEADER2 =Response
+NDD_AXNAM   =Axis name
+NDD_DNAME   =Device name
+NDD_HVERS   =HW Version
+NDD_SVERS   =SW Version
+
+NODE_FBCMD  =Com代码
+NODE_FBOBJ  =Cob ID
+NODE_FBIN0  =DI_Data0
+NODE_FBIN1  =DI_Data1
+NODE_FBSTS  =状态
+NODE_FBERR  =错误
+NODE_FBDT0  =DO_Data0
+NODE_FBDT1  =DO_Data1
+
+NODE_FB0    =Fb[0]
+NODE_FB1    =Fb[1]
+NODE_FB2    =Fb[2]
+NODE_FB3    =Fb[3]
+NODE_FB4    =Fb[4]
+NODE_FB5    =Fb[5]
+NODE_FB6    =Fb[6]
+NODE_FB7    =Fb[7]
+
+SPACE     =-
+
+SLAVE_FRAME=Slave
+MASTER_FRAME=Master
+
+EC_DCENAB=Distribuited clocks enable
+EC_REFCLOCK=Reference clock master
+EC_WRMTIME=Write master time to reference device
+EC_PROPDELAY=Enable propagation delay compensation
+EC_MSKOPTION=Opzioni
+EC_MSKOPTIONLIST=NULL,Build XML file 
+
+EC_INPDOCONTENT=Input PDO Content
+EC_OUTPDOCONTENT=Output PDO Content
+
+EC_XMLDRIVECONF=File di configurazione drive (xml) 
+
+CAN_PARAM_LBL_NODE_ADDR=Node address
+CAN_PARAM_LBL_DEVNAME=Device name
+CAN_PARAM_LBL_HWVER=HW Version
+CAN_PARAM_LBL_SWVER=SW Version
+CAN_PARAM_LBL_VENDORID=Vendor ID
+CAN_PARAM_LBL_PRODUCTCODE=Product Code
+CAN_PARAM_LBL_REVISIONNUMBER=Revision Number
+CAN_PARAM_LBL_SERNUM4=Serial Number
+
+QDSEVEN_MONVAROUTPUT = Monitor Variable Output ax[SysWide].ra26
+QDSEVEN_IXOBJ1LIST = NULL, QCurrent
+QDSEVEN_IXOBJ1 = Monitor Variable Field
+
+[HELP]
+RG_RINGTYPE =Ring Type:0=CAN Trajectory, 1=CAN Positioning, 2-Ethercat
+RG_ENAB     =Enable: 0=Disab, 1=Can1, 2=Can2,   AAPTINNN: AAdd(C0:FF)  Prio(0,9:13)  Tick(0,1:15)  Irq(0,5,9,10,11,15)  NNNode(1,2,100:13C / 200:23C)
+RG_BAUD     =Ring baud rate (CiA)
+RG_SYNC     =Sync time (msec)
+RG_NODES    =Number of configured nodes (max 60)
+ND_NODE     =0=OutOfService, 1=Reserved, 2-60=Node Address (dec)
+ND_PROFILE  =Device profile (CiA)
+ND_LIFE     =Node guarding time (msec)
+DR_TYPE0    =Drive Type
+DV_TYPE0    =Device Type
+DR_SWIDE0   =Kvara system-wide index
+DR_SWIDE1   =Redirection system-wide number
+DR_REGTY0   =(PP)Position Profile: used to move to positions relative to the last target position or to an absolute position.\n(VL)Velocity Mode: used for speed changes relative to the current speed.\n(PV)Profile Velocity Mode: generates a speed trajectory.\n(TM)Torque Mode: used for torque variations relative to the actual torque.\n(IP)Interpolated Mode: generates a position trajectory.\n(CSP)CS Position: reserved for ethercat, as IP generates a position trajectory.\n(CSV)CS Velocity: reserved for ethercat, as PV generates a speed trajectory.
+DR_FEED0    =Feed constant (mm)
+DR_SHAFT0   =Shaft revolutions
+DR_FEEDDELAY=Feedback delay (TickReg * 1000)
+ND_NUMDEV   =Number of configured Pdos
+ND_NUMOBJS  =Parameter set to be loaded: B0=Set1.  B1=Set2.  B2=Set3.  B3=Set4.  B4-B11=Reserved.  B12-B15: (000=Noop, 001=BootRead, 010=BootCheck, 011=BootWrite, 100=BootWrite & save).  B15=Reserved.
+PDOTX       =Transmission type (0=SyncAcyclic, 1-240=SyncCiclic, 252=SyncRtr, 253=AsyncRtr, 254-255=Async)
+PDOTM       =Inhibit time (0.1msec)
+PDOIW1      =IW / QW mapping number
+PDOMP1      =mapping: Index,Subindex,Length (xxxxyyzz)
+
+kRPDO1o1    =CanFb mappimg: 0=no mapping, 1=CanFb1, ...47=CanFb47
+kTPDOTX     =Transmission type (1-240=SyncCiclic, 255=Async)

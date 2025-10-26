@@ -1,0 +1,247 @@
+ [K]0 [D]0 [S]0 [B] [P]0 [U] X Y F [R]1: G700
+
+;// Inizia una sezione normale o bevel con eventuale correzione del kerf.
+;// Vedi [Sintassi Cicli Opzione Bevel]
+;//
+;// G700 [K<kerf>] [D<correttore>] [S<sovramateriale>]
+;//     [B<bevel_iniziale>] [P<lead_iniziale>]
+;//     [U<C_iniziale>]
+;//     X<quota> Y<quota> F<feed_iniziale> [R<abilita_regolazione>]
+
+DBL kfRotY=0
+DBL kfRotP=0
+DBL kfRotR=0
+
+DBL TargetX=VA23
+DBL TargetY=VA24
+DBL Bevel=VA1
+DBL Lead=VA15
+DBL ForcedC=VA20
+
+DBL NutaC = 0, NutaA = 0
+DBL nut_yOrient, nut_yECAx, nut_yEBAx
+DBL tmp_x, tmp_y, tmp_z
+
+DBL phy
+
+IF( gAttachState != 0 ) THEN
+    ERROR(3)    ;//Funzione non valida
+ENDIF
+
+;//Preparazione frame cinematica
+IF(%twi[TWIIDX(0)].yKine == 3) THEN
+    ;//TWI_OBLIQUE_AXIS_ROTARY_HEAD_KINEMATICS
+    kfRotY=%twi[TWIIDX(0)].htwi.oarh.dFrameC
+    kfRotP=%twi[TWIIDX(0)].htwi.oarh.dFrameB
+    kfRotR=%twi[TWIIDX(0)].htwi.oarh.dFrameA
+    nut_yOrient = %twi[TWIIDX(0)].htwi.oarh.yOrient
+    nut_yECAx = %twi[TWIIDX(0)].htwi.oarh.yECAx
+    nut_yEBAx = %twi[TWIIDX(0)].htwi.oarh.yEBAx
+    IF((nut_yECAx == 7) && (nut_yEBAx == 8)) THEN
+        kf_HeadIsAB7 = 1
+    ELSE
+        kf_HeadIsAB7 = 0
+    ENDIF
+    POP(1)
+    JMP .EndCaseKine
+ENDIF
+;//Unsupported Kinematics
+ERROR(221)
+.EndCaseKine
+
+IF( (kfRotR == 0) && (kfRotP == 0) && (kfRotY == 0) && (nut_yOrient == 9) ) THEN
+    kf_identity = 1
+ELSE
+    kf_identity = 0
+    kf_a11 = COS(kfRotY)*COS(kfRotP)
+    kf_a21 = SIN(kfRotY)*COS(kfRotP)
+    kf_a31 = -SIN(kfRotP)
+    kf_a12 = -SIN(kfRotY)*COS(kfRotR)+COS(kfRotY)*SIN(kfRotR)*SIN(kfRotP)
+    kf_a22 = COS(kfRotY)*COS(kfRotR)+SIN(kfRotY)*SIN(kfRotR)*SIN(kfRotP)
+    kf_a32 = COS(kfRotP)*SIN(kfRotR)
+    kf_a13 = SIN(kfRotY)*SIN(kfRotR)+COS(kfRotY)*SIN(kfRotP)*COS(kfRotR)
+    kf_a23 = -COS(kfRotY)*SIN(kfRotR)+SIN(kfRotY)*SIN(kfRotP)*COS(kfRotR)
+    kf_a33 = COS(kfRotR)*COS(kfRotP)
+
+    IF(nut_yOrient == 6) THEN
+        ;//XCLORI_X_FORWARD
+        tmp_x = kf_a31
+        tmp_y = kf_a11
+        tmp_z = kf_a21
+        kf_a11 = tmp_x
+        kf_a21 = tmp_y
+        kf_a31 = tmp_z
+
+        tmp_x = kf_a32
+        tmp_y = kf_a12
+        tmp_z = kf_a22
+        kf_a12 = tmp_x
+        kf_a22 = tmp_y
+        kf_a32 = tmp_z
+
+        tmp_x = kf_a33
+        tmp_y = kf_a13
+        tmp_z = kf_a23
+        kf_a13 = tmp_x
+        kf_a23 = tmp_y
+        kf_a33 = tmp_z
+
+        POP(1)
+        JMP .endCaseHeadOri
+    ENDIF
+    IF(nut_yOrient == 8) THEN
+        ;//XCLORI_Y_FORWARD
+        tmp_x = kf_a21
+        tmp_y = kf_a31
+        tmp_z = kf_a11
+        kf_a11 = tmp_x
+        kf_a21 = tmp_y
+        kf_a31 = tmp_z
+
+        tmp_x = kf_a22
+        tmp_y = kf_a32
+        tmp_z = kf_a12
+        kf_a12 = tmp_x
+        kf_a22 = tmp_y
+        kf_a32 = tmp_z
+
+        tmp_x = kf_a23
+        tmp_y = kf_a33
+        tmp_z = kf_a13
+        kf_a13 = tmp_x
+        kf_a23 = tmp_y
+        kf_a33 = tmp_z
+
+        POP(1)
+        JMP .endCaseHeadOri
+    ENDIF
+    IF(nut_yOrient == 9) THEN
+        ;//XCLORI_Z_FORWARD
+        POP(1)
+        JMP .endCaseHeadOri
+    ENDIF
+
+    ;//Bad TWI orientation
+    ERROR(222)
+.endCaseHeadOri
+ENDIF
+
+IF( gTravE != 0 ) THEN
+    ERROR(3)    ;//Funzione non valida
+ENDIF
+
+IF( XGET("@G90") != 90 ) ERROR(3)    ;//Funzione non valida
+IF( XGET("@G94") != 94 ) ERROR(3)   ;//Funzione non valida
+
+;//Applicazione: per compatibilita' con i CAD gia' sviluppati per teste CA e
+;//che possono programmare U.
+IF( !kf_identity ) ForcedC=QNAN()
+
+IF( ISQNAN(Bevel) ) THEN
+    gBevelMode = 0
+    gCurBevel = 0
+    gCurLead = 0
+	gForcedInitialC = QNAN()
+ELSE
+    gBevelMode = 1
+    gCurBevel = Bevel
+    gCurLead = Lead
+	gForcedInitialC = ForcedC
+ENDIF
+
+gCurX = TargetX
+gCurY = TargetY
+gAttachState = 1
+
+gCurForce = 0
+
+gCurVecX = 0
+gCurVecY = 0
+
+gRegol=VA17
+
+F(VA5)
+
+gKerfType7 = VA10
+gKerfDescr7 = VA3
+gKerfSvr7 = VA18
+
+IF( gKerfDescr7 == 0 ) THEN
+    gKerfType7 = 0
+    gKerfSvr7 = 0
+ENDIF
+
+IF( gBevelMode == 0 ) THEN
+    ;//$APP #MAG: Show required A
+    IF( %cn[WHO()].pc[14].25 ) THEN
+        IF( !wah_a_inited ) wah_a = ABS(0)
+        wah_a_inited = 1
+    ENDIF
+
+    IF( kf_identity ) THEN
+        ;//$APP Eventualmente cambiare la quota di parcheggio di C
+        ;//$APP Mantenere consistente con G708!
+        NutaC = 0
+        IF( !ISQNAN(ForcedC) ) NutaC = ForcedC
+        phy = %twi[TWIIDX(0)].htwi.oarh.dEB
+        ;//$APP #MAG: Show required A
+        IF( (kf_HeadIsAB7 == 0) && ISQNAN(QCALCQ(A)) ) THEN 
+            IF( %cn[WHO()].pc[14].25 ) THEN
+                IF( !wah_phy_a_inited ) %gIso[16] = FLOOR((0 * 1000) + 0.5)
+                wah_phy_a_inited = 1
+                phy = %gIso[16] / 1000
+            ENDIF
+            ENDIF
+        NutaA = 0
+        IF( (kf_HeadIsAB7 == 0) && ISQNAN(QCALCQ(A)) ) THEN
+            ;//Tool orientation violates constraints
+            IF( ABS(phy) > 0.1 ) ERROR(229)
+            NutaA = QNAN()
+        ENDIF
+    ELSE
+        gKineFlip = 0
+        gKineOffs = 0
+        G708 C(0) L(0) A(0) W(ForcedC)
+    ENDIF
+
+    IF( rtcp_on == 0 ) ERROR(63)        ;//Descrittore utensile errato
+
+    ;//Forza G806 S0
+    IF( gTravS != 0 ) THEN
+        G172 T(gTravT) H(gTravH) D(gTravD) S(0) E(gTravE) I(gTravI)
+    ENDIF
+
+    IF( kf_HeadIsAB7 ) THEN
+        G180 X(gCurX) Y(gCurY) Z(workpiece_safe_dist) A(NutaC) B(NutaA)
+        G153 G0 X(kine_x) Y(kine_y) A(kine_a) B(kine_b)
+        IF( gTechType != 2 ) G153 G0 Z(kine_z)
+    ELSE
+        IF(!%gPlc0.0) THEN              ; Se gestione 5 assi attiva
+            NutaC=QNAN()
+            NutaA=QNAN()
+			  ENDIF
+
+        ;//ATTENZIONE! Usare stesso test utilizzato internamente da G800 T1
+        IF (%CostK[49]==1) THEN 
+			;//G800 T1 plate default is surface normal vector
+            G180 X(gCurX) Y(gCurY) Z(0.0+workpiece_safe_dist) C(NutaC) A(NutaA)
+        ELSE
+			;//G800 T1 plate default is tool vector
+            ;//Forza G806 S(workpiece_safe_dist)
+            G172 T(gTravT) H(gTravH) D(gTravD) S(workpiece_safe_dist) E(gTravE) I(gTravI)
+            G180 X(gCurX) Y(gCurY) Z(0.0) C(NutaC) A(NutaA)
+        ENDIF
+        G153 G0 X(kine_x) Y(kine_y) C(kine_c) A(kine_a)
+        IF( gTechType != 2 ) G153 G0 Z(kine_z)
+    ENDIF
+
+    ;//$APP Q0
+    IF( gTechType != 2 ) THEN
+    G800 K(VA10) D(VA3) S(VA18) X(gCurX) Y(gCurY) Z0 F(VA5) T1 P1 R(gRegol) U0 V0 W1 Q0
+    ELSE
+        G800 K(VA10) D(VA3) S(VA18) X(gCurX) Y(gCurY) F(VA5) T1 P1 R(gRegol) U0 V0 W1 Q0
+    ENDIF
+    gAttachState = 2
+ENDIF
+
+RET

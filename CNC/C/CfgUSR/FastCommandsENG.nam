@@ -1,0 +1,31 @@
+
+[KEYS]
+TITLE=Fast Commands
+
+[PROMPT]
+KEY_NODE=Node
+FASTCOMMANDS=Leaf
+GroupBox1=C Rotation
+ButtonSpindleAlig1=Spindle Alignment
+ButtonSpindleAlig2=Spindle Parking 0
+Button1=Open Cm
+Button2=Close Cm
+Button3=Open C1
+Button4=Close C1
+Button7=Open C2
+Button8=Close C2
+P_REF2=<< X
+P_REF3=X >>
+P_REF4=<< X3
+P_REF5=X3 >>
+P_REF6=<< X1
+P_REF7=X1 >>
+P_REF8=Z Up
+P_REF9=Z Down
+P_REF10=Y-
+P_REF11=Y+
+ButtonSpindleAlig3=Park YZCB Axes
+
+[STATUS]
+
+[HELP]

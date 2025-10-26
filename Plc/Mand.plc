@@ -1,0 +1,779 @@
+* Blocchi gestione mandrini da PLC
+
+#funcdec "assi.plc"
+
+VAR
+#include "assi.inc"
+#include "cnc.inc"
+END_VAR
+
+* ----------------------------------------------------------------*
+* Blocco Funzionale conversione da numero utensile a numero pocket
+* ----------------------------------------------------------------*
+
+FUNCTION_BLOCK SP_TOOL_POCKET
+
+VAR_INPUT
+xax_TOOL:     BYTE; * Numero utensile
+END_VAR
+
+VAR_OUTPUT
+yax_POCKET:   BYTE; * Numero pocket
+END_VAR
+
+VAR
+INDEX: DWORD;    * Indice per caricamento pocket associato al tool richiesto
+END_VAR
+
+
+* Seleziona il revolver richiesto
+PATH %mag[CC_RV]                   ** cc26 Numero magazzino utensile associato al canale
+
+* Se il target è nullo, lo trasferisce allo slave che darà errore
+LD   xax_TOOL                      ** Numero utensile
+EQ   0
+JMPC DIRECT_TOOL
+
+LD   xax_TOOL                      ** Numero utensile
+SUB  1
+ST   INDEX                         ** Indice per caricamento pocket associato al tool richiesto
+
+* Seleziona il pocket relativo all'utensile richiesto
+LD   %tp.map[INDEX]                ** Indice per caricamento pocket associato al tool richiesto
+ST   INDEX                         ** Indice per caricamento pocket associato al tool richiesto
+
+* Se il pocket è nullo, usa il numero dell'utensile
+LD   INDEX                         ** Indice per caricamento pocket associato al tool richiesto
+EQ   0
+JMPC DIRECT_TOOL
+
+LD   INDEX                         ** Indice per caricamento pocket associato al tool richiesto
+ST   yax_POCKET                    ** Numero pocket
+
+JMP  END_TOOL
+
+DIRECT_TOOL:
+
+LD   xax_TOOL                      ** Numero utensile
+ST   yax_POCKET                    ** Numero pocket
+
+END_TOOL:
+
+END_FUNCTION_BLOCK
+
+
+
+* ----------------------------------------------------------------*
+* Blocco Funzionale conversione da numero pocket a numero utensile
+* ----------------------------------------------------------------*
+
+FUNCTION_BLOCK SP_POCKET_TOOL
+
+VAR_INPUT
+xax_POCKET:   BYTE; * Numero pocket
+END_VAR
+
+VAR_OUTPUT
+yax_TOOL:     BYTE; * Numero utensile
+END_VAR
+
+VAR
+INDEX: DWORD;    * Indice per caricamento tool associato al pocket richiesto
+END_VAR
+
+* Seleziona il revolver richiesto
+PATH %mag[CC_RV]                   ** cc26 Numero magazzino utensile associato al canale
+
+* Trova l'utensile corrispondente al pocket corrente
+LD   0
+ST   INDEX                         ** Indice per caricamento tool associato al pocket richiesto
+
+LOOP_POCKET:
+
+LD   %tp.map[INDEX]                ** Indice per caricamento tool associato al pocket richiesto
+EQ   xax_POCKET                    ** Numero pocket
+JMPC END_POCKET
+
+LD   INDEX                         ** Indice per caricamento tool associato al pocket richiesto
+ADD  1
+ST   INDEX                         ** Indice per caricamento tool associato al pocket richiesto
+
+LD   INDEX                         ** Indice per caricamento tool associato al pocket richiesto
+LT   6
+JMPC LOOP_POCKET
+
+* Se l'utensile non è configurato, ritorna utensile pari a zero
+LD   -1
+ST   INDEX                         ** Indice per caricamento tool associato al pocket richiesto
+
+END_POCKET:
+
+LD   INDEX                         ** Indice per caricamento tool associato al pocket richiesto
+ADD  1
+ST   yax_TOOL                      ** Numero utensile
+
+END_FUNCTION_BLOCK
+
+
+
+* --------------------------------------------*
+* Blocco Funzionale posizionamento mandrino
+* --------------------------------------------*
+
+FUNCTION_BLOCK SP_POSIZ
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (quota, vel, toll) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_INCMODE:  BOOL;       * 0 = assoluto, 1 = incrementale
+xax_REVMODE:  BOOL;       * 0 = M19, 1 = orienta per innesto revolver
+xax_TOOL:     DWORD;      * Utensile corrente 1-12
+xax_QUOTA:    DWORD;      * Quota target assoluta ( 0.1 deg )
+xax_VEL:      DWORD;      * Velocita' posizionamento ( rpm )
+xax_VSTOP:    DWORD;      * Velocita' di arresto ( rpm )
+xax_TOLLP:    DWORD;      * Tolleranza ( 0.1 deg )
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+PTFB: SP_POCKET_TOOL;
+INDEX: DWORD;    * Indice per caricamento dinamica associata al tool richiesto
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   xax_INCMODE                   ** 0 = assoluto, 1 = incrementale
+JMPC INCMODE
+
+LD   4
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_INCMODE
+
+INCMODE:
+
+LD   5
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+END_INCMODE:
+
+LD   xax_IMMDATA                   ** dati (quota, vel, toll) immediati
+JMPC IMMDATA
+
+LD   xax_REVMODE                   ** 0 = M19, 1 = orienta per innesto revolver
+JMPC REVMODE
+
+LD   CO_ANGM19                     ** rc38 Angolo orientamento mandrino M19
+ST   FB_QUOTADEG                   ** fb1 Quota target assoluta (0.1 deg)
+
+JMP  END_REVMODE
+
+REVMODE:
+
+* Seleziona il revolver richiesto
+PATH %mag[CC_RV]                   ** cc26 Numero magazzino utensile associato al canale
+
+LD   RV_PARKQTA                    ** prv11 Quota di parcheggio
+ST   FB_QUOTADEG                   ** fb1 Quota target assoluta (0.1 deg)
+
+END_REVMODE:
+
+* Se non è configurato il revolver, usa i dati del mandrino
+LD   CC_MAG                        ** cc25 Tipo magazzino utensile (1=revolver)
+NE   1
+JMPC MAND_DATA
+
+* Trova l'utensile corrispondente al pocket corrente
+CAL  PTFB(xax_POCKET=xax_TOOL)     ** Utensile corrente 1-12
+
+* Se l'utensile non è configurato, usa i dati di default del mandrino
+LD   PTFB.yax_TOOL
+EQ   0
+JMPC MAND_DATA
+
+LD   PTFB.yax_TOOL
+SUB  1
+ST   INDEX                         ** Indice per caricamento dinamica associata al tool richiesto
+
+* Seleziona i dati mandrino relativi all'utensile corrente
+LD   %tp.dyn[INDEX]                ** Indice per caricamento dinamica associata al tool richiesto
+ST   INDEX                         ** Indice per caricamento dinamica associata al tool richiesto
+
+PATH %tdyn[INDEX]                  ** Indice per caricamento dinamica associata al tool richiesto
+
+LD   TDYN_VELPOS                   ** dy7 Velocità in orientamento (rpm)
+ST   FB_VELRPM                     ** fb2 Velocita' posizionamento (rpm)
+
+LD   TDYN_VELPOS                   ** dy7 Velocità in orientamento (rpm)
+ST   FB_VSTOP                      ** fb3 Velocita' arresto mandrino (rpm)
+
+LD   TDYN_TOLLERF                  ** dy6 Quota di tolleranza fine (gradi)
+ST   FB_TOLLDEG                    ** fb7 Tolleranza (0.1 deg)
+
+JMP  END_DATA
+
+MAND_DATA:
+
+LD   SP_VELM19                     ** pa37 Velocità mandrino in orientamento (rpm)
+ST   FB_VELRPM                     ** fb2 Velocita' posizionamento (rpm)
+
+LD   SP_VELM19                     ** pa37 Velocità mandrino in orientamento (rpm)
+ST   FB_VSTOP                      ** fb3 Velocita' arresto mandrino (rpm)
+
+LD   SP_TOLLERG                    ** pa6 Quota tolleranza grossolana
+ST   FB_TOLLDEG                    ** fb7 Tolleranza (0.1 deg)
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_QUOTA                     ** Quota target assoluta ( 0.1 deg )
+ST   FB_QUOTADEG                   ** fb1 Quota target assoluta (0.1 deg)
+
+LD   xax_VEL                       ** Velocita' posizionamento ( rpm )
+ST   FB_VELRPM                     ** fb2 Velocita' posizionamento (rpm)
+
+LD   xax_VSTOP                     ** Velocita' di arresto ( rpm )
+ST   FB_VSTOP                      ** fb3 Velocita' arresto mandrino (rpm)
+
+LD   xax_TOLLP                     ** Tolleranza ( 0.1 deg )
+ST   FB_TOLLDEG                    ** fb7 Tolleranza (0.1 deg)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+
+
+* ----------------------------------------------*
+* Blocco Funzionale qualifica mandrino/ revolver
+* ----------------------------------------------*
+
+FUNCTION_BLOCK SP_QUALIFY
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (vel, rampe, gain) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_REVMODE:  BOOL;       * 0 = qualifica mandrino, 1 = qualifica revolver
+xax_PRESET:   BOOL;       * Abilita preset automatico mandrino
+xax_TOOL:     DWORD;      * Utensile corrente 1-12
+xax_VMAX:     DWORD;      * Velocita' massima ( rpm )
+xax_ACCEL:    DWORD;      * Accelerazione (msec o rev/s2)
+xax_DECEL:    DWORD;      * Decelerazione (msec o rev/s2)
+xax_RAMPES:   DWORD;      * Tempo Rampe S (msec o rev/s3)
+xax_GAINP:    DWORD;      * Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+xax_FLWER:    DWORD;      * Errore inseguimento massimo (pulses o 0.001 rev)
+xax_EFS:      DWORD;      * Tensione di fondo scala (mV)
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+PTFB: SP_POCKET_TOOL;
+INDEX: DWORD;    * Indice per caricamento dinamica associata al tool richiesto
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   xax_REVMODE                   ** 0 = qualifica mandrino, 1 = qualifica revolver
+JMPC REVMODE
+
+LD   xax_PRESET                    ** Abilita preset automatico mandrino
+JMPC MANPRESET
+
+LD   3
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_REVMODE
+
+MANPRESET:
+
+LD   20
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_REVMODE
+
+REVMODE:
+
+LD   xax_PRESET                    ** Abilita preset automatico mandrino
+JMPC REVPRESET
+
+LD   6
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_REVMODE
+
+REVPRESET:
+
+LD   21
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+END_REVMODE:
+
+LD   xax_TOOL                      ** Utensile corrente 1-12
+ST   FB_TOOL                       ** fb1 Numero utensile corrente 1-12
+
+LD   xax_IMMDATA                   ** dati (vel, rampe, gain) immediati
+JMPC IMMDATA
+
+LD   xax_REVMODE                   ** 0 = qualifica mandrino, 1 = qualifica revolver
+JMPC REVPAR
+
+* Trova l'utensile corrispondente al pocket corrente
+CAL  PTFB(xax_POCKET=xax_TOOL)     ** Utensile corrente 1-12
+
+* Se l'utensile non è configurato, usa i dati di default del mandrino
+LD   PTFB.yax_TOOL
+EQ   0
+JMPC MAND_DATA
+
+LD   PTFB.yax_TOOL
+SUB  1
+ST   INDEX                         ** Indice per caricamento dinamica associata al tool richiesto
+
+* Seleziona i dati mandrino relativi all'utensile corrente
+LD   %tp.dyn[INDEX]                ** Indice per caricamento dinamica associata al tool richiesto
+ST   INDEX                         ** Indice per caricamento dinamica associata al tool richiesto
+
+PATH %tdyn[INDEX]                  ** Indice per caricamento dinamica associata al tool richiesto
+
+LD   TDYN_VELLIM                   ** dy0 Velocità limite
+ST   FB_VMAXRPM                    ** fb3 Velocita' massima (rpm)
+
+LD   TDYN_ACCTIME                  ** dy1 Tempo accelerazione
+ST   FB_ACCELREV                   ** fb4 Accelerazione (msec o rev/s2)
+
+LD   TDYN_DECTIME                  ** dy2 Tempo decelerazione
+ST   FB_DECELREV                   ** fb5 Decelerazione (msec o rev/s2)
+
+LD   TDYN_DELAYS                   ** dy3 Tempo di rampa S
+ST   FB_RAMPESREV                  ** fb6 Tempo Rampe S (msec o rev/s3)
+
+LD   TDYN_GAINP                    ** dy4 Guadagno P
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+LD   TDYN_FWERR                    ** dy5 Massimo errore inseguimento
+ST   FB_FLWERREV                   ** fb9 Errore inseguimento limite (pulses o 0.001 rev)
+
+LD   DC_DACREF                     ** dDacRef Tensione a Vel. Max (mVolt)
+ST   FB_EFS                        ** fb11 Tensione di fondo scala (mV)
+
+JMP  END_DATA
+
+MAND_DATA:
+
+LD   SP_VELMAX                     ** pa9 Velocità massima
+ST   FB_VMAXRPM                    ** fb3 Velocita' massima (rpm)
+
+LD   SP_ACCEL                      ** pa1 Accelerazione massima
+ST   FB_ACCELREV                   ** fb4 Accelerazione (msec o rev/s2)
+
+LD   SP_DECEL                      ** pa2 Decelerazione massima
+ST   FB_DECELREV                   ** fb5 Decelerazione (msec o rev/s2)
+
+LD   SP_JERK                       ** pa25 Jerk massimo
+ST   FB_RAMPESREV                  ** fb6 Tempo Rampe S (msec o rev/s3)
+
+LD   SP_KPGAIN                     ** pa10 Guadagno P
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+LD   SP_SSERR                      ** pa5 Errore inseguimento massimo
+ST   FB_FLWERREV                   ** fb9 Errore inseguimento limite (pulses o 0.001 rev)
+
+LD   DC_DACREF                     ** dDacRef Tensione a Vel. Max (mVolt)
+ST   FB_EFS                        ** fb11 Tensione di fondo scala (mV)
+
+JMP  END_DATA
+
+REVPAR:
+
+PATH %mag[CC_RV]                   ** cc26 Numero magazzino utensile associato al canale
+
+LD   RV_VELLIM                     ** prv3 Velocità limite revolver (rpm)
+ST   FB_VMAXRPM                    ** fb3 Velocita' massima (rpm)
+
+LD   RV_ACCTIME                    ** prv4 Tempo accelerazione
+ST   FB_ACCELREV                   ** fb4 Accelerazione (msec o rev/s2)
+
+LD   RV_DECTIME                    ** prv5 Tempo decelerazione
+ST   FB_DECELREV                   ** fb5 Decelerazione (msec o rev/s2)
+
+LD   RV_DELAYS                     ** prv6 Tempo di rampa S
+ST   FB_RAMPESREV                  ** fb6 Tempo Rampe S (msec o rev/s3)
+
+LD   RV_GAINP                      ** prv7 Guadagno P
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+LD   RV_FWERR                      ** prv8 Massimo errore inseguimento
+ST   FB_FLWERREV                   ** fb9 Errore inseguimento limite (pulses o 0.001 rev)
+
+LD   DC_DACREF                     ** dDacRef Tensione a Vel. Max (mVolt)
+ST   FB_EFS                        ** fb11 Tensione di fondo scala (mV)
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_VMAX                      ** Velocita' massima ( rpm )
+ST   FB_VMAXRPM                    ** fb3 Velocita' massima (rpm)
+
+LD   xax_ACCEL                     ** Accelerazione (msec o rev/s2)
+ST   FB_ACCELREV                   ** fb4 Accelerazione (msec o rev/s2)
+
+LD   xax_DECEL                     ** Decelerazione (msec o rev/s2)
+ST   FB_DECELREV                   ** fb5 Decelerazione (msec o rev/s2)
+
+LD   xax_RAMPES                    ** Tempo Rampe S (msec o rev/s3)
+ST   FB_RAMPESREV                  ** fb6 Tempo Rampe S (msec o rev/s3)
+
+LD   xax_GAINP                     ** Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+LD   xax_FLWER                     ** Errore inseguimento massimo (pulses o 0.001 rev)
+ST   FB_FLWERREV                   ** fb9 Errore inseguimento limite (pulses o 0.001 rev)
+
+LD   xax_EFS                       ** Tensione di fondo scala (mV)
+ST   FB_EFS                        ** fb11 Tensione di fondo scala (mV)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+
+
+* --------------------------------------------*
+* Blocco Funzionale posizionamento revolver
+* --------------------------------------------*
+
+FUNCTION_BLOCK SP_POSREV
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (vmax, toll) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_INCFORW:  BOOL;       * 0 = assoluto, 1 = incrementale avanti
+xax_INCBACK:  BOOL;       * 0 = assoluto, 1 = incrementale indietro
+xax_TARGR:    DWORD;      * Posizione target (1-12)
+xax_SLOW:     BOOL;       * 0 = veloce, 1 = lento
+xax_VEL:      DWORD;      * Velocita' posizionamento ( rpm )
+xax_TOLLP:    DWORD;      * Tolleranza ( 0.1 deg )
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+TPFB: SP_TOOL_POCKET;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   xax_INCFORW                   ** 0 = assoluto, 1 = incrementale avanti
+OR   xax_INCBACK                   ** 0 = assoluto, 1 = incrementale indietro
+JMPC INCMODE
+
+LD   7
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+* Trova il pocket corrispondente all'utensile target
+CAL  TPFB(xax_TOOL=xax_TARGR)      ** Posizione target (1-12)
+
+LD   TPFB.yax_POCKET
+ST   FB_TARGR                      ** fb10 Numero utensile target (1-12)
+
+JMP  END_INCMODE
+
+INCMODE:
+
+* Seleziona il revolver richiesto
+PATH %mag[CC_RV]                   ** cc26 Numero magazzino utensile associato al canale
+
+LD   8
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_INCFORW                   ** 0 = assoluto, 1 = incrementale avanti
+JMPCN INCMENO
+
+LD   1
+ST   FB_TARGR                      ** fb10 Numero utensile target (1-12)
+
+JMP  END_INCMODE
+
+INCMENO:
+
+LD   -1
+ST   FB_TARGR                      ** fb10 Numero utensile target (1-12)
+
+END_INCMODE:
+
+LD   xax_IMMDATA                   ** dati (vmax, toll) immediati
+JMPC IMMDATA
+
+LD   xax_SLOW                      ** 0 = veloce, 1 = lento
+JMPC SINGCYC
+
+LD   RV_VELPOS                     ** prv12 Velocità in orientamento
+ST   FB_VELRPM                     ** fb2 Velocita' posizionamento (rpm)
+
+JMP  END_SINGCYC
+
+SINGCYC:
+
+LD   RV_VELCYCLE                   ** prv14 Velocità in SINGLE CYCLE
+ST   FB_VELRPM                     ** fb2 Velocita' posizionamento (rpm)
+
+END_SINGCYC:
+
+LD   RV_TOLLERF                    ** prv9 Quota di tolleranza fine (gradi)
+ST   FB_TOLLDEG                    ** fb7 Tolleranza (0.1 deg)
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_VEL                       ** Velocita' posizionamento ( rpm )
+ST   FB_VELRPM                     ** fb2 Velocita' posizionamento (rpm)
+
+LD   xax_TOLLP                     ** Tolleranza ( 0.1 deg )
+ST   FB_TOLLDEG                    ** fb7 Tolleranza (0.1 deg)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+
+* ----------------------------------------------*
+* Funzione selezione velocità rotazione mandrino
+* ----------------------------------------------*
+
+FUNCTION SP_SELSPEED
+
+LD   BCI_JOGOPEN                   ** rc0.22  Abilita esecuzione JOG a Loop Aperto
+AND  BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+ST   BAI_VOLTS                     ** ra0.31 Rotaz. speed in Volts (JOG open mandrino)
+
+LD   BCI_MDI                       ** rc0.11  Selettore modi operativi su MDI (semiautom)
+OR   BCI_AUT                       ** rc0.12  Selettore modi operativi su AUT (automatic)
+JMPC VELAUT
+
+LD   BAO_REVOL                     ** ra3.31 Selezione mandrino come revolver
+JMPC VELJOGREVO
+
+LD   BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+JMPC VELREFMAND
+
+LD   BAI_VOLTS                     ** ra0.31 Rotaz. speed in Volts (JOG open mandrino)
+JMPC VELJOGOPEN
+
+LD   SP_VELJOG                     ** pa36 Velocità JOG mandrino (rpm)
+ST   AI_SPEED                      ** ra32 Velocità rotazione al mandrino (rpm)
+
+JMP END_VELMAND
+
+VELJOGOPEN:
+
+LD   CI_JOGOPEN                    ** rc5  Tensione JOG a Loop Aperto
+ST   AI_SPEED                      ** ra32 Velocità rotazione al mandrino (rpm)
+
+JMP END_VELMAND
+
+VELREFMAND:
+
+LD   BAI_FCRALL                    ** ra0.13 Finecorsa Taratura
+JMPC RICTACCAMAND
+
+LD   SP_VELMICRO                   ** pa19 Velocità ricerca micro mandrino (rpm)
+ST   AI_SPEED                      ** ra32 Velocità rotazione al mandrino (rpm)
+
+JMP END_VELMAND
+
+RICTACCAMAND:
+
+LD   SP_VELTACCA                   ** pa20 Velocità ricerca tacca mandrino (rpm)
+ST   AI_SPEED                      ** ra32 Velocità rotazione al mandrino (rpm)
+
+JMP END_VELMAND
+
+VELJOGREVO:
+
+* Seleziona il revolver richiesto
+PATH %mag[CC_RV]                   ** cc26 Numero magazzino utensile associato al canale
+
+LD   RV_VELJOG                     ** prv13 Velocità in JOG
+ST   AI_SPEED                      ** ra32 Velocità rotazione al mandrino (rpm)
+
+JMP END_VELMAND
+
+VELAUT:
+
+LD   CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+JMPCN MAND2
+
+LD   CO_VELMANDS3                  ** rc82 Velocità mandrino 3 richiesta da canale (funzione S)
+ST   AI_SPEED                      ** ra32 Velocità rotazione al mandrino (rpm)
+
+JMP  END_VELMAND
+
+MAND2:
+
+LD   CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+JMPCN MAND1
+
+LD   CO_VELMANDS2                  ** rc81 Velocità mandrino 2 richiesta da canale (funzione S)
+ST   AI_SPEED                      ** ra32 Velocità rotazione al mandrino (rpm)
+
+JMP  END_VELMAND
+
+MAND1:
+
+LD   CO_VELMAND                    ** rc25 Velocità mandrino 1 richiesta da canale (funzione S)
+ST   AI_SPEED                      ** ra32 Velocità rotazione al mandrino (rpm)
+
+END_VELMAND:
+
+END_FUNCTION
+
+

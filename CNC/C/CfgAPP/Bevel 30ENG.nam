@@ -1,0 +1,20 @@
+
+[KEYS]
+TITLE=Bevel 30°
+
+[PROMPT]
+KEY_NODE=Node
+GRAPHNEW3=Leaf
+Plot1.3=Bevel 30
+L_TYPE_INTERP2=Points
+L_Height3=Height[mm]
+L_Voltage3=Voltage[DAC]
+L_TYPE_INTERP3=Pattern
+LIST0=Linear,Segment,Smoothing
+Button2=<
+Button1=>
+
+[STATUS]
+Plot1.3=Height(mm),Voltage(DAC)
+
+[HELP]

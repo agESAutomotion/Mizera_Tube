@@ -1,0 +1,25 @@
+
+[KEYS]
+TITLE=Pressure - Diameter(Mobile)
+
+[PROMPT]
+KEY_NODE=Node
+GRAPHSIDEPOT=Mobile Spindle S-P
+GroupBox1=Y Side Measure
+GroupBox=Z Side Measure
+Plot1=Potentiometer - Side Z
+L_TYPE_INTERP1=Pattern
+LIST0=Linear,Segment,Smoothing
+L_TYPE_INTERP2=Points
+Plot2=Potentiometer - Side Y
+L_TYPE_INTERP3=Pattern
+LIST1=Linear,Segment,Smoothing
+L_TYPE_INTERP4=Points
+L_SPEED2=Pot [ADC]
+L_POWER1=Y Side [mm]
+
+[STATUS]
+Plot1=Side [mm],Potentiometer[ADC]
+Plot2=Side [mm],Potentiometer[ADC]
+
+[HELP]

@@ -1,0 +1,147 @@
+[PROMPT]
+KEY_CONFGEN   =Configura Máquina
+
+KEY_GEN       =General.
+KEY_OPZCN     =Opcion. CN
+KEY_OPZPLC    =Opcion. PLC
+SPACE         = -
+
+CN_NUMCHAN    =Número de canal.
+CN_NUMAX      =Número de ejes
+CN_FIRSTSLAVE =Número antes tarj. slave
+CN_MMINCI     =Definición default
+CN_DELAY      =Retardo explorac. CN [s]
+CN_DLY_PATTERN =Prioridad otros procesos
+CN_CALCREG     =Código Carga Slave
+CN_COMMTICALC  =Mandos para intervalo de cálculo
+CN_CNCTIMOT    =Timeout para cada canal
+CN_USREXTLEN   =Long. de las extensiones usuario
+CN_PTKB        =Memoria para ejecuc. pasante
+CN_RETRKB      =Memoria para Retrace
+CN_SLVBLOCKS   =Bloques para todas las code slave
+CN_PARMSVER    =Versión set de parámetros
+
+CN_CALCREGEX   =Extended Slave Load Code (TimeReg/TimeCalc)
+CN_CALCREGEX_LIST =Disab, 2.0/8.0ms, 2.0/4.0ms, 2.0/2.0ms, 1.0/4.0ms, 1.0/2.0ms, 1.0/1.0ms, 0.5/2.0ms, 0.5/1.0ms, 0.5/0.5ms, 0.25/1.0ms, 0.25/0.5ms, 0.25/0.25ms, 4.0/16.0ms, 4.0/8.0ms, 4.0/4.0ms, 8.0/16.0ms, 8.0/8.0ms, 16.0/16.0ms
+CN_TIMINT      =Interrupt Source
+CN_TIMINT_LIST =External, Internal
+
+CN_MONERRINS  =Hab. visualización error seguim.
+CN_MONQTAAX   =Hab. Visual. cota ejes ref. Máq.
+CN_MONINTER   =Hab. Visual. en fase con intérpr.
+CN_MONPARAM   =Hab. Visual. en fase c/paramétr.
+CN_MONCFROM   =Hab. Visual. ciclos fijos en ROM
+CN_M_OVRLAP   =Habil. funciones M overlapped
+CN_SRP_LAH    =Deshab.look-ahead Rampas a S
+CN_VIMO_EN    =Abilitazione modo VIMO
+CN_DIG_FC_EN    =Abilita fattore di conversione per assi digitali
+CN_DIGSIM_KP_EN =Abilita Kp[1/s] in simulato per assi digitali
+CN_EXACT_LS_COMP=Abilita verifica alternativa dei finecorsa software
+CN_ENABLE_G16_AUX =Hab. gestión G16 ejes auxiliares
+CN_ENAB_CORR_DIAM_USURA=Enable diameter-based tool wear compensation
+CN_ENAB_G96_VMIN_VMAX=Enable mandatory G96 VMIN and VMAX
+CN_ENAB_AXIS_CHAN_MATCH=Ab.associazione esplicita assi/canali
+CN_ENAB_SAFETY_EXTINT=Ab.modalità safety estesa
+CN_ENAB_FAST_Q_REF=Ab.modalità rinfresco veloce quota misurata
+CN_ENAB_TIME_ALIGNED_SETIO=Ab.allineamento IO tramite timer hardware
+CN_ENAB_TIME_ALIGNED_SETIO_EX=Ab.accelerazione hardware allineamento IO (laser)
+CN_ENAB_PWM_COMBINE=Ab.emissione e PWM combinati (laser)
+CN_ENAB_G10_EXCLUDE_UNGRP=Escludi assi non-GRP con G10
+CN_ENAB_G8X_NON_MODAL_EXECUTION=Abilita esecuzione non-modale G8x
+CN_ENAB_COMPACT_REFRESH=Abilita rinfresco compattato
+CN_ENAB_WRITES_PIGGYBACKING=Abilita piggybacking per le scritture
+CN_ENAB_HOLD_PERSIST_M=Mantieni STB funzioni M con HOLD
+CN_DISAB_PPG_OPTIM=Disabilita priority boost PPG
+
+_DBO_ENABLE_EXT_HEAP_RT_CHK     =Hab. control consistencia heap
+_DBO_ENABLE_KENV_DEBUG          =Hab. depur. recorr. de búsqueda
+_DBO_ENABLE_DETAILED_DEBUG      =Vis. mas inform. de depuración
+_DBO_ENABLE_REPORT              =Generación report
+_DBO_ENABLE_DTL_LOGGING         =Grab. detallada eventos en disquete
+_DBO_ENABLE_TRACE               =Habilita pistas
+_DBO_ENABLE_PRINTERR            =Vis. pág. informativa del error
+_DBO_ENABLE_VERBOSE_PE          =Vis. pág. informativa detallada
+_DBO_ENABLE_WARP_ENGINE_DEBUG   =Hab.debug parám. cinemát./dinámica
+
+CN_SCNPLCLEN  =Tiempo explorac PLC [s]
+CN_SCNPLCVEL  =Tiempo explorac PLC rapido [s]
+CN_TMOPLCLEN  =Tiempo máximo explorac PLC [s]
+CN_TMOPLCVEL  =Tiempo máximo exp. PLC rapido [s]
+CN_RFSIONODE  =Disab. refresh nodi I/O ring
+CN_PLCTIMEDIV2 =Divide para 2 tiempo explorac PLC
+CN_PLCTIMEDIV4 =Divide para 4 tiempo explorac PLC
+CN_PLCTIMEDIV8 =Divide para 8 tiempo explorac PLC
+CN_PLCFASTHPRI =Plc fast con alta prioridad
+CN_DISTIMCOMP  =Disab. compensacion timer 1.024
+
+KEY_SYSDLLS     =System DLLs
+SYS_SLAOSC      =Oscilloscope
+SYS_SLADLL      =Slave Dll
+SYS_SLACOUP     =Coupling functions Dll
+SYS_SLAPPG      =Pressbrake
+SYS_SLADGT      =Digital drives
+SYS_CAN1        =CanOpen (first)
+SYS_CAN2        =CanOpen (second)
+SYS_SLADGT_ADDR =Base Address
+SYS_SLADGT_IRQN =IRQ Number
+SYS_SLADLL_LIST =None, Default, Filename, Debug
+SYS_SLADGT_LIST =None, McLink, SercosII, Canopen, EsaLink, SercosI, Filename, Debug
+
+CN_SYNCIRQ		= Sync IRQ
+CN_SYNCIRQLIST	= Disab,AutoIRQ,Analog,IRQ10,IRQ11,IRQ12,ECAT
+CN_SYNCTREF		= TRef
+CN_SYNCTREG		= TReg
+CN_SYNCTCALC	= TCalc
+
+[HELP]
+CN_NUMCHAN    =Número de canales
+CN_NUMAX      =Número de ejes
+CN_FIRSTSLAVE =Identificador primera tarjeta ejes para sistemas distribuidos. NO USADO.
+CN_MMINCI     =Fijación de la unidad de medida usada por omisión por el PP (0)mm (1)pulgadas
+CN_DELAY      =Retardo exploracion CN [s]:  debe ser mayor que cero si la tarjeta CNC debe cubrir los requerimientos de una interfaz usuario para permitir a ésta de efectuar las necesarias elaboraciones.
+CN_DLY_PATTERN =Prioridad otros procesos de sistema. A las actividades se reserva un lapso de tiempo programado en 'Retardo Barrido CN' con una frecuencia determinada por la prioridad.
+CN_CALCREG    =Código Carga Slave - Valor optimal (6)
+CN_COMMTICALC =Número de mandos preelaborados por el slave en un intervalo de cálculo. Valor estándar: 1
+CN_CNCTIMOT   =Tiempo máximo que puede transcurrir entre el inicio de la ejecución de un canal y la del canal que lo sigue. Debe ser sin duda mayor del tiempo programado en el parámetro Retardo Barrido CN [s].
+CN_USREXTLEN  =Longitud de las extensiones usuario de los bloques ISO (byte). Las extensiones disponibles están compartidas por los diversos canales y por las máquinas a estados de cada canal, en modo tal que esta dimensión debe tener en cuenta la mayor estructura a controlar.
+CN_PTKB       =Memoria para ejecución pasante en KB, compartida por todos los canales. Para garantizar que cada canal cuente con la efectiva memoria que requiere (configurada mediante el específico parámetro configuración canal) es necesario que este parámetro sea igual o superior a la memoria requerida por las diversas combinaciones de canales que pueden ejecutar simultáneamente.
+CN_RETRKB     =Memoria para Retrace en KB, compartida por todos los canales. Para garantizar que cada canal cuente con la efectiva memoria que requiere (configurada mediante el específico parámetro configuración canal) es necesario que este parámetro sea igual o superior a la memoria requerida por las diversas combinaciones de canales que pueden ejecutar simultáneamente.
+CN_SLVBLOCKS  =Número de bloques a utilizar para las code slave, compartido por todos los canales. Para garantizar que cada canal cuente con el efectivo número de bloques slave que requiere (configurado mediante los parámetros configuración canal) es necesario que este parámetro sea igual o superior al número de bloques requerido por las diversas combinaciones de canales que pueden ejecutar simultáneamente.
+CN_PARMSVER   =Versión del set de parámetros; una versión 1 o superior indica la expresión de los parámetros inherentes al movimiento de los ejes según unidades ingenierísticas. Usar 0 para compatibilidad con las versiones Sw que prevén por ejemplo la fijación de los tiempos de aceleración en segundos.
+
+CN_MONERRINS  =Habilitación visualización error seguimiento:  (0) cota absoluta y cota diferencial (1) error de seguimiento
+CN_MONQTAAX   =Habilitación visualización cota ejes referencia máquina: (0)sistema de referencia origen pieza (1)sistema de referencia origen máquina
+CN_MONINTER   =Habilitación visualización en fase con interprete lenguaje
+CN_MONPARAM   =Habilitación visualización en fase con paramétrica
+CN_MONCFROM   =Habilitación visualización ciclos fijos en ROM : habilita la visualización del ciclo fijo en fase de ejecución
+CN_M_OVRLAP   =Habilitación funciones M overlapped: (0)modalidad sincronismo por omisión (1)modalidad overlapped
+CN_SRP_LAH    =Deshabilita look-ahead Rampas a S:  cuando se usan las rampas a S, el jerk en los pasajes de ángulo es considerado por el procedimiento de look-ahead si este parámetro es nulo. Si está fijado en 1 el look-ahead está deshabilitado.
+CN_VIMO_EN    =Abilita il modo VIMO per l'ottimizzazione delle transizioni tra blocchi in G64 in presenza di assi con forti differenze dinamiche.
+CN_DIG_FC_EN    =Abilita fattore di conversione per assi digitali.  Adottare 1 su nuove applicazioni, 0 per compatibilità.
+CN_DIGSIM_KP_EN =Abilita Kp[1/s] in simulato per assi digitali.  L'impostazione dipende dal driver utilizzato.  Utilizzare 0 se non diversamente richiesto.
+CN_EXACT_LS_COMP=Abilita verifica alternativa dei finecorsa software
+CN_ENABLE_G16_AUX =Habilita gestión G16 con ejes auxiliares (ej. G16 ZUU+)
+CN_ENAB_CORR_DIAM_USURA=Enable diameter-based tool wear compensation (0=radius-based, 1=diameter-based)
+CN_ENAB_G96_VMIN_VMAX=Enable mandatory G96 VMIN and VMAX (0=optional, 1=mandatory)
+
+_DBO_ENABLE_EXT_HEAP_RT_CHK     =Habilita control Tiempo de Ejecución de la consistencia del heap de las extensiones usuario 'freecells'
+_DBO_ENABLE_KENV_DEBUG          =Habilita la visualización de los recorridos de búsqueda de los archivos
+_DBO_ENABLE_DETAILED_DEBUG      =Visualiza un número mayor de informaciones de depuración
+_DBO_ENABLE_REPORT              =Generación archivo de REPORT : 0-deshabilita 1-genera el archivo .deb
+_DBO_ENABLE_DTL_LOGGING         =Grabación detallada eventos en disquete: 0-deshabilitada 1-habilitada
+_DBO_ENABLE_TRACE               =Habilitación Trace: 0-deshabilitado 1-monitoriza las actividades del canal sin generar archivo
+_DBO_ENABLE_PRINTERR            =Habilita visualización página informativa sobre el error
+_DBO_ENABLE_VERBOSE_PE          =Habilita visualización detallada página informativa sobre el error
+_DBO_ENABLE_WARP_ENGINE_DEBUG   =Habilita debugger de los parámetros de la cinemática y dinámica de los tramos
+
+CN_SCNPLCLEN  =Tiempo exploración PLC [s]:período que transcurre desde el inicio de un barrido del PLC al sucesivo.
+CN_SCNPLCVEL  =Tiempo exploración PLC veloz [s]:período que transcurre desde el inicio de un barrido del PLC veloz al sucesivo.
+CN_TMOPLCLEN  =Tiempo máximo exploración PLC [s]:tiempo máximo que puede transcurrir desde el inicio de un barrido del PLC a la conclusión del mismo.
+CN_TMOPLCVEL  =Tiempo máximo exploración PLC rapido [s]:tiempo máximo que puede transcurrir desde el inicio de un barrido del PLC veloz a la conclusión del mismo.
+CN_RFSIONODE  =Disabilita il mantenimento automatico del link di I/O ogni 32 ms. Può essere utilizzato con tempo scansione PLC lento inferiore a 40 ms per ridurre il carico della CPU su sistemi dotati di I/O ring su fibra ottica.
+CN_PLCTIMEDIV2 =Divide per 2 i tempi di scansione del PLC. Permette di portare il tempo di scansione del PLC veloce a 0.5 ms.
+CN_PLCTIMEDIV4 =Divide per 4 i tempi di scansione del PLC. Permette di portare il tempo di scansione del PLC veloce a 0.25 ms.
+CN_PLCTIMEDIV8 =Divide per 8 i tempi di scansione del PLC. Permette di portare il tempo di scansione del PLC veloce a 0.125 ms.
+CN_PLCFASTHPRI =Imposta la priorità del PLC FAST sopra quella del regolatore assi.
+CN_DISTIMCOMP  =Disabilita compensazione timer 1.024. Da usare per garantire la ripetibilità dei timer con valori di preset minori di 100 ms.
+

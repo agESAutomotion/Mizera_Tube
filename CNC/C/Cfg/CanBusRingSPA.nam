@@ -1,0 +1,45 @@
+
+[PROMPT]
+KEY_RNODES=Config
+RG_RINGTYPELIST =0-CAN Trajectory,1-CAN Positioning,2-Ethercat
+RG_BAUDLIST =1000 Kb,800 Kb,500 Kb,250 Kb,125 Kb,100 Kb,50 Kb,20 Kb,10 Kb
+LBL_RG_ENAB=DLL_Enable
+LBL_RG_RINGTYPE=Ring Type
+LBL_RG_SYNC=Sync time
+LBL_RG_NODES=Nodes
+RG_MSYNC=Measured Cycle Time (usec)
+LBL_RG_BAUD=Baud Rate
+LBL_RG_CANOPEN=CANOPEN
+LBL_RG_CANBITERR=Controller Bit Error
+LBL_RG_CANFORMERR=Controller Form Error
+LBL_RG_CANSTUFFERR=Controller Stuff Error
+LBL_RG_CANGENERR=Controller Gen. Error
+LBL_RG_WRONGWC=Wrong WC
+LIST_SYNC_DIVIDER=none,x1,x2,x4
+LBL_RG_SYNC_DIVIDER=Sync Time Divider
+
+
+[STATUS]
+
+[HELP]
+CBX_RG_RINGTYPE =Ring Type:0=CAN Trajectory, 1=CAN Positioning, 2-Ethercat
+DR_FEED0    =Feed constant (mm)
+DR_SHAFT0   =Shaft revolutions
+DR_SWIDE0   =Kvara system-wide index
+DR_SWIDE1   =Redirection system-wide number
+DR_TYPE0    =Drive Type
+ND_LIFE     =Node guarding time (msec)
+ND_NODE     =0=OutOfService, 1=Reserved, 2-60=Node Address (dec)
+ND_NUMDEV   =Number of configured Pdos
+ND_NUMOBJS  =Parameter set to be loaded: B0=Set1.  B1=Set2.  B2=Set3.  B3=Set4.  B4-B11=Reserved.  B12-B15: (000=Noop, 001=BootRead, 010=BootCheck, 011=BootWrite, 100=BootWrite & save).  B15=Reserved.
+ND_PROFILE  =Device profile (CiA)
+PDOIW1      =IW / QW mapping number
+PDOMP1      =mapping: Index,Subindex,Length (xxxxyyzz)
+PDOTM       =Inhibit time (0.1msec)
+PDOTX       =Transmission type (0=SyncAcyclic, 1-240=SyncCiclic, 252=SyncRtr, 253=AsyncRtr, 254-255=Async)
+RG_BAUD     =Ring baud rate (CiA)
+RG_ENAB     =Enable: 0=Disab, 1=Can1, 2=Can2,   AAPTINNN: AAdd(C0:FF)  Prio(0,9:13)  Tick(0,1:15)  Irq(0,5,9,10,11,15)  NNNode(1,2,100:13C / 200:23C)
+RG_NODES    =Number of configured nodes (max 60)
+RG_SYNC     =Sync time (msec)
+kRPDO1o1    =CanFb mappimg: 0=no mapping, 1=CanFb1, ...47=CanFb47
+kTPDOTX     =Transmission type (1-240=SyncCiclic, 255=Async)

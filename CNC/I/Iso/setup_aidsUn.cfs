@@ -1,0 +1,110 @@
+: setup_aids
+;//laser tube dynamic machining aids setup
+;//uses data from G2292: xs, ... xe, ... xr, ...
+
+
+;//$APPLICAZIONE
+IF (%cn[WHO()].rc[0].21) RET
+
+;altri (es.: loadPart) possono aver agganciato la Z. Per la C e' per sicurezza
+G4005 S(AXIDX(3,Z))
+G4005 S(AXIDX(3,C))
+G4099
+
+SYN
+
+;l'asse virtuale non e' ancora agganciato e potrebbe non rispecchiare la quota di 3,C
+G153
+G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1
+G152
+G4099
+;lo molliamo perche' la Sel_Y3... attualmente assume che non sia agganciato (non lo sgancia all'inizio)
+G4005 S(AXIDX(3,C))
+G4099
+
+;//$APPLICAZIONE
+
+;// lunghezza superficie piatta al di sotto della quale gli assi non si
+;// arrestano al passaggio di quadrante (G1000)
+DBL min_flatness = 10
+
+DBL u[4], v[4], rnd
+DBL c, cp, cpm
+DBL aid_v_neg
+
+;//select plane
+IF (xr != 0) THEN
+    rnd = xr
+    u[0] = ys + rnd
+    u[1] = ys + rnd
+    v[0] = zs + rnd
+    v[3] = zs + rnd
+    u[2] = ye - rnd
+    u[3] = ye - rnd
+    v[2] = ze - rnd
+    v[1] = ze - rnd
+ELSEIF (yr != 0) THEN
+    rnd = yr
+    u[0] = zs + rnd
+    u[1] = zs + rnd
+    v[0] = xs + rnd
+    v[3] = xs + rnd
+    u[2] = ze - rnd
+    u[3] = ze - rnd
+    v[2] = xe - rnd
+    v[1] = xe - rnd
+ELSE
+    rnd = zr
+    u[0] = xs + rnd
+    u[1] = xs + rnd
+    v[0] = ys + rnd
+    v[3] = ys + rnd
+    u[2] = xe - rnd
+    u[3] = xe - rnd
+    v[2] = ye - rnd
+    v[1] = ye - rnd
+ENDIF
+
+IF (u[3] < (u[0] - 0.002)) ERROR(55)
+IF (v[0] > (v[1] + 0.002)) ERROR(55)
+IF (u[1] > (u[2] + 0.002)) ERROR(55)
+IF (v[2] < (v[3] - 0.002)) ERROR(55)
+
+;//shape flatness (bottom, left, top, right)
+aid_isFlat[0] = u[3] > (u[0] + min_flatness)
+aid_isFlat[1] = v[0] < (v[1] - min_flatness)
+aid_isFlat[2] = u[1] < (u[2] - min_flatness)
+aid_isFlat[3] = v[2] > (v[3] + min_flatness)
+
+LSYN
+c = QPREF(C)        ;//C axis
+cp = FLOOR(c/90)
+;//+0 = aid_v_neg, +1 = aid_u_neg, +2 = aid_v_pos, +3 = aid_u_pos
+cpm = MOD(cp+0,4)
+IF (cpm < 0) cpm = cpm + 4
+aid_v_neg = SIN(c) * u[cpm] + COS(c) * v[cpm] - rnd
+
+;//$APPLICAZIONE
+;//predisponi asse sostegno dinamico
+G153
+G4010 M(AXIDX(Z)) S(AXIDX(8,X)) I1
+G152
+G4099
+
+G153 G1 F5000 Z(-aid_v_neg)
+
+;//$APPLICAZIONE
+G4005 S(AXIDX(8,X))
+G4099
+
+;//engage tube machining aids
+;//ABCD = shape limits [[u- v-]..[u+ v+]]
+;//E    = rounding radius
+;//F    = aid skew (i.e.: 0°=bottom, 90°=left, 180°=top, 270°=right)
+;//G    = rotation invert flag
+;//H    = aid direction invert flag (0=positive towards center)
+
+G4011 T33 M(AXIDX(C)) S(AXIDX(8,X)) A(u[0]-rnd) B(v[0]-rnd) C(u[2]+rnd) D(v[2]+rnd) E(rnd) F0.0 G0 H1
+G4099
+
+RET

@@ -1,0 +1,167 @@
+*******************************************************************************
+*   WORKLIST.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "assi.plc"
+#funcdec "mand.plc"
+#funcdec "cnc.plc"
+
+VAR
+#include "assi.inc"
+#include "cnc.inc"
+END_VAR
+
+#include "iol.inc"
+
+VAR_IN_OUT
+
+#include "mem.inc"              
+
+TIMER_PROG          AT %wl_time;                    * timer
+SEQ_VIS             AT %WlistMngt.wl_mngdwpar0;     * (WlistMngt.wl_mngdwpar0)Sequenza per vis.
+CMD_CHCOMP          AT %CompData0;                  * Comando canale computazionale
+WENDL               AT %wl_endl;
+WPARA               AT %wl_parA0;
+END_VAR
+
+*******************************************************************************
+*   FB GESTIONE LISTE
+*   (#WLIST)
+*******************************************************************************
+FUNCTION_BLOCK WORK_LIST
+
+VAR_INPUT
+xEnable:            BOOL;           ** abilitazione
+xProgRun:           BOOL;           ** program run
+xEmissionOn:        BOOL;           ** Laser acceso (O_O_A2_LASER_PROG_RUN)
+END_VAR
+
+VAR_OUTPUT
+END_VAR
+
+VAR
+F_TRIGP:            F_TRIG;     * Program run down
+L_RTRIG_NEXT:       R_TRIG;     * Vis. prog successivo
+L_RTRIG_PREV:       R_TRIG;     * Vis. prog precedente
+L_RTRIG_1SEC:       R_TRIG;     * Cadenza di 1 secondo
+RefreshGraph:       BOOL;
+L_appoggio:         BOOL;       * appoggio
+L_PrevUiplPage:     DWORD;      * Pagina precedente UIPL
+CopyVal_SEQ_VIS:    DWORD;      * Copia numero sequenza vis.
+END_VAR
+*******************************************************************************
+
+***************************************
+* List running
+***************************************
+LD   0
+ST   %WlistMngt.wl_ListRunning
+
+LD   xEnable
+AND  xProgRun
+JMPCN No_Run
+
+LD   1
+ST   %WlistMngt.wl_ListRunning
+
+No_Run:
+
+***************************************
+* Gestione visualizzazione linea
+***************************************
+LD   %Uipl.Field
+EQ   9999
+ANDN %WlistMngt.wl_ListRunning
+ANDN GRAPH_DRAW_RUN                ** ui33.7 Graphics drawing in progress
+AND (
+LD   SEQ_VIS                       ** (WlistMngt.wl_mngdwpar0)Sequenza per vis.
+NE   %Uipl.Row
+)
+JMPCN NoSel
+
+LD   %Uipl.Row
+ST   SEQ_VIS                       ** (WlistMngt.wl_mngdwpar0)Sequenza per vis.
+
+NoSel:
+***************************************
+* Rinfresco grafica
+***************************************
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   RefreshGraph
+
+LD   SEQ_VIS                       ** (WlistMngt.wl_mngdwpar0)Sequenza per vis.
+EQ   CopyVal_SEQ_VIS               ** Copia numero sequenza vis.
+JMPC AGGNUMCODE
+
+LD   SEQ_VIS                       ** (WlistMngt.wl_mngdwpar0)Sequenza per vis.
+ST   CopyVal_SEQ_VIS               ** Copia numero sequenza vis.
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   RefreshGraph
+
+AGGNUMCODE:
+LD   L_PrevUiplPage                ** Pagina precedente UIPL
+EQ   5000                   ** Numero pagina della LISTA lavoro
+AND (
+LD   %Uipl.Page
+NE   5000                   ** Numero pagina della LISTA lavoro
+)
+OR (
+LD   L_PrevUiplPage                ** Pagina precedente UIPL
+EQ   5001                   ** Numero pagina GRAFICA FULL SCREEN
+AND (
+LD   %Uipl.Page
+NE   5001                   ** Numero pagina della LISTA lavoro
+)
+)
+ST   L_appoggio                    ** appoggio
+
+LD   %Uipl.Page
+ST   L_PrevUiplPage                ** Pagina precedente UIPL
+
+CAL  F_TRIGP(CLK=PRGRUN_CN0)       ** Program run down
+
+LD   L_appoggio                    ** appoggio
+OR   %SoftBtn0.0                   ** Reset PIECE and GEOMETRY
+OR   RefreshGraph
+OR   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+OR   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+OR   F_TRIGP.Q
+AND  %LSRPlcOp0.5                  ** Worklist mode enabled
+JMPCN NoSendCmd
+
+LD   5                          * Comando refresh grafica (canale computazionale)
+ST   CMD_CHCOMP                    ** Comando canale computazionale
+
+NoSendCmd:
+***************************************
+* Lock editing in pagina EDITOR LISTE
+***************************************
+LD   %WlistMngt.wl_ListRunning
+ST   %WlistMngt.wl_EditLock
+
+***************************************
+* Gestione TEMPI di esecuzione
+***************************************
+CAL L_RTRIG_1SEC(CLK=NORMAL_BLINK) ** Cadenza di 1 secondo
+
+PATH %Wlist[%WlistMngt.wl_Index]
+
+LD   %cn0.rc8.0                    * Programma in corso cn0
+ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+**AND  xEmissionOn  *todomag scommentare nel caso serva il tempo sull'accensione laser
+AND  L_RTRIG_1SEC.Q
+AND (
+LD   %WlistMngt.wl_ListRunning
+EQ   1
+)
+JMPCN NoIncTimer
+
+LD   TIMER_PROG                    ** timer
+ADD  1
+ST   TIMER_PROG                    ** timer
+
+NoIncTimer:
+
+END_FUNCTION_BLOCK

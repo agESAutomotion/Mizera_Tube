@@ -1,0 +1,464 @@
+ : pcmDoTubeCentering
+;// pipe calibration cycles:
+;// adjusts tube spindle and clamps centering
+;// Cycle starts by centering spindle, using face facing upwards with given C
+;// coordinate.  If no C coordinate is given, face is automatically chosen.
+;// Spindle and clamps centering error is returned.
+;// INPUT:
+;//     pcRequiredCS (QNAN = auto)
+;//     pcRequiredZ
+;//     pcRequiredW
+;// OUTPUT:
+;//     pcErrorS[2]
+;//     pcErrorC[2]
+DBL c = pcRequiredCS
+DBL z = pcRequiredZ
+DBL w = pcRequiredW
+
+DBL fSimul = %cn[WHO()].rc[0].21
+
+DBL pi = tubePI
+;// See pcsEligibleFace, pcsDoSpindleCentering(#1)
+;// INPUTS
+DBL pcRequiredC
+DBL pcSearchMode
+;// OUTPUTS, INPUTS(#1)
+DBL pcCommonAngle
+DBL pcFaces[2]
+DBL pcVLeads[2]
+DBL pcIsEdge[2]
+;// OUTPUTS
+DBL pcIsEligible
+;// See pcsDoSpindleCentering
+;// INPUTS
+DBL pcSpindleZ
+DBL pcSpindleW
+;// OUTPUT:
+DBL pcDeltaS[2]
+;// See pcsEvalFace
+;// INPUT:
+DBL pcFaceToEval
+;// OUTPUT:
+DBL pcAngleBC
+DBL pcLengthBC
+DBL pcPb[2], pcPc[2]
+DBL pcPbr, pcPcr
+DBL pcLb, pcLc
+DBL pcSignB, pcSignC
+;// See pcuNormalProbe
+;// INPUT:
+DBL pcC
+DBL pcV[3]
+DBL pcW
+;// OUTPUT:
+DBL pcAcquired[3]
+
+DBL faces[10],  maxFaces = 10
+DBL logicalFaces[10]
+DBL vLeadsBs[10], vLeadsCs[10]
+DBL commonAngle0
+DBL faceC0
+DBL isEdgeB0, isEdgeC0
+DBL deltaCx0
+DBL deltaCys[10]
+DBL angleBCs[10]
+DBL iFace, nFaces
+DBL centerSpindle = 0
+
+DBL sn, cs
+DBL dx, dy
+DBL dst
+DBL pb[2], pc[2]
+DBL bx, by
+DBL cx, cy
+DBL lx, ly
+DBL angleBC
+DBL length
+DBL i, j, n, ti
+
+DBL calibrationType
+
+DBL an[2], bn[2], cn[2]
+DBL one_d
+DBL a11, a21, a31, a12, a22, a32, a13, a23, a33
+DBL ds[2]
+DBL ns[2]
+DBL cc
+
+pcErrorC[0] = 0.0
+pcErrorC[1] = 0.0
+pcErrorS[0] = 0.0
+pcErrorS[1] = 0.0
+
+;// NOTE: determine feasibility of all phases before starting
+
+;// Prepare first face for [both spindle and] tube cal (class-independent)
+pcRequiredC = c
+pcSearchMode = 2    ;//PC_SPINDLE_CENTERING
+JSR "pcsEligibleFace.cfs"
+
+IF (pcIsEligible) THEN
+    faceC0 = pcFaces[1]
+    isEdgeB0 = pcIsEdge[0]
+    isEdgeC0 = pcIsEdge[1]
+    centerSpindle = 1
+ELSE
+    pcRequiredC = c
+    pcSearchMode = 3    ;//PC_TUBE_CENTERING
+    JSR "pcsEligibleFace.cfs"
+    IF (!pcIsEligible) ERROR(55)
+ENDIF
+
+commonAngle0 = pcCommonAngle
+faces[0] = pcFaces[0]
+logicalFaces[0] = 0
+vLeadsBs[0] = pcVLeads[0]
+vLeadsCs[0] = pcVLeads[1]
+nFaces = 1
+
+n = %gmaPolygons[pi].gmanVertices
+IF (n < 3) ERROR(55) ;// at least 3p for a polygon
+
+;// Prepare all other faces and choose calibration algorithm (class-dependent)
+SWITCH (tubeClass)
+CASE 0
+    ;// NOT A TUBE
+    ERROR(55) ;not a tube
+CASE 1
+    ;// RECTANGLE/FLAT OVAL/ROUND
+    angleBC = commonAngle0
+    FOR j = 1 TO 3
+        angleBC = angleBC + 90.0
+
+        pcRequiredC = -(angleBC - 180.0)
+        pcSearchMode = 3    ;//PC_TUBE_CENTERING
+        JSR "pcsEligibleFace.cfs"
+        IF (!pcIsEligible) ERROR(55)
+
+        IF (nFaces == maxFaces) ERROR(55)
+        faces[nFaces] = pcFaces[0]
+        logicalFaces[nFaces] = j
+        vLeadsBs[nFaces] = pcVLeads[0]
+        vLeadsCs[nFaces] = pcVLeads[1]
+        nFaces = nFaces + 1
+    ENDFOR
+    calibrationType = 2 ;// QUAD
+CASE 2
+    ;// TRIANGLE
+    i = faces[0]
+    FOR j = 1 TO 2
+        i = i + 1
+        IF (i >= n) i = i - n
+        ti = i
+        bx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+        by = %gmaPolygons[pi].gmaVertices[ti].gma_v
+        ti = i + 1
+        IF (ti >= n) ti = ti - n
+        cx = %gmaPolygons[pi].gmaVertices[ti].gma_u
+        cy = %gmaPolygons[pi].gmaVertices[ti].gma_v
+        lx = cx - bx
+        ly = cy - by
+        length = SQRT(lx * lx + ly * ly)
+        IF (length < 0.1) ERROR(55) ;// null segment
+        angleBC = ATANXY(ly, lx)
+
+        pcRequiredC = -(angleBC - 180.0)
+        pcSearchMode = 3    ;//PC_TUBE_CENTERING
+        JSR "pcsEligibleFace.cfs"
+        IF (!pcIsEligible) ERROR(55)
+
+        IF (nFaces == maxFaces) ERROR(55)
+        faces[nFaces] = pcFaces[0]
+        logicalFaces[nFaces] = j
+        vLeadsBs[nFaces] = pcVLeads[0]
+        vLeadsCs[nFaces] = pcVLeads[1]
+        nFaces = nFaces + 1
+    ENDFOR
+    calibrationType = 1 ;// TRI
+CASE 3
+    ;// REGULAR POLYGON
+    IF ((n / 4) == FLOOR(n / 4)) THEN
+        angleBC = commonAngle0
+        FOR j = 1 TO 3
+            angleBC = angleBC + 90.0
+
+            pcRequiredC = -(angleBC - 180.0)
+            pcSearchMode = 3    ;//PC_TUBE_CENTERING
+            JSR "pcsEligibleFace.cfs"
+            IF (!pcIsEligible) ERROR(55)
+
+            IF (nFaces == maxFaces) ERROR(55)
+            faces[nFaces] = pcFaces[0]
+            logicalFaces[nFaces] = j
+            vLeadsBs[nFaces] = pcVLeads[0]
+            vLeadsCs[nFaces] = pcVLeads[1]
+            nFaces = nFaces + 1
+        ENDFOR
+        calibrationType = 2 ;// QUAD
+    ELSE
+        FOR j = 1 TO 2
+            angleBC = FLOOR((n + 1) / 3) * (360.0 / n)
+            IF (j == 1) THEN
+                angleBC = +angleBC + commonAngle0
+            ELSE
+                angleBC = -angleBC + commonAngle0
+            ENDIF
+
+            pcRequiredC = -(angleBC - 180.0)
+            pcSearchMode = 3    ;//PC_TUBE_CENTERING
+            JSR "pcsEligibleFace.cfs"
+            IF (!pcIsEligible) ERROR(55)
+
+            IF (nFaces == maxFaces) ERROR(55)
+            faces[nFaces] = pcFaces[0]
+            logicalFaces[nFaces] = j
+            vLeadsBs[nFaces] = pcVLeads[0]
+            vLeadsCs[nFaces] = pcVLeads[1]
+            nFaces = nFaces + 1
+        ENDFOR
+        calibrationType = 1 ;// TRI
+    ENDIF
+CASE 4, 5, 6
+    ;// I-BEAM
+    ;// C-BEAM
+    ;// L-BEAM
+    angleBC = commonAngle0
+    FOR j = 1 TO 3
+        angleBC = angleBC + 90.0
+
+        pcRequiredC = -(angleBC - 180.0)
+        pcSearchMode = 3    ;//PC_TUBE_CENTERING
+        JSR "pcsEligibleFace.cfs"
+        IF (pcIsEligible) THEN
+            IF (nFaces == maxFaces) ERROR(55)
+            faces[nFaces] = pcFaces[0]
+            logicalFaces[nFaces] = j
+            vLeadsBs[nFaces] = pcVLeads[0]
+            vLeadsCs[nFaces] = pcVLeads[1]
+            nFaces = nFaces + 1
+        ENDIF
+    ENDFOR
+    calibrationType = 2 ;// QUAD
+OTHERWISE
+    ERROR(55) ;unhandled tube class
+ENDSWITCH
+
+;// Acquire all faces (class-independent)
+FOR iFace = 0 TO nFaces - 1
+    IF (centerSpindle && (iFace == 0)) THEN
+        pcCommonAngle = commonAngle0
+        pcFaces[0] = faces[iFace]
+        pcFaces[1] = faceC0
+        pcVLeads[0] = vLeadsBs[iFace]
+        pcVLeads[1] = vLeadsCs[iFace]
+        pcIsEdge[0] = isEdgeB0
+        pcIsEdge[1] = isEdgeC0
+        pcSpindleZ = z
+        pcSpindleW = w
+        JSR "pcsDoSpindleCentering.cfs"
+        deltaCx0 = pcDeltaS[0]
+        deltaCys[iFace] = pcDeltaS[1]
+        angleBCs[iFace] = commonAngle0
+    ELSE
+        pcFaceToEval = faces[iFace]
+        JSR "pcsEvalFace.cfs"
+
+        sn = SIN(pcAngleBC)
+        cs = COS(pcAngleBC)
+
+        pb[0] = cs * (+vLeadsBs[iFace]) + pcPb[0]
+        pb[1] = sn * (+vLeadsBs[iFace]) + pcPb[1]
+        pc[0] = cs * (-vLeadsCs[iFace]) + pcPc[0]
+        pc[1] = sn * (-vLeadsCs[iFace]) + pcPc[1]
+
+        pcV[0] = (pb[0] + pc[0]) / 2
+        pcV[1] = (pb[1] + pc[1]) / 2
+        pcV[2] = z
+        pcW = w
+        pcC = -(pcAngleBC - 180.0)
+
+        JSR "pcuNormalProbe.cfs"
+
+        ;// Rotate 180°
+        sn = -sn
+        cs = -cs
+
+        ;//              T
+        ;// deltaC[1] = R [1] * (pcAcquired - pcV)
+        dx = pcAcquired[0] - pcV[0]
+        dy = pcAcquired[1] - pcV[1]
+        deltaCys[iFace] = -sn * dx +cs * dy
+        angleBCs[iFace] = pcAngleBC
+    ENDIF
+ENDFOR
+
+;// Execute proper calibration algorithm
+SWITCH (calibrationType)
+CASE 1
+    ;// TRI
+    IF (nFaces != 3) ERROR (55)
+
+    ;// assume winding CCW
+    ;// an = R[-90] * BC, ...
+    an[0] = +SIN(angleBCs[0])
+    an[1] = -COS(angleBCs[0])
+    bn[0] = +SIN(angleBCs[1])
+    bn[1] = -COS(angleBCs[1])
+    cn[0] = +SIN(angleBCs[2])
+    cn[1] = -COS(angleBCs[2])
+
+    ;//                                    -1
+    ;// | pcErrorC[0] |   | an[0] an[1] 1 |
+    ;// |             |   |               |
+    ;// | pcErrorC[1] | = | bn[0] bn[1] 1 |  . deltaCy
+    ;// |             |   |               |
+    ;// | pcErrorS[1] |   | cn[0] cn[1] 1 |
+
+    one_d =       + an[0] * bn[1] + bn[0] * cn[1] + cn[0] * an[1]
+    one_d = one_d - an[0] * cn[1] - bn[0] * an[1] - cn[0] * bn[1]
+    IF (ABS(one_d) < 0.01) ERROR(55)
+    one_d = 1 / one_d
+
+    a11 = (bn[1] - cn[1]) * one_d
+    a21 = (cn[0] - bn[0]) * one_d
+    a31 = (bn[0] * cn[1] - bn[1] * cn[0]) * one_d
+    a12 = (cn[1] - an[1]) * one_d
+    a22 = (an[0] - cn[0]) * one_d
+    a32 = (an[1] * cn[0] - an[0] * cn[1]) * one_d
+    a13 = (an[1] - bn[1]) * one_d
+    a23 = (bn[0] - an[0]) * one_d
+    a33 = (an[0] * bn[1] - an[1] * bn[0]) * one_d
+
+    pcErrorC[0] = a11 * deltaCys[0] + a12 * deltaCys[1] + a13 * deltaCys[2]
+    pcErrorC[1] = a21 * deltaCys[0] + a22 * deltaCys[1] + a23 * deltaCys[2]
+    pcErrorS[1] = a31 * deltaCys[0] + a32 * deltaCys[1] + a33 * deltaCys[2]
+
+    IF (centerSpindle) THEN
+        cc = -(angleBCs[0] - 180.0)
+        sn = SIN(cc)
+        cs = COS(cc)
+        ;// ErrorS[0] = deltaCx0 - (R * ErrorC)[0]
+        pcErrorS[0] = deltaCx0 - (+cs * pcErrorC[0] -sn * pcErrorC[1])
+    ENDIF
+CASE 2
+    ;// QUAD
+    ns[0] = 0
+    ns[1] = 0
+    ds[0] = 0.0
+    ds[1] = 0.0
+
+    ;// assume winding CCW
+    FOR iFace = 0 TO nFaces - 1
+        SWITCH (logicalFaces[iFace])
+        CASE 0
+            ;// an = R[-90] * BC
+            an[0] = +SIN(angleBCs[iFace])
+            an[1] = -COS(angleBCs[iFace])
+            ds[0] = ds[0] + deltaCys[iFace]
+            ns[0] = ns[0] + 1
+        CASE 1
+            ;// bn = R[-90] * BC
+            bn[0] = +SIN(angleBCs[iFace])
+            bn[1] = -COS(angleBCs[iFace])
+            ds[1] = ds[1] + deltaCys[iFace]
+            ns[1] = ns[1] + 1
+        CASE 2
+            ;// an = -R[-90] * BC, ...
+            an[0] = -SIN(angleBCs[iFace])
+            an[1] = +COS(angleBCs[iFace])
+            ds[0] = ds[0] - deltaCys[iFace]
+            ns[0] = ns[0] + 1
+        CASE 3
+            ;// bn = -R[-90] * BC
+            bn[0] = -SIN(angleBCs[iFace])
+            bn[1] = +COS(angleBCs[iFace])
+            ds[1] = ds[1] - deltaCys[iFace]
+            ns[1] = ns[1] + 1
+        OTHERWISE
+            ERROR(55) ;unhandled logical face
+        ENDSWITCH
+    ENDFOR
+
+    IF ((ns[0] == 0) && (ns[1] == 0)) ERROR(55)
+    ;// in case a vector is missing, fill with a vector normal to the other
+    ;// to get a 1 determinant.
+    IF ((ns[0] != 0) && (ns[1] == 0)) THEN
+        ;// bn = R[+90] * an
+        bn[0] = -an[1]
+        bn[1] = +an[0]
+        ns[1] = ns[1] + 1
+    ELSEIF ((ns[1] != 0) && (ns[0] == 0))
+        ;// an = R[-90] * bn
+        an[0] = +bn[1]
+        an[1] = -bn[0]
+        ns[0] = ns[0] + 1
+    ENDIF
+
+    ds[0] = ds[0] / ns[0]
+    ds[1] = ds[1] / ns[1]
+
+    ;//                                  -1
+    ;// | pcErrorC[0] |   | an[0] an[1] |
+    ;// |             | = |             |  . ds
+    ;// | pcErrorC[1] |   | bn[0] bn[1] |
+
+    one_d = + an[0] * bn[1] - bn[0] * an[1]
+    IF (ABS(one_d) < 0.01) ERROR(55)
+    one_d = 1 / one_d
+
+    a11 = +bn[1] * one_d
+    a21 = -bn[0] * one_d
+    a12 = -an[1] * one_d
+    a22 = +an[0] * one_d
+
+    pcErrorC[0] = a11 * ds[0] + a12 * ds[1]
+    pcErrorC[1] = a21 * ds[0] + a22 * ds[1]
+
+    cc = -(angleBCs[0] - 180.0)
+    sn = SIN(cc)
+    cs = COS(cc)
+    ;// ErrorS = deltaC0 - R * ErrorC
+    IF (centerSpindle) THEN
+    pcErrorS[0] = deltaCx0    - (+cs * pcErrorC[0] -sn * pcErrorC[1])
+    ENDIF
+    pcErrorS[1] = deltaCys[0] - (+sn * pcErrorC[0] +cs * pcErrorC[1])
+OTHERWISE
+    ERROR(55) ;unhandled calibration type
+ENDSWITCH
+
+sn = SIN(pcPolyToPhy)
+cs = COS(pcPolyToPhy)
+;// errorS' = R * errorS
+dx = pcErrorS[0]
+dy = pcErrorS[1]
+pcErrorS[0] = +cs * dx -sn * dy
+pcErrorS[1] = +sn * dx +cs * dy
+
+;// Adjust spindle and clamps
+IF (!fSimul) THEN
+    dst = TABIDX(0)
+    G153
+    SYN
+    SWITCH (tubeAxis)
+    CASE 0
+        %tab[dst].t_ttab.t_oart.t_dY = %tab[dst].t_ttab.t_oart.t_dY + pcErrorS[0]
+        %tab[dst].t_ttab.t_oart.t_dZ = %tab[dst].t_ttab.t_oart.t_dZ + pcErrorS[1]
+        %tab[dst].t_ttab.t_oart.t_dXx = %tab[dst].t_ttab.t_oart.t_dXx - pcErrorC[1]
+        %tab[dst].t_ttab.t_oart.t_dYy = %tab[dst].t_ttab.t_oart.t_dYy + pcErrorC[0]
+    CASE 1
+        %tab[dst].t_ttab.t_oart.t_dZ = %tab[dst].t_ttab.t_oart.t_dZ + pcErrorS[0]
+        %tab[dst].t_ttab.t_oart.t_dX = %tab[dst].t_ttab.t_oart.t_dX + pcErrorS[1]
+        %tab[dst].t_ttab.t_oart.t_dXx = %tab[dst].t_ttab.t_oart.t_dXx + pcErrorC[1]
+        %tab[dst].t_ttab.t_oart.t_dYy = %tab[dst].t_ttab.t_oart.t_dYy - pcErrorC[0]
+    CASE 2
+        %tab[dst].t_ttab.t_oart.t_dX = %tab[dst].t_ttab.t_oart.t_dX + pcErrorS[0]
+        %tab[dst].t_ttab.t_oart.t_dY = %tab[dst].t_ttab.t_oart.t_dY + pcErrorS[1]
+        %tab[dst].t_ttab.t_oart.t_dXx = %tab[dst].t_ttab.t_oart.t_dXx + pcErrorC[0]
+        %tab[dst].t_ttab.t_oart.t_dYy = %tab[dst].t_ttab.t_oart.t_dYy + pcErrorC[1]
+    OTHERWISE
+        ERROR(55) ;bad tubeAxis
+    ENDSWITCH
+    G152
+ENDIF
+
+RET

@@ -1,0 +1,11 @@
+:G155
+;//Selezione origine macchina 2
+;//Scrive sulle variabili ori_x, ...
+ori_x = %cn[WHO()].sr[1].do[0] / 1000
+ori_y = %cn[WHO()].sr[1].do[1] / 1000
+ori_z = %cn[WHO()].sr[1].do[2] / 1000
+
+ori_gorg = 0
+ori_no = 155
+G152
+RET

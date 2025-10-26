@@ -1,0 +1,52 @@
+
+[KEYS]
+TITLE=OPZIONI
+
+[PROMPT]
+KEY_NODE=
+OPZIONIEXE=Leaf
+GroupBox3=Tip Touch Options
+GroupBox2=General Options
+GroupBox=Iso Options
+GroupBox1=Operative Modes
+LIST0=PROGRAM MODE ENABLED, WORK LIST MODE ENABLED
+LIST1=TRACK,PIECE and GEOMETRY
+LabelAbilHeadUp=Enable axes movement with Z high
+LabelAbilStep=Enable pause in the end of geometry/track
+LabelSimulatoNoZ=Simulation (no Z axis movement)
+LabelAbilStep1=Enable pause in the end of piece
+LabelAPA1=Enable auto-restart after Tip Touch
+LabelAPA2=Enable retrace after stop
+LabelAPA3=Retrace distance after stop [mm]
+LabelAPA5=Number of auto-restart attempts
+LabelAPA6=Z axis inc. mov. [mm]
+LabelAPA7=Enable Z up after pause
+LabelAPA8=Tip-touch Filter [ms]
+LabelAPA9=Dry-Run speed [m/min]
+Label1=Safe head manual mode [mm]
+Label2=Enable blowing during Dry-Run
+Label3=Min distance to allow Jump [mm]
+GroupBox4=Pipe Options
+LabelAbilAutoCalibPipe=Disable Auto Database (M1000)
+Label5=Replace L5 with L10
+LabelCalibFromISO1=Auto Nozzle Clean.
+LabelCalibFromISO4=N� Piercing to clean
+Button1=R
+GroupBox6=Gas Options
+Label4=Purging time during program [s]
+Label6=Purge Pressure [bar]
+Label7=Min.distance close gas [mm]
+Label8=Delay for gas stabilization [ms]
+Label9=Save Gas Enab.
+LabelAbilHeadingPipe=Enable Bevel Angle Parameters
+LabelAbilWeldingPipe=Disable Parameters Changing (G834)
+LabelAbilPark=Enable parking in the end of track
+LabelDisabM822=Disable M822 (M822=regulation OFF)
+LabelAbilStep2=Show Piece Number to Unload
+Label10=Piercing Safety Time Out [%]
+LabelSimulatoNoZ1=Maintenance Mode (no anti-colision management)
+LabelAbilHeadingPipe1=Disable Tube Calibration
+
+[STATUS]
+
+[HELP]

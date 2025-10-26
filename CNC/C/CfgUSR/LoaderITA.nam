@@ -1,0 +1,51 @@
+
+[KEYS]
+TITLE=TP6022-6 Caricatore
+
+[PROMPT]
+KEY_NODE=Node
+LOADER=TP6022-6 Caricatore
+Label=Offset Chiudi mandrino mobile [mm] (da tubo a morsetto)
+Label1=Offset tubo in macchina [mm] (dalla testa al mandrino)
+Label2=Caricatore pronto
+Label3=Posizione raggiunta dal caricatore
+Label4=Posizione posteriore del caricatore
+Label5=Consenti caricamento
+Label6=Caricatore indietro
+Label7=Lunghezza del tubo dal grafico
+Label8=Lunghezza tubo fornita dall'utente [mm]
+Label9=Caricamento manuale quota parcheggio X
+Label10=Disabilita carico / semi-carico
+Label11=Parametri
+Label12=Ingressi
+Label13=Uscite
+LabelRotateOrig2=Ruota origine
+LabelPauseGeometry2=Mantieni geometria finale
+LabelPausePiece2=Mantieni pezzo finale
+LabelZhigh2=Forza Z in alto
+LabelInForced2=Ingressi forzati
+LabelOutForced2=Uscite forzate
+LabelZhigh1=Automatico. Acq. Origine
+LabelDryRun2=Esecuzione di prova
+LabelSIM1=Nessun movimento Z
+Resume Re2=Riprendi pronto
+LabelPlcSIM1=PLC SIMULATO
+LabelPallInMan1=Risparmio gas attivo
+LabelSIM2=LASER SIMULATO
+LabelSIM3=SIM CAPACITIVA.
+LabelEnabAutorestart2=Riavvio automatico
+LabelRegON2=REGOL. SU
+LabelJogRTCP2=JOG RTCP
+LabelHeadindPipe2=Tubo intestazione
+LabelWeldingPipe2=Tubo di SALDATURA
+LabelAutoCalibPipe2=Calibrazione automatica. tubo
+LabelPauseAndPark2=Parcheggia la fine della traccia
+LabelASPon2=ASPIRATORE ACCESO
+LabelDisCalib2=Calibrazione disattivata
+P_REF2=Vel. +
+Label14=%
+P_REF1=Vel. -
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,251 @@
+ [L]0 : @@FAST@@ G840
+
+;//Coordinate assolute
+DBL a_x, a_y, a_z
+DBL a_x2, a_y2, a_z2
+DBL next_allowance = VA11
+DBL hix
+DBL fFlyCutMode = 0
+DBL fSolderingJointFind = 0
+DBL TaioEn       = %cg3.23      ;// TAIO flyCut enabled
+DBL TaioAssistEn = %cg3.24      ;// TAIO Hardware assisted flyCut enabled
+DBL EnabVal = 0
+DBL sav_G70=XGET("@G70")
+DBL JumpAlongFace = 0
+
+;//1 = tool, 2 = surface, 6 = Z
+DBL vectorSelect = %config_machine32
+IF( (vectorSelect != 2) && (vectorSelect != 6 ) && (vectorSelect != 1 ) ) ERROR(55)
+
+IF( %LSRPlcOp0.21 ) THEN 
+    IF( %R35 <= 1 ) next_allowance = 0
+	IF( %R35 >= 1 ) %R35 = %R35 - 1
+ENDIF 
+
+G271
+
+G40
+SVR(0)
+
+SPC 30000,0     ;Preprocessor Disable
+SPC 32301,0     ;//afmVectorSelect
+SPC 32309,0     ;//afmIsDebugDump
+
+?%C165.0 = 0        ;finestra di controllo angolo di bevel (=0, considera angolo=0)
+
+; NB: Velocità ripristinata perchè in G800 limitata
+IF( AEXISTS(3,B) ) THEN
+    VEL[B]=%ax[AXIDX(B)].pa[9]
+    FDCWEI[B]=1
+	lstisbeveltrack=0
+ENDIF   
+
+IF (next_allowance<15) M1208   ; Spegnimento regolatore altezza
+
+; Se opzione abilitata "forza traslazione testa alta a fine traccia"
+; oppure "stop a fine traccia" (single block) simula una G840 L0
+IF( (%LSRPlcOp0.6) || (%LSRPlcOp0.7) || (%M33 == 1) ) next_allowance = 0
+
+;//$GRAPH
+IF( %cn[WHO()].pc[14].25 != 0 ) THEN
+    FDCDLE=1
+    IF ( start_track == 0) start_track = 1 
+    start_track=start_track+1
+    G(200+sav_G70)
+ENDIF
+IF( %cn[WHO()].pc[14].25 != 0 ) RET
+;//$GRAPH
+
+hix = 0
+    IF ((%UnitWork.uxh[hix].uxh_Flags & 0x0010) == 0x0010) fFlyCutMode = 1
+    IF ((%UnitWork.uxh[hix].uxh_Flags & 0x0200) == 0x0200) THEN
+        fFlyCutMode = 1
+        fSolderingJointFind = 1
+    ENDIF
+
+    ;//XXX Questo SPC � gi� messo 0 sopra.  Non si pu� eseguire la G840 con le
+    ;//XXX spline abilitate.  Anzich� disabilitare le spline qui se non si
+    ;//XXX fanno i salti da CAD, abilitarle alla fine se li si fanno!
+    SPC 30000,0     ;Preprocessor Disable
+    gLastCompress=0 
+
+
+?%TstP15 = 0       ; reset word for laser on/off
+gMachining = 0
+
+; Jump BTW faces
+IF(next_allowance == 3) G1014
+
+IF (next_allowance == 15) THEN
+    IF( %LSRPlcOp0.8 ) JMPF .skip1
+    ;//laser fastCut
+    ?%TstP15.2 = 1                   ;  (LASER_OFF) Turn off laser from Iso
+    _wait_bit( 1," %LsPlc1.25",0)    ; wait laser off
+    ;//M500 Mode FlyCut OFF
+
+    IF (fFlyCutMode) THEN
+        ?%C125.0 = 0                ;// application turn flyCut mode ON
+        IF (TaioEn && TaioAssistEn) THEN
+            WAITBIT("%QW911.12",0)  ;// Laser I/F board PWM_CFG register (RD): S_EF
+        ELSE
+            WAITBIT("%C126.0",0)    ;// application flyCut mode is ON
+        ENDIF
+    ENDIF
+.skip1
+
+    ls_stateping = next_allowance;
+    
+    ;;;?%C18.0 = 0                                  ;Spegnimento anticipato [NOT USED]
+    
+    IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+        ; If not APA and not capacitive test
+        IF( (!%C18.7) && (!%C18.17) ) THEN
+            ; Se gestione start_track classica
+            IF( !%PlcOp0.31 ) THEN
+                ;Esecuzione
+                IF (start_track == 0) start_track=1
+                start_track=start_track+1
+                ?%R18=start_track
+            ENDIF
+        ENDIF
+    ENDIF
+ENDIF
+
+IF (gPiercingMode != 2) M8000           ;Retrace disable
+?%TstP15 = 0       ; reset word for laser on/off
+
+IF( next_allowance == 15 ) G(200+sav_G70)
+IF( next_allowance == 15 ) RET
+
+;//Laser
+IF ((next_allowance<0) || (next_allowance>15)) ERROR(776) ;Wrong parameter L (G800)
+;IF (next_allowance<15) M1208   ; Spegnimento regolatore altezza
+IF (%TabLsr[%LsIso[11]].L_SourceInt15>0) G4 F((%TabLsr[%LsIso[11]].L_SourceInt15)/1000)
+
+?%TstP15.2 = 1              ;  (LASER_OFF) Turn off laser from Iso   
+G4 F 0.015
+_wait_bit( 1," %LsPlc1.25",0)    ; wait laser off
+
+IF (fFlyCutMode) THEN
+    ?%C125.0 = 0                ;// application turn flyCut mode ON
+    IF (TaioEn && TaioAssistEn) THEN
+        WAITBIT("%QW911.12",0)  ;// Laser I/F board PWM_CFG register (RD): S_EF
+    ELSE
+        WAITBIT("%C126.0",0)    ;// application flyCut mode is ON
+    ENDIF
+ENDIF
+ls_stateping = next_allowance;
+
+?%TstP15 = 0       ; reset word for laser on/off
+
+;Canale in test
+IF( %cn[WHO()].rc[0].21 ) JMPF .graph
+
+; Se simulazione programma senza Z
+IF( %LSRPlcOp0.8 ) JMPF .graph
+
+G180 D1 P1
+G180 P1 X(kine_x) Y(kine_y) Z(kine_z)
+
+a_x = kine_x 
+a_y = kine_y 
+IF( !ISQNAN(QCALCQ(Z)) ) THEN
+    a_z = kine_z
+ELSE
+    a_z = 0
+ENDIF
+
+?%UnitWork.uxh[0].a_x = a_x
+?%UnitWork.uxh[0].a_y = a_y
+?%UnitWork.uxh[0].a_z = a_z + %UnitWork.uxh[0].uxh_Thickness
+
+
+;//No separate threads for Laser in fast ping mode
+IF( ls_stateping >= 3 ) JMP .noSep
+
+
+JSR "laser_stop.cfs"  
+
+M831
+
+.noSep
+
+; Per fare in modo che se fa il tip touch in questa fase
+; venga ristartato alla traccia successiva facendo il piercing
+?%LsPlc37 = 1                ; send to plc piercing in run
+
+.graph
+
+first_mach = 0
+
+;//$APP
+;//Grafica run-time
+?%ChanMon[WHO()].CmGraphCmd = 0x0;           Attivazione Ut in Graph
+?%ChanMon[WHO()].CmGraphRefCed = gTravD
+?%ChanMon[WHO()].CmGraphRefSvl = gTravS
+?%ChanMon[WHO()].CmGraphCmd = 0x101;           Attivazione Ut in Graph
+
+;;;?%C18.0 = 0                                  ;Spegnimento anticipato [NOT USED]
+?%C18.1 = 0                                  ;Congelamento regolazione
+
+IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+
+    ; If not APA and not capacitive test
+    IF( (!%C18.7) && (!%C18.17) ) THEN
+        ; Se gestione start_track classica
+        IF( !%PlcOp0.31 ) THEN
+            IF (start_track == 0) start_track=1
+            start_track=start_track+1
+            ?%R18=start_track
+        ENDIF
+    ENDIF
+
+        ; Se opzione abilitata "forza traslazione testa alta a fine traccia"
+        ; oppure "stop a fine traccia" (single block) simula una G840 L0
+        IF( (%LSRPlcOp0.6) || (%LSRPlcOp0.7) ) THEN
+            G153 G0 Z(trav_safe_z)
+        ENDIF
+
+        ;Single Block FUNCTION and Parking axes
+        IF( (%LSRPlcOp0.7) && (%LSRPlcOp0.9) ) JSR "ServicePos.cfs"
+        IF( (%LSRPlcOp0.7) && (%LSRPlcOp0.9) ) M30
+        
+        ;Single Block FUNCTION and If not APA and not capacitive test
+        IF( (%LSRPlcOp0.7) && (!%C18.7) && (!%C18.17) ) THEN
+            ; Se gestione start_track classica
+            IF( !%PlcOp0.31 ) THEN
+                M496
+                $ END TRACK/GEOMETRY. Press [START] to continue
+                M0
+                SYN		
+                $
+                M497
+            ENDIF
+        ENDIF
+    ENDIF
+
+IF( !ISQNAN(QCALCQ(Z)) ) VEL[Z]=%ax29.pa9       ; NB! (deve essere la vel dell'asse reale)
+
+IF ((next_allowance == 5)||(next_allowance == 3))  ?%LsIso46 = gL_CutDistance * 1000
+IF (next_allowance == 0) g840executed = 1  ; for G153 to understand the cycle is working on program run 
+
+G(200+sav_G70)
+
+g840executed = 1
+g650executed = 0
+g1000executed = 0
+
+;Identifer laser on cutting track
+?%LsIso9.5 = 0
+
+IF( %M33 == 1 ) THEN 
+   G153 G0 Z(trav_safe_z)
+ENDIF
+
+IF( (%LSRPlcOp0.21) && (%R35 == 0) ) THEN 
+    ?%LSRPlcOp0.21 = 0
+    POP(1)
+    RETSKIPF ("M30")
+ENDIF
+
+RET

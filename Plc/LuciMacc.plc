@@ -1,0 +1,95 @@
+*******************************************************************************
+*   LUCIMACC.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+
+Macchina_in_ANOMALIA:       BOOL;   ** Macchina in anomalia
+Macchina_in_HOLD_oper:      BOOL;   ** Macchina in hold operatore
+Macchina_in_lavorazione:    BOOL;   ** Macchina in lavorazione       
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+*******************************************************************************
+*    * Gestione Lampade Macchina
+*******************************************************************************
+FUNCTION LuciMacc
+
+*******************************************************************************
+*   Illuminazione CABINA
+*******************************************************************************
+LD   ON_OFF_CABINA                 ** (LsGui0.1)
+ST	 O_O_LUCE_CABINA                ** machine light
+
+*******************************************************************************
+*   Illuminazione Testa Laser
+*******************************************************************************
+LD   ON_OFF_TESTA_LASER            ** (LsGui0.2)
+ST   O_O_LUCE_SU_TESTA_LASER       ** head light
+
+*******************************************************************************
+* Macchina in ANOMALIA
+*******************************************************************************
+LDN  O_O_CNC_OK                    ** CNC OK
+OR   ALARM_ACT		                   ** M100.3  Allarme attivo
+ST	 Macchina_in_ANOMALIA
+
+*******************************************************************************
+* Macchina in HOLD operatore
+*******************************************************************************
+LD   PRGSTOP_CN0		                 ** (cn0.rc8.1)  Programma interrotto CN0
+ANDN Macchina_in_ANOMALIA	** Macchina in anomalia
+ST	 Macchina_in_HOLD_oper	** Macchina in hold operatore
+
+*******************************************************************************
+* Macchina in ciclo senza allarmi e no hold
+*******************************************************************************
+LD   MACCH_IN_AUTO		               ** M100.25 SELEZIONE MACCHINA IN AUTOMATICO
+AND	 PRGRUN_CN0 		                 ** M0.0 cn0.rc8.0  Programma in corso
+ANDN Macchina_in_HOLD_oper
+ANDN Macchina_in_ANOMALIA
+ST	 Macchina_in_lavorazione
+
+*******************************************************************************
+*   Colonnina luminosa: Luce ROSSA
+*******************************************************************************
+LDN  EMERGENZA_PLC_CN     		       ** M100.0  Emergenza da PLC o da CN
+*OR   NORMAL_BLINK     		           ** PLCFLAGS.10 Lampeggio normale (0.5 sec.)
+ANDN MACCHINA_OK			                ** M100.1  Macchina OK
+OR(
+LD   MACCHINA_OK			                ** M100.1  Macchina OK
+AND	 Macchina_in_ANOMALIA		** Macchina in anomalia
+*AND  NORMAL_BLINK     		           ** PLCFLAGS.10 Lampeggio normale (0.5 sec.)
+)
+ST   O_O_LAMPADA_ROSSA	            ** Red lamp
+
+*******************************************************************************
+* Colonnina luminosa: Luce VERDE
+*******************************************************************************
+LD   Macchina_in_lavorazione		** Macchina in lavorazione
+*AND  NORMAL_BLINK     		           ** PLCFLAGS.10 Lampeggio normale (0.5 sec.)
+ORN	 Macchina_in_lavorazione		** Macchina in lavorazione
+AND	 MACCHINA_OK			                ** M100.1  Macchina OK
+ANDN Macchina_in_ANOMALIA		** Macchina in anomalia
+AND  PRGRUN_CN0 			                ** M0.0 cn0.rc8.0  Programma in corso
+ST	 O_O_LAMPADA_VERDE	             ** Green lamp
+
+*******************************************************************************
+* Colonnina luminosa: Luce ARANCIO
+*******************************************************************************
+*LD   MACCH_IN_AUTO			              ** M100.25 SELEZIONE MACCHINA IN AUTOMATICO YANG
+LDN PRGRUN_CN0 			                ** M0.0 cn0.rc8.0  Programma in corso
+OR	 Macchina_in_HOLD_oper		** Macchina in hold operatore
+*AND	 NORMAL_BLINK			               ** PLCFLAGS.10 Lampeggio normale (0.5 sec.)
+ANDN Macchina_in_ANOMALIA		** Macchina in anomalia
+AND	 MACCHINA_OK			                ** M100.1  Macchina OK
+ST	 O_O_LAMPADA_ARANCIONE	         ** Orange lamp
+
+END_FUNCTION

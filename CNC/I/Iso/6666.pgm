@@ -1,0 +1,39 @@
+%6666
+;******************************************************************************
+;   Computational cycle running on channel 6
+;   Started and stopped by PLC
+;******************************************************************************
+IF( %cn[WHO()].rc[0].21 == 1 )  END
+IF(!DEFINED("log_included")) INCLUDE "log_inc.cfs"
+
+SYN
+GRPQ[X,Y] = 0 
+G4 F0.1
+
+; Logger initialization
+JSR "LogIni.cfs"
+
+.Loop
+
+ SYN
+ ;ESA Computational
+ JSR "Comp"
+
+ SYN
+ ;USER Computational
+ JSR "CompUsr"
+
+ SYN
+ ; Logger management
+ JSR "Log"
+
+ ; Copy W Function
+ JSR "CypW"
+ 
+ ; Ecat Device Reset (first loop)
+ JSR "EcatReset.cfu"
+ 
+G4 F0.2
+JMPB.Loop
+
+M30

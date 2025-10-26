@@ -1,0 +1,45 @@
+
+[KEYS]
+TITLE=Calibrar TUBO
+TXT8=Nivel Experto
+
+[PROMPT]
+KEY_NODE=Node
+PIPECALIBRATION=Pipe Calibration
+GroupBox3=Información
+GroupBox4=Calibración
+GroupBox1=Calibración del Cabezal rotatorio
+GroupBox2=Tubos: Opciones de Calibración General
+GroupBox=Calibración del Tubo
+Label=Tabla Back-Up
+Label1=Máximo Error Vertical [mm]
+Label2=Máximo Error Horizontal [mm]
+Label3=Coordenada X [mm]
+Label4=Coordenada Y [mm]
+Label5=Borde [mm]
+Label6=Minimum Side [mm]
+Label14=Cuadrado
+Label15=Redondo
+Label16=Longitud [mm]
+Label17=Longitud [mm]
+Label18=Radio [mm]
+Label19=Lado 1  [mm]
+Label20=Lado 2  [mm]
+Label21=Redondo [mm]
+Label22=Longitud [mm]
+Label23=Lado 1  [mm]
+Label24=Lado 2  [mm]
+Label25=Redondo [mm]
+Label26=Tipo de Calibración
+LIST0=Tubo,Spindle ,Tubo + Spindle
+Button=Ejecutar Calibración
+Label7=Ultimo tamaño del Tubo:
+Label8=X
+Label9=Y
+Label10=Z
+Label11=No Delete
+Label12=, need for par.dat
+
+[STATUS]
+
+[HELP]

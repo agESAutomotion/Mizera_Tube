@@ -1,0 +1,53 @@
+
+[KEYS]
+TITLE=Check calibration
+TXT0=Calibrazione bevel
+TXT1=Clear Alarm
+TXT114=Bevel 0
+TXT115=Bevel 15
+TXT116=Bevel 30
+TXT117=Bevel 45
+
+[PROMPT]
+KEY_NODE=
+CALIB_CHECK=Leaf
+Label2=Enable calib. checking
+Label12=ADC
+Label13=Error
+Label22=Distance
+Label=______
+Label23=______
+Label24=Nominal signal
+Label25=Signal sampled
+LabelCalikOK=Calibration OK
+Label28=No data
+Label29=Calibration not OK
+Label14=[mm]
+Label15=[point]
+Label16=[%]
+LabelErrCalib=MAX ERROR [%]
+ButtonInitNominal1=Nominal curve setting
+ButtonStartCheck=START check calibration
+LabelTest=Z
+LabelTest1=Cap.
+LabelTest2=z axis
+LabelTest3=z (touch)
+LabelTest4=rc128
+LabelTest5=rc129
+LabelTest6=C120
+PlotRtcpTest=RTCP test (with capacitive)
+ButtonStartRtcpTest=START RTCP test
+AxesLaserCH1=Axes1
+LBL_VELOCITA2=Cutting height [mm]
+LabelPar1=RTCP Y toolholder [mm]
+LabelErrFounded=Max error found [%]
+P_REF1=Feed +
+P_REF4=Feed -
+LabelErrCalib1=C axis position in RTCP test
+Label1=%
+Label3=Nozzle Diameter [mm]
+
+[STATUS]
+PlotCalibrationControl=PlotCalibrationControl
+
+[HELP]

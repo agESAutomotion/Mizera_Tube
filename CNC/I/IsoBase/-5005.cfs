@@ -1,0 +1,17 @@
+[S] : G4005
+;Scollega un asse slave
+;S=VA18: system wide asse slave
+
+IF( !vax_c_pend ) THEN
+    ;//ACQUIRE(conn_super_lock)
+    WTAS( "%rg[20]", WHO(), -1 )
+    vax_c_pend = 1
+ENDIF
+
+?%rg17.1 = 1 ;test tempo ciclo completo
+
+?%ax[VA18].rga0.1 = 1 ;richiedi sconnessione slave
+?%rg17.0 = 1 ;busy
+;?%ax[VA18].rga11 = -1
+
+RET

@@ -1,0 +1,328 @@
+[A] [D] [J] [H]0 [Q]0 : -1920
+
+;//
+;// H = Grado di finitura       {-2,0,1..5}, omesso: 0
+;// Q = Grado di compressione   {0,[1..5]}, 0 od omesso: disabilitata
+;//
+;// Significato per H:
+;//    -2 = finitura 2
+;//    -1 = finitura 1
+;//     0 = riferimento nei parametri (default)
+;//     1 = sgrossatura 1
+;//     2 = sgrossatura 2
+;//     3 = sgrossatura 3
+;//     4 = sgrossatura 4
+;//     5 = sgrossatura 5
+;//
+;// Significato per Q:
+;//     1 = massimo livello di dettaglio
+;//     2 = ...
+;//     3 = ...
+;//     4 = ...
+;//     5 = minimo livello di dettaglio
+;//
+
+DBL acctrj, dectrj, jrktrj
+
+DBL last_finishing = VA7
+DBL last_compress = VA16
+DBL last_accel = CTOMM(VA0)
+DBL last_decel = CTOMM(VA3)
+DBL last_jerk = CTOMM(VA9)
+DBL sav_G70=XGET("@G70")
+G71
+
+;//
+;// FINITURA
+;//
+
+IF( last_finishing == 5 ) THEN
+    ;//Sgrossatura 5
+    FDCARC = %cn[WHO()].fdc.arc * 4     ;//Toller. raggio archi [mm]
+    FDCFCA = %cn[WHO()].fdc.fca * 4     ;//VRef[mm/min] arc R=1m, a=90°
+    FDCFCB = %cn[WHO()].fdc.fcb * 4     ;//VRef[mm/min] arc R=0.01m, a=90°
+    FDCFCC = %cn[WHO()].fdc.fcc * 4     ;//VRef[mm/min] arc R=1m, a->0°
+    FDCFCD = %cn[WHO()].fdc.fcd * 4     ;//VRef[mm/min] arc R=0.01m, a->0°
+    FDCTCA = %cn[WHO()].fdc.tca * 4     ;//max NEG jump [mm/min])
+    FDCTCB = %cn[WHO()].fdc.tcb * 4     ;//max NEG jump [°/min])
+    FDCTCC = %cn[WHO()].fdc.tcc * 4     ;//max POS jump [mm/min])
+    FDCTCD = %cn[WHO()].fdc.tcd * 4     ;//max POS jump [°/min])
+
+    acctrj = %cn[WHO()].pc6     * 1.5
+    dectrj = %cn[WHO()].pc7     * 1.5
+    jrktrj = %cn[WHO()].pc16    * 2.5
+
+    JRK[X] = %ax[AXIDX(X)].pa25 * 2.5
+    JRK[Y] = %ax[AXIDX(Y)].pa25 * 2.5
+    JRK[Z] = %ax[AXIDX(Z)].pa25 * 2.5
+
+    POP(1)
+    JMP .EndFinishing
+ENDIF
+
+IF( last_finishing == 4 ) THEN
+    ;//Sgrossatura 4
+    FDCARC = %cn[WHO()].fdc.arc * 3.25  ;//Toller. raggio archi [mm]
+    FDCFCA = %cn[WHO()].fdc.fca * 3.25  ;//VRef[mm/min] arc R=1m, a=90°
+    FDCFCB = %cn[WHO()].fdc.fcb * 3.25  ;//VRef[mm/min] arc R=0.01m, a=90°
+    FDCFCC = %cn[WHO()].fdc.fcc * 3.25  ;//VRef[mm/min] arc R=1m, a->0°
+    FDCFCD = %cn[WHO()].fdc.fcd * 3.25  ;//VRef[mm/min] arc R=0.01m, a->0°
+    FDCTCA = %cn[WHO()].fdc.tca * 3.25  ;//max NEG jump [mm/min])
+    FDCTCB = %cn[WHO()].fdc.tcb * 3.25  ;//max NEG jump [°/min])
+    FDCTCC = %cn[WHO()].fdc.tcc * 3.25  ;//max POS jump [mm/min])
+    FDCTCD = %cn[WHO()].fdc.tcd * 3.25  ;//max POS jump [°/min])
+
+    acctrj = %cn[WHO()].pc6     * 1.4
+    dectrj = %cn[WHO()].pc7     * 1.4
+    jrktrj = %cn[WHO()].pc16    * 2.2
+
+    JRK[X] = %ax[AXIDX(X)].pa25 * 2.2
+    JRK[Y] = %ax[AXIDX(Y)].pa25 * 2.2
+    JRK[Z] = %ax[AXIDX(Z)].pa25 * 2.2
+
+    POP(1)
+    JMP .EndFinishing
+ENDIF
+
+IF( last_finishing == 3 ) THEN
+    ;//Sgrossatura 3
+    FDCARC = %cn[WHO()].fdc.arc * 2.5   ;//Toller. raggio archi [mm]
+    FDCFCA = %cn[WHO()].fdc.fca * 2.5   ;//VRef[mm/min] arc R=1m, a=90°
+    FDCFCB = %cn[WHO()].fdc.fcb * 2.5   ;//VRef[mm/min] arc R=0.01m, a=90°
+    FDCFCC = %cn[WHO()].fdc.fcc * 2.5   ;//VRef[mm/min] arc R=1m, a->0°
+    FDCFCD = %cn[WHO()].fdc.fcd * 2.5   ;//VRef[mm/min] arc R=0.01m, a->0°
+    FDCTCA = %cn[WHO()].fdc.tca * 2.5   ;//max NEG jump [mm/min])
+    FDCTCB = %cn[WHO()].fdc.tcb * 2.5   ;//max NEG jump [°/min])
+    FDCTCC = %cn[WHO()].fdc.tcc * 2.5   ;//max POS jump [mm/min])
+    FDCTCD = %cn[WHO()].fdc.tcd * 2.5   ;//max POS jump [°/min])
+
+    acctrj = %cn[WHO()].pc6     * 1.3
+    dectrj = %cn[WHO()].pc7     * 1.3
+    jrktrj = %cn[WHO()].pc16    * 1.9
+
+    JRK[X] = %ax[AXIDX(X)].pa25 * 1.9
+    JRK[Y] = %ax[AXIDX(Y)].pa25 * 1.9
+    JRK[Z] = %ax[AXIDX(Z)].pa25 * 1.9
+
+    POP(1)
+    JMP .EndFinishing
+ENDIF
+
+IF( last_finishing == 2 ) THEN
+    ;//Sgrossatura 2
+    FDCARC = %cn[WHO()].fdc.arc * 2     ;//Toller. raggio archi [mm]
+    FDCFCA = %cn[WHO()].fdc.fca * 2     ;//VRef[mm/min] arc R=1m, a=90°
+    FDCFCB = %cn[WHO()].fdc.fcb * 2     ;//VRef[mm/min] arc R=0.01m, a=90°
+    FDCFCC = %cn[WHO()].fdc.fcc * 2     ;//VRef[mm/min] arc R=1m, a->0°
+    FDCFCD = %cn[WHO()].fdc.fcd * 2     ;//VRef[mm/min] arc R=0.01m, a->0°
+    FDCTCA = %cn[WHO()].fdc.tca * 2     ;//max NEG jump [mm/min])
+    FDCTCB = %cn[WHO()].fdc.tcb * 2     ;//max NEG jump [°/min])
+    FDCTCC = %cn[WHO()].fdc.tcc * 2     ;//max POS jump [mm/min])
+    FDCTCD = %cn[WHO()].fdc.tcd * 2     ;//max POS jump [°/min])
+
+    acctrj = %cn[WHO()].pc6     * 1.2
+    dectrj = %cn[WHO()].pc7     * 1.2
+    jrktrj = %cn[WHO()].pc16    * 1.6
+
+    JRK[X] = %ax[AXIDX(X)].pa25 * 1.6
+    JRK[Y] = %ax[AXIDX(Y)].pa25 * 1.6
+    JRK[Z] = %ax[AXIDX(Z)].pa25 * 1.6
+
+    POP(1)
+    JMP .EndFinishing
+ENDIF
+
+IF( last_finishing == 1 ) THEN
+    ;//Sgrossatura 1
+    FDCARC = %cn[WHO()].fdc.arc * 1.5   ;//Toller. raggio archi [mm]
+    FDCFCA = %cn[WHO()].fdc.fca * 1.5   ;//VRef[mm/min] arc R=1m, a=90°
+    FDCFCB = %cn[WHO()].fdc.fcb * 1.5   ;//VRef[mm/min] arc R=0.01m, a=90°
+    FDCFCC = %cn[WHO()].fdc.fcc * 1.5   ;//VRef[mm/min] arc R=1m, a->0°
+    FDCFCD = %cn[WHO()].fdc.fcd * 1.5   ;//VRef[mm/min] arc R=0.01m, a->0°
+    FDCTCA = %cn[WHO()].fdc.tca * 1.5   ;//max NEG jump [mm/min])
+    FDCTCB = %cn[WHO()].fdc.tcb * 1.5   ;//max NEG jump [°/min])
+    FDCTCC = %cn[WHO()].fdc.tcc * 1.5   ;//max POS jump [mm/min])
+    FDCTCD = %cn[WHO()].fdc.tcd * 1.5   ;//max POS jump [°/min])
+
+    acctrj = %cn[WHO()].pc6     * 1.1
+    dectrj = %cn[WHO()].pc7     * 1.1
+    jrktrj = %cn[WHO()].pc16    * 1.3
+
+    JRK[X] = %ax[AXIDX(X)].pa25 * 1.3
+    JRK[Y] = %ax[AXIDX(Y)].pa25 * 1.3
+    JRK[Z] = %ax[AXIDX(Z)].pa25 * 1.3
+
+    POP(1)
+    JMP .EndFinishing
+ENDIF
+
+IF( last_finishing == 0 ) THEN
+    ;//Riferimento nei parametri (default)
+    FDCARC = %cn[WHO()].fdc.arc         ;//Toller. raggio archi [mm]
+    FDCFCA = %cn[WHO()].fdc.fca         ;//VRef[mm/min] arc R=1m, a=90°
+    FDCFCB = %cn[WHO()].fdc.fcb         ;//VRef[mm/min] arc R=0.01m, a=90°
+    FDCFCC = %cn[WHO()].fdc.fcc         ;//VRef[mm/min] arc R=1m, a->0°
+    FDCFCD = %cn[WHO()].fdc.fcd         ;//VRef[mm/min] arc R=0.01m, a->0°
+    FDCTCA = %cn[WHO()].fdc.tca         ;//max NEG jump [mm/min])
+    FDCTCB = %cn[WHO()].fdc.tcb         ;//max NEG jump [°/min])
+    FDCTCC = %cn[WHO()].fdc.tcc         ;//max POS jump [mm/min])
+    FDCTCD = %cn[WHO()].fdc.tcd         ;//max POS jump [°/min])
+
+    acctrj = %cn[WHO()].pc6
+    dectrj = %cn[WHO()].pc7
+    jrktrj = %cn[WHO()].pc16
+
+    JRK[X] = %ax[AXIDX(X)].pa25
+    JRK[Y] = %ax[AXIDX(Y)].pa25
+    JRK[Z] = %ax[AXIDX(Z)].pa25
+
+    POP(1)
+    JMP .EndFinishing
+ENDIF
+
+IF( last_finishing == -1 ) THEN
+    ;//Finitura 1
+    FDCARC = %cn[WHO()].fdc.arc / 2     ;//Toller. raggio archi [mm]
+    FDCFCA = %cn[WHO()].fdc.fca / 2     ;//VRef[mm/min] arc R=1m, a=90°
+    FDCFCB = %cn[WHO()].fdc.fcb / 2     ;//VRef[mm/min] arc R=0.01m, a=90°
+    FDCFCC = %cn[WHO()].fdc.fcc / 2     ;//VRef[mm/min] arc R=1m, a->0°
+    FDCFCD = %cn[WHO()].fdc.fcd / 2     ;//VRef[mm/min] arc R=0.01m, a->0°
+    FDCTCA = %cn[WHO()].fdc.tca / 2     ;//max NEG jump [mm/min])
+    FDCTCB = %cn[WHO()].fdc.tcb / 2     ;//max NEG jump [°/min])
+    FDCTCC = %cn[WHO()].fdc.tcc / 2     ;//max POS jump [mm/min])
+    FDCTCD = %cn[WHO()].fdc.tcd / 2     ;//max POS jump [°/min])
+
+    acctrj = %cn[WHO()].pc6     / 1
+    dectrj = %cn[WHO()].pc7     / 1
+    jrktrj = %cn[WHO()].pc16    / 1
+
+    JRK[X] = %ax[AXIDX(X)].pa25 / 1
+    JRK[Y] = %ax[AXIDX(Y)].pa25 / 1
+    JRK[Z] = %ax[AXIDX(Z)].pa25 / 1
+
+    POP(1)
+    JMP .EndFinishing
+ENDIF
+
+IF( last_finishing == -2 ) THEN
+    ;//Finitura 2
+    FDCARC = %cn[WHO()].fdc.arc / 3     ;//Toller. raggio archi [mm]
+    FDCFCA = %cn[WHO()].fdc.fca / 3     ;//VRef[mm/min] arc R=1m, a=90°
+    FDCFCB = %cn[WHO()].fdc.fcb / 3     ;//VRef[mm/min] arc R=0.01m, a=90°
+    FDCFCC = %cn[WHO()].fdc.fcc / 3     ;//VRef[mm/min] arc R=1m, a->0°
+    FDCFCD = %cn[WHO()].fdc.fcd / 3     ;//VRef[mm/min] arc R=0.01m, a->0°
+    FDCTCA = %cn[WHO()].fdc.tca / 3     ;//max NEG jump [mm/min])
+    FDCTCB = %cn[WHO()].fdc.tcb / 3     ;//max NEG jump [°/min])
+    FDCTCC = %cn[WHO()].fdc.tcc / 3     ;//max POS jump [mm/min])
+    FDCTCD = %cn[WHO()].fdc.tcd / 3     ;//max POS jump [°/min])
+
+    acctrj = %cn[WHO()].pc6     / 2
+    dectrj = %cn[WHO()].pc7     / 2
+    jrktrj = %cn[WHO()].pc16    / 2
+
+    JRK[X] = %ax[AXIDX(X)].pa25 / 1
+    JRK[Y] = %ax[AXIDX(Y)].pa25 / 1
+    JRK[Z] = %ax[AXIDX(Z)].pa25 / 1
+
+    POP(1)
+    JMP .EndFinishing
+ENDIF
+
+;//Funzione non disponibile
+ERROR(8)
+.EndFinishing
+
+IF( !ISQNAN(last_accel) ) acctrj = last_accel
+IF( !ISQNAN(last_decel) ) dectrj = last_decel
+IF( !ISQNAN(last_jerk ) ) jrktrj = last_jerk
+
+ACCTRJ = acctrj
+DECTRJ = dectrj
+JRKTRJ = jrktrj
+
+;//
+;// COMPRESSIONE
+;//
+
+IF( last_compress == 0 ) THEN
+    ;//Disabilitata
+    SPC 30000,0
+
+    POP(1)
+    JMP .EndCompress
+ENDIF
+
+SPC 30000,1
+SPC 30001,0         ;//PreProcessG0
+SPC 30002,2         ;//PreProcessingType
+SPC 30050,3         ;//DiscretizationInterval
+SPC 30055,3         ;//MaxInputSegmentSize
+SPC 30057,35        ;//KnotsWindow
+SPC 30059,2         ;//Interpolation Type (1..3)
+SPC 30060,3         ;//Degree
+SPC 30010,32        ;//Max compression depth (blocks, max 16)
+
+IF( last_compress == 5 ) THEN
+    ;//Minimo livello di dettaglio
+    SPC 30054,20        ;//LimitAngle
+    SPC 30058,3         ;//AverageInputSegmentSize
+    SPC 30056,3         ;//OutputSegmentSize
+
+    ;//La compressione con livello minimo di dettaglio richiede un tempo di
+    ;//jerking lievemente superiore per evitare che le rampe di decelerazione
+    ;//vengano spezzate in piu' parti.  Testato con tutti i programmi benchmark
+	IF( jrktrj < (%cn[WHO()].pc16) * 1.2 ) THEN
+		jrktrj = (%cn[WHO()].pc16) * 1.2
+		JRKTRJ = jrktrj
+	ENDIF
+
+    POP(1)
+    JMP .EndCompress
+ENDIF
+
+IF( last_compress == 4 ) THEN
+    ;//...
+    SPC 30054,20        ;//LimitAngle
+    SPC 30058,3         ;//AverageInputSegmentSize
+    SPC 30056,1         ;//OutputSegmentSize
+
+    POP(1)
+    JMP .EndCompress
+ENDIF
+
+IF( last_compress == 3 ) THEN
+    ;//...
+    SPC 30054,10        ;//LimitAngle
+    SPC 30058,3         ;//AverageInputSegmentSize
+    SPC 30056,1         ;//OutputSegmentSize
+
+    POP(1)
+    JMP .EndCompress
+ENDIF
+
+IF( last_compress == 2 ) THEN
+    ;//...
+    SPC 30054,5         ;//LimitAngle
+    SPC 30058,1         ;//AverageInputSegmentSize
+    SPC 30056,1         ;//OutputSegmentSize
+
+    POP(1)
+    JMP .EndCompress
+ENDIF
+
+IF( last_compress == 1 ) THEN
+    ;//Massimo livello di dettaglio
+    SPC 30054,2         ;//LimitAngle
+    SPC 30058,1         ;//AverageInputSegmentSize
+    SPC 30056,1         ;//OutputSegmentSize
+
+    POP(1)
+    JMP .EndCompress
+ENDIF
+
+;//Funzione non disponibile
+ERROR(8)
+.EndCompress
+
+G(sav_G70)
+RET

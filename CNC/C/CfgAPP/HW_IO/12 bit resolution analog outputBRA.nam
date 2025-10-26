@@ -1,0 +1,13 @@
+
+[KEYS]
+TITLE=Saída Analógica
+
+[PROMPT]
+KEY_NODE=NODE
+12_BIT_RESOLUTION_ANALOG_OUTPUT=Leaf
+PIN=PIN1: Sinal Saída QW24
+PIN3=PIN2: Sinal Terra Referência
+
+[STATUS]
+
+[HELP]

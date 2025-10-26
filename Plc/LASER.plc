@@ -1,0 +1,1247 @@
+*******************************************************************************
+*   LASER.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "FLP.plc"
+#funcdec "RestFB.plc"
+VAR
+#include "Cnc.inc"
+
+#include "RemContr.inc"
+
+HoerbEnabCond: BOOL; * Hoerbiger prop. valve enable conditions
+TOF_HBPROP: TOF;
+#defcom TOF_HBPROP.Q Hoerbiger prop valve enable delayed
+
+
+appoggio:             BOOL;
+
+TP_HOLD_Tip:                TP;
+TP_HOLD_Noz:                TP;
+
+F_DIS_MANAPA:               F_TRIG;
+
+R_TRIG_PRGRUN:              R_TRIG; * Fronte salita start programma
+R_TRIG_PRGRUN2:             R_TRIG; * Fronte salita start programma
+F_TRIG_PRGRUN:              F_TRIG; * Fronte discesa start programma
+
+R_TRIG0:                    R_TRIG;
+TON_ST:                        TON;
+
+*manual cut
+TP_EXE_REQ:                 TP;                 
+FTRIG_PRUN:                 F_TRIG;
+TP_EXE_REQ2:                TP;                 
+FTRIG_PRUN2:                F_TRIG;
+RTRIG_Xstart:               R_TRIG;
+RTRIG_Xend:                 R_TRIG;
+RTRIG_Ystart:               R_TRIG;
+RTRIG_Yend:                 R_TRIG;
+RTRIG_REQ_BREAK:            R_TRIG;
+*
+* microjoint alg
+firScan:                   DWORD;                * Initialization of filter
+RTRIG_FIR_INIT:           R_TRIG;  
+error:                     DWORD; 
+TON_VALID_DATA:              TON;
+ 
+TON_DISABLE_BEAM:            TON;
+RTRIG_CAL_FILTER:         R_TRIG; 
+velMaxAlg:                 DWORD;                 * set point speed to have filter at 0
+RTRIG_START_LEAD:         R_TRIG;
+FTRIG_START_LEAD:         F_TRIG;
+posXinitlead:              DWORD;
+posYinitlead:              DWORD;
+posXendlead:               DWORD;
+posYendlead:               DWORD; 
+PosIntInitLead:            DWORD;
+PosIntendLead:             DWORD;
+microJoinfactor:           DWORD;        * need to comensate the possible radius during lead in
+percReduction:             DWORD;
+LinearDistance:            DWORD;
+RealLeadDistance:          DWORD;
+distX:                     DWORD;
+distY:                     DWORD;
+indexLeadIn:               DWORD;        * if  indexLeadIn = 314 lead in is a semicircumference
+Ftrig_LeadTest:           F_TRIG; 
+
+RTRIG_COUNT_PIERC:        R_TRIG;  
+rtrig_ResPiercCounter:    R_TRIG;
+rtrig_ResPiercCounter_2:  R_TRIG;
+MicroJointime:         DWORD;
+
+* wrong operation protection
+
+RTRIG_NOPIERC:            R_TRIG;
+RTRIG_ALLPIERC:           R_TRIG;
+RTRIG_NOLEAD:             R_TRIG;
+RTRIG_RES_GEOM:           R_TRIG;
+RTRIG_RES_PIECE:          R_TRIG;
+FTRIG_RES_AUTO_CLEAN:     F_TRIG; 
+RTRIG_WORK_ENAB:          R_TRIG;
+
+
+TP_BUZZER:              TP;         * Buzzer timer
+TP_HOLD_BODY:           TP;
+
+TON_REMOVE_ALARM:       TON;
+RTRIG_ORIG19:           R_TRIG;
+RTRIG_BLOCK_S:          R_TRIG;
+
+RTRIG_MANSEL_P:         R_TRIG;         * Selettore manuale (potenza/duty/frequenza)
+RTRIG_MANSEL_M:         R_TRIG;         * Selettore manuale (potenza/duty/frequenza)
+
+Restart:                Restart_Cut;
+
+
+END_VAR
+
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+******************************************************************************
+* FUNCTION LASER_IN
+******************************************************************************
+FUNCTION LASER_IN
+
+**@@@ INP_TEST    * Digital Inputs test management
+
+
+
+******************************************************************************
+*   Gestione selettore manuale x cambiamento valori potenza/duty/frequenza
+******************************************************************************
+CAL  RTRIG_MANSEL_P (CLK:=%SoftBtn1.0)
+CAL  RTRIG_MANSEL_M (CLK:=%SoftBtn1.1)
+
+*** INC
+
+LD   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+OR (
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+LE   0
+)
+OR (
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+GT   3
+)
+JMPCN man_sel_init
+
+LD   100
+ST   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+ST   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+ST   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+
+man_sel_init:
+
+LD   RTRIG_MANSEL_P.Q
+AND (
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   1
+)
+JMPCN no_pow_inc
+
+LD   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+ADD  1
+ST   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+
+no_pow_inc:
+LD   RTRIG_MANSEL_P.Q
+AND (
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   2
+)
+JMPCN no_duty_inc
+
+LD   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+ADD  5
+ST   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+
+no_duty_inc:
+LD   RTRIG_MANSEL_P.Q
+AND (
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   3
+)
+JMPCN no_freq_inc
+
+LD   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+ADD  5
+ST   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+
+no_freq_inc:
+
+*** DEC
+
+LD   RTRIG_MANSEL_M.Q
+AND (
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   1
+)
+JMPCN no_pow_dec
+
+LD   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+SUB  1
+ST   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+
+no_pow_dec:
+LD   RTRIG_MANSEL_M.Q
+AND (
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   2
+)
+JMPCN no_duty_dec
+
+LD   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+SUB  5
+ST   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+
+no_duty_dec:
+LD   RTRIG_MANSEL_M.Q
+AND (
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   3
+)
+JMPCN no_freq_dec
+
+LD   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+SUB  5
+ST   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+
+no_freq_dec:
+
+*** CONTROLLO VALORE MINIMO/MASSIMO
+
+LD   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+LT   0
+JMPCN no_pow_zero
+LD   0
+ST   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+no_pow_zero:
+LD   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+GT   120
+JMPCN no_pow_max
+LD   120
+ST   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+no_pow_max:
+
+LD   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+LT   0
+JMPCN no_duty_zero
+LD   0
+ST   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+no_duty_zero:
+LD   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+GT   120
+JMPCN no_duty_max
+LD   120
+ST   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+no_duty_max:
+
+LD   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+LT   0
+JMPCN no_freq_zero
+LD   0
+ST   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+no_freq_zero:
+LD   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+GT   120
+JMPCN no_freq_max
+LD   120
+ST   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+no_freq_max:
+
+
+*** VALORI DI USCITA PER LsrGest.plc
+
+LD   0
+ST   ManSelectorPOW_out         *(gPlc30)Selettore manuale POTENZA: ultimo valore impostato (valore di uscita per LsrGest)
+ST   ManSelectorDUTY_out        *(gPlc30)Selettore manuale DUTY: ultimo valore impostato (valore di uscita per LsrGest)
+ST   ManSelectorFREQ_out        *(gPlc30)Selettore manuale FREQUENCY: ultimo valore impostato (valore di uscita per LsrGest)
+
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   1
+JMPCN no_pow
+
+LD   100
+ST   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+ST   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+JMP  no_freq
+
+no_pow:
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   2
+JMPCN no_duty
+
+LD   100
+ST   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+ST   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+JMP  no_freq
+
+no_duty:
+LD   ManSelector            *(rgGui6)Selettore manuale potenza/duty/frequenza  
+EQ   3
+JMPCN no_freq
+
+LD   100
+ST   ManSelectorPOW         *(rgGui7)Selettore manuale POTENZA: ultimo valore impostato
+ST   ManSelectorDUTY        *(rgGui8)Selettore manuale DUTY: ultimo valore impostato
+
+LD   %TabLsr0.L_CutFreq
+MUL (
+LD   ManSelectorFREQ        *(rgGui9)Selettore manuale FREQUENCY: ultimo valore impostato
+SUB  100                    * 100%
+)
+DIV  100                    * 100 %
+ST   ManSelectorFREQ_out        *(gPlc30)Selettore manuale FREQUENCY: ultimo valore impostato (valore di uscita per LsrGest)
+
+no_freq:
+
+
+******************************************************************************
+*   Copia il valore della potenza massima sulla variabile usata dalla GUI
+******************************************************************************
+LD   %LsrGest0.ParMaxPower
+ST   PotenzaMaxLaser            **(rLsGui17)Potenza massima Laser
+
+
+******************************************************************************
+* Safety for axes when operator move in jog the axes
+CAL  TON_REMOVE_ALARM (IN:=%PLCerr7.21,PT:=5000)    * Axes cannot move, not safe movement
+
+LD   OrderMoveYPosit               ** (LsPlc26.5) Order of movement positive dir for Y
+OR   OrderMoveYNegat               ** (LsPlc26.6) Order of movement negative dir for Y
+OR   OrderMoveXPosit               ** (LsPlc26.3) Order of movement positive dir for X
+OR   OrderMoveXNegat               ** (LsPlc26.4) Order of movement negative dir for X
+OR   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+OR   TON_REMOVE_ALARM.Q        * Reset of the alarm
+OR   PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+R    %PLCerr7.21               * Axes cannot move, not safe movement
+
+LD   %CalPipe0.General0.5       * pipe is along Y axis
+AND  %cn3.cc1.5                 * W axis configured
+ANDN PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+ANDN BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+JMPCN noPipeY
+
+  * hold moving if the bridge in in the middle of the machine and
+  * the operator move X in pipe side
+  LD   %ax28.ra4                  * y axis position
+  SUB  3000
+  GT   %tab1.t_ttab.t_oart.t_dY   * pipe offset along y axis
+  OR  (
+  LD   %ax29.ra4
+  LE  (
+  LD   %ax29.pa22
+  SUB  10000
+  )
+  )
+  AND  (
+  LD   %ax27.ra4                  * x axis position
+  LE   (
+  LD   %ax27.pa21
+  ADD  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+   )
+  )
+  AND  (
+  LD  %tab1.t_ttab.t_oart.t_dX 
+  LT  0
+  )
+  AND OrderMoveXNegat                ** (LsPlc26.4) Order of movement negative dir for X
+ ***************************
+  OR  ( * x is in the pipe side but head is not up
+  LD   %ax27.ra4                  * x axis position
+  LT   (
+  LD   %ax27.pa21
+  ADD  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+   )
+  AND (
+  LD   %ax29.ra4
+  LE  (
+  LD   %ax29.pa22
+  SUB  10000
+    )
+   ) 
+  AND  OrderMoveXPosit               ** (LsPlc26.3) Order of movement positive dir for X
+  ANDN (
+  LD   %ax28.ra4                  * y axis position
+  SUB  3000
+  GT   %tab1.t_ttab.t_oart.t_dY   * pipe offset along y axis 
+  )
+  AND  (
+  LD  %tab1.t_ttab.t_oart.t_dX 
+  LT  0
+  )
+  )
+ **************************
+  OR  (  * same condition, in case the pipe is in positive direction of X axis 
+   LD   %ax28.ra4                  * y axis position
+   SUB  3000
+   GT   %tab1.t_ttab.t_oart.t_dY   * pipe offset along y axis 
+   OR  (
+   LD   %ax29.ra4
+   LE  (
+   LD   %ax29.pa22
+   SUB  10000
+    )
+   )
+   AND  (
+   LD   %ax27.ra4                  * x axis position
+   GE   (
+   LD   %ax27.pa22
+   SUB  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+    )
+   )
+   AND  (
+   LD  %tab1.t_ttab.t_oart.t_dX 
+   GT  0
+   )
+   AND  OrderMoveXPosit               ** (LsPlc26.3) Order of movement positive dir for X
+  )
+ ***************************
+  OR  ( * x is in the pipe side but head is not up
+  LD   %ax27.ra4                  * x axis position
+  GE   (
+  LD   %ax27.pa22
+  SUB  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+   )
+  AND (
+  LD   %ax29.ra4
+  LE  (
+  LD   %ax29.pa22
+  SUB  10000
+    )
+   ) 
+  AND  OrderMoveXNegat               ** (LsPlc26.4) Order of movement negative dir for X
+  ANDN (
+  LD   %ax28.ra4                  * y axis position
+  SUB  3000
+  GT   %tab1.t_ttab.t_oart.t_dY   * pipe offset along y axis 
+  )
+  AND  (
+  LD  %tab1.t_ttab.t_oart.t_dX 
+  GT  0
+   )
+  )
+ ************************** 
+  ST  HoldSafePipeX                  ** (LsPlc26.2) Hold moving for X axis, not allow manual movement in pipe area
+  
+  LD   %ax27.ra4                  * x axis position
+  LT   (
+  LD   %ax27.pa21
+  ADD  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+   )
+  AND  (
+  LD  %tab1.t_ttab.t_oart.t_dX 
+  LT  0
+  )
+  AND (
+  LD  OrderMoveYPosit                ** (LsPlc26.5) Order of movement positive dir for Y
+  OR  OrderMoveYNegat                ** (LsPlc26.6) Order of movement negative dir for Y
+  )
+  OR  (
+   LD   %ax27.ra4                 * x axis position
+   GT   (
+   LD   %ax27.pa22
+   SUB  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+    )
+    AND  (
+    LD  %tab1.t_ttab.t_oart.t_dX 
+    GT  0
+   )
+    AND (
+    LD  OrderMoveYPosit                ** (LsPlc26.5) Order of movement positive dir for Y
+    OR  OrderMoveYNegat                ** (LsPlc26.6) Order of movement negative dir for Y
+   )
+  )
+  ST   HoldSafePipeY                 ** (LsPlc26.7) Hold moving for Y axis, not allow manual movement in pipe area
+
+noPipeY:
+
+* Safety for axes when operator move in jog the axes
+* NEED TO BE TESTED,ACTUALLY MACHINE HAVE PIPE ALONG y
+
+LD   %CalPipe0.General0.4       * pipe is along X axis
+AND  %cn3.cc1.5                 * W axis configured
+ANDN PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+ANDN BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+JMPCN noPipeX
+
+  LD   %ax27.ra4                  * x axis position
+  SUB  3000
+  GT   %tab1.t_ttab.t_oart.t_dX   * pipe offset along x axis
+  AND  (
+  LD   %ax28.ra4                  * y axis position
+  LT   (
+  LD   %ax28.pa21
+  ADD  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+   )
+  )
+  AND  (
+  LD  %tab1.t_ttab.t_oart.t_dY 
+  LT  0
+  )
+  AND OrderMoveYNegat                ** (LsPlc26.6) Order of movement negative dir for Y
+  OR  (
+   LD   %ax27.ra4                  * x axis position
+   SUB  3000
+   GT   %tab1.t_ttab.t_oart.t_dX   * pipe offset along y axis 
+   AND  (
+   LD   %ax28.ra4                  * y axis position
+   GT   (
+   LD   %ax28.pa22
+   SUB  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+    )
+   )
+   AND  (
+   LD  %tab1.t_ttab.t_oart.t_dY 
+   GT  0
+   )
+   AND  OrderMoveYPosit               ** (LsPlc26.5) Order of movement positive dir for Y
+  )
+  ST  HoldSafePipeY                  ** (LsPlc26.7) Hold moving for Y axis, not allow manual movement in pipe area
+  
+  LD   %ax28.ra4                   * y axis position
+  LT   (
+  LD   %ax28.pa21
+  ADD  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+   )
+  AND  (
+  LD  %tab1.t_ttab.t_oart.t_dY 
+  LT  0
+  )
+  AND (
+  LD  OrderMoveYPosit                ** (LsPlc26.5) Order of movement positive dir for Y
+  OR  OrderMoveYNegat                ** (LsPlc26.6) Order of movement negative dir for Y
+  )
+  OR  (
+   LD   %ax28.ra4                  * y axis position
+   GT   (
+   LD   %ax28.pa22
+   SUB  SafePipeZone                  ** (%LSRCostK9) Safety distance from axis limit in pipe management
+    )
+    AND  (
+    LD  %tab1.t_ttab.t_oart.t_dY 
+    GT  0
+   )
+    AND (
+    LD  OrderMoveYPosit                ** (LsPlc26.5) Order of movement positive dir for Y
+    OR  OrderMoveYNegat                ** (LsPlc26.6) Order of movement negative dir for Y
+   )
+  )
+  ST   HoldSafePipeX                 ** (LsPlc26.2) Hold moving for X axis, not allow manual movement in pipe area
+ 
+noPipeX:
+
+LD   HoldSafePipeX                 ** (LsPlc26.2) Hold moving for X axis, not allow manual movement in pipe area
+OR   HoldSafePipeY                 ** (LsPlc26.7) Hold moving for Y axis, not allow manual movement in pipe area
+S    %PLCerr7.21                    * Axes cannot move, not safe movement
+
+******************************************************************************
+******************************************************************************
+*   BUZZER MANAGEMENT
+******************************************************************************
+LD   PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+ST   appoggio
+
+CAL  TP_BUZZER(IN=PRGRUN_CN0,PT=%Cost_User20) ** Buzzer timer
+
+LD   TP_BUZZER.Q
+ST	 O_O_BUZZER_START_CIC           ** Star cycle buzzer
+
+
+******************************************************************************
+CAL  TP_HOLD_Tip(IN=%PLCerr5.4,PT=500) **PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
+CAL  TP_HOLD_Noz(IN=%PLCerr5.6,PT=1000) **PLC Err 166 Nozzle lost (A11=1, A14=0, A15=1 in normal operation)
+CAL  TP_HOLD_BODY (IN:=%PLCerr5.5,PT:=1000)                    **PLC Err 165 Body touch (A11=1, A14=1, A15=0 in normal operation)
+
+LD   TP_HOLD_Tip.Q
+OR   TP_HOLD_Noz.Q
+OR   TP_HOLD_BODY.Q
+ST   StopUsrPlc                    ** (gPlc2.22)Richiesta STOP da User_Plc
+
+**************************************
+*& Set TAB value for startup (retentive)
+**
+LD      ON_ONE_SCAN                ** PLCFLAGS.8  Flag on alla prima scansione PLC
+JMPCN   No_FirstScan
+  LD      guiTAB_Sinottico           ** (rGui10)GUI TAB Sinottico for Quotes
+  EQ      0
+  JMPCN   No_TabEqZero
+    LD      1
+    ST      guiTAB_Sinottico           ** (rGui10)GUI TAB Sinottico for Quotes
+No_TabEqZero:
+No_FirstScan:
+
+
+CAL R_TRIG0(CLK=%PLCFLAGS.10)
+
+LD   R_TRIG0.Q
+JMPCN CNT_MP
+
+LD   Timesec                       ** (R123) Tempo secondi
+ADD  1
+ST   Timesec                       ** (R123) Tempo secondi
+
+CNT_MP:
+
+LD   Timesec                       ** (R123) Tempo secondi
+DIV  3600
+ST   TimeOur                       ** (R124) Tempo ore
+****************************************************************
+
+****************************************************************
+* Tempo Taglio In Corso
+****************************************************************
+
+CAL  TON_ST(IN:=StartTimer,PT:=1000) ** Start tim 
+
+LD   %cn0.rc8.0                    * Programma in corso cn0
+AND  TON_ST.Q                     * Start tim
+ANDN PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+AND  R_TRIG0.Q                     * Impulso incremento secondi
+JMPCN TIMECUT
+
+* Contasecondi
+
+LD   TimeSecProg                   ** (R125) Conteggio Secondi Tempo Programma Taglio in corso
+ADD  1
+ST   TimeSecProg                   ** (R125) Conteggio Secondi Tempo Programma Taglio in corso
+
+TIMECUT:
+
+CAL R_TRIG_PRGRUN(CLK=%cn0.rc8.0)	 ** Fronte salita start programma
+
+LD   R_TRIG_PRGRUN.Q
+JMPCN ResCount
+
+LD   0
+ST   TimeSecProg                   ** (R125) Conteggio Secondi Tempo Programma Taglio in corso
+ST   TimeMinProg                   ** (R126) Conteggio Minuti Tempo Programma Taglio in corso
+
+ResCount:
+
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+JMPCN no_zero
+LD   0
+ST   StartTimer                    ** Start tim 
+no_zero:
+
+*******************************************************************************
+*   Restart Taglio
+*******************************************************************************
+LD   PRGRUN_CN0   
+ST   Restart.xProg_Run
+
+LD   %PLCerr5.4                    **PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
+AND  EnTiptouchRetrace
+AND  BevelHeadSyncG800              * Traccia in esecuzione
+ST   Restart.xTip_Touch    
+
+LD   VRTCIncSetPReached
+ST   Restart.xZupExecuted  
+
+LD   PRGSTOP_CN0
+ST   Restart.xMachineInHold
+
+LD   %LSRCostK13                    ** (LSRCostK13) Numero tentativi per tip touch con gestione autorestart
+ST   Restart.xAttempts
+
+LD   RetraceCommBack
+ST   Restart.xRetraceOn    
+
+CAL  Restart
+
+LD   Restart.yStartProg
+ST   StartAftTipTouch              ** (LsPlc47.2) Start after tip touch
+
+LD   Restart.yStartRetrace
+ST   JogCommandTipTouch            ** (LsPlc47.0) Automatic jog command for tip touch
+
+LD   Restart.yZupRequest
+ST   EnPosiz                       * (LsPlc47.3) Abilitaz. posiz. Asse Z
+
+LD   Restart.yInibTipTouch
+AND  EnTiptouchRetrace
+ST   InibTipTouchAllarm            ** M100.22 Inibizione allarme Tip Touch per restart ciclo
+
+
+
+**********************************************************************************
+* enable/disable automatic height control manual cut
+
+LD   %cn0.rc9            * Channel 0 M-Functions register
+EQ   4001   
+AND  %cn0.rc8.4          * Channel 0 M-Functions Strobe
+S    M4001_REQ           * (LsPlc47.14) M4001 request to enable height threshold detection
+
+LD   %cn0.rc9            * Channel 0 M-Functions register
+EQ   4002   
+AND  %cn0.rc8.4          * Channel 0 M-Functions Strobe
+ORN  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+R    M4001_REQ           * (LsPlc47.14) M4001 request to enable height threshold detection
+
+*
+********************************************************************************
+* Turn off laser by distance to go
+
+LD   EnMicroJoint                  ** (%rLsGui29.4) Enable microjoint option
+JMPCN no_microjoint_func
+
+* Compensation if the lead in is not straight
+
+CAL  RTRIG_START_LEAD (CLK:=LeadInStart) ** SignaL lead in in progress
+
+LD   RTRIG_START_LEAD.Q
+JMPCN acuXYdist
+
+LD   %ax27.ra4
+ST   posXinitlead
+
+LD   %ax28.ra4
+ST   posYinitlead
+
+LD   %ax21.ra25
+ST   PosIntInitLead
+
+acuXYdist:
+
+CAL  FTRIG_START_LEAD (CLK:=LeadInStart) ** SignaL lead in in progress
+
+LD   FTRIG_START_LEAD.Q
+JMPCN endLead
+  
+LD   %ax27.ra4  
+ST   posXendlead
+
+LD   %ax28.ra4
+ST   posYendlead
+
+LD   %ax21.ra25
+ST   PosIntendLead
+
+LD   PosIntendLead
+SUB  PosIntInitLead
+ST   RealLeadDistance
+
+* Calc linear distance
+
+LD   posXendlead
+SUB  posXinitlead
+ST   distX
+
+LD   posYendlead
+SUB  posYinitlead
+ST   distY
+
+LD   0
+HYPOT (X=distX,Y=distY)
+ST   LinearDistance          
+    
+LD   0    
+ST   microJoinfactor               ** need to comensate the possible radius during lead in
+    
+LD   RealLeadDistance
+GT   LinearDistance
+JMPCN changecompens
+
+LD   RealLeadDistance
+MUL  2
+MUL  100
+DIV  LinearDistance
+ST   indexLeadIn                   ** if  indexLeadIn = 314 lead in is a semicircumference
+
+*y=mx+c => x=indexLeadIn  Y=0-100% X=200-314
+LD   indexLeadIn                   ** if  indexLeadIn = 314 lead in is a semicircumference
+MUL  87719
+DIV  1000
+SUB  17544
+DIV  100
+ST   percReduction
+
+*LD   indexLeadIn                       * if  indexLeadIn = 314 lead in is a semicircumference
+*MUL  100
+*DIV  314
+*ST   percReduction
+
+LD   percReduction
+GT   100
+JMPCN limitperc
+
+LD   100
+ST   percReduction
+
+limitperc:
+
+
+LD   SpaceForLeadCom               ** (%LsGui82) Costant to compensate no linear lead in (max value of compensation)
+MUL  percReduction
+DIV  100
+ST   microJoinfactor               ** need to comensate the possible radius during lead in
+changecompens:
+
+endLead:
+
+*LD   InterpolatResidual         
+LD   %ax21.ra29
+LT   (
+LD   MicroJointDist                ** (rLsGui25) Distance for microjoint
+ADD  microJoinfactor               ** need to comensate the possible radius during lead in
+)
+AND  %ax21.ra8.21
+ST   appoggio
+
+* Interpolation of filter time to compensate the output delay
+****
+
+LD   666667                             * 40000 mm/min
+MUL  -1
+ST   velMaxAlg                     ** set point speed to have filter at 0
+
+CAL  RTRIG_CAL_FILTER (CLK:=appoggio)
+
+LD   RTRIG_CAL_FILTER.Q
+JMPCN nofilCal
+LD   FilterForMicroJ               ** (rLsGui26) Microjoint FIR time (NOT USED)
+MUL  (
+LD   %ax21.ra28                       * interpolator speed (micro/sec) Proc.Principale CN0
+ADD  velMaxAlg                     ** set point speed to have filter at 0
+)
+DIV  velMaxAlg                     ** set point speed to have filter at 0
+ST   MicroJointime
+
+nofilCal:
+
+CAL  TON_DISABLE_BEAM (IN:=appoggio,PT:=MicroJointime) * Data valid for microjoint 
+
+LD   TON_DISABLE_BEAM.Q 
+ANDN (
+LD   %LsIso11
+EQ   4
+OR   (
+LD   %LsIso11
+EQ   5
+)
+OR   INP_flyCutModeON                 ** application turn flyCut mode ON
+)
+S    TurnOffLaser                  ** (LsPlc47.19) Turn off laser from microjoint algorithm
+
+
+LD   enabcopy                      ** test copia
+JMPC nocopy 
+
+LD   %PlPlc21
+ST   %PlPlc22           * 3
+
+LD   %PlPlc20
+ST   %PlPlc21           * 2 
+
+LD   %ax21.ra29
+ST   %PlPlc20           * 1
+ 
+
+nocopy:
+
+LD   TurnOffLaser                  ** (LsPlc47.19) Turn off laser from microjoint algorithm
+S    enabcopy                      ** test copia
+
+****
+
+LD   piercing_run                  ** (LsPlc37) Piercing in run
+***ORN  %ax21.ra8.21                     * Data valid for microjoint  VA VIA TROPPO PRESTO
+ORN  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+R    TurnOffLaser                  ** (LsPlc47.19) Turn off laser from microjoint algorithm
+
+CAL  Ftrig_LeadTest (CLK:=PRGRUN_CN0) ** M0.0 cn0.rc8.0  Programma in corso
+
+LD   Ftrig_LeadTest.Q
+OR   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+JMPCN no_res_var
+LD   0
+ST   LeadInStart                   ** SignaL lead in in progress
+no_res_var:
+no_microjoint_func:
+******************************************************************************************
+END_FUNCTION
+
+
+
+
+
+
+
+
+
+
+
+******************************************************************************
+******************************************************************************
+******************************************************************************
+* FUNCTION LASER_M
+******************************************************************************
+******************************************************************************
+******************************************************************************
+FUNCTION LASER_M
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   PresetDaErrore                ** (gPlc2.2)Rich. Preset/Allineamento quota slave a master per errore allin.
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   Stop_Req_PLC                  ** (gPlc0.12)Richiesta stop ciclo da PLC.plc
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   Blav_Req_PLC                  ** (gPlc0.13)Richiesta blocco avanzamento XY da PLC.plc
+
+***
+Gest_Assi
+***
+Macch_Reset
+***
+Barriere
+***
+Pneumatico
+***
+GestGas
+GasProp
+***
+REMOTE_DISPLAY
+***
+LOG
+***
+CLAMP_SUPPORT
+***
+PIPE_CALIBRATION
+***
+LuciMacc
+***
+
+END_FUNCTION
+
+
+
+
+
+
+******************************************************************************
+******************************************************************************
+******************************************************************************
+* FUNCTION LASER_OUT
+******************************************************************************
+******************************************************************************
+******************************************************************************
+FUNCTION LASER_OUT
+
+CAL  R_TRIG_PRGRUN2(CLK=%cn0.rc8.0)
+CAL  F_TRIG_PRGRUN(CLK=%cn0.rc8.0)
+
+
+******************************************************************************
+*   WELDING management
+******************************************************************************
+LD   %LSRPlcOp0.22                 ** Pipe Welding function enabling
+JMPCN NoWeldingM
+
+LD   R_TRIG_PRGRUN2.Q
+OR   F_TRIG_PRGRUN.Q
+OR (
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+ANDN PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+)
+R    WeldingSensorPiston
+
+LD   WeldingSensorPiston
+ST   O_O_WELDING_PISTON
+
+NoWeldingM:
+
+******************************************************************************
+*   Aspirator
+******************************************************************************
+Aspiraz
+
+
+******************************************************************************
+*   Hoerbiger proportional valve
+******************************************************************************
+LD   O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+AND  GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+ST   O_O_EV_OPEN_N2_HOERB          ** Hoerbiger: N2 ev
+
+LD   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+AND  GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+ST   O_O_EV_OPEN_O2_HOERB          ** Hoerbiger: O2 ev
+
+LD   O_O_EV_OPEN_ARIA              ** Elettrovalvola apertura Aria taglio
+AND  GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+ST   O_O_EV_OPEN_ARIA_HOERB        ** Hoerbiger: air ev
+
+***************************************
+* Enable valve for oxygen and nitrogen
+***************************************
+LD   %config_machine29             ** Proportional valve manage only with OXYGEN
+EQ   0
+AND  O_O_EV_OPEN_N2                ** Elettrovalvola apertura Azoto
+OR   O_O_EV_OPEN_O2                ** Elettrovalvola apertura Ossigeno
+ST   HoerbEnabCond                 ** Hoerbiger prop. valve enable conditions
+
+CAL  TOF_HBPROP(IN:=HoerbEnabCond,PT:=60000) ** Hoerbiger prop. valve enable conditions
+
+LD   TOF_HBPROP.Q                  ** Hoerbiger prop valve enable delayed
+ST   O_O_ENAB_VALVE_HOERB          ** Enable proportional valve for oxygen (Hoerbiger) 
+
+*PILOTAGGIO HOERBIGER
+LD   O_O_EV_OR_ALLGAS              ** M90.15 Elettrovalvola apertura di almeno un gas
+AND  GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
+OR   O_O_CALIB_REQ_HOERB           ** Hoerbiger: calibration request
+ST   O_O_PILOT_HOERB               ** Hoerbiger: gas command ev
+
+**********************************************************************
+
+
+**********************************************************************
+******************************************************************************* 
+* Manual Cut Request                                                            
+******************************************************************************* 
+                                                                                
+LD    guiManualReq                 ** (gGui22.1) Manual cut request
+AND   %cn0.rgc0.3                     * rgc0.3 Canale in JOG o INC      
+ST    appoggio
+        
+CAL  TP_EXE_REQ(IN:=appoggio,PT:=300)     
+
+LD   TP_EXE_REQ.Q  
+S    exeaux_for_mancut               ** (LsPlc47.8) manual cut request   
+      
+CAL  FTRIG_PRUN (CLK:=%cn0.rc8.0)     
+      
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+OR   FTRIG_PRUN.Q                                            
+OR   I_I_EMERGENZA                 ** Machine OK (no EMERG.)
+OR   EMER_GEN                      ** M0.10 Emergenza generale
+R    exeaux_for_mancut               ** (LsPlc47.8) manual cut request  
+
+CAL  RTRIG_Xstart (CLK:=guiAcqXstart) ** (gGui22.2) Manual cut: acquire X start quota
+CAL  RTRIG_Xend (CLK:=guiAcqXend)  ** (gGui22.3) Manual cut: acquire X end quota
+CAL  RTRIG_Ystart (CLK:=guiAcqYstart) ** (gGui22.4) Manual cut: acquire Y start quota
+CAL  RTRIG_Yend (CLK:=guiAcqYend)  ** (gGui22.5) Manual cut: acquire Y end quota
+
+LD   RTRIG_Xstart.Q
+ANDN %cn0.rc8.0
+JMPCN NoAcq1
+
+LD   %ax27.ra4
+ST   qCut_X_start                  ** (rLsGui48) Manual cut: X quota start
+
+NoAcq1:
+LD   RTRIG_Xend.Q
+ANDN %cn0.rc8.0
+JMPCN NoAcq2
+
+LD   %ax27.ra4
+ST   qCut_X_end                    ** (rLsGui49) Manual cut: X quota end
+
+NoAcq2:
+LD   RTRIG_Ystart.Q
+ANDN %cn0.rc8.0
+JMPCN NoAcq1_
+
+LD   %ax28.ra4
+ST   qCut_Y_start                  ** (rLsGui50) Manual cut: Y quota start
+
+NoAcq1_:
+LD   RTRIG_Yend.Q
+ANDN %cn0.rc8.0
+JMPCN NoAcq2_
+
+LD   %ax28.ra4
+ST   qCut_Y_end                    ** (rLsGui51) Manual cut: Y quota end
+
+NoAcq2_:                      
+**********************************************************************
+* Break Point positioning
+
+CAL  RTRIG_REQ_BREAK (CLK:=RemContrBreakPoint) ** Xhc_Puls.7  Break point positioning request*
+
+LD   RTRIG_REQ_BREAK.Q
+S    BreakPosReq               ** (LsPlc47.17) Request break point positioning
+
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+OR   FTRIG_PRUN.Q                                              
+OR   I_I_EMERGENZA                 ** Machine OK (no EMERG.)
+OR   EMER_GEN                      ** M0.10 Emergenza generale
+R    BreakPosReq               ** (LsPlc47.17) Request break point positioning
+
+
+
+**********************************************************************
+
+**********************************************************************
+* Piercing counter 
+
+CAL  RTRIG_COUNT_PIERC (CLK:=PiercingInRun.0)   * (LsPlc70) Piercing in run
+
+LD   RTRIG_COUNT_PIERC.Q            * (LsPlc70) Piercing in run
+ANDN %PlcOp0.2                     ** DryRun
+ANDN (                              * customer line for marking
+LD   CurrentLineExecute            ** (LsIso11) Current cutting line parameter to execute 
+EQ   4
+)
+ANDN (                              * customer line for film burning
+LD   CurrentLineExecute            ** (LsIso11) Current cutting line parameter to execute 
+EQ   5
+) 
+ANDN INP_flyCutModeON              ** application turn flyCut mode ON
+JMPCN no_pierc_count
+
+LD   PiercCounter                  ** (%C71) Piercing counter                 
+ADD  1
+ST   PiercCounter                  ** (%C71) Piercing counter                 
+
+no_pierc_count:
+
+CAL rtrig_ResPiercCounter_2 (CLK:=AutoNozzleClean) ** (%rLsGui29.9) Nozzle clean active
+
+LD   BtnResetCounter               ** (LsGui32.28) Reset counter of piercing
+OR   rtrig_ResPiercCounter_2.Q    
+OR   Nozzle_clean_run               * (C26.1) Nozzle cleaning in run
+ST   appoggio
+  
+CAL  rtrig_ResPiercCounter (CLK:=appoggio) *  Reset counter of piercing         
+ 
+LD   rtrig_ResPiercCounter.Q
+JMPCN  norescounter
+
+LD   0
+ST   PiercCounter                  ** (%C71) Piercing counter                 
+norescounter:
+
+*********************************************************************
+* Wrong selection option protection
+
+* no piercing option,no lead in option or worklist enabled reset all pre piercing 
+* if origin 19 selected, disable all option
+
+CAL  RTRIG_NOPIERC (CLK:=EnNoPiercing) ** (%rLsGui29.5) No piercing execution
+CAL  RTRIG_NOLEAD (CLK:=EnNoLeadIn) ** (%rLsGui29.6) No lead-in execution
+CAL  RTRIG_WORK_ENAB (CLK:=WorkListEnabled) ** (LSRPlcOp0.5) Worklist mode enabled
+CAL  RTRIG_ORIG19 (CLK:=VisLedOrigGui.19)         * Origin 19 selected 
+CAL  RTRIG_BLOCK_S (CLK:=BUP_BLKSRC) ** ui16.24 Selezione esecuzione ricerca blocco
+
+LD   RTRIG_NOPIERC.Q
+OR   RTRIG_NOLEAD.Q
+OR   RTRIG_WORK_ENAB.Q
+OR   VisLedOrigGui.19                             * Origin 19 selected 
+OR   RTRIG_BLOCK_S.Q
+JMPCN resAllpierc
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    AllPrePiercing                ** (%rLsGui29.7) Force all pre-piercing
+
+resAllpierc:
+
+* All piercing option reset no pierc and no lead in
+
+CAL  RTRIG_ALLPIERC (CLK:=AllPrePiercing) ** (%rLsGui29.7) Force all pre-piercing
+
+LD   RTRIG_ALLPIERC.Q
+OR   VisLedOrigGui.19                             * Origin 19 selected 
+OR   RTRIG_BLOCK_S.Q
+JMPCN resNopierc
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    EnNoPiercing                  ** (%rLsGui29.5) No piercing execution
+R    EnNoLeadIn                    ** (%rLsGui29.6) No lead-in execution
+
+resNopierc:
+
+* Stop end track geometry reset stop end piece
+
+CAL  RTRIG_RES_PIECE (CLK:=StopEndTrackGeometry) ** (LSRPlcOp0.7) stop at the end of the track/geometry
+
+LD   RTRIG_RES_PIECE.Q
+OR   VisLedOrigGui.19                             * Origin 19 selected
+OR   RTRIG_BLOCK_S.Q 
+JMPCN no_res_endpiece
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    StopEndPiece                  ** (LSRPlcOp0.19) stop at the end of the piece
+
+no_res_endpiece:
+
+* Stop end piece reset stop end Stop End Track Geometry
+
+CAL  RTRIG_RES_GEOM  (CLK:=StopEndPiece) ** (LSRPlcOp0.19) stop at the end of the piece
+
+LD   RTRIG_RES_GEOM.Q
+****OR   VisLedOrigGui.19                             * Origin 19 selected 
+OR   RTRIG_BLOCK_S.Q
+JMPCN  no_res_end_geometr
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    StopEndTrackGeometry          ** (LSRPlcOp0.7) stop at the end of the track/geometry
+
+no_res_end_geometr:
+
+CAL  FTRIG_RES_AUTO_CLEAN (CLK:=NozzleCleanPresent) ** (LSRPlcOp1.5) Nozzle clean active
+
+LD   FTRIG_RES_AUTO_CLEAN.Q
+OR   VisLedOrigGui.19                             * Origin 19 selected 
+OR   RTRIG_BLOCK_S.Q
+JMPCN res_auto_clean
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+R    AutoNozzleClean               ** (%rLsGui29.9) Nozzle clean active
+
+res_auto_clean:
+
+********************************************************************************
+* DB Laser upload synchronism (no_usr db present)
+********************************************************************************
+
+*LD   %Uipl.CurPsw                * Valore corrente Password Attiva
+*EQ   255
+*ST   UseDbUser                   *(LsPlc0.5) User db is used online db
+
+**********************************************************************
+* Clear alarm function
+**********************************************************************
+LD  ButtClearAlarm                 ** (gGui23.0) Clear alarm interface push-button
+OR  RemContrCancAlarm			   * Xhc_Puls.31 Clear alarm 
+AND (
+LD  PRGSTOP_CN0                    ** (cn0.rc8.1)  Programma interrotto CN0
+ORN PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+)
+JMPCN noClearAlarm
+
+LD   0
+ST   %PLCerr0
+ST   %PLCerr1
+ST   %PLCerr2
+ST   %PLCerr3
+ST   %PLCerr4
+ST   %PLCerr5
+ST   %PLCerr6
+ST   %PLCerr7
+ST   %PLCerr8
+ST   %PLCerr20
+ST   %PLCerr21
+
+ST   %PLCmsg0
+ST   %PLCmsg1
+ST   %PLCmsg2
+ST   %PLCmsg3
+ST   %PLCmsg4
+ST   %PLCmsg5
+ST   %PLCmsg6
+ST   %PLCmsg7
+
+noClearAlarm:
+
+**@@@ OUT_TEST    * Digital Outputs test management
+
+END_FUNCTION

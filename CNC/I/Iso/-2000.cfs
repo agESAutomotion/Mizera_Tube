@@ -1,0 +1,90 @@
+ [G]0 [X] [Y] [Z] [U] [V] [A] [B] [C] [F] [K]0 :G1000
+DBL tx = VA23
+DBL ty = VA24
+DBL tz = VA25
+DBL tu = VA20
+DBL tv = VA21
+DBL ta = VA0
+DBL tb = VA1
+DBL tc = VA2
+DBL never_split = VA10     ;K parameter=disable command split logics
+DBL g_type_par = VA6
+DBL feed_par = VA5
+
+DBL sav_kine_x, sav_kine_y, sav_kine_z
+DBL sav_kine_a, sav_kine_b, sav_kine_c
+
+
+DBL a_x, a_u, t_x, t_u
+DBL a_y, t_y
+DBL a_c, t_c
+DBL dist_xu, dist_y, dist_c, dist_tot
+
+; Auto-Close gas valve management
+IF( (%LSRPlcOp[1].20) && (g650executed == 1) && (g840executed == 1) && (g1000executed == 0) ) THEN
+
+    a_x = (XGET("@X"))
+    t_x = (IFEXP(VALID(VA23),VA23,XGET("@X")))
+    a_u = (XGET("@U"))
+    t_u = (IFEXP(VALID(VA20),VA20,XGET("@U")))
+    dist_xu = t_x + t_u - a_x - a_u
+
+    a_y = (XGET("@Y"))
+    t_y = (IFEXP(VALID(VA24),VA24,XGET("@Y")))
+    dist_y = t_y - a_y
+
+    a_c = (XGET("@C") + pl_orig_c)
+    t_c = (IFEXP(VALID(VA2),VA2,XGET("@C")) + pl_orig_c)
+    dist_c = t_c - a_c
+
+    dist_tot = SQRT(dist_xu * dist_xu + dist_y * dist_y + dist_c * dist_c) 
+    ?%gIso[99] = dist_tot / 1000
+
+;SYN
+;MSGOUT "dist_tot="dist_tot "LSRCostK52="%LSRCostK52
+;M0 
+
+    IF (dist_tot >= (%LSRCostK52/1000)) THEN
+        M496                   ; close gas
+    ENDIF
+
+    g1000executed = 1
+ENDIF
+
+sav_kine_x = kine_x
+sav_kine_y = kine_y
+sav_kine_z = kine_z
+sav_kine_a = kine_a
+sav_kine_b = kine_b
+sav_kine_c = kine_c
+
+; Gestione LUNETTE
+never_split = 1
+
+IF( %SUPPORTS_SYSTEM.boolean1.31 ) JMPF .no_m700
+IF (((tc + orig_c) >= (XGET("@C")+95)) || ((tc + orig_c) <= (XGET("@C")-95)) && (%UNLOADER.values1.1) && (roundFlag == 0)) THEN  
+   IF ((tc + orig_c) >= (XGET("@C")+95))  ?%gIso37 = ((tc + orig_c) - 45) * 1000
+   IF ((tc + orig_c) <= (XGET("@C")-95))  ?%gIso37 = ((tc + orig_c) + 45) * 1000
+   IF ( CouplingFollowEn ) M700
+ENDIF
+.no_m700
+
+G153 G(g_type_par) F(feed_par) X(tx) Y(ty) Z(tz) U(tu) V(tv) A(ta) B(tb) C(tc)
+
+IF( %SUPPORTS_SYSTEM.boolean1.31 ) JMPF .no_m704
+IF ((%UNLOADER.values1.1) && (roundFlag == 0) && CouplingFollowEn ) M704
+.no_m704 
+
+; IF( glbIsPolygon == 1 ) THEN
+;     JSR "Sub2000_poly_pipe.cfs"
+; ELSE
+;     JSR "Sub2000_other_pipe.cfs"
+; ENDIF
+
+kine_x = sav_kine_x
+kine_y = sav_kine_y
+kine_z = sav_kine_z
+kine_a = sav_kine_a
+kine_b = sav_kine_b
+kine_c = sav_kine_c
+RET

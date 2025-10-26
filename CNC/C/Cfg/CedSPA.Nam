@@ -1,0 +1,51 @@
+[PROMPT]
+KEY_CED       =Dat. Herram.
+
+CED_RAD       =Radio Herram. [mm]
+CED_TRAD      =Radio empalme para fresa tórica
+CED_LENZ      =Longitud Z Herram. [mm]
+CED_THICK     =Espesor herramienta a disquete
+CED_LENX      =Long. X herramienta para torneado
+CED_LENY      =Long. Y herramienta para torneado
+CED_LATHE_ANG_A =Angolo di spoglia A per tornitura
+CED_LATHE_ANG_B =Angolo di spoglia B per tornitura
+CED_DSC       =Descrizione
+CED_WEAIDX    =Indice extensión gestión desgaste
+
+CED_MINRPM    =Número mínimo de rpm
+CED_MAXRPM    =Número máximo de rpm
+CED_STDRPM    =Número de rpm
+CED_CCW       =Herramienta de paso izquierdo
+CED_MAXFEED   =Velocidad máx. avance lineal
+CED_STDFEED   =Velocidad avance lineal por omisión
+CED_DIR       =Habilita control hacia corte
+CED_TG        =Tipo de avance admitido
+CED_TGTHRE    =Tolerancia angular (grados)
+CED_STATUS    =Eventos que conciernen a la herram.
+CED_MAXACC    =Máxima aceleración [rev/s²]
+CED_MAXDEC    =Máxima desaceleración [rev/s²]
+
+[HELP]
+
+CED_RAD       =Radio Herramienta: Radio de la herramienta permite tener en cuenta el espacio ocupado real de la herramienta en fase de trabajo
+CED_TRAD      =Radio empalme para fresa tórica
+CED_LENZ      =Longitud Z Herramienta: Longitud de la herramienta en la dirección ortogonal respecto al plano seleccionado [mm]
+CED_THICK     =La figura muestra un ejemplo de definición parámetros de herramienta de disco, en particular obsérvese dThick que representa el espesor de la herramienta de disco
+CED_LENX      =Longitud X: Longitud auxiliar 1 herramienta para torneado
+CED_LENY      =Longitud Y: Longitud auxiliar 2 herramienta para torneado
+CED_LATHE_ANG_A =Angolo di spoglia A per tornitura
+CED_LATHE_ANG_B =Angolo di spoglia B per tornitura
+CED_WEAIDX    =Indice extensión datos herramienta para gestión desgaste
+
+CED_MINRPM    =Número mínimo de rpm
+CED_MAXRPM    =Número máximo de rpm
+CED_STDRPM    =Número de rpm
+CED_CCW       =Herramienta de paso izquierdo
+CED_MAXFEED   =Velocidad máx. avance lineal
+CED_STDFEED   =Velocidad avance lineal por omisión
+CED_DIR       =Habilita control hacia corte
+CED_TG        =Tipo de avance admitido durante el trabajo:  0-cualquiera (ej.:  fresa cilíndrica);  1-sólo avance axial (ej.:  punta);  2-sólo avance radial (ej.:  cuchilla)
+CED_TGTHRE    =Tolerancia angular para el control del avance durante el trabajo (grados)
+CED_STATUS    =Eventos que pueden condicionar el empleo de la herramienta
+CED_MAXACC    =Máxima aceleración [rev/s²]; es la máxima velocidad de rotación [rev/s] dividida por el tiempo [s] empleado en alcanzarla
+CED_MAXDEC    =Máxima desaceleración [rev/s²]; es la máxima velocidad de rotación [rev/s] dividida por el tiempo [s] empleado a pararse a partir de dicha velocidad

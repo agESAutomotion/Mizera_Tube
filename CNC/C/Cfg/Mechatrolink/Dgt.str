@@ -1,0 +1,2195 @@
+[STRUCT]
+
+KEY_DGT {
+        KEY_RING0;
+}
+
+KEY_RING0 {
+        KEY_NAXES,ring0;
+        KEY_DRV,ring0.drv,ring0.axes;
+        KEY_DIAGS,ring0.drv,ring0.axes;
+        KEY_DATI,ring0.data,ring0.axes;
+}
+
+KEY_RING1 {
+        KEY_NAXES,ring1;
+        KEY_DRV,ring1.drv,ring1.axes;
+        KEY_DIAGS,ring1.drv,ring1.axes;
+        KEY_DATI,ring1.data,ring1.axes;
+}
+
+KEY_NAXES {
+        #,RING_AXES;
+        *,MCLK_RATE;
+        if(brate.0==1) {
+        MCLK_RETRY;
+        }
+}
+
+KEY_DRV {
+        DRV_IAX,             (280, 20);
+        DRV_ADX,             (280,+20);
+        DRV_TIO,             (280,+20);
+        DRV_NIO,             (280,+20);
+        KEY_ID_DESCRIPTION,  (140,+20);
+        ?R-1,DRV_SERVOPACK,  (200,+20);
+        ?R-1,DRV_ENCODER,    (200,+20);
+        ?R-1,DRV_MOTOR,      (200,+20);
+        ?R-1,DRV_OPTUNIT,    (200,+20);
+}
+
+KEY_DATI {
+    if( Pn890 == 0 ) {
+        KEY_HEADER, ( 240 , 0 );
+        *,DRV_P890, ( 270 ,+20);
+        DRV_P898, (270,+30);
+        DRV_P899, (270,+20);
+
+        KEY_CATEGORY_0, (240,+20);
+        DRV_P000,(270,+20);
+        KEY_HEADER000, ( +390 ,+0 );
+        DRV_P001, (270,+20);
+        KEY_HEADER001, ( +390 ,+0 );
+        DRV_P002, (270,+20);
+        KEY_HEADER002, ( +390 ,+0 );
+        DRV_P003, (270,+20);
+        KEY_HEADER003, ( +390 ,+0 );
+        ?R-1,DRV_P004, (270,+20);
+        KEY_HEADER004, ( +390 ,+0 );
+        DRV_P005, (270,+20);
+        KEY_HEADER005, ( +390 ,+0 );
+
+        KEY_CATEGORY_1, (240, 230);
+
+        DRV_P100, (270,+20);
+        KEY_HEADER100, ( +390 ,+0 );
+        DRV_P101, (270,+20);
+        KEY_HEADER101, ( +390 ,+0 );
+        DRV_P102, (270,+20);
+        KEY_HEADER102, ( +390 ,+0 );
+        DRV_P103, (270,+20);
+        KEY_HEADER103, ( +390 ,+0 );
+        ?R-1,DRV_P104, (270,+20);
+        KEY_HEADER104, ( +390 ,+0 );
+        ?R-1,DRV_P105, (270,+20);
+        KEY_HEADER105, ( +390 ,+0 );
+        ?R-1,DRV_P106, (270,+20);
+        KEY_HEADER106, ( +390 ,+0 );
+        DRV_P107, (270,+20);
+        KEY_HEADER107, ( +390 ,+0 );
+        DRV_P108, (270,+20);
+        KEY_HEADER108, ( +390 ,+0 );
+        DRV_P109, (270,+20);
+        KEY_HEADER109, ( +390 ,+0 );
+        DRV_P10A, (270,+20);
+        KEY_HEADER10A, ( +390 ,+0 );
+        DRV_P10B, (270,+20);
+        KEY_HEADER10B, ( +390 ,+0 );
+        DRV_P10C, (270,+20);
+        KEY_HEADER10C, ( +390 ,+0 );
+        DRV_P10D, (270,+20);
+        KEY_HEADER10D, ( +390 ,+0 );
+        DRV_P10E, (270,+20);
+        KEY_HEADER10E, ( +390 ,+0 );
+        DRV_P10F, (270,+20);
+        KEY_HEADER10F, ( +390 ,+0 );
+        DRV_P110, (270,+20);
+        KEY_HEADER110, ( +390 ,+0 );
+        DRV_P111, (270,+20);
+        KEY_HEADER111, ( +390 ,+0 );
+        ?R-1,DRV_P112, (270,+20);
+        KEY_HEADER112, ( +390 ,+0 );
+        ?R-1,DRV_P113, (270,+20);
+        KEY_HEADER113, ( +390 ,+0 );
+        ?R-1,DRV_P114, (270,+20);
+        KEY_HEADER114, ( +390 ,+0 );
+        ?R-1,DRV_P115, (270,+20);
+        KEY_HEADER115, ( +390 ,+0 );
+        ?R-1,DRV_P116, (270,+20);
+        KEY_HEADER116, ( +390 ,+0 );
+        ?R-1,DRV_P117, (270,+20);
+        KEY_HEADER117, ( +390 ,+0 );
+        ?R-1,DRV_P118, (270,+20);
+        KEY_HEADER118, ( +390 ,+0 );
+        ?R-1,DRV_P119, (270,+20);
+        KEY_HEADER119, ( +390 ,+0 );
+        ?R-1,DRV_P11A, (270,+20);
+        KEY_HEADER11A, ( +390 ,+0 );
+        ?R-1,DRV_P11B, (270,+20);
+        KEY_HEADER11B, ( +390 ,+0 );
+        ?R-1,DRV_P11C, (270,+20);
+        KEY_HEADER11C, ( +390 ,+0 );
+        ?R-1,DRV_P11D, (270,+20);
+        KEY_HEADER11D, ( +390 ,+0 );
+        ?R-1,DRV_P11E, (270,+20);
+        KEY_HEADER11E, ( +390 ,+0 );
+        ?R-1,DRV_P11F, (270,+20);
+        KEY_HEADER11F, ( +390 ,+0 );
+        ?R-1,DRV_P120, (270,+20);
+        KEY_HEADER120, ( +390 ,+0 );
+        ?R-1,DRV_P121, (270,+20);
+        KEY_HEADER121, ( +390 ,+0 );
+        ?R-1,DRV_P122, (270,+20);
+        KEY_HEADER122, ( +390 ,+0 );
+        ?R-1,DRV_P123, (270,+20);
+        KEY_HEADER123, ( +390 ,+0 );
+        KEY_CATEGORY_2, (240,+20);
+        ?R-1,DRV_P200, (270,+20);
+        KEY_HEADER200, ( +390 ,+0 );
+        ?R-1,DRV_P201, (270,+20);
+        KEY_HEADER201, ( +390 ,+0 );
+        DRV_P202, (270,+20);
+        KEY_HEADER202, ( +390 ,+0 );
+        DRV_P203, (270,+20);
+        KEY_HEADER203, ( +390 ,+0 );
+        DRV_P204, (270,+20);
+        KEY_HEADER204, ( +390 ,+0 );
+        DRV_P205, (270,+20);
+        KEY_HEADER205, ( +390 ,+0 );
+        DRV_P206, (270,+20);
+        KEY_HEADER206, ( +390 ,+0 );
+        ?R-1,DRV_P207, (270,+20);
+        KEY_HEADER207, ( +390 ,+0 );
+        ?R-1,DRV_P208, (270,+20);
+        KEY_HEADER208, ( +390 ,+0 );
+        KEY_CATEGORY_3, (240,+20);
+        ?R-1,DRV_P300, (270,+20);
+        KEY_HEADER300, ( +390 ,+0 );
+        ?R-1,DRV_P301, (270,+20);
+        KEY_HEADER301, ( +390 ,+0 );
+        ?R-1,DRV_P302, (270,+20);
+        KEY_HEADER302, ( +390 ,+0 );
+        ?R-1,DRV_P303, (270,+20);
+        KEY_HEADER303, ( +390 ,+0 );
+        DRV_P304, (270,+20);
+        KEY_HEADER304, ( +390 ,+0 );
+        DRV_P305, (270,+20);
+        KEY_HEADER305, ( +390 ,+0 );
+        DRV_P306, (270,+20);
+        KEY_HEADER306, ( +390 ,+0 );
+        ?R-1,DRV_P307, (270,+20);
+        KEY_HEADER307, ( +390 ,+0 );
+        DRV_P308, (270,+20);
+        KEY_HEADER308, ( +390 ,+0 );
+        KEY_CATEGORY_4, (240,+20);
+        ?R-1,DRV_P400, (270,+20);
+        KEY_HEADER400, ( +390 ,+0 );
+        DRV_P401, (270,+20);
+        KEY_HEADER401, ( +390 ,+0 );
+        DRV_P402, (270,+20);
+        KEY_HEADER402, ( +390 ,+0 );
+        DRV_P403, (270,+20);
+        KEY_HEADER403, ( +390 ,+0 );
+        DRV_P404, (270,+20);
+        KEY_HEADER404, ( +390 ,+0 );
+        DRV_P405, (270,+20);
+        KEY_HEADER405, ( +390 ,+0 );
+        DRV_P406, (270,+20);
+        KEY_HEADER406, ( +390 ,+0 );
+        ?R-1,DRV_P407, (270,+20);
+        KEY_HEADER407, ( +390 ,+0 );
+        DRV_P408, (270,+20);
+        KEY_HEADER408, ( +390 ,+0 );
+        DRV_P409, (270,+20);
+        KEY_HEADER409, ( +390 ,+0 );
+        KEY_CATEGORY_5, (240,+20);
+        DRV_P500, (270,+20);
+        KEY_HEADER500, ( +390 ,+0 );
+        ?R-1,DRV_P501, (270,+20);
+        KEY_HEADER501, ( +390 ,+0 );
+        DRV_P502, (270,+20);
+        KEY_HEADER502, ( +390 ,+0 );
+        ?R-1,DRV_P503, (270,+20);
+        KEY_HEADER503, ( +390 ,+0 );
+        DRV_P504, (270,+20);
+        KEY_HEADER504, ( +390 ,+0 );
+        DRV_P505, (270,+20);
+        KEY_HEADER505, ( +390 ,+0 );
+        DRV_P506, (270,+20);
+        KEY_HEADER506, ( +390 ,+0 );
+        DRV_P507, (270,+20);
+        KEY_HEADER507, ( +390 ,+0 );
+        DRV_P508, (270,+20);
+        KEY_HEADER508, ( +390 ,+0 );
+        DRV_P509, (270,+20);
+        KEY_HEADER509, ( +390 ,+0 );
+        DRV_P50A, (270,+20);
+        KEY_HEADER50A, ( +390 ,+0 );
+        DRV_P50B, (270,+20);
+        KEY_HEADER50B, ( +390 ,+0 );
+        ?R-1,DRV_P50C, (270,+20);
+        KEY_HEADER50C, ( +390 ,+0 );
+        ?R-1,DRV_P50D, (270,+20);
+        KEY_HEADER50D, ( +390 ,+0 );
+        DRV_P50E, (270,+20);
+        KEY_HEADER50E, ( +390 ,+0 );
+        DRV_P50F, (270,+20);
+        KEY_HEADER50F, ( +390 ,+0 );
+        DRV_P510, (270,+20);
+        KEY_HEADER510, ( +390 ,+0 );
+        DRV_P511, (270,+20);
+        KEY_HEADER511, ( +390 ,+0 );
+        DRV_P512, (270,+20);
+        KEY_HEADER512, ( +390 ,+0 );
+        KEY_CATEGORY_6, (240,+20);
+        DRV_P600, (270,+20);
+        KEY_HEADER600, ( +390 ,+0 );
+        ?R-1,DRV_P601, (270,+20);
+        KEY_HEADER601, ( +390 ,+0 );
+        KEY_CATEGORY_8, (240,+20);
+        DRV_P800, (270,+20);
+        KEY_HEADER800, ( +390 ,+0 );
+        KEY_CATEGORY_9, (240,+20);
+        DRV_P801, (270,+20);
+        KEY_HEADER801, ( +390 ,+0 );
+        DRV_P802, (270,+20);
+        KEY_HEADER802, ( +390 ,+0 );
+        DRV_P803, (270,+20);
+        KEY_HEADER803, ( +390 ,+0 );
+        KEY_CATEGORY_10, (240,+20);
+        DRV_P804, (270,+20);
+        KEY_HEADER804, ( +390 ,+0 );
+        DRV_P806, (270,+20);
+        KEY_HEADER806, ( +390 ,+0 );
+        DRV_P808, (270,+20);
+        KEY_HEADER808, ( +390 ,+0 );
+        KEY_CATEGORY_11, (240,+20);
+        DRV_P80A, (270,+20);
+        KEY_HEADER80A, ( +390 ,+0 );
+        DRV_P80B, (270,+20);
+        KEY_HEADER80B, ( +390 ,+0 );
+        DRV_P80C, (270,+20);
+        KEY_HEADER80C, ( +390 ,+0 );
+        DRV_P80D, (270,+20);
+        KEY_HEADER80D, ( +390 ,+0 );
+        DRV_P80E, (270,+20);
+        KEY_HEADER80E, ( +390 ,+0 );
+        DRV_P80F, (270,+20);
+        KEY_HEADER80F, ( +390 ,+0 );
+        KEY_CATEGORY_12, (240,+20);
+        DRV_P810, (270,+20);
+        KEY_HEADER810, ( +390 ,+0 );
+        DRV_P811, (270,+20);
+        KEY_HEADER811, ( +390 ,+0 );
+        DRV_P812, (270,+20);
+        KEY_HEADER812, ( +390 ,+0 );
+        KEY_CATEGORY_13, (240,+20);
+        DRV_P813, (270,+20);
+        KEY_HEADER813, ( +390 ,+0 );
+        KEY_CATEGORY_14, (240,+20);
+        DRV_P814, (270,+20);
+        KEY_HEADER814, ( +390 ,+0 );
+        DRV_P816, (270,+20);
+        KEY_HEADER816, ( +390 ,+0 );
+        DRV_P817, (270,+20);
+        KEY_HEADER817, ( +390 ,+0 );
+        DRV_P818, (270,+20);
+        KEY_HEADER818, ( +390 ,+0 );
+        DRV_P819, (270,+20);
+        KEY_HEADER819, ( +390 ,+0 );
+    }
+
+    if( Pn890 == 1 ) {
+        KEY_HEADER, ( 240 , 0 );
+        *,DRV_P890, ( 270 ,+20);
+        DRV_P898, (270,+30);
+        DRV_P899, (270,+20);
+
+        SGDN_CATEGORY, (240,+30);
+        DRV_C001,(270,+20);
+        KEY_C001, ( +390 ,+0 );
+        DRV_C002,(270,+20);
+        KEY_C002, ( +390 ,+0 );
+        DRV_C003,(270,+20);
+        KEY_C003, ( +390 ,+0 );
+        DRV_C004,(270,+20);
+        KEY_C004, ( +390 ,+0 );
+        DRV_C005,(270,+20);
+        KEY_C005, ( +390 ,+0 );
+        DRV_C006,(270,+20);
+        KEY_C006, ( +390 ,+0 );
+        DRV_C007,(270,+20);
+        KEY_C007, ( +390 ,+0 );
+        DRV_C008,(270,+20);
+        KEY_C008, ( +390 ,+0 );
+        DRV_C009,(270,+20);
+        KEY_C009, ( +390 ,+0 );
+        ?R-1,DRV_C00A,(270,+20);
+        KEY_C00A, ( +390 ,+0 );
+        ?R-1,DRV_C00B,(270,+20);
+        KEY_C00B, ( +390 ,+0 );
+        DRV_C00C,(270,+20);
+        KEY_C00C, ( +390 ,+0 );
+        ?R-1,DRV_C00D,(270,+20);
+        KEY_C00D, ( +390 ,+0 );
+        DRV_C00E,(270,+20);
+        KEY_C00E, ( +390 ,+0 );
+        DRV_C00F,(270,+20);
+        KEY_C00F, ( +390 ,+0 );
+
+        ?R-1,DRV_C010,(270,+30);
+        KEY_C010, ( +390 ,+0 );
+        DRV_C011,(270,+20);
+        KEY_C011, ( +390 ,+0 );
+        DRV_C012,(270,+20);
+        KEY_C012, ( +390 ,+0 );
+        DRV_C013,(270,+20);
+        KEY_C013, ( +390 ,+0 );
+        DRV_C014,(270,+20);
+        KEY_C014, ( +390 ,+0 );
+        DRV_C015,(270,+20);
+        KEY_C015, ( +390 ,+0 );
+        DRV_C016,(270,+20);
+        KEY_C016, ( +390 ,+0 );
+        DRV_C017,(270,+20);
+        KEY_C017, ( +390 ,+0 );
+        DRV_C018,(270,+20);
+        KEY_C018, ( +390 ,+0 );
+        ?R-1,DRV_C019,(270,+20);
+        KEY_C019, ( +390 ,+0 );
+        DRV_C01A,(270,+20);
+        KEY_C01A, ( +390 ,+0 );
+        DRV_C01B,(270,+20);
+        KEY_C01B, ( +390 ,+0 );
+        DRV_C01C,(270,+20);
+        KEY_C01C, ( +390 ,+0 );
+        DRV_C01D,(270,+20);
+        KEY_C01D, ( +390 ,+0 );
+        DRV_C01E,(270,+20);
+        KEY_C01E, ( +390 ,+0 );
+        DRV_C01F,(270,+20);
+        KEY_C01F, ( +390 ,+0 );
+
+        DRV_C020,(270,+30);
+        KEY_C020, ( +390 ,+0 );
+        DRV_C021,(270,+20);
+        KEY_C021, ( +390 ,+0 );
+        DRV_C022,(270,+20);
+        KEY_C022, ( +390 ,+0 );
+        DRV_C023,(270,+20);
+        KEY_C023, ( +390 ,+0 );
+        DRV_C024,(270,+20);
+        KEY_C024, ( +390 ,+0 );
+        DRV_C025,(270,+20);
+        KEY_C025, ( +390 ,+0 );
+        DRV_C026,(270,+20);
+        KEY_C026, ( +390 ,+0 );
+        DRV_C027,(270,+20);
+        KEY_C027, ( +390 ,+0 );
+        DRV_C028,(270,+20);
+        KEY_C028, ( +390 ,+0 );
+        DRV_C02A,(270,+20);
+        KEY_C02A, ( +390 ,+0 );
+        DRV_C02B,(270,+20);
+        KEY_C02B, ( +390 ,+0 );
+        DRV_C02D,(270,+20);
+        KEY_C02D, ( +390 ,+0 );
+        DRV_C02E,(270,+20);
+        KEY_C02E, ( +390 ,+0 );
+        DRV_C02F,(270,+20);
+        KEY_C02F, ( +390 ,+0 );
+
+        DRV_C031,(270,+30);
+        KEY_C031, ( +390 ,+0 );
+        DRV_C033,(270,+20);
+        KEY_C033, ( +390 ,+0 );
+        DRV_C035,(270,+20);
+        KEY_C035, ( +390 ,+0 );
+        ?R-1,DRV_C036,(270,+20);
+        KEY_C036, ( +390 ,+0 );
+        ?R-1,DRV_C037,(270,+20);
+        KEY_C037, ( +390 ,+0 );
+        ?R-1,DRV_C038,(270,+20);
+        KEY_C038, ( +390 ,+0 );
+        ?R-1,DRV_C039,(270,+20);
+        KEY_C039, ( +390 ,+0 );
+        ?R-1,DRV_C03A,(270,+20);
+        KEY_C03A, ( +390 ,+0 );
+        ?R-1,DRV_C03B,(270,+20);
+        KEY_C03B, ( +390 ,+0 );
+        ?R-1,DRV_C03C,(270,+20);
+        KEY_C03C, ( +390 ,+0 );
+        ?R-1,DRV_C03D,(270,+20);
+        KEY_C03D, ( +390 ,+0 );
+        ?R-1,DRV_C03E,(270,+20);
+        KEY_C03E, ( +390 ,+0 );
+        ?R-1,DRV_C03F,(270,+20);
+        KEY_C03F, ( +390 ,+0 );
+    }
+
+    if( Pn890 == 2 ) {
+        KEY_HEADER, ( 240 , 0 );
+        *,DRV_P890, ( 270 ,+20);
+        DRV_P898, (270,+30);
+        DRV_P899, (270,+20);
+
+        KEY_CATEGORY_0, (240,+30);
+        DRV_P000,(270,+20);
+        KEY_HEADER000, ( +390 ,+0 );
+        DRV_P001, (270,+20);
+        KEY_HEADER001, ( +390 ,+0 );
+        DRV_P002, (270,+20);
+        KEY_HEADER002, ( +390 ,+0 );
+        DRV_P006, (270,+20);
+        KEY_HEADER006, ( +390 ,+0 );
+        DRV_P007, (270,+20);
+        KEY_HEADER007, ( +390 ,+0 );
+        DRV_P008, (270,+20);
+        KEY_HEADER008, ( +390 ,+0 );
+        DRV_P009, (270,+20);
+        KEY_HEADER009, ( +390 ,+0 );
+        DRV_P00B, (270,+20);
+        KEY_HEADER00B, ( +390 ,+0 );
+        DRV_P00C, (270,+20);
+        KEY_HEADER00C, ( +390 ,+0 );
+        DRV_P080, (270,+20);
+        KEY_HEADER080, ( +390 ,+0 );
+
+        KEY_CATEGORY_1, (240, 330);
+        DRV_P100, (270,+20);
+        KEY_HEADER100, ( +390 ,+0 );
+        DRV_P101, (270,+20);
+        KEY_HEADER101, ( +390 ,+0 );
+        DRV_P102, (270,+20);
+        KEY_HEADER102, ( +390 ,+0 );
+        DRV_P103, (270,+20);
+        KEY_HEADER103, ( +390 ,+0 );
+        DRV_P104, (270,+20);
+        KEY_HEADER104, ( +390 ,+0 );
+        DRV_P105, (270,+20);
+        KEY_HEADER105, ( +390 ,+0 );
+        DRV_P106, (270,+20);
+        KEY_HEADER106, ( +390 ,+0 );
+        DRV_P109, (270,+20);
+        KEY_HEADER109, ( +390 ,+0 );
+        DRV_P10A, (270,+20);
+        KEY_HEADER10A, ( +390 ,+0 );
+        DRV_P10B, (270,+20);
+        KEY_HEADER10B, ( +390 ,+0 );
+        DRV_P10C, (270,+20);
+        KEY_HEADER10C, ( +390 ,+0 );
+        DRV_P10D, (270,+20);
+        KEY_HEADER10D, ( +390 ,+0 );
+        DRV_P10E, (270,+20);
+        KEY_HEADER10E, ( +390 ,+0 );
+        DRV_P10F, (270,+20);
+        KEY_HEADER10F, ( +390 ,+0 );
+        DRV_P11F, (270,+20);
+        KEY_HEADER11F, ( +390 ,+0 );
+        DRV_P121, (270,+20);
+        KEY_HEADER121, ( +390 ,+0 );
+        DRV_P122, (270,+20);
+        KEY_HEADER122, ( +390 ,+0 );
+        DRV_P123, (270,+20);
+        KEY_HEADER123, ( +390 ,+0 );
+        DRV_P124, (270,+20);
+        KEY_HEADER124, ( +390 ,+0 );
+        DRV_P125, (270,+20);
+        KEY_HEADER125, ( +390 ,+0 );
+        DRV_P131, (270,+20);
+        KEY_HEADER131, ( +390 ,+0 );
+        DRV_P132, (270,+20);
+        KEY_HEADER132, ( +390 ,+0 );
+        DRV_P135, (270,+20);
+        KEY_HEADER135, ( +390 ,+0 );
+        DRV_P136, (270,+20);
+        KEY_HEADER136, ( +390 ,+0 );
+        DRV_P139, (270,+20);
+        KEY_HEADER139, ( +390 ,+0 );
+        DRV_P13D, (270,+20);
+        KEY_HEADER13D, ( +390 ,+0 );
+        DRV_P140, (270,+20);
+        KEY_HEADER140, ( +390 ,+0 );
+        DRV_P141, (270,+20);
+        KEY_HEADER141, ( +390 ,+0 );
+        DRV_P142, (270,+20);
+        KEY_HEADER142, ( +390 ,+0 );
+        DRV_P143, (270,+20);
+        KEY_HEADER143, ( +390 ,+0 );
+        DRV_P144, (270,+20);
+        KEY_HEADER144, ( +390 ,+0 );
+        DRV_P145, (270,+20);
+        KEY_HEADER145, ( +390 ,+0 );
+        DRV_P146, (270,+20);
+        KEY_HEADER146, ( +390 ,+0 );
+        DRV_P147, (270,+20);
+        KEY_HEADER147, ( +390 ,+0 );
+        DRV_P148, (270,+20);
+        KEY_HEADER148, ( +390 ,+0 );
+        DRV_P149, (270,+20);
+        KEY_HEADER149, ( +390 ,+0 );
+        DRV_P14A, (270,+20);
+        KEY_HEADER14A, ( +390 ,+0 );
+        DRV_P14B, (270,+20);
+        KEY_HEADER14B, ( +390 ,+0 );
+        DRV_P160, (270,+20);
+        KEY_HEADER160, ( +390 ,+0 );
+        DRV_P161, (270,+20);
+        KEY_HEADER161, ( +390 ,+0 );
+        DRV_P162, (270,+20);
+        KEY_HEADER162, ( +390 ,+0 );
+        DRV_P163, (270,+20);
+        KEY_HEADER163, ( +390 ,+0 );
+        DRV_P164, (270,+20);
+        KEY_HEADER164, ( +390 ,+0 );
+        DRV_P165, (270,+20);
+        KEY_HEADER165, ( +390 ,+0 );
+        DRV_P170, (270,+20);
+        KEY_HEADER170, ( +390 ,+0 );
+
+        KEY_CATEGORY_2, (240,+30);
+        DRV_P205, (270,+20);
+        KEY_HEADER205, ( +390 ,+0 );
+        DRV_P207, (270,+20);
+        KEY_HEADER207, ( +390 ,+0 );
+        DRV_P20A, (270,+20);
+        KEY_HEADER20A, ( +390 ,+0 );
+        DRV_P20E, (270,+20);
+        KEY_HEADER20E, ( +390 ,+0 );
+        DRV_P210, (270,+20);
+        KEY_HEADER210, ( +390 ,+0 );
+        DRV_P212, (270,+20);
+        KEY_HEADER212, ( +390 ,+0 );
+        DRV_P22A, (270,+20);
+        KEY_HEADER22A, ( +390 ,+0 );
+        DRV_P281, (270,+20);
+        KEY_HEADER281, ( +390 ,+0 );
+
+        KEY_CATEGORY_3, (240,+30);
+        DRV_P304, (270,+20);
+        KEY_HEADER304, ( +390 ,+0 );
+        DRV_P305, (270,+20);
+        KEY_HEADER305, ( +390 ,+0 );
+        DRV_P306, (270,+20);
+        KEY_HEADER306, ( +390 ,+0 );
+        DRV_P307, (270,+20);
+        KEY_HEADER307, ( +390 ,+0 );
+        DRV_P310, (270,+20);
+        KEY_HEADER310, ( +390 ,+0 );
+        DRV_P311, (270,+20);
+        KEY_HEADER311, ( +390 ,+0 );
+        DRV_P312, (270,+20);
+        KEY_HEADER312, ( +390 ,+0 );
+        DRV_P324, (270,+20);
+        KEY_HEADER324, ( +390 ,+0 );
+
+        KEY_CATEGORY_4, (240,+30);
+        DRV_P401, (270,+20);
+        KEY_HEADER401, ( +390 ,+0 );
+        DRV_P402, (270,+20);
+        KEY_HEADER402, ( +390 ,+0 );
+        DRV_P403, (270,+20);
+        KEY_HEADER403, ( +390 ,+0 );
+        DRV_P404, (270,+20);
+        KEY_HEADER404, ( +390 ,+0 );
+        DRV_P405, (270,+20);
+        KEY_HEADER405, ( +390 ,+0 );
+        DRV_P406, (270,+20);
+        KEY_HEADER406, ( +390 ,+0 );
+        DRV_P407, (270,+20);
+        KEY_HEADER407, ( +390 ,+0 );
+        DRV_P408, (270,+20);
+        KEY_HEADER408, ( +390 ,+0 );
+        DRV_P409, (270,+20);
+        KEY_HEADER409, ( +390 ,+0 );
+        DRV_P40A, (270,+20);
+        KEY_HEADER40A, ( +390 ,+0 );
+        DRV_P40B, (270,+20);
+        KEY_HEADER40B, ( +390 ,+0 );
+        DRV_P40C, (270,+20);
+        KEY_HEADER40C, ( +390 ,+0 );
+        DRV_P40D, (270,+20);
+        KEY_HEADER40D, ( +390 ,+0 );
+        DRV_P40E, (270,+20);
+        KEY_HEADER40E, ( +390 ,+0 );
+        DRV_P40F, (270,+20);
+        KEY_HEADER40F, ( +390 ,+0 );
+        DRV_P410, (270,+20);
+        KEY_HEADER410, ( +390 ,+0 );
+        DRV_P412, (270,+20);
+        KEY_HEADER412, ( +390 ,+0 );
+        DRV_P424, (270,+20);
+        KEY_HEADER424, ( +390 ,+0 );
+        DRV_P425, (270,+20);
+        KEY_HEADER425, ( +390 ,+0 );
+        DRV_P456, (270,+20);
+        KEY_HEADER456, ( +390 ,+0 );
+        DRV_P460, (270,+20);
+        KEY_HEADER460, ( +390 ,+0 );
+        DRV_P481, (270,+20);
+        KEY_HEADER481, ( +390 ,+0 );
+        DRV_P482, (270,+20);
+        KEY_HEADER482, ( +390 ,+0 );
+        DRV_P486, (270,+20);
+        KEY_HEADER486, ( +390 ,+0 );
+        DRV_P487, (270,+20);
+        KEY_HEADER487, ( +390 ,+0 );
+        DRV_P488, (270,+20);
+        KEY_HEADER488, ( +390 ,+0 );
+        DRV_P490, (270,+20);
+        KEY_HEADER490, ( +390 ,+0 );
+        DRV_P493, (270,+20);
+        KEY_HEADER493, ( +390 ,+0 );
+        DRV_P494, (270,+20);
+        KEY_HEADER494, ( +390 ,+0 );
+        DRV_P495, (270,+20);
+        KEY_HEADER495, ( +390 ,+0 );
+        DRV_P498, (270,+20);
+        KEY_HEADER498, ( +390 ,+0 );
+
+        KEY_CATEGORY_5, (240,+30);
+        DRV_P501, (270,+20);
+        KEY_HEADER501, ( +390 ,+0 );
+        DRV_P502, (270,+20);
+        KEY_HEADER502, ( +390 ,+0 );
+        DRV_P503, (270,+20);
+        KEY_HEADER503, ( +390 ,+0 );
+        DRV_P506, (270,+20);
+        KEY_HEADER506, ( +390 ,+0 );
+        DRV_P507, (270,+20);
+        KEY_HEADER507, ( +390 ,+0 );
+        DRV_P508, (270,+20);
+        KEY_HEADER508, ( +390 ,+0 );
+        DRV_P509, (270,+20);
+        KEY_HEADER509, ( +390 ,+0 );
+        DRV_P50A, (270,+20);
+        KEY_HEADER50A, ( +390 ,+0 );
+        DRV_P50B, (270,+20);
+        KEY_HEADER50B, ( +390 ,+0 );
+        DRV_P50E, (270,+20);
+        KEY_HEADER50E, ( +390 ,+0 );
+        DRV_P50F, (270,+20);
+        KEY_HEADER50F, ( +390 ,+0 );
+        DRV_P510, (270,+20);
+        KEY_HEADER510, ( +390 ,+0 );
+        DRV_P511, (270,+20);
+        KEY_HEADER511, ( +390 ,+0 );
+        DRV_P512, (270,+20);
+        KEY_HEADER512, ( +390 ,+0 );
+        DRV_P51B, (270,+20);
+        KEY_HEADER51B, ( +390 ,+0 );
+        DRV_P51E, (270,+20);
+        KEY_HEADER51E, ( +390 ,+0 );
+        DRV_P520, (270,+20);
+        KEY_HEADER520, ( +390 ,+0 );
+        DRV_P522, (270,+20);
+        KEY_HEADER522, ( +390 ,+0 );
+        DRV_P524, (270,+20);
+        KEY_HEADER524, ( +390 ,+0 );
+        DRV_P526, (270,+20);
+        KEY_HEADER526, ( +390 ,+0 );
+        DRV_P528, (270,+20);
+        KEY_HEADER528, ( +390 ,+0 );
+        DRV_P529, (270,+20);
+        KEY_HEADER529, ( +390 ,+0 );
+        DRV_P52A, (270,+20);
+        KEY_HEADER52A, ( +390 ,+0 );
+        DRV_P52B, (270,+20);
+        KEY_HEADER52B, ( +390 ,+0 );
+        DRV_P52C, (270,+20);
+        KEY_HEADER52C, ( +390 ,+0 );
+        DRV_P52F, (270,+20);
+        KEY_HEADER52F, ( +390 ,+0 );
+        DRV_P530, (270,+20);
+        KEY_HEADER530, ( +390 ,+0 );
+        DRV_P531, (270,+20);
+        KEY_HEADER532, ( +390 ,+0 );
+        DRV_P533, (270,+20);
+        KEY_HEADER533, ( +390 ,+0 );
+        DRV_P534, (270,+20);
+        KEY_HEADER534, ( +390 ,+0 );
+        DRV_P535, (270,+20);
+        KEY_HEADER535, ( +390 ,+0 );
+        DRV_P536, (270,+20);
+        KEY_HEADER536, ( +390 ,+0 );
+        DRV_P550, (270,+20);
+        KEY_HEADER550, ( +390 ,+0 );
+        DRV_P551, (270,+20);
+        KEY_HEADER551, ( +390 ,+0 );
+        DRV_P552, (270,+20);
+        KEY_HEADER552, ( +390 ,+0 );
+        DRV_P553, (270,+20);
+        KEY_HEADER553, ( +390 ,+0 );
+        DRV_P560, (270,+20);
+        KEY_HEADER560, ( +390 ,+0 );
+        DRV_P561, (270,+20);
+        KEY_HEADER561, ( +390 ,+0 );
+
+        KEY_CATEGORY_6, (240,+30);
+        DRV_P600, (270,+20);
+        KEY_HEADER600, ( +390 ,+0 );
+
+        KEY_CATEGORY_8, (240,+30);
+        DRV_P800, (270,+20);
+        KEY_HEADER800, ( +390 ,+0 );
+        KEY_CATEGORY_9, (240,+20);
+        DRV_P801, (270,+20);
+        KEY_HEADER801, ( +390 ,+0 );
+        DRV_P803, (270,+20);
+        KEY_HEADER803, ( +390 ,+0 );
+        KEY_CATEGORY_10, (240,+20);
+        DRV_P804, (270,+20);
+        KEY_HEADER804, ( +390 ,+0 );
+        DRV_P806, (270,+20);
+        KEY_HEADER806, ( +390 ,+0 );
+        DRV_P808, (270,+20);
+        KEY_HEADER808, ( +390 ,+0 );
+        KEY_CATEGORY_11, (240,+20);
+        DRV_P80A, (270,+20);
+        KEY_HEADER80A, ( +390 ,+0 );
+        DRV_P80B, (270,+20);
+        KEY_HEADER80B, ( +390 ,+0 );
+        DRV_P80C, (270,+20);
+        KEY_HEADER80C, ( +390 ,+0 );
+        DRV_P80D, (270,+20);
+        KEY_HEADER80D, ( +390 ,+0 );
+        DRV_P80E, (270,+20);
+        KEY_HEADER80E, ( +390 ,+0 );
+        DRV_P80F, (270,+20);
+        KEY_HEADER80F, ( +390 ,+0 );
+        KEY_CATEGORY_12, (240,+20);
+        DRV_P810, (270,+20);
+        KEY_HEADER810, ( +390 ,+0 );
+        DRV_P811, (270,+20);
+        KEY_HEADER811, ( +390 ,+0 );
+        DRV_P812, (270,+20);
+        KEY_HEADER812, ( +390 ,+0 );
+        KEY_CATEGORY_14, (240,+20);
+        DRV_P814, (270,+20);
+        KEY_HEADER814, ( +390 ,+0 );
+        DRV_P816, (270,+20);
+        KEY_HEADER816, ( +390 ,+0 );
+        DRV_P817, (270,+20);
+        KEY_HEADER817, ( +390 ,+0 );
+        DRV_P818, (270,+20);
+        KEY_HEADER818, ( +390 ,+0 );
+        DRV_P819, (270,+20);
+        KEY_HEADER819, ( +390 ,+0 );
+        DRV_P81E, (270,+20);
+        KEY_HEADER81E, ( +390 ,+0 );
+        DRV_P81F, (270,+20);
+        KEY_HEADER81F, ( +390 ,+0 );
+        DRV_P820, (270,+20);
+        KEY_HEADER820, ( +390 ,+0 );
+        DRV_P822, (270,+20);
+        KEY_HEADER822, ( +390 ,+0 );
+        DRV_P824, (270,+20);
+        KEY_HEADER824, ( +390 ,+0 );
+        DRV_P825, (270,+20);
+        KEY_HEADER825, ( +390 ,+0 );
+        DRV_P827, (270,+20);
+        KEY_HEADER827, ( +390 ,+0 );
+        DRV_P829, (270,+20);
+        KEY_HEADER829, ( +390 ,+0 );
+        DRV_P82A, (270,+20);
+        KEY_HEADER82A, ( +390 ,+0 );
+        DRV_P82B, (270,+20);
+        KEY_HEADER82B, ( +390 ,+0 );
+        DRV_P82C, (270,+20);
+        KEY_HEADER82C, ( +390 ,+0 );
+        DRV_P82D, (270,+20);
+        KEY_HEADER82D, ( +390 ,+0 );
+        DRV_P82E, (270,+20);
+        KEY_HEADER82E, ( +390 ,+0 );
+        DRV_P833, (270,+20);
+        KEY_HEADER833, ( +390 ,+0 );
+        DRV_P834, (270,+20);
+        KEY_HEADER834, ( +390 ,+0 );
+        DRV_P836, (270,+20);
+        KEY_HEADER836, ( +390 ,+0 );
+        DRV_P838, (270,+20);
+        KEY_HEADER838, ( +390 ,+0 );
+        DRV_P83A, (270,+20);
+        KEY_HEADER83A, ( +390 ,+0 );
+        DRV_P83C, (270,+20);
+        KEY_HEADER83C, ( +390 ,+0 );
+        DRV_P83E, (270,+20);
+        KEY_HEADER83E, ( +390 ,+0 );
+        DRV_P840, (270,+20);
+        KEY_HEADER840, ( +390 ,+0 );
+        DRV_P850, (270,+20);
+        KEY_HEADER850, ( +390 ,+0 );
+        DRV_P851, (270,+20);
+        KEY_HEADER851, ( +390 ,+0 );
+        DRV_P852, (270,+20);
+        KEY_HEADER852, ( +390 ,+0 );
+        DRV_P853, (270,+20);
+        KEY_HEADER853, ( +390 ,+0 );
+    }
+}
+
+
+KEY_DIAGS {
+RDD_HEADER, ( 240 , 0 );
+    RDD_HDR_IOHANDLING;
+        RDD_IORFSH;
+        RDD_IOINDEX;
+    RDD_HDR_IDENT;
+        ?R-1,RDD_SERVOPACK;
+        ?R-1,RDD_SERVOPACKVER;
+        ?R-1,RDD_ENCODERVER;
+        ?R-1,RDD_MOTOR;
+        ?R-1,RDD_OPTIONUNIT;
+        ?R-1,RDD_OPTIONUNITVER;
+    RDD_HDR_MONITORING;
+        RDD_MONSEL;
+        $,?R-1,RDD_MONVAL;
+    RDD_HDR_ASYCMD_CMD;
+        RDD_ASYCMD_PARAMETER;
+        RDD_ASYCMD_VALUE_TO_WRITE;
+        $,?R-1,RDD_ASYCMD_READ_VALUE;
+        $,?R-1,RDD_ASYCMD_RELEASE_BRK;
+        $,?R-1,RDD_ASYCMD_SERVO_ON;
+        $,?R-1,RDD_ASYCMD_SENSOR_ON;
+        $,?R-1,RDD_ASYCMD_LATCH_ENABLE;
+        RDD_ASYCMD_LATCH_SIGNAL;
+        RDD_HDR_ASYCMD_LATCH_INFO;
+        $,?R-1,RDD_ASYCMD_LATCHSTS_COMPLETE;
+        $,?R-1,RDD_ASYCMD_LATCHED_VALUE;
+        RDD_HDR_ASYCMD_ALARM_ARRAY;
+        $,?R-1,RDD_ASYCMD_AA_0;
+        $,?R-1,RDD_ASYCMD_AA_1;
+        $,?R-1,RDD_ASYCMD_AA_2;
+        $,?R-1,RDD_ASYCMD_AA_3;
+        $,?R-1,RDD_ASYCMD_AA_4;
+        $,?R-1,RDD_ASYCMD_AA_5;
+        $,?R-1,RDD_ASYCMD_AA_6;
+        $,?R-1,RDD_ASYCMD_AA_7;
+        $,?R-1,RDD_ASYCMD_AA_8;
+        $,?R-1,RDD_ASYCMD_AA_9;
+    RDD_HDR_STATUSES;
+        $,?R-1,RDD_STS_ALARM;
+        RDD_HDR_STS_STATUS;
+        $,?R-1,RDD_STSSTS_ALARM;
+        $,?R-1,RDD_STSSTS_WARNG;
+        $,?R-1,RDD_STSSTS_CMDRDY;
+        $,?R-1,RDD_STSSTS_SVON;
+        $,?R-1,RDD_STSSTS_PON;
+        $,?R-1,RDD_STSSTS_MLOCK;
+        $,?R-1,RDD_STSSTS_ZPOINT;
+        $,?R-1,RDD_STSSTS_PSET;
+        $,?R-1,RDD_STSSTS_DEN;
+        $,?R-1,RDD_STSSTS_T_LIM;
+        $,?R-1,RDD_STSSTS_L_CMP;
+        $,?R-1,RDD_STSSTS_NEAR;
+        $,?R-1,RDD_STSSTS_P_SOT;
+        $,?R-1,RDD_STSSTS_N_SOT;
+        $,?R-1,RDD_STSSTS_RSRV_0;
+        $,?R-1,RDD_STSSTS_RSRV_1;
+        RDD_HDR_STS_IOS;
+        $,?R-1,RDD_STSIOS_P_OT;
+        $,?R-1,RDD_STSIOS_N_OT;
+        $,?R-1,RDD_STSIOS_DEC;
+        $,?R-1,RDD_STSIOS_PA;
+        $,?R-1,RDD_STSIOS_PB;
+        $,?R-1,RDD_STSIOS_PC;
+        $,?R-1,RDD_STSIOS_EXT1;
+        $,?R-1,RDD_STSIOS_EXT2;
+        $,?R-1,RDD_STSIOS_EXT3;
+        $,?R-1,RDD_STSIOS_BRK;
+        $,?R-1,RDD_STSIOS_RSRV_0;
+        $,?R-1,RDD_STSIOS_RSRV_1;
+        $,?R-1,RDD_STSIOS_RSRV_2;
+        $,?R-1,RDD_STSIOS_RSRV_3;
+        $,?R-1,RDD_STSIOS_RSRV_4;
+        $,?R-1,RDD_STSIOS_RSRV_5;
+}
+
+[MCLK_RATE]
+ADR = brate
+MSK = 0,1
+FRM = CBX,2
+LST = MCLK_RATELIST
+RNG = {0,1}
+RST = 1
+[MCLK_RETRY]
+ADR = brate
+MSK = 4,3
+FRM = DEC,0
+RNG = {0:7}
+HLP = MCLK_RETRY
+RST = 1
+
+[RING_AXES]
+ADR = axes
+RNG = {1:31}
+
+[DRV_IAX]
+ADR = iax
+
+[DRV_ADX]
+ADR = adx
+
+[DRV_TIO]
+ADR = RDD_yIOrfsh
+RNG = {0,1,2}
+FRM = CBX,3
+LST = DRV_TIOLIST
+RST = 1
+
+[DRV_NIO]
+ADR = RDD_wIOindex
+RST = 1
+
+[DRV_SERVOPACK]
+FRM = STR
+LEN = 20
+ADR = nmsrv
+
+[DRV_ENCODER]
+FRM = STR
+LEN = 20
+ADR = nmenc
+
+[DRV_MOTOR]
+FRM = STR
+LEN = 20
+ADR = nmmot
+
+[DRV_OPTUNIT]
+FRM = STR
+LEN = 20
+ADR = nmopt
+
+[DRV_P898]
+ADR = Pn898
+HLP = DRV_P898
+
+[DRV_P899]
+ADR = Pn899
+FRM = CBX,6
+RNG = {0:5}
+LST = P899_LIST
+
+[DRV_P890]
+ADR = Pn890
+FRM = CBX,3
+RNG = {0,1,2}
+LST = P890_LIST
+
+[DRV_P000]
+ADR = Pn0
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P001]
+ADR = Pn1
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P002]
+ADR = Pn2
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P003]
+ADR = Pn3
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P004]
+ADR = Pn4
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P005]
+ADR = Pn5
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P006]
+ADR = Pn6
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P007]
+ADR = Pn7
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P008]
+ADR = Pn8
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P009]
+ADR = Pn9
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P00B]
+ADR = Pn11
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P00C]
+ADR = Pn12
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P080]
+ADR = Pn700
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+
+[DRV_P100]
+ADR = Pn100
+RNG = {1:2000}
+HLP = DRV_P100
+[DRV_P101]
+ADR = Pn101
+RNG = {15:51200}
+[DRV_P102]
+ADR = Pn102
+RNG = {1:2000}
+[DRV_P103]
+ADR = Pn103
+RNG = {0:10000}
+[DRV_P104]
+ADR = Pn104
+RNG = {1:2000}
+[DRV_P105]
+ADR = Pn105
+RNG = {15:51200}
+[DRV_P106]
+ADR = Pn106
+RNG = {1:2000}
+[DRV_P107]
+ADR = Pn107
+RNG = {0:10000}
+[DRV_P108]
+ADR = Pn108
+RNG = {0:250}
+[DRV_P109]
+ADR = Pn109
+RNG = {0:100}
+[DRV_P10A]
+ADR = Pn110
+RNG = {0:6400}
+[DRV_P10B]
+ADR = Pn111
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P10C]
+ADR = Pn112
+RNG = {0:800}
+[DRV_P10D]
+ADR = Pn113
+RNG = {0:10000}
+[DRV_P10E]
+ADR = Pn114
+RNG = {0:3000}
+[DRV_P10F]
+ADR = Pn115
+RNG = {0:10000}
+[DRV_P110]
+ADR = Pn116
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P111]
+ADR = Pn117
+RNG = {1:100}
+[DRV_P112]
+ADR = Pn118
+RNG = {0:1000}
+[DRV_P113]
+ADR = Pn119
+RNG = {0:10000}
+[DRV_P114]
+ADR = Pn120
+RNG = {0:400}
+[DRV_P115]
+ADR = Pn121
+RNG = {0:1000}
+[DRV_P116]
+ADR = Pn122
+RNG = {0:1000}
+[DRV_P117]
+ADR = Pn123
+RNG = {20:100}
+[DRV_P118]
+ADR = Pn124
+RNG = {50:100}
+[DRV_P119]
+ADR = Pn125
+RNG = {1:2000}
+[DRV_P11A]
+ADR = Pn126
+RNG = {1:2000}
+[DRV_P11B]
+ADR = Pn127
+RNG = {1:150}
+[DRV_P11C]
+ADR = Pn128
+RNG = {1:150}
+[DRV_P11D]
+ADR = Pn129
+RNG = {0:150}
+[DRV_P11E]
+ADR = Pn130
+RNG = {0:150}
+[DRV_P11F]
+ADR = Pn131
+RNG = {0:2000}
+[DRV_P120]
+ADR = Pn132
+RNG = {0:51200}
+[DRV_P121]
+ADR = Pn133
+RNG = {10:250}
+[DRV_P122]
+ADR = Pn134
+RNG = {0:250}
+[DRV_P123]
+ADR = Pn135
+RNG = {0:100}
+[DRV_P124]
+ADR = Pn136
+[DRV_P125]
+ADR = Pn137
+RNG = {0:100}
+[DRV_P131]
+ADR = Pn149
+[DRV_P132]
+ADR = Pn150
+[DRV_P135]
+ADR = Pn153
+[DRV_P136]
+ADR = Pn154
+[DRV_P139]
+ADR = Pn157
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P13D]
+ADR = Pn161
+[DRV_P140]
+ADR = Pn164
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P141]
+ADR = Pn165
+[DRV_P142]
+ADR = Pn166
+[DRV_P143]
+ADR = Pn167
+[DRV_P144]
+ADR = Pn168
+[DRV_P145]
+ADR = Pn169
+[DRV_P146]
+ADR = Pn170
+[DRV_P147]
+ADR = Pn171
+[DRV_P148]
+ADR = Pn172
+[DRV_P149]
+ADR = Pn173
+[DRV_P14A]
+ADR = Pn174
+[DRV_P14B]
+ADR = Pn175
+[DRV_P160]
+ADR = Pn196
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P161]
+ADR = Pn197
+[DRV_P162]
+ADR = Pn198
+[DRV_P163]
+ADR = Pn199
+[DRV_P164]
+ADR = Pn701
+[DRV_P165]
+ADR = Pn702
+[DRV_P170]
+ADR = Pn703
+
+[DRV_P200]
+ADR = Pn200
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P201]
+ADR = Pn201
+RNG = {16:16384}
+[DRV_P202]
+ADR = Pn202
+RNG = {1:65535}
+[DRV_P203]
+ADR = Pn203
+RNG = {1:65535}
+[DRV_P204]
+ADR = Pn204
+RNG = {0:6400}
+[DRV_P205]
+ADR = Pn205
+RNG = {0:65535}
+[DRV_P206]
+ADR = Pn206
+RNG = {513:65535}
+[DRV_P207]
+ADR = Pn207
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P208]
+ADR = Pn208
+RNG = {0:6400}
+[DRV_P20A]
+ADR = Pn210
+[DRV_P20E]
+ADR = Pn214
+[DRV_P210]
+ADR = Pn216
+[DRV_P212]
+ADR = Pn218
+[DRV_P22A]
+ADR = Pn242
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P281]
+ADR = Pn704
+
+[DRV_P300]
+ADR = Pn300
+RNG = {150:3000}
+[DRV_P301]
+ADR = Pn301
+RNG = {0:10000}
+[DRV_P302]
+ADR = Pn302
+RNG = {0:10000}
+[DRV_P303]
+ADR = Pn303
+RNG = {0:10000}
+[DRV_P304]
+ADR = Pn304
+RNG = {0:10000}
+[DRV_P305]
+ADR = Pn305
+RNG = {0:10000}
+[DRV_P306]
+ADR = Pn306
+RNG = {0:10000}
+[DRV_P307]
+ADR = Pn307
+RNG = {0:65535}
+[DRV_P308]
+ADR = Pn308
+RNG = {0:65535}
+[DRV_P310]
+ADR = Pn316
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P281]
+ADR = Pn704
+[DRV_P311]
+ADR = Pn317
+[DRV_P312]
+ADR = Pn318
+[DRV_P324]
+ADR = Pn336
+
+[DRV_P400]
+ADR = Pn400
+RNG = {10:100}
+[DRV_P401]
+ADR = Pn401
+RNG = {0:65535}
+[DRV_P402]
+ADR = Pn402
+RNG = {0:800}
+[DRV_P403]
+ADR = Pn403
+RNG = {0:800}
+[DRV_P404]
+ADR = Pn404
+RNG = {0:800}
+[DRV_P405]
+ADR = Pn405
+RNG = {0:800}
+[DRV_P406]
+ADR = Pn406
+RNG = {0:800}
+[DRV_P407]
+ADR = Pn407
+RNG = {0:10000}
+[DRV_P408]
+ADR = Pn408
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P409]
+ADR = Pn409
+RNG = {50:2000}
+[DRV_P40A]
+ADR = Pn410
+[DRV_P40B]
+ADR = Pn411
+[DRV_P40C]
+ADR = Pn412
+[DRV_P40D]
+ADR = Pn413
+[DRV_P40E]
+ADR = Pn414
+[DRV_P40F]
+ADR = Pn415
+[DRV_P410]
+ADR = Pn416
+[DRV_P412]
+ADR = Pn418
+[DRV_P424]
+ADR = Pn436
+[DRV_P425]
+ADR = Pn437
+[DRV_P456]
+ADR = Pn486
+[DRV_P460]
+ADR = Pn496
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P481]
+ADR = Pn705
+[DRV_P482]
+ADR = Pn706
+[DRV_P486]
+ADR = Pn707
+[DRV_P487]
+ADR = Pn708
+[DRV_P488]
+ADR = Pn709
+[DRV_P490]
+ADR = Pn710
+[DRV_P493]
+ADR = Pn711
+[DRV_P494]
+ADR = Pn712
+[DRV_P495]
+ADR = Pn713
+[DRV_P498]
+ADR = Pn714
+
+
+[DRV_P500]
+ADR = Pn500
+RNG = {0:250}
+[DRV_P501]
+ADR = Pn501
+RNG = {0:10000}
+[DRV_P502]
+ADR = Pn502
+RNG = {0:10000}
+[DRV_P503]
+ADR = Pn503
+RNG = {0:100}
+[DRV_P504]
+ADR = Pn504
+RNG = {1:250}
+[DRV_P505]
+ADR = Pn505
+RNG = {1:32767}
+[DRV_P506]
+ADR = Pn506
+RNG = {0:50}
+[DRV_P507]
+ADR = Pn507
+RNG = {0:10000}
+[DRV_P508]
+ADR = Pn508
+RNG = {10:100}
+[DRV_P509]
+ADR = Pn509
+RNG = {20:1000}
+[DRV_P50A]
+ADR = Pn510
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P50B]
+ADR = Pn511
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P50C]
+ADR = Pn512
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P50D]
+ADR = Pn513
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P50E]
+ADR = Pn514
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P50F]
+ADR = Pn515
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P510]
+ADR = Pn516
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P511]
+ADR = Pn517
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P512]
+ADR = Pn518
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P51B]
+ADR = Pn527
+[DRV_P51E]
+ADR = Pn530
+[DRV_P520]
+ADR = Pn532
+[DRV_P522]
+ADR = Pn534
+[DRV_P524]
+ADR = Pn536
+[DRV_P526]
+ADR = Pn538
+[DRV_P528]
+ADR = Pn540
+[DRV_P529]
+ADR = Pn541
+[DRV_P52A]
+ADR = Pn542
+[DRV_P52B]
+ADR = Pn543
+[DRV_P52C]
+ADR = Pn544
+[DRV_P52F]
+ADR = Pn547
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P530]
+ADR = Pn548
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P531]
+ADR = Pn549
+[DRV_P533]
+ADR = Pn551
+[DRV_P534]
+ADR = Pn552
+[DRV_P535]
+ADR = Pn553
+[DRV_P536]
+ADR = Pn554
+[DRV_P550]
+ADR = Pn580
+[DRV_P551]
+ADR = Pn581
+[DRV_P552]
+ADR = Pn582
+[DRV_P553]
+ADR = Pn583
+[DRV_P553]
+ADR = Pn583
+[DRV_P560]
+ADR = Pn596
+[DRV_P561]
+ADR = Pn597
+
+[DRV_P600]
+ADR = Pn600
+[DRV_P601]
+ADR = Pn601
+
+[DRV_P800]
+ADR = Pn800
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P801]
+ADR = Pn801
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P802]
+ADR = Pn802
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P803]
+ADR = Pn803
+RNG = {0:250}
+[DRV_P804]
+ADR = Pn804
+[DRV_P806]
+ADR = Pn806
+[DRV_P808]
+ADR = Pn808
+[DRV_P80A]
+ADR = Pn810
+RNG = {0:65535}
+[DRV_P80B]
+ADR = Pn811
+RNG = {0:65535}
+[DRV_P80C]
+ADR = Pn812
+RNG = {0:65535}
+[DRV_P80D]
+ADR = Pn813
+RNG = {0:65535}
+[DRV_P80E]
+ADR = Pn814
+RNG = {0:65535}
+[DRV_P80F]
+ADR = Pn815
+RNG = {0:65535}
+[DRV_P810]
+ADR = Pn816
+RNG = {0:65535}
+[DRV_P811]
+ADR = Pn817
+RNG = {0:5100}
+[DRV_P812]
+ADR = Pn818
+RNG = {0:5100}
+[DRV_P813]
+ADR = Pn819
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P814]
+ADR = Pn820
+[DRV_P815]
+ADR = Pn821
+[DRV_P816]
+ADR = Pn822
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P817]
+ADR = Pn823
+RNG = {0:65535}
+[DRV_P818]
+ADR = Pn824
+RNG = {0:65535}
+[DRV_P819]
+ADR = Pn825
+[DRV_P81E]
+ADR = Pn830
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P81F]
+ADR = Pn831
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P820]
+ADR = Pn832
+[DRV_P822]
+ADR = Pn834
+[DRV_P824]
+ADR = Pn836
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P825]
+ADR = Pn837
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P827]
+ADR = Pn839
+[DRV_P829]
+ADR = Pn841
+[DRV_P82A]
+ADR = Pn842
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P82B]
+ADR = Pn843
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P82C]
+ADR = Pn844
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P82D]
+ADR = Pn845
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P82E]
+ADR = Pn846
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P833]
+ADR = Pn851
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P834]
+ADR = Pn852
+[DRV_P836]
+ADR = Pn854
+[DRV_P838]
+ADR = Pn856
+[DRV_P83A]
+ADR = Pn858
+[DRV_P83C]
+ADR = Pn860
+[DRV_P83E]
+ADR = Pn862
+[DRV_P840]
+ADR = Pn864
+[DRV_P850]
+ADR = Pn880
+[DRV_P851]
+ADR = Pn881
+[DRV_P852]
+ADR = Pn882
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_P853]
+ADR = Pn883
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+
+
+[KEY_ID_DESCRIPTION]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_0]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_1]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_2]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_3]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_4]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_5]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_6]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_7]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_8]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_9]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_10]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_11]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_12]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_13]
+CLR = 7
+FNS = 14
+
+[KEY_CATEGORY_14]
+CLR = 7
+FNS = 14
+
+[KEY_HEADER]
+CLR = 7
+FNS = 14
+
+[SGDN_CATEGORY]
+CLR = 7
+FNS = 14
+
+[DRV_C001]
+ADR = Pn1
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_C002]
+ADR = Pn2
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_C003]
+ADR = Pn103
+[DRV_C004]
+ADR = Pn100
+[DRV_C005]
+ADR = Pn101
+[DRV_C006]
+ADR = Pn6
+[DRV_C007]
+ADR = Pn7
+[DRV_C008]
+ADR = Pn8
+[DRV_C009]
+ADR = Pn9
+[DRV_C00A]
+ADR = Pn10
+[DRV_C00B]
+ADR = Pn11
+[DRV_C00C]
+ADR = Pn12
+[DRV_C00D]
+ADR = Pn13
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_C00E]
+ADR = Pn14
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_C00F]
+ADR = Pn15
+[DRV_C010]
+ADR = Pn16
+[DRV_C011]
+ADR = Pn17
+[DRV_C012]
+ADR = Pn18
+[DRV_C013]
+ADR = Pn19
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_C014]
+ADR = Pn20
+MSK = 0, 16
+MCH = 4
+FRM = HEX
+[DRV_C015]
+ADR = Pn21
+[DRV_C016]
+ADR = Pn22
+[DRV_C017]
+ADR = Pn23
+[DRV_C018]
+ADR = Pn24
+[DRV_C019]
+ADR = Pn25
+[DRV_C01A]
+ADR = Pn102
+[DRV_C01B]
+ADR = Pn27
+[DRV_C01C]
+ADR = Pn28
+[DRV_C01D]
+ADR = Pn109
+[DRV_C01E]
+ADR = Pn30
+[DRV_C01F]
+ADR = Pn31
+[DRV_C020]
+ADR = Pn32
+[DRV_C021]
+ADR = Pn33
+[DRV_C022]
+ADR = Pn34
+[DRV_C023]
+ADR = Pn35
+[DRV_C024]
+ADR = Pn36
+[DRV_C025]
+ADR = Pn37
+[DRV_C026]
+ADR = Pn38
+[DRV_C027]
+ADR = Pn39
+[DRV_C028]
+ADR = Pn40
+[DRV_C029]
+ADR = Pn41
+[DRV_C02A]
+ADR = Pn42
+[DRV_C02B]
+ADR = Pn43
+[DRV_C02C]
+ADR = Pn44
+[DRV_C02D]
+ADR = Pn45
+[DRV_C02E]
+ADR = Pn46
+[DRV_C02F]
+ADR = Pn47
+[DRV_C030]
+ADR = Pn48
+[DRV_C031]
+ADR = Pn49
+[DRV_C032]
+ADR = Pn50
+[DRV_C033]
+ADR = Pn51
+[DRV_C034]
+ADR = Pn52
+[DRV_C035]
+ADR = Pn53
+[DRV_C036]
+ADR = Pn54
+[DRV_C037]
+ADR = Pn55
+[DRV_C038]
+ADR = Pn56
+[DRV_C039]
+ADR = Pn57
+[DRV_C03A]
+ADR = Pn58
+[DRV_C03B]
+ADR = Pn59
+[DRV_C03C]
+ADR = Pn60
+[DRV_C03D]
+ADR = Pn61
+[DRV_C03E]
+ADR = Pn62
+[DRV_C03F]
+ADR = Pn63
+
+
+[RDD_HEADER]
+CLR = 7
+FNS = 14
+
+[RDD_HDR_IOHANDLING]
+CLR = 7
+FNS = 14
+
+[RDD_IORFSH]
+ADR = RDD_yIOrfsh
+RNG = {0,1,2}
+FRM = CBX,3
+LST = RDD_IORFSHLIST
+RST = 1
+
+[RDD_IOINDEX]
+ADR = RDD_wIOindex
+RST = 1
+
+[RDD_HDR_IDENT]
+CLR = 7
+FNS = 14
+
+[RDD_SERVOPACK]
+FRM = STR
+LEN = 18
+ADR = RDD_szServoPack
+
+[RDD_SERVOPACKVER]
+ADR = RDD_wServoPackVer
+FRM = HEX
+
+[RDD_ENCODERVER]
+ADR = RDD_wEncoderVer
+FRM = HEX
+
+[RDD_MOTOR]
+FRM = STR
+LEN = 18
+ADR = RDD_szMotor
+
+[RDD_OPTIONUNIT]
+FRM = STR
+LEN = 18
+ADR = RDD_szOptionUnit
+
+[RDD_OPTIONUNITVER]
+ADR = RDD_wOptionUnitVer
+FRM = HEX
+
+[RDD_HDR_MONITORING]
+CLR = 7
+FNS = 14
+
+[RDD_MONSEL]
+ADR = RDD_yMonSel
+RNG = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+FRM = CBX,16
+LST = RDD_MONSELLIST
+
+[RDD_MONVAL]
+ADR = RDD_lMonVal
+
+[RDD_HDR_ASYCMD_CMD]
+CLR = 7
+FNS = 14
+
+[RDD_ASYCMD_PARAMETER]
+ADR = RDD_wParameter
+FRM = HEX
+
+[RDD_ASYCMD_VALUE_TO_WRITE]
+ADR = RDD_lValueToWrite
+
+[RDD_ASYCMD_READ_VALUE]
+ADR = RDD_lReadValue
+
+[RDD_ASYCMD_RELEASE_BRK]
+ADR = RDD_wAsyCmd
+MSK = 6, 1
+
+[RDD_ASYCMD_SERVO_ON]
+ADR = RDD_wAsyCmd
+MSK = 7, 1
+
+[RDD_ASYCMD_SENSOR_ON]
+ADR = RDD_wAsyCmd
+MSK = 8, 1
+
+[RDD_ASYCMD_LATCH_ENABLE]
+ADR = RDD_wAsyCmd
+MSK = 9, 1
+
+[RDD_ASYCMD_LATCH_SIGNAL]
+ADR = RDD_wLatchSignal
+RNG = {0,1,2,3}
+FRM = CBX,4
+LST = RDD_ASYCMD_LATCH_SIGNALLIST
+
+[RDD_HDR_ASYCMD_LATCH_INFO]
+CLR = 7
+FNS = 14
+
+[RDD_ASYCMD_LATCHSTS_COMPLETE]
+ADR = RDD_wLatchStatus
+MSK = 0, 1
+
+[RDD_ASYCMD_LATCHED_VALUE]
+ADR = RDD_lLatchVal
+
+[RDD_HDR_ASYCMD_ALARM_ARRAY]
+CLR = 7
+FNS = 14
+
+[RDD_ASYCMD_AA_0]
+ADR = RDD_yAlarmArray0
+FRM = HEX
+
+[RDD_ASYCMD_AA_1]
+ADR = RDD_yAlarmArray1
+FRM = HEX
+
+[RDD_ASYCMD_AA_2]
+ADR = RDD_yAlarmArray2
+FRM = HEX
+
+[RDD_ASYCMD_AA_3]
+ADR = RDD_yAlarmArray3
+FRM = HEX
+
+[RDD_ASYCMD_AA_4]
+ADR = RDD_yAlarmArray4
+FRM = HEX
+
+[RDD_ASYCMD_AA_5]
+ADR = RDD_yAlarmArray5
+FRM = HEX
+
+[RDD_ASYCMD_AA_6]
+ADR = RDD_yAlarmArray6
+FRM = HEX
+
+[RDD_ASYCMD_AA_7]
+ADR = RDD_yAlarmArray7
+FRM = HEX
+
+[RDD_ASYCMD_AA_8]
+ADR = RDD_yAlarmArray8
+FRM = HEX
+
+[RDD_ASYCMD_AA_9]
+ADR = RDD_yAlarmArray9
+FRM = HEX
+
+[RDD_HDR_STATUSES]
+CLR = 7
+FNS = 14
+
+[RDD_STS_ALARM]
+ADR = RDD_yAlarm
+FRM = HEX
+
+[RDD_HDR_STS_STATUS]
+CLR = 7
+FNS = 14
+
+[RDD_STSSTS_ALARM]
+ADR = RDD_wStatus
+MSK = 0, 1
+
+[RDD_STSSTS_WARNG]
+ADR = RDD_wStatus
+MSK = 1, 1
+
+[RDD_STSSTS_CMDRDY]
+ADR = RDD_wStatus
+MSK = 2, 1
+
+[RDD_STSSTS_SVON]
+ADR = RDD_wStatus
+MSK = 3, 1
+
+[RDD_STSSTS_PON]
+ADR = RDD_wStatus
+MSK = 4, 1
+
+[RDD_STSSTS_MLOCK]
+ADR = RDD_wStatus
+MSK = 5, 1
+
+[RDD_STSSTS_ZPOINT]
+ADR = RDD_wStatus
+MSK = 6, 1
+
+[RDD_STSSTS_PSET]
+ADR = RDD_wStatus
+MSK = 7, 1
+
+[RDD_STSSTS_DEN]
+ADR = RDD_wStatus
+MSK = 8, 1
+
+[RDD_STSSTS_T_LIM]
+ADR = RDD_wStatus
+MSK = 9, 1
+
+[RDD_STSSTS_L_CMP]
+ADR = RDD_wStatus
+MSK = 10, 1
+
+[RDD_STSSTS_NEAR]
+ADR = RDD_wStatus
+MSK = 11, 1
+
+[RDD_STSSTS_P_SOT]
+ADR = RDD_wStatus
+MSK = 12, 1
+
+[RDD_STSSTS_N_SOT]
+ADR = RDD_wStatus
+MSK = 13, 1
+
+[RDD_STSSTS_RSRV_0]
+ADR = RDD_wStatus
+MSK = 14, 1
+
+[RDD_STSSTS_RSRV_1]
+ADR = RDD_wStatus
+MSK = 15, 1
+
+[RDD_HDR_STS_IOS]
+CLR = 7
+FNS = 14
+
+[RDD_STSIOS_P_OT]
+ADR = RDD_wIOs
+MSK = 0, 1
+
+[RDD_STSIOS_N_OT]
+ADR = RDD_wIOs
+MSK = 1, 1
+
+[RDD_STSIOS_DEC]
+ADR = RDD_wIOs
+MSK = 2, 1
+
+[RDD_STSIOS_PA]
+ADR = RDD_wIOs
+MSK = 3, 1
+
+[RDD_STSIOS_PB]
+ADR = RDD_wIOs
+MSK = 4, 1
+
+[RDD_STSIOS_PC]
+ADR = RDD_wIOs
+MSK = 5, 1
+
+[RDD_STSIOS_EXT1]
+ADR = RDD_wIOs
+MSK = 6, 1
+
+[RDD_STSIOS_EXT2]
+ADR = RDD_wIOs
+MSK = 7, 1
+
+[RDD_STSIOS_EXT3]
+ADR = RDD_wIOs
+MSK = 8, 1
+
+[RDD_STSIOS_BRK]
+ADR = RDD_wIOs
+MSK = 9, 1
+
+[RDD_STSIOS_RSRV_0]
+ADR = RDD_wIOs
+MSK = 10, 1
+
+[RDD_STSIOS_RSRV_1]
+ADR = RDD_wIOs
+MSK = 11, 1
+
+[RDD_STSIOS_RSRV_2]
+ADR = RDD_wIOs
+MSK = 12, 1
+
+[RDD_STSIOS_RSRV_3]
+ADR = RDD_wIOs
+MSK = 13, 1
+
+[RDD_STSIOS_RSRV_4]
+ADR = RDD_wIOs
+MSK = 14, 1
+
+[RDD_STSIOS_RSRV_5]
+ADR = RDD_wIOs
+MSK = 15, 1

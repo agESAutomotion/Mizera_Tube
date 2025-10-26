@@ -1,0 +1,9 @@
+[PROMPT]
+KEYWORD =Parameters
+
+#include "czo?.nam"
+
+[HELP]
+
+[KEYS]
+TXT8 = Load Comp.Zone

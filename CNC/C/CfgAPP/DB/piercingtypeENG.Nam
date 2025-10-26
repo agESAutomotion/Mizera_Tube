@@ -1,0 +1,17 @@
+[KEYS]
+TITLE=HELP
+[PROMPT]
+PIERCINGTYPE=
+LabelP1=P1
+LabelP2=P2
+LabelP1e2=P1 = P2
+LabelType1=(P1 <> P2)
+LabelType2=(P1 = P2)
+LabelType3=(P5 <> P6)
+LabelType4=(P5 = P6)
+LabelType5=PLAN
+LabelCilindrica=CYLINDRICAL
+LabelP3=P3 = turns (>0 clockwise)
+LabelP4=P4 = speed [mm/min]
+LabelP5=P7 = turns [>0 clockwise)
+LabelP6=P8 = speed [mm/min]

@@ -1,0 +1,109 @@
+[PROMPT]
+KEY_TWI       =Dati Mandrini
+
+TWI_KINELIST =0-Nullo, 1=Rotary Hd, 2=Fork Hd, 3=Nutator
+TWI_KINE      =Tipo di cinematismo
+TWI_DSC       =Descrizione
+
+RH_X0         =Coordinata X primo pivot
+RH_Y0         =Coordinata Y primo pivot
+RH_Z0         =Coordinata Z primo pivot
+RH_ORIENT     =Orientamento asse Z testa
+RH_FRAME_C    =Rotazione frame di riferimento Z (Y)
+RH_FRAME_B    =Rotazione frame di riferimento Y (P)
+RH_FRAME_A    =Rotazione frame di riferimento X (R)
+RH_ORIENTLST  =6: X+, 8: Y+, 9: Z+
+RH_EC         =Rotazione intorno all'asse Z
+RH_ECREV      =Inversione verso attuatore rotazione
+RH_ECAX       =Attuatore rotaz. intorno all'asse Z
+RH_AXLST      =0-NC, 7-Asse A, 8-Asse B, 9-Asse C, 10-Mandrino, 127-Ad inseg.
+
+FRH_X0        =Coordinata X primo pivot
+FRH_Y0        =Coordinata Y primo pivot
+FRH_Z0        =Coordinata Z primo pivot
+FRH_ORIENT    =Orientamento asse Z testa
+FRH_FRAME_C   =Rotazione frame di riferimento Z (Y)
+FRH_FRAME_B   =Rotazione frame di riferimento Y (P)
+FRH_FRAME_A   =Rotazione frame di riferimento X (R)
+FRH_EC        =Rotazione intorno all'asse Z
+FRH_ECREV     =Inversione  verso attuatore rotazione
+FRH_ECAX      =Attuatore rotazione intorno all'asse Z
+FRH_X1        =Coordinata X secondo pivot
+FRH_Y1        =Coordinata Y secondo pivot
+FRH_EB        =Rotazione intorno all'asse Y
+FRH_EBREV     =Inversione  verso attuatore rotazione
+FRH_EBAX      =Attuatore rotazione intorno all'asse Y
+FRH_X2        =Coordinata X portautensile
+FRH_Z2        =Coordinata Z portautensile
+
+OARH_X0       =Coordinata X primo pivot
+OARH_Y0       =Coordinata Y primo pivot
+OARH_Z0       =Coordinata Z primo pivot
+OARH_ORIENT   =Orientamento asse Z testa
+OARH_FRAME_C  =Rotazione frame di riferimento Z (Y)
+OARH_FRAME_B  =Rotazione frame di riferimento Y (P)
+OARH_FRAME_A  =Rotazione frame di riferimento X (R)
+OARH_EC       =Rotazione intorno all'asse Z
+OARH_ECREV    =Inversione  verso attuatore rotazione
+OARH_ECAX     =Attuatore rotazione intorno all'asse Z
+OARH_X1       =Coordinata X secondo pivot
+OARH_Y1       =Coordinata Y secondo pivot
+OARH_TILT     =Angolo di basculamento
+OARH_EB       =Rotazione intorno all'asse Y
+OARH_EBREV    =Inversione  verso attuatore rotazione
+OARH_EBAX     =Attuatore rotazione intorno all'asse Y
+OARH_X2       =Coordinata X portautensile
+OARH_Y2       =Coordinata Y portautensile
+OARH_Z2       =Coordinata Z portautensile
+OARH_CAMBER   =Angolo di camber
+
+TWI_MINRPM    =Numero minimo di giri/minuto
+TWI_MAXRPM    =Numero massimo di giri/minuto
+TWI_CCW       =Verso normale sinistrorso
+
+[HELP]
+TWI_KINE      =Tipo di cinematismo: 1 =ROTARY_HEAD, 2 =FORK_ROTARY_HEAD
+
+RH_X0         =Coordinata X primo pivot rispetto allo zero testa
+RH_Y0         =Coordinata Y primo pivot rispetto allo zero testa
+RH_Z0         =Coordinata Z primo pivot rispetto allo zero testa
+RH_ORIENT     =Orientamento asse Z testa: 6 =X+ 8 =Y+ 9 =Z+
+RH_EC1        =Rotazione intorno all’ asse Z del sistema di riferimento con origine nel primo pivot
+RH_ECREV      =Inversione verso attuatore rotazione intorno all'asse Z:  1 - Abilita;  0 - Disabilita
+RH_ECAX       =Attuatore rotazione intorno all'asse Z: 0 =NC 7 =A 8 =B 9 =C 10 =Asse mandrino 127 =Ad inseguimento meccanico
+
+FRH_X0        =Coordinata X primo pivot rispetto allo zero testa
+FRH_Y0        =Coordinata Y primo pivot rispetto allo zero testa
+FRH_Z0        =Coordinata Z primo pivot rispetto allo zero testa
+FRH_ORIENT    =Orientamento asse Z testa: 6 =X+ 8 =Y+ 9 =Z+
+FRH_EC        =Rotazione intorno all’ asse Z del sistema di riferimento con origine nel primo pivot
+FRH_ECREV     =Inversione verso attuatore rotazione intorno all'asse Z:  1 - Abilita;  0 - Disabilita
+FRH_ECAX      =Attuatore rotazione intorno all'asse Z: 0 =NC 7 =A 8 =B 9 =C 10 =Asse mandrino 127 =Ad inseguimento meccanico
+FRH_X1        =Coordinata X secondo pivot rispetto al sistema di riferimento con origine nel primo pivot
+FRH_Y1        =Coordinata Y secondo pivot rispetto al sistema di riferimento con origine nel primo pivot
+FRH_EB        =Rotazione intorno all'asse Y' appartente al sistema di riferimento con origine nel secondo pivot
+FRH_EBREV     =Inversione verso attuatore rotazione intorno all'asse Y':  1 - Abilita;  0 - Disabilita
+FRH_EBAX      =Attuatore rotazione intorno all'asse Y': 0 =NC 7 =A 8 =B 9 =C 10 =Asse mandrino 127 =Ad inseguimento meccanico
+FRH_X2        =Coordinata X portautensile rispetto al sistema di riferimento con origine nel secondo pivot
+FRH_Z2        =Coordinata Z portautensile rispetto al sistema di riferimento con origine nel secondo pivot
+
+OARH_X0       =Coordinata X primo pivot rispetto allo zero testa
+OARH_Y0       =Coordinata Y primo pivot rispetto allo zero testa
+OARH_Z0       =Coordinata Z primo pivot rispetto allo zero testa
+OARH_ORIENT   =Orientamento asse Z testa: 6 =X+ 8 =Y+ 9 =Z+
+OARH_EC       =Rotazione intorno all’ asse Z del sistema di riferimento con origine nel primo pivot
+OARH_ECREV    =Inversione verso attuatore rotazione intorno all'asse Z:  1 - Abilita;  0 - Disabilita
+OARH_ECAX     =Attuatore rotazione intorno all'asse Z: 0 =NC 7 =A 8 =B 9 =C 10 =Asse mandrino 127 =Ad inseguimento meccanico
+OARH_X1       =Coordinata X secondo pivot rispetto al sistema di riferimento con origine nel primo pivot
+OARH_Y1       =Coordinata Y secondo pivot rispetto al sistema di riferimento con origine nel primo pivot
+OARH_TILT     =Angolo tra l'asse Y testa e la normale del piano di basculamento
+OARH_EB       =Rotazione intorno all'asse Y' appartente al sistema di riferimento con origine nel secondo pivot
+OARH_EBREV    =Inversione verso attuatore rotazione intorno all'asse Y':  1 - Abilita;  0 - Disabilita
+OARH_EBAX     =Attuatore rotazione intorno all'asse Y': 0 =NC 7 =A 8 =B 9 =C 10 =Asse mandrino 127 =Ad inseguimento meccanico
+OARH_X2       =Coordinata X portautensile rispetto al sistema di riferimento con origine nel secondo pivot
+OARH_Y2       =Coordinata Y portautensile rispetto al sistema di riferimento con origine nel secondo pivot
+OARH_Z2       =Coordinata Z portautensile rispetto al sistema di riferimento con origine nel secondo pivot
+
+TWI_MINRPM    =Numero minimo di giri/minuto
+TWI_MAXRPM    =Numero massimo di giri/minuto
+TWI_CCW       =Verso normale sinistrorso

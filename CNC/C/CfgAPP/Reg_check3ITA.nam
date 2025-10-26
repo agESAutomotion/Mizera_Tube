@@ -1,0 +1,40 @@
+
+[KEYS]
+TITLE=Jumping data
+
+[PROMPT]
+KEY_NODE=Node
+REG_CHECK2=Jumping data
+ButtonRegCheck1=START
+AxesCh1=Axes
+Label2=Capacitive -mm-
+LabelDryRun2=DRY RUN
+LabelRegOn1=Regulation ON
+LBL_VELOCITA2=Cut Height [mm]
+LBL_upVel1=Z axis quota for speed change [mm]
+Label1=pos upper limit [mm] [ 0]
+Label4=pos lower limit [mm] [ 1]
+Label3=vel upward limit [mm/min] [ 2]
+Label6=vel downward limit [mm/min] [ 3]
+Label5=acc upward limit [mm/s²] [ 4]
+Label8=acc downward limit [mm/s²] [ 5]
+Label7=Kp gain [Hz] [ 6]
+Label10=Kp gain table index [ 7]
+Label9=Kp gain table mul (0=N/U) [ 8]
+Label12=positive deadband [ 9]
+Label11=negative deadband [10]
+Label14=filter cutoff freq [Hz] [11]
+Label13=filter damping coeff [12]
+Label16=simulation x-fade time [ms] [13]
+Label15=trig lock vel upward limit [mm/min] [14]
+Label18=trig lock vel downward limit [mm/min] [15]
+Label17=trig lock acc limit [mm/s²] [16]
+LabelTabHold=PipeCut [5]
+LBL_jumplimit1=Height Jump limit [mm] (Plane Machine)
+LBL_jumplimit2=Height Jump Limit [mm] (Pipe Machine)
+ButtonBack1=<<
+LabelTabHold1=Simulation [6]
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,26 @@
+
+[KEYS]
+TITLE=ESA reserved
+
+[PROMPT]
+KEY_NODE=Node
+SERVICE3=Leaf
+GroupBoxDataCalc=Dati calcolati in fun(angolo)
+Lb_esa4=Potenza:
+Lb_esa5=Duty:
+Lb_esa6=Pressione:
+Lb_esa7=Focale:
+Lb_esa8=Altezza di taglio:
+Lb_esa9=Velocità di taglio:
+Lb_esa11=Angolo attuale [°]
+Lb_esa12=Vel. interpolata filtrata [mm/s]
+Lb_esa13=Vel. interpolata [%]
+Lb_esa14=Abilitazione interpolaz. dati taglio
+Lb_esa15=Filtro velocità interpolata [msec]
+Lb_esa16=Simulazione interna
+Lb_esa18=Simulazione: angolo attuale
+Lb_esa20=Filtro su angolo [msec]
+
+[STATUS]
+
+[HELP]

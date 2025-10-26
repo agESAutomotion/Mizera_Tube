@@ -1,0 +1,147 @@
+[PROMPT]
+KEY_CONFGEN   =konfiguracja Maszyny
+
+KEY_GEN       =Dane ogólne
+KEY_OPZCN     =NC Opcje
+KEY_OPZPLC    =PLC Opcje
+SPACE         = -
+
+CN_NUMCHAN    =Liczba kanalów
+CN_NUMAX      =Liczba osi 
+CN_FIRSTSLAVE =Numer pierwszego obwodu sledzacego 
+CN_MMINCI     =Domyslne ustawienie
+CN_DELAY      =Opóznienie sknowania NC (s)
+CN_DLY_PATTERN =Inne priorytety zadañ
+CN_CALCREG     =Zaladunek kodu sledzenia
+CN_COMMTICALC  =Polecenia do czasu obliczeñ
+CN_CNCTIMOT    =Przydzial czasu na kanal
+CN_USREXTLEN   =Wydluzenie dla operatora
+CN_PTKB        =Wielkosc pamiêci 
+CN_RETRKB      =Wielkosc odtworzonej pamiêci 
+CN_SLVBLOCKS   =Bloki dla wszystkich kolejek sledzacych
+CN_PARMSVER    =Wersja ustawionych parametrów
+
+CN_CALCREGEX   =Wydluzony kod zaladunku sledzenia  (TimeReg/TimeCalc)
+CN_CALCREGEX_LIST =Niedostêpny, 2.0/8.0ms, 2.0/4.0ms, 2.0/2.0ms, 1.0/4.0ms, 1.0/2.0ms, 1.0/1.0ms, 0.5/2.0ms, 0.5/1.0ms, 0.5/0.5ms, 0.25/1.0ms, 0.25/0.5ms, 0.25/0.25ms, 4.0/16.0ms, 4.0/8.0ms, 4.0/4.0ms, 8.0/16.0ms, 8.0/8.0ms, 16.0/16.0ms
+CN_TIMINT      =Przerwane zródlo
+CN_TIMINT_LIST =Zewnêtrzny, Wewnêtrzny
+
+CN_MONERRINS  =Dostepne wyswietlanie uchybu.
+CN_MONQTAAX   =Dostêpne wyswietlanie polozenia referencyjneo osi.
+CN_MONINTER   =Dostêpne wyswietlanie w fazie z przewaniem.
+CN_MONPARAM   =Dostêpne wyswietlanie w fazie z parametrem.
+CN_MONCFROM   =Dostêpne wyswietlanie stalych cykli w ROM
+CN_M_OVRLAP   =Dostêpne nakladanie siê funkcji M
+CN_SRP_LAH    =Niedostêpne przewidywanie krzywej S
+CN_VIMO_EN    =Dostêpny tryb VIMO
+CN_DIG_FC_EN    =Dostêpna konwersja do osi cyfrowej
+CN_DIGSIM_KP_EN =Dostêpne Kp[1/s] symulacji do osi cyfrowej
+CN_EXACT_LS_COMP=Use alternative method for software limit switches checking
+CN_ENABLE_G16_AUX =Dostêpne operowanie (G16) osi pomocniczej.
+CN_ENAB_CORR_DIAM_USURA=Dostêpna kompensacja zuzycia srednicy narzêdzia
+CN_ENAB_G96_VMIN_VMAX=Dostêpny obowiazkowy G96 VMIN i VMAX
+CN_ENAB_AXIS_CHAN_MATCH=Enable channels/axes explicit matching
+CN_ENAB_SAFETY_EXTINT=Enable extended safety mode
+CN_ENAB_FAST_Q_REF=Enable encoder measure fast refresh mode
+CN_ENAB_TIME_ALIGNED_SETIO=Enable time-aligned IO by hardware timer
+CN_ENAB_TIME_ALIGNED_SETIO_EX=Hardware accelerated time-aligned IO (laser)
+CN_ENAB_PWM_COMBINE=Combine emission and PWM (laser)
+CN_ENAB_G10_EXCLUDE_UNGRP=Exclude ungrouped axes with G10
+CN_ENAB_G8X_NON_MODAL_EXECUTION=Enable non-modal G8x execution
+CN_ENAB_COMPACT_REFRESH=Enable compact refresh
+CN_ENAB_WRITES_PIGGYBACKING=Enable piggybacking for writes
+CN_ENAB_HOLD_PERSIST_M=Keep M functions STB with HOLD
+CN_DISAB_PPG_OPTIM=Disable PPG priority boost
+
+_DBO_ENABLE_EXT_HEAP_RT_CHK     =Sprawdzanie czasu przebywania w stosie
+_DBO_ENABLE_KENV_DEBUG          =Dostêpne wyszukiwanie blêdów Kenv 
+_DBO_ENABLE_DETAILED_DEBUG      =Szczególowe wyszukiwanie blêdów
+_DBO_ENABLE_REPORT              =Generowanie raportu
+_DBO_ENABLE_DTL_LOGGING         =Szczególowe zapisywanie zdarzeñ na dysku
+_DBO_ENABLE_TRACE               =Dostêpne sledzenie
+_DBO_ENABLE_PRINTERR            =Wyswietlanie maski komunikatu blêdu.
+_DBO_ENABLE_VERBOSE_PE          =Wyswietlanie maski szczególowego komunikatu.
+_DBO_ENABLE_WARP_ENGINE_DEBUG   =Dostepne wyszukiwnie blêdów parametrów kinemtycznych/dynamicznych.
+
+CN_SCNPLCLEN  =Czas skanowania PLC (s)
+CN_SCNPLCVEL  =Czas szybkiego skanowania PLC (s)
+CN_TMOPLCLEN  =Czas przeznacony na PLC(s)
+CN_TMOPLCVEL  =Skrócony czas przeznacony na PLC(s)
+CN_RFSIONODE  =Niedostêpne odswiezanie I/O wêzlów pierscienia
+CN_PLCTIMEDIV2 =Czas skanowania podzielony przez 2
+CN_PLCTIMEDIV4 =Czas skanowania podzielony przez 4
+CN_PLCTIMEDIV8 =Czas skanowania podzielony przez 8
+CN_PLCFASTHPRI =wysoki priorytet Plc szybki
+CN_DISTIMCOMP  =Niedostêpny licznik kompensacji 1.024
+
+KEY_SYSDLLS     =System DLLs
+SYS_SLAOSC      =Oscylloskop
+SYS_SLADLL      =Sledzenie Dll
+SYS_SLACOUP     =Coupling functions Dll
+SYS_SLAPPG      =Prasa krawêdziowa 
+SYS_SLADGT      =Cyfrowy napêd 
+SYS_CAN1        =Mozna otworzyc (pierwszy)
+SYS_CAN2        =Mozna otworzyc (drugi)
+SYS_SLADGT_ADDR =Adres podstawowy
+SYS_SLADGT_IRQN =Numer IRQ 
+SYS_SLADLL_LIST =None, Default, Filename, Debug
+SYS_SLADGT_LIST =None, McLink, SercosII, Canopen, EsaLink, SercosI, Filename, Debug
+
+CN_SYNCIRQ		= Sync IRQ
+CN_SYNCIRQLIST	= Disab,AutoIRQ,Analog,IRQ10,IRQ11,IRQ12,ECAT
+CN_SYNCTREF		= TRef
+CN_SYNCTREG		= TReg
+CN_SYNCTCALC	= TCalc
+
+[HELP]
+CN_NUMCHAN    =Liczba kanalów
+CN_NUMAX      =Liczba osi 
+CN_FIRSTSLAVE =Ientyfikator pierwszego obwodu osi stosowany tylko w przydzielonych systemach - UNUSED.
+CN_MMINCI     =Wejscie ukladu pomiarowego stosowanego domyslnie PP (0)mm (1)inches
+CN_DELAY      =Opóznienie pojedynczego skanu NC (s):  musi byc wiêkszy niz 0 aby zapewnic czas  na  dla ukladu CNC na obslugê poleceñ operatora.
+CN_DLY_PATTERN =Priorytet dla pozostalych zadañ w tle.  Czas na zadania w tle jest okreslony przez 'opóznienie pojedyñczego skanu NC'. Czestotliwosc wystêpowania jest okreslona przez ustawienie priorytetu.
+CN_CALCREG    =Kod zaladunku sledzenia - Optymalna watrosc (6)
+CN_COMMTICALC =Liczba polecñ wykonanych przez kopial podczas kazdego cyklu obliczeñ. Standardowa wartosc: 1
+CN_CNCTIMOT   =Maksymalny dozwolony czas miêdzy rozpoczeciem obslugi kanalu i poczatkiem obslugi nastêpnego przewidzianego kanalu. Musi byc wiekszy niz nastawione 'opóznienie pojedyñczego skanu NC'.
+CN_USREXTLEN  =Dlugosc bloków ISO z rozszezeniem uzytkownika .  Dostêpne rozszezenie bloku jest wspóldzielone miêdzy rózne kanaly i wszystkie stany, rozmiar musi odpowiadac najwiêkszej obslugiwnej struktórze danych.
+CN_PTKB       =Wielkosc pamiêci wykonawczej (KB), wspóldzielonej rzez wszystkie kanly CNC.  W celu zapewnienia kazdemu knalowi odpowiedniego zakresu pamiêci (ustalone przez wlasciwy parametr konfiguracji  kanlu), parametr musi byc równy lub wiêkszy niz pamiêc potrzebna do róznych kombinacji jednoczesnie pracujacych kanalów.
+CN_RETRKB     =Zakres pamiêci odtwarzania (KB), wspóldzielonej rzez wszystkie kanly CNC. W celu zapewnienia kazdemu knalowi odpowiedniego zakresu pamiêci (ustalone przez wlasciwy parametr konfiguracji  kanlu)  , parametr musi byc równy lub wiêkszy niz pamiêc potrzebna do róznych kombinacji jednoczesnie pracujacych kanalów.
+CN_SLVBLOCKS  =Liczba bloków pzeznaczonych do kolejki oczekujacej, wspóldzielonej rzez wszystkie kanly CNC. W celu zapewnienia kazdemu knalowi odpowiedniego zakresu pamiêci (ustalone przez wlasciwy parametr konfiguracji  kanlu)  , parametr musi byc równy lub wiêkszy niz pamiêc potrzebna do róznych kombinacji jednoczesnie pracujacych kanalów.
+CN_PARMSVER   =Wersja ustawienia prametrów;  wersja wyzsza lub równa 1 odpowiada zastosowaniu w modulach wejsc parametrów osi.  Wartosc 0 pozwala osiagnac zgodnosc ze strszymi wesjami SW, tzn. wymagane jest wejscie parametrów przyspieszenia w sekundach.
+
+CN_MONERRINS  =Dostepne wyswietlnie blêdu uchybu:  (0) zadne polozenie absolutne lub przyrostowe (1) blad uchybu
+CN_MONQTAAX   =Dostêpne wyswietlanie polozenia w ukladzie wspólrzêdnych: (0) uklad wspólrzêdnych przedmiotu  (1) uklad wspólrzêdnych maszyny 
+CN_MONINTER   =Dostepne wyswietlamie w tlumaczonej wersji jêzykowej.
+CN_MONPARAM   =Dostepne wyswietlamie zgodnie z parmetrami. 
+CN_MONCFROM   =Dostêpne wyswietlanie stalych cykli w ROM : aktyne wyswietlanie
+CN_M_OVRLAP   =Dostêpne nakladanie siê funkcji M : (0)domyslny tryb synchronizacji (1) tryb nakladania
+CN_SRP_LAH    =Niedostêpne przewidywanie krzywej S: podczas wykorzystywania krzywej S  uwzglêdniana jest niestabilnosc pracy w narozach przy prametrze 0. Wartosc 1 niedostêpne przewidywanie niestabilnosci.
+CN_VIMO_EN    =Dostepna optymalizacja VIMO przesylania miedzy blokami G64 przy duzych dynamicznych  róznicach.
+CN_DIG_FC_EN    =Dostêpny wskaznik konwersji dla osi. 1 nowa aplikacja, 0 kompatybilnosc 
+CN_DIGSIM_KP_EN =Dostepna Kp[1/s] symulacja dla osi. Nastawa zalezy od uzytkownika. W przeciwnym przypadku zastosuj 0. 
+CN_EXACT_LS_COMP=Use alternative method for software limit switches checking
+CN_ENABLE_G16_AUX =Dostêpne operowanie osiami pomocniczymi G16 (np.: G16 ZUU+)
+CN_ENAB_CORR_DIAM_USURA=Dostêpna kompensacja zuzycia narzêdzia na srednicy  (0=na promieniu , 1=na srednicy)
+CN_ENAB_G96_VMIN_VMAX=Dostepne obowiazkowe G96 VMIN i VMAX (0=opcionalnie, 1=obowiazkowo)
+
+_DBO_ENABLE_EXT_HEAP_RT_CHK     =Dostêpna biezaca kontrola zawartosci pamiêci uzytkownika
+_DBO_ENABLE_KENV_DEBUG          =Dostêpne wyswietlanie sciezki dostêpu pliku
+_DBO_ENABLE_DETAILED_DEBUG      =Dostepne szczególowe komunikaty usuwania blêdów
+_DBO_ENABLE_REPORT              =REPORT tworzenia pliku: 0-niedostêpny  1-tworzy .deb file
+_DBO_ENABLE_DTL_LOGGING         =Szczególowa rejestrcja  zdarzeñ na dysku:0-niedostêpna 1-dostepna
+_DBO_ENABLE_TRACE               =Dostêpne sledzenie: 0-niedostepne  1-monitorowanie ruchu w kanale bez tworzenia plików
+_DBO_ENABLE_PRINTERR            =Dostêpne wyswietlanie maski komunikatu blêdu
+_DBO_ENABLE_VERBOSE_PE          =Dostêpne wyswietlanie maski szczególowego komunikatu blêdu
+_DBO_ENABLE_WARP_ENGINE_DEBUG   =Dostepne usuwanie blêdów w parametrach kinematycznych i  dynamicznych
+
+CN_SCNPLCLEN  =Czas skanowania PLC  (s):czas miêdzy dwoma kolejnymi iteracjmi PLC.
+CN_SCNPLCVEL  =Czas szybkiego skanowania PLC  (s):czas miêdzy dwoma kolejnymi szybkimi iteracjmi PLC.
+CN_TMOPLCLEN  =Czas przerwania PLC (s):maksymalny czas miêdzy rozpoczeciem skanowania PLC i faktycznym poczatkiem skanowania.
+CN_TMOPLCVEL  =Czas szybkiego przerwania PLC (s):maksymalny czas miêdzy rozpoczeciem szybkiego skanowania PLC i faktycznym poczatkiem szybkiego skanowania.
+CN_RFSIONODE  =Niedostepne automatyczne utrzymywanie inpulsów na I/O polaczeniach co 32 ms. Stosowane jedynie gdy czs sknowani wolnego jest mniejszy niz 40 ms w celu obnizenia obciazenia CPU jesli zastosowano pierscieñ I/O ze swiatlowodu.
+CN_PLCTIMEDIV2 =Podzial przez 2 czasu skanowania PLC. Stosowany w celu redukcji czsu skanowania do 0.5 ms.
+CN_PLCTIMEDIV4 =Podzial przez 4 czasu skanowania PLC. Stosowany w celu redukcji czsu szybkiego skanowania do 0.25 ms.
+CN_PLCTIMEDIV8 =Podzial przez 8 czasu skanowania PLC. Stosowany w celu redukcji czsu szybkiego skanowania do 0.125 ms.
+CN_PLCFASTHPRI =Ustawienie priorytetu FAST PLC nad regulatorem osi. 
+CN_DISTIMCOMP  =Niedostepna kompensacja regulatora czasu 1.024. Stosowane do poprawy powtarzalnosci regulatora czasu z nastawa  mniejsza niz 100 ms.
+

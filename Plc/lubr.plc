@@ -1,0 +1,226 @@
+*******************************************************************************
+*   LUBR.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+VAR
+TON_PUMP_ON_MINUTE:    TON;
+TON_PUMP_ON_HOUR:      TON;
+TON_REST_PUMP:         TON;
+TON_REST_PUMP1:        TON;
+TON_REST_PUMP2:        TON;
+TON_REST_PUMP3:        TON;
+appoggio:             BOOL;
+TurnPumpTMP:          BOOL;
+RestartPump:          BOOL;
+ 
+RTRIG_TIME:         R_TRIG;     
+RTRIG_PUMP:         R_TRIG;
+RTRIG_PUMP2:         R_TRIG;
+
+Hour_axes_mov       AT %LsGui5;       * (LsGui5) Hour axes movement
+Minute_axes_mov     AT %LsGui6;       * (LsGui6) Minute axes movement
+
+hour                AT %rLsPlc23;     * (rLsPlc23) timer for lubrication cycle minute
+timer_minute        AT %rLsPlc24;     * (rLsPlc24) time minutes 
+timer_hour          AT %rLsPlc25;     * (rLsPlc25) time hour     
+pump_on_time        AT %rLsPlc26;     * (rLsPlc26) pump on period [s]
+pump_off_time        AT %rLsPlc35;     * (rLsPlc35) pump off time [s]
+Repetition           AT %rLsPlc37;     * (rLsPlc37)
+
+PumpCount:            DWORD; 
+END_VAR
+
+VAR_IN_OUT
+PulLubr             AT %LsGui4.0;     * (LsGui4.0) Push Button manual lubrication 
+TurnPump            AT %LsGui4.1;     * (LsGui4.1) Turn on pump
+MinLevel            AT %LsGui4.2;     * (LsGui4.2) Min level in lubrication system
+MinPressure         AT %LsGui4.3;     * (LsGui4.3) Min pressure in lubrication system
+END_VAR
+
+
+******************************************************************************
+*   Lubrication management
+******************************************************************************
+FUNCTION Lubrication
+
+LDN  %ax27.ra3.0                      * axis not move
+ORN  %ax30.ra3.0                      * axis not move
+ORN  %ax28.ra3.0                      * axis not move
+ORN  %ax31.ra3.0                      * axis not move 
+ORN  %ax36.ra3.0                      * axis not move
+ST   appoggio
+
+CAL  RTRIG_TIME(CLK:=%PLCFLAGS.10)
+
+***************************************
+LD   RTRIG_TIME.Q
+AND  appoggio
+JMPCN no_count
+LD   second                        ** (rLsPlc21) timer for lubrication cycle second
+ADD  1                                
+ST   second                        ** (rLsPlc21) timer for lubrication cycle second
+no_count:                             
+                                      
+LD   second                        ** (rLsPlc21) timer for lubrication cycle second
+EQ   60                               
+JMPCN inc_minut                       
+LD   minute                        ** (rLsPlc22) timer for lubrication cycle minute
+ADD  1                                
+ST   minute                        ** (rLsPlc22) timer for lubrication cycle minute
+                                      
+LD   0                                
+ST   second                        ** (rLsPlc21) timer for lubrication cycle second
+inc_minut:                             
+                                      
+LD   minute                        ** (rLsPlc22) timer for lubrication cycle minute
+EQ   60                                                                             
+JMPCN inc_hour                                                                     
+LD   hour                          ** (rLsPlc23) timer for lubrication cycle minute
+ADD  1                                                                              
+ST   hour                          ** (rLsPlc23) timer for lubrication cycle minute
+                                                                                    
+LD   0                                                                              
+ST   minute                        ** (rLsPlc22) timer for lubrication cycle minute
+inc_hour:      
+
+***************************************
+LD  %LSRPlcOp1.13                  ** Enable lubrication by minute, default by hour 
+JMPCN no_lubr_by_minute
+
+LD   minute                           * (rLsPlc22) timer for lubrication cycle second
+GE   timer_minute                      * (rLsPlc24) time minutes 
+ANDN RestartPump
+ST   TurnPumpTMP                      * pump on by automatic cycle
+
+LD   PulLubr                          * (LsGui4.0) Push Button manual lubrication 
+ST   TurnPump                         * (LsGui3.0) Turn on pump
+
+CAL  TON_PUMP_ON_MINUTE (IN:=TurnPumpTMP,PT:=pump_on_time)   
+CAL  TON_REST_PUMP (IN:=TON_PUMP_ON_MINUTE.Q,PT:=pump_off_time)
+
+LD   TON_REST_PUMP.Q
+ST   RestartPump
+
+LD   TON_PUMP_ON_MINUTE.Q
+JMPCN res_timer_pump1
+
+LD   ALWAYS_ZERO
+ST   TurnPumpTMP                      * pump on by automatic cycle
+
+LD   PumpCount
+GE   Repetition
+JMPCN no_res_pump
+
+ LD   0
+ ST   PumpCount
+ 
+ LD   0
+ ST   minute                           * (rLsPlc22) timer for lubrication cycle second
+no_res_pump:
+
+res_timer_pump1:
+
+CAL  RTRIG_PUMP (CLK:=TurnPumpTMP)
+
+LD   RTRIG_PUMP.Q
+JMPCN no_inc_pump
+
+LD   PumpCount
+ADD  1
+ST   PumpCount
+
+no_inc_pump:
+
+LD   PulLubr                          * (LsGui4.0) Push Button manual lubrication 
+OR   TurnPumpTMP                      * pump on by automatic cycle
+ST   TurnPump                         * (LsGui3.0) Turn on pump
+
+no_lubr_by_minute:
+LDN  %LSRPlcOp1.13                 ** Enable lubrication by minute, default by hour 
+JMPCN no_lubr_by_hour
+
+LD   hour                             *(rLsPlc23) timer for lubrication cycle hour
+GE   timer_hour                       * (rLsPlc25) time hour
+ANDN RestartPump
+ST   TurnPumpTMP                      * pump on by automatic cycle
+
+CAL  TON_PUMP_ON_HOUR (IN:=TurnPumpTMP,PT:=pump_on_time)  
+CAL  TON_REST_PUMP2 (IN:=TON_PUMP_ON_HOUR.Q,PT:=pump_off_time)
+
+LD   TON_REST_PUMP2.Q
+ST   RestartPump
+
+LD   TON_PUMP_ON_HOUR.Q
+JMPCN res_timer_pump2
+
+LD   ALWAYS_ZERO
+ST   TurnPumpTMP                      * pump on by automatic cycle
+
+LD   PumpCount
+GE   Repetition
+JMPCN no_res_pump2
+
+ LD   0
+ ST   PumpCount
+ 
+ LD   0
+ ST   hour                             *(rLsPlc23) timer for lubrication cycle hour
+no_res_pump2:
+
+res_timer_pump2:        
+
+CAL  RTRIG_PUMP2 (CLK:=TurnPumpTMP)
+
+LD   RTRIG_PUMP2.Q
+JMPCN no_inc_pump2
+
+LD   PumpCount
+ADD  1
+ST   PumpCount
+
+no_inc_pump2:    
+
+LD   PulLubr                          * (LsGui4.0) Push Button manual lubrication 
+OR   TurnPumpTMP                      * pump on by automatic cycle
+ST   TurnPump                         * (LsGui3.0) Turn on pump
+          
+no_lubr_by_hour:  
+
+
+***************************************
+LD   I_I_LUB_LOW_LEVEL             ** Lubrication: low oil level
+ST   MinLevel                      ** (LsGui4.2) Min level in lubrication system
+ST   %PLCmsg4.27                      * Lubrication system low level
+
+LD   I_I_LUB_LOW_PRESSURE             ** Lubrication: low oil pressure
+ST   MinPressure                     ** (LsGui4.3) Min pressure in lubrication system
+ST   %PLCmsg4.28                      * Lubrication system low pressure
+                                     
+LD   TurnPump                      ** (LsGui4.1) Turn on pump
+ST   O_O_LUB                       ** Lubrication
+
+LD   hour                          ** (rLsPlc23) timer for lubrication cycle minute
+ST   Hour_axes_mov                 ** (LsGui5) Hour axes movement
+
+LD   minute                        ** (rLsPlc22) timer for lubrication cycle minute
+ST   Minute_axes_mov               ** (LsGui6) Minute axes movement
+                                                                                                                                                                                                                                                                
+
+
+
+
+
+
+                                                                                             
+END_FUNCTION

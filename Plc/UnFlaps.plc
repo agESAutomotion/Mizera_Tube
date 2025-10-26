@@ -1,0 +1,358 @@
+#funcdec "assi.plc"
+#funcdec "suppFB.plc"
+#funcdec "SPist.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+#funcdec "SupForce.plc"
+
+#include "usrMem.inc" 
+#include "Iol.inc"
+
+VAR
+#include "iof.inc"
+#include "usrIof.inc"
+#include "cnc.inc"
+
+FlapA71:              SINGLE_PISTON;
+FlapA72:              SINGLE_PISTON;
+FlapA73:              SINGLE_PISTON;
+FlapA74:              SINGLE_PISTON;
+FlapA75:              SINGLE_PISTON;
+END_VAR
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"              
+END_VAR
+
+FUNCTION UNLOAD_FLAPS
+
+********************************************************************************
+* UNLOAD FLAPS MANAGEMENT                                                      *
+********************************************************************************
+LD   PRGRUN_CN0                       ** M0.0 cn0.rc8.0  Programma in corso
+ST   FlapA72.xAuto
+ST   FlapA71.xAuto
+ST   FlapA73.xAuto
+ST   FlapA74.xAuto
+ST   FlapA75.xAuto
+
+LD   Pul_Reset                        ** (gPlc0.3)Reset pushbutton
+OR   Pul_Start                        ** (gPlc0.1)Start pushbutton
+ST   FlapA72.xReset	  
+ST   FlapA71.xReset	  
+ST   FlapA73.xReset	  
+ST   FlapA74.xReset	  
+ST   FlapA75.xReset	  
+
+LD   I_I_PRESSIONE_ARIA_IMPIANTO      ** %USR_M0
+ST   FlapA72.xAirPressure
+ST   FlapA71.xAirPressure
+ST   FlapA73.xAirPressure
+ST   FlapA74.xAirPressure
+ST   FlapA75.xAirPressure
+
+LD   ALWAYS_ONE
+ST   FlapA72.xPlusAtInit           
+ST   FlapA71.xPlusAtInit           
+ST   FlapA73.xPlusAtInit           
+ST   FlapA74.xPlusAtInit           
+ST   FlapA75.xPlusAtInit           
+
+LD   ALWAYS_ZERO                      ** PLCFLAGS.0  Flag sempre stato off
+ST   FlapA72.xSingleEffect
+ST   FlapA71.xSingleEffect
+ST   FlapA73.xSingleEffect
+ST   FlapA74.xSingleEffect
+ST   FlapA75.xSingleEffect
+
+LD   TimeOutPistonDown            
+ST   FlapA72.xTimeOut     
+ST   FlapA71.xTimeOut     
+ST   FlapA73.xTimeOut     
+ST   FlapA74.xTimeOut     
+ST   FlapA75.xTimeOut     
+
+LDN  I_I_EMERGENZA                    ** Machine OK (no EMERG.)
+ST   FlapA72.xEmerg	  
+ST   FlapA71.xEmerg	  
+ST   FlapA73.xEmerg	  
+ST   FlapA74.xEmerg	  
+ST   FlapA75.xEmerg	  
+
+********************************************************************************
+* Ax72, Unloader Flap L2
+********************************************************************************
+LD   %ax71.ra4   
+GT  (    
+     LD  UnloadSupQta
+     ADD 1000
+)
+OR   Fun_M993_Ch0
+ST   ForceFlapUpZone
+
+LD   Flap71JogHome  
+OR   AllFlapsHome   
+OR   ForceFlapUpZone     
+OR   ParkAllCmd    
+ST   FlapA71.xManualPlus	  
+    
+LD   Flap71JogIncline
+OR   AllFlapsIncline 
+ANDN ForceFlapUpZone
+ST   FlapA71.xManualMinus    
+
+LD   Fun_M829_Ch0                     ** Auto Up command for supports  
+OR   ForceFlapUpZone  
+OR   AllFlapsHome                                
+ST   FlapA71.xAutoPlus
+
+LD   Fun_M830_Ch0                     ** Auto DWN command for supports
+OR   InclineFlapL1_ISO
+ANDN ForceFlapUpZone
+ST   FlapA71.xAutoMinus    
+
+LD   I_I_Flap_Home
+ST   FlapA71.xSensorPlus 
+
+LD   I_I_Flap_Inclined                ** M57.1
+ST   FlapA71.xSensorMinus           
+
+CAL  FlapA71
+
+LD   FlapA71.yPistonPlus 
+OR   HoldFlapInclined
+ST   O_O_Flap_Home
+
+LD   FlapA71.yPistonMinus 
+ANDN HoldFlapInclined
+ST   O_O_Flap_Incline
+
+LD   FlapA71.yAlarm
+AND  %cn8.cc1.1
+ST   %PLCerr21.14
+
+LD   ForceFlapUpZone
+ST   ForceFlapUp_71
+
+********************************************************************************
+* Ax72, Unloader Flap L2
+********************************************************************************
+LD   %ax72.ra4   
+GT  (    
+     LD  UnloadSupQta
+     ADD 1000
+)
+OR   Fun_M993_Ch0
+ST   ForceFlapUpZone
+
+LD   Flap72JogHome  
+OR   AllFlapsHome
+OR   ForceFlapUpZone    
+OR   ParkAllCmd 
+ST   FlapA72.xManualPlus	  
+    
+LD   Flap72JogIncline 
+OR   AllFlapsIncline 
+ANDN ForceFlapUpZone
+ST   FlapA72.xManualMinus    
+
+LD   Fun_M826_Ch0                     ** Auto Up command for supports  
+OR   ForceFlapUpZone      
+OR   AllFlapsHome                             
+ST   FlapA72.xAutoPlus
+
+LD   Fun_M827_Ch0                     ** Auto DWN command for supports
+OR   InclineFlapL2_ISO
+ANDN ForceFlapUpZone
+ST   FlapA72.xAutoMinus    
+
+LD   I_I_FlapL2_Home
+ST   FlapA72.xSensorPlus 
+
+LD   I_I_FlapL2_Inclined                ** M57.1
+ST   FlapA72.xSensorMinus           
+
+CAL  FlapA72
+
+LD   FlapA72.yPistonPlus 
+OR   HoldFlapInclined
+ST   O_O_FlapL2_Home
+
+LD   FlapA72.yPistonMinus 
+ANDN HoldFlapInclined
+ST   O_O_FlapL2_Incline
+
+LD   FlapA72.yAlarm
+AND  %cn8.cc1.2
+ST   %PLCerr21.22
+
+LD   ForceFlapUpZone
+ST   ForceFlapUp_72
+
+********************************************************************************
+* Ax73, Unloader Flap L3
+********************************************************************************
+LD   %ax73.ra4   
+GT  (    
+     LD  UnloadSupQta
+     ADD 1000
+)
+OR   Fun_M993_Ch0
+ST   ForceFlapUpZone
+
+LD   FlapL3JogHome 
+OR   AllFlapsHome      
+OR   ForceFlapUpZone   
+OR   ParkAllCmd   
+ST   FlapA73.xManualPlus	  
+    
+LD   FlapL3JogIncline 
+OR   AllFlapsIncline 
+ANDN ForceFlapUpZone
+ST   FlapA73.xManualMinus    
+
+LD   Fun_M987_Ch0                     ** Auto Up command for supports  
+OR   ForceFlapUpZone    
+OR   AllFlapsHome                                                            
+ST   FlapA73.xAutoPlus
+
+LD   Fun_M988_Ch0                     ** Auto DWN command for supports
+OR   InclineFlapL3_ISO
+ANDN ForceFlapUpZone
+ST   FlapA73.xAutoMinus    
+
+LD   I_I_FlapL3_Home
+ST   FlapA73.xSensorPlus 
+
+LD   I_I_FlapL3_Inclined                ** M57.1
+ST   FlapA73.xSensorMinus           
+
+CAL  FlapA73
+
+LD   FlapA73.yPistonPlus 
+OR   HoldFlapInclined
+ST   O_O_FlapL3_Home
+
+LD   FlapA73.yPistonMinus 
+ANDN HoldFlapInclined
+ST   O_O_FlapL3_Incline
+
+LD   FlapA73.yAlarm
+AND  %cn8.cc1.3
+ST   %PLCerr21.26
+
+LD   ForceFlapUpZone
+ST   ForceFlapUp_73
+
+********************************************************************************
+* Ax74, Unloader Flap L4
+********************************************************************************
+LD   %ax74.ra4   
+GT  (    
+     LD  UnloadSupQta
+     ADD 1000
+)
+OR   Fun_M993_Ch0
+ST   ForceFlapUpZone
+
+LD   FlapL4JogHome   
+OR   AllFlapsHome   
+OR   ForceFlapUpZone      
+OR   ParkAllCmd   
+ST   FlapA74.xManualPlus	  
+    
+LD   FlapL4JogIncline 
+OR   AllFlapsIncline 
+ANDN ForceFlapUpZone
+ST   FlapA74.xManualMinus    
+
+LD   Fun_M989_Ch0                     ** Auto Up command for supports  
+OR   ForceFlapUpZone      
+OR   AllFlapsHome                            
+ST   FlapA74.xAutoPlus
+
+LD   Fun_M990_Ch0                     ** Auto DWN command for supports
+OR   InclineFlapL4_ISO
+ANDN ForceFlapUpZone
+ST   FlapA74.xAutoMinus    
+
+LD   I_I_FlapL4_Home
+ST   FlapA74.xSensorPlus 
+
+LD   I_I_FlapL4_Inclined                ** M57.1
+ST   FlapA74.xSensorMinus           
+
+CAL  FlapA74
+
+LD   FlapA74.yPistonPlus 
+OR   HoldFlapInclined
+ST   O_O_FlapL4_Home
+
+LD   FlapA74.yPistonMinus 
+ANDN HoldFlapInclined
+ST   O_O_FlapL4_Incline
+
+LD   FlapA74.yAlarm
+AND  %cn8.cc1.4
+ST   %PLCerr21.27
+
+LD   ForceFlapUpZone
+ST   ForceFlapUp_74
+
+********************************************************************************
+* Ax75, Unloader Flap L5
+********************************************************************************
+LD   %ax75.ra4   
+GT  (    
+     LD  UnloadSupQta
+     ADD 1000
+)
+OR   Fun_M993_Ch0
+ST   ForceFlapUpZone
+
+LD   FlapL5JogHome  
+OR   AllFlapsHome  
+OR   ForceFlapUpZone    
+OR   ParkAllCmd     
+ST   FlapA75.xManualPlus	  
+    
+LD   FlapL5JogIncline 
+OR   AllFlapsIncline 
+ANDN ForceFlapUpZone
+ST   FlapA75.xManualMinus    
+
+LD   Fun_M991_Ch0                     ** Auto Up command for supports  
+OR   ForceFlapUpZone    
+OR   AllFlapsHome                               
+ST   FlapA75.xAutoPlus
+
+LD   Fun_M992_Ch0                     ** Auto DWN command for supports
+OR   InclineFlapL5_ISO
+ANDN ForceFlapUpZone
+ST   FlapA75.xAutoMinus    
+
+LD   I_I_FlapL5_Home
+ST   FlapA75.xSensorPlus 
+
+LD   I_I_FlapL5_Inclined                ** M57.1
+ST   FlapA75.xSensorMinus           
+
+CAL  FlapA75
+
+LD   FlapA75.yPistonPlus 
+OR   HoldFlapInclined
+ST   O_O_FlapL5_Home
+
+LD   FlapA75.yPistonMinus 
+ANDN HoldFlapInclined
+ST   O_O_FlapL5_Incline
+
+LD   FlapA75.yAlarm
+AND  %cn8.cc1.5
+ST   %PLCerr21.28
+
+LD   ForceFlapUpZone
+ST   ForceFlapUp_75
+
+END_FUNCTION

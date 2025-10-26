@@ -1,0 +1,21 @@
+*File di messaggi errori runtime
+*I messaggi sono divisi in 3 blocchi:
+*1) 0-999: messaggi applicativo
+*2) 1000-1999: messaggi di errore di ogni canale
+*3) 2000-2031: nomi canali
+*
+*Le stringhe del secondo e terzo blocco vengono concatenate runtime
+*per creare il messaggio di errore completo.
+*
+*I messaggi di errore di ogni canale sono divisi in 3 blocchi:
+*1) 1000-1511: errori ISO
+*2) 1512-1767: errori DLL di base
+*3) 1768-1999: errori DLL personalizzate
+*
+*E' ammessa la direttiva #include "nomefile.ext".
+*E' possibile sovrascrivere un messaggio di base specificandone il numero
+*(es. #1000) seguito dalla linea del nuovo messaggio.
+*
+*Una riga che comincia per asterisco ('*') viene considerata commento
+*Tutte le altre righe non vuote vengono considerate valide
+

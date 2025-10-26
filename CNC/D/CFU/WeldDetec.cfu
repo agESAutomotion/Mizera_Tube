@@ -1,0 +1,222 @@
+[A]0 :Laser Tube Weld Seam Detection Via Vision Carmera (WeldDetec.cfu)
+
+; if block search running exit
+IF( (%cn[0].rc[8].8) && !(%cn[0].rc[8].15) ) RET
+IF( %cn[WHO()].rc[0].21 ) RET          
+IF( %IndexORG == 0 ) ERROR(769)         
+
+DBL sav_G70=XGET("@G70")
+G71
+
+; Tube Dimention Graph Level Protection
+IF( %gIso[24] < 1.0 ) THEN
+    SYN
+    ?%ui0.7 = 1
+	SYN
+	G4 F1
+	SYN
+	?%ui0.7 = 0
+	IF( %gIso[24] < 1.0 ) THEN
+	    MSGOUT "Tube Dimention Wrong, Please Reload the program"
+		M0
+		ERROR(55)
+	ENDIF
+ENDIF
+
+DBL Shpz = %gIso[24]
+DBL Shpy = %gIso[23]
+DBL Shpinfo = %gIso[26]
+
+DBL j, strtar
+DBL liftz = SQRT( Shpz * Shpz + Shpy * Shpy)/2 + 20
+DBL inc_scan = 0
+
+DBL CurCAng = 0
+DBL found = 0
+DBL MesStp = 3            ;[mm]
+DBL MesAng = %rLsGui[66] / 1000           ;[degree]
+DBL MesDis = 20           ;[mm] + Tube surface
+DBL DetecSpd = 1500
+
+SYN
+JSR "Sel_Y3Z3_ORIG.cfs"
+G153 G0 Z(trav_safe_z)
+G153 G0 C0
+
+G64 F(DetecSpd)
+SPC 30000,0
+
+MSGOUT "WELD SEAM searching in progress..."
+	
+SWITCH ( Shpinfo ) 
+
+CASE 0
+
+    ;// SQUARE
+    REPEAT   
+	      SYN
+		  IF( inc_scan == 1 ) THEN
+              RPT .incscan_start, .incscan_end, 1
+		  ELSE
+              RPT .noscan_start, .noscan_end, 1
+	      ENDIF
+		  
+		  ;I_I_Detec_Weld
+		  SYN
+		  IF( %M55.13 == 1 ) BREAK
+		  
+	      IF( liftz > MesDis ) G153 G0 Z(liftz)
+	      G153 G0 C( CurCAng + 90 )
+	      SYN
+		  CurCAng = CurCAng + 90
+		  G4 F0.22
+	UNTIL ( (CurCAng == 360) || (found != 0) )
+	
+CASE 1
+    ;// ROUND
+	G153 G0 Z(Shpz/2+MesDis) Y(0)
+	G91
+	FOR j=0 TO 360 BY MesAng   
+		SYN
+		;I_I_Detec_Weld
+		found = IFEXP( %M55.13 == 1, CurCAng, 0)
+		SYN
+		IF( %M55.13 == 1 ) BREAK
+	    G1 C(MesAng)
+		;IsoCameraToDetec
+		SYN
+        ?%LsIso2.5 = 1
+		SYN	
+		;I_I_Pic_Weld AT %M55.14;
+		WAITBIT("%M55.14",1)
+		G4 F0.22
+		SYN
+        ?%LsIso2.5 = 0		
+	ENDFOR
+	G90
+	
+OTHERWISE	
+    .FAULT_WELDDETC
+    SYN 
+    MSGOUT " Not available weld detection for special profile"	   
+    JMP .FAULT_WELDDETC
+ENDSWITCH 
+
+RPT .close_cam_piston_start, .close_cam_piston_end, 1
+
+IF( (found != 0) || ((found == 0) && (CurCAng == 0)) ) THEN 
+    ;?%funz[%IndexORG].rotEA = found - pl_add1_c - 180
+    ;orig_c=%funz[%IndexORG].rotEA
+	SYN 
+	MSGOUT " Weld seam C angle: " found
+	
+	;Set origin 180 from weld seam
+    orig_c = found - pl_add1_c - ( %R[38] )
+	IF( orig_c > 180 ) found = found - 360
+    G179 C(orig_c)
+	?%funz[19].rotEA = orig_c
+	WeldDetecDone = 1 
+ELSE
+    SYN 
+    MSGOUT " No weld seam detected, press START to continue"
+	M0
+ENDIF
+
+;O_O_WeldDetec_En AT %USR_M41.24;	
+SYN
+?%USR_M41.24 = 0
+G4 F0.22
+
+G153 G0 Z(trav_safe_z)
+IF( found != 0 ) G153 G0 C(orig_c)
+
+G(sav_G70)
+RET
+
+.incscan_start
+    SYN
+    CurCAng = FIX(QCALC(C))
+	SYN
+	IF( (ABS(SIN(CurCAng))) < 0.001 ) THEN
+	    G153 G0 Z(Shpz/2+MesDis) Y(-Shpy/2)
+	    strtar = Shpy
+	ELSEIF ( ABS(ABS(SIN(CurCAng)) - 1) < 0.001 ) THEN 
+	    G153 G0 Z(Shpy/2+MesDis) Y(-shpz/2)
+	    strtar = shpz
+	ELSE
+        RPT .alm_status_start, .alm_status_end, 1
+	ENDIF
+	
+	RPT .open_cam_piston_start, .open_cam_piston_end, 1
+			  
+	G91
+	FOR j=0 TO strtar BY MesStp    
+		SYN
+		;I_I_Detec_Weld
+		found = IFEXP( %M55.13 == 1, CurCAng, 0)
+		IF( %M55.13 == 1 ) BREAK
+	    G1 Y(MesStp)
+		;IsoCameraToDetec
+        ?%LsIso2.5 = 1
+		SYN
+		;I_I_Pic_Weld AT %M55.14;
+		WAITBIT("%M55.14",1)
+		G4 F0.22	
+        ?%LsIso2.5 = 0		
+	ENDFOR
+	G90
+.incscan_end
+
+.noscan_start
+    SYN
+    CurCAng = FIX(QCALC(C))
+	SYN
+	IF( (ABS(SIN(CurCAng))) < 0.001 ) THEN
+	    G153 G0 Z(Shpz/2+MesDis) Y(0)
+	ELSEIF ( ABS(ABS(SIN(CurCAng)) - 1) < 0.001 ) THEN 
+	    G153 G0 Z(Shpy/2+MesDis) Y(0)
+	ELSE
+        RPT .alm_status_start, .alm_status_end, 1
+	ENDIF
+	
+	RPT .open_cam_piston_start, .open_cam_piston_end, 1
+
+    ;IsoCameraToDetec
+    ?%LsIso2.5 = 1
+	SYN
+	;I_I_Pic_Weld AT %M55.14;
+	WAITBIT("%M55.14",1)
+	G4 F0.22
+	?%LsIso2.5 = 0	
+	SYN
+	;I_I_Detec_Weld
+	found = IFEXP( %M55.13 == 1, CurCAng, 0)
+.noscan_end
+
+.alm_status_start
+	.FAULT_TUBEAGN
+    SYN 
+    MSGOUT " Wrong Square Tube Angle to Detect Weld Seam "	   
+    JMP .FAULT_TUBEAGN
+.alm_status_end
+
+.open_cam_piston_start
+    ; O_O_VISCAMERA_PISTON
+	SYN
+	IF( !%LsIso2.4 ) THEN
+        ?%LsIso2.4 = 1  
+        G4 F3
+	ENDIF
+	
+    ;O_O_WeldDetec_En AT %USR_M41.24;	
+    SYN
+    ?%USR_M41.24 = 1
+    G4 F0.05
+.open_cam_piston_end
+
+.close_cam_piston_start
+    ; O_O_VISCAMERA_PISTON
+	SYN
+    ?%LsIso2.4 = 0
+    G4 F3
+.close_cam_piston_end

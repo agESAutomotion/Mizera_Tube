@@ -1,0 +1,55 @@
+ [C]12 [X]0 [Y]0 [Z]0 [R]0 [A]-90.0 [B]+90.0 : G2804
+;//Sphere graphics
+DBL color = VA2
+DBL xc = CTOMM(VA23), yc = CTOMM(VA24), zc = CTOMM(VA25)
+DBL r = CTOMM(VA17)
+DBL as = VA0, ae = VA1
+DBL shx = 0, shy = 0, shz = 0
+DBL a, b, b0, step
+DBL chord, asteps, bsteps
+DBL sav_G70=XGET("@G70")
+G71
+
+IF(f_ortho) THEN
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+ENDIF
+
+IF (r < 0.001) THEN
+    asteps = 1
+ELSE
+    chord = 0.05 / r    ;//chord error
+    asteps = CEIL(360.0 / (2*ACOS(1.0-MIN(1.0,chord)))) ;//span
+    asteps = MIN(MAX(asteps, 1), 48)    ;//max tiles
+ENDIF
+
+IF (r < 0.001) THEN
+    bsteps = 1
+ELSE
+    chord = 0.05 / r                    ;//chord error
+    bsteps = CEIL(360.0 / (2*ACOS(1.0-MIN(1.0,chord)))) ;//span
+    bsteps = MIN(MAX(bsteps, 1), 48)    ;//max tiles
+ENDIF
+
+bsteps = CEIL((ae-as) * bsteps/360.0 + 0.001)
+step = (ae-as)/bsteps
+
+FOR b = as TO ae+0.001 BY step
+    b0 = b - step
+
+    IF((b > -89.999) && (b < +89.999)) THEN
+        MOVE(15,color,xc+r*COS(b)+shx,yc+shy,zc+r*SIN(b)+shz)
+        ARCTOCCW(15,color,17,xc+r*COS(b)+shx,yc+shy,zc+r*SIN(b)+shz,xc+shx,yc+shy,zc+shz)
+    ENDIF
+
+    IF(b0 > (as-0.001)) THEN
+    FOR a = 0 TO 359.999 BY 360/asteps
+        MOVE(  15,color,xc+r*COS(b )*COS(a)+shx,yc+r*COS(b )*SIN(a)+shy,zc+r*SIN(b )+shz)
+        LINETO(15,color,xc+r*COS(b0)*COS(a)+shx,yc+r*COS(b0)*SIN(a)+shy,zc+r*SIN(b0)+shz)
+    ENDFOR
+    ENDIF
+ENDFOR
+
+G(sav_G70)
+RET

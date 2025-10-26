@@ -1,0 +1,102 @@
+Programma Unit1 % 3333
+
+IF( %cn[WHO()].rc[0].21 ) M2           ;Canale in test
+
+INCLUDE "vax_inc.cfs"
+INCLUDE "vars_inc.cfs"
+INCLUDE "generic_inc.cfs"
+
+DBL a
+;//Determina istanza testa
+;//(UNIT1, che é il canale 3, corrisponde all'istanza 0)
+DBL  hix = WHO() - 3
+DBL  is_dryrun=0
+
+;//G650
+DBL gTechType
+;//G806
+DBL gTravT
+DBL gTravH
+DBL gTravD
+DBL gTravS
+DBL gTravE
+;//G800
+DBL gKerfDescr
+DBL gKerfSvr
+;//Coordinate relative alla matrice del Tool Center Point
+DBL a_x, a_y, a_z
+;//Altre
+DBL leave_dist
+DBL regol_mode
+DBL touch_mode
+DBL cut_dist
+
+DBL sav_G70=XGET("@G70")
+G71
+
+;//XXX Puo' darsi che non servano a nulla IN questo canale.
+;//Surface normal vector is relative to the workpiece frame
+ECLMXM=1
+;//face milling mode
+G183 J1   ;;;SPC 30150,1
+
+RTCP=1
+VECRTC=1
+G64
+
+N10
+
+; if graphics mode return
+IF( %cn[WHO()].rc[0].21 == 1 )  G(sav_G70)
+IF( %cn[WHO()].rc[0].21 == 1 )  END
+
+M30000   ;Attendi Servizio per Unit_1(M10000 / M10001)
+
+SYN
+;CN3_REQ_VYZ_ISO AT %LsIso35.5;
+IF( %LsIso35.5 ) THEN
+    
+	G16 VYZ+
+	VECRTC=1
+	G16 XYZ+
+	
+	?%LsIso35.5 = 0
+    SYN
+    AWAIT( %LsIso35.5 == 0 )
+    POP(1)
+    JMP 10
+ENDIF
+
+SYN 
+FOR a=0 TO 10
+    SYN
+    IF( !%gPlc2.12 ) BREAK
+    IF( (%gPlc2.12) && (%cn0.rc8.1) ) BREAK
+    G4 F0.1
+ENDFOR
+
+SYN
+GRPQ[X,Y,Z,A,B,C] = 1
+G152
+
+SYN
+;//G650
+;gTechType = %gIso[0]
+gTechType = 3
+
+G153
+GRPQ[X,Y,Z,A,B,C] = 0
+
+IF(%FunzRequest==1) THEN
+	M30010              ; Sblocco Richiesta servizio (M10000_CN0 inizialavorazione)
+ENDIF
+
+IF(%FunzRequest==2) THEN
+	M30011              ; Sblocco Richiesta servizio (M10001_CN0 finelavorazione)
+ENDIF
+
+JMP 10
+
+G(sav_G70)
+M30
+END

@@ -1,0 +1,65 @@
+: ErrorIso
+
+
+RET
+;Gestione errori ISO
+;**********************************************************
+;(VA0)    =0 Error
+;         =1 Warning
+;         =2 Message
+;(VA1)    Codice messaggio
+;(VA2..9) Parametri messaggio
+
+;Info
+;--------------------------------------
+;%Language[x] Array codice ascii 
+;es. ITA
+;[0]    73  I
+;[1]    84  T
+;[2]    65  A
+
+
+
+;Per ridurre il numero di decimali
+;--------------------------------------
+SYN
+%Md20=0
+%Md21=0
+%Md22=0
+%Md23=0
+IF(!ISQNAN(VA2)) %Md20=VA2*10
+IF(!ISQNAN(VA3)) %Md21=VA3*10
+IF(!ISQNAN(VA4)) %Md22=VA4*10
+IF(!ISQNAN(VA5)) %Md23=VA5*10
+SYN
+VA2=%Md20/10
+VA3=%Md21/10
+VA4=%Md22/10
+VA5=%Md23/10
+
+
+;Richiamo traduzioni
+;--------------------------------------
+SYN
+.ErrIso
+IF((%Language[0]==73) && (%Language[1]==84) && (%Language[2]==65)) JSR "ErrorIso_ITA.cfs" VA0 VA1 VA2 VA3 VA4 VA5 VA6 VA7 VA8 VA9
+IF((%Language[0]==69) && (%Language[1]==78) && (%Language[2]==71)) JSR "ErrorIso_ENG.cfs" VA0 VA1 VA2 VA3 VA4 VA5 VA6 VA7 VA8 VA9
+
+
+;Attesa richiesta operatore
+;--------------------------------------
+SYN
+;Message
+IF (VA0==2) JMP .Msg
+;Warning
+%Md[12].9=1           ;Richiesta operatore da ISO
+M0
+SYN
+MSGOUT " " 
+;Error
+IF (VA0==0) JMP .ErrIso
+
+.Msg
+SYN
+%Md[12].9=0           ;Richiesta operatore da ISO
+RET  

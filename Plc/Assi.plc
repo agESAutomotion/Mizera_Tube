@@ -1,0 +1,3304 @@
+* Blocchi gestione assi da PLC
+
+VAR
+#include "assi.inc"
+#include "cnc.inc"
+END_VAR
+
+* --------------------------------------------*
+* Blocco Funzionale gestione procedura assi
+* --------------------------------------------*
+* NB: questo codice viene richiamato da tutti i FB di gestione assi,
+* quindi e' stato ottimizzato in vari modi per renderlo piu' efficiente.
+
+FUNCTION_BLOCK AX_COMMAND
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+END_VAR
+
+VAR_OUTPUT
+#defcom yax_ERRCODE.0 Stato procedura terminata con allarme
+#defcom yax_ERRCODE.1 Stato proc. slave terminata per abort
+#defcom yax_ERRCODE.2 Stato errore da slave
+#defcom yax_ERRCODE.3 Stato errore asse non pronto
+#defcom yax_ERRCODE.4 Stato errore slave busy
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+yax_RUNSLV:   BOOL;       * Esecuzione procedura slave in corso
+yax_TRDATA:   BOOL;       * Impulso trasferimento dati a slave
+yax_RUNEXEC:  BOOL;       * Esecuzione procedura slave confermata
+END_VAR
+
+VAR
+AP_ENDPSL:    BOOL;       * Appoggio procedura slave terminata
+AP_ENDPFB:    BOOL;       * Appoggio procedura FB terminata
+AP_NOTRDY:    BOOL;       * Appoggio errore asse non pronto
+AP_BUSY:      BOOL;       * slave busy
+AP_ALLM:      BOOL;       * allarme o emergenza asse
+ST_ENDP:      BOOL;       * Stato procedura terminata
+ST_ABORT:     BOOL;       * Stato abort procedura
+FR_START:     BOOL;       * Fronte su ingresso di start
+SP_START:     BOOL;       * Stato prec. ingresso di start
+SP_RUNSLV:    BOOL;       * Stato prec. esecuzione procedura slave
+END_VAR
+
+* Controllo asse pronto per start
+
+LD   BAI_START                     ** ra0.29 Esecuzione comando impostato da PLC
+OR   BAO_PEXEC                     ** ra3.29 Exec procedura attivo da slave
+ST   AP_BUSY                       ** slave busy
+
+LD   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAI_ABORT                     ** ra0.16 Fermata asse, annulla percorso residuo
+ST   AP_ALLM                       ** allarme o emergenza asse
+
+LD   xax_ENABLE                    ** abilita FB
+AND  BAO_GRANTPLC                  ** ra3.28 conferma asse gestito da PLC
+AND  BAI_PLCREQ                    ** ra0.28 Richiesta gestione asse da PLC
+ANDN AP_ALLM                       ** allarme o emergenza asse
+ANDN BAO_ARUN                      ** ra8.7 arresto per allarme in corso
+ANDN BAO_ALRM                      ** ra8.2 arresto per allarme terminato
+ANDN AP_BUSY                       ** slave busy
+ST   yax_READY                     ** FB pronto per START
+
+* Fronte di salita sullo start
+
+LD   xax_START                     ** start richiesta azione
+ANDN SP_START                      ** Stato prec. ingresso di start
+ST   FR_START                      ** Fronte su ingresso di start
+
+LD   xax_START                     ** start richiesta azione
+ST   SP_START                      ** Stato prec. ingresso di start
+
+* Gestione start non accettato
+
+LD   FR_START                      ** Fronte su ingresso di start
+ANDN yax_READY                     ** FB pronto per START
+ANDN yax_RUNEXEC                   ** Esecuzione procedura slave confermata
+ST   AP_NOTRDY                     ** Appoggio errore asse non pronto
+
+* Impulso fine procedura
+
+LD   AP_ALLM                       ** allarme o emergenza asse
+AND  yax_RUNSLV                    ** Esecuzione procedura slave in corso
+OR   (
+LDN  BAO_GRANTPLC                  ** ra3.28 conferma asse gestito da PLC
+AND  ST_ABORT                      ** Stato abort procedura
+)
+ANDN yax_RUNEXEC                   ** Esecuzione procedura slave confermata
+OR   (             * Condizione normale di fine procedura
+LDN  BAO_PEXEC                     ** ra3.29 Exec procedura attivo da slave
+AND  yax_RUNEXEC                   ** Esecuzione procedura slave confermata
+)
+ST   AP_ENDPSL                     ** Appoggio procedura slave terminata
+
+LD   AP_ENDPSL                     ** Appoggio procedura slave terminata
+OR   AP_NOTRDY                     ** Appoggio errore asse non pronto
+ST   AP_ENDPFB                     ** Appoggio procedura FB terminata
+
+* Gestione start valido
+
+LD   FR_START                      ** Fronte su ingresso di start
+AND  yax_READY                     ** FB pronto per START
+S    yax_RUNSLV                    ** Esecuzione procedura slave in corso
+
+LD   BAO_PEXEC                     ** ra3.29 Exec procedura attivo da slave
+AND  yax_RUNSLV                    ** Esecuzione procedura slave in corso
+S    yax_RUNEXEC                   ** Esecuzione procedura slave confermata
+
+LD   AP_ENDPFB                     ** Appoggio procedura FB terminata
+R    yax_RUNSLV                    ** Esecuzione procedura slave in corso
+R    yax_RUNEXEC                   ** Esecuzione procedura slave confermata
+
+* memoria fine procedura
+
+LD   AP_ENDPFB                     ** Appoggio procedura FB terminata
+S    ST_ENDP                       ** Stato procedura terminata
+
+LD   xax_CLEAR                     ** conferma fine comando
+OR   yax_RUNSLV                    ** Esecuzione procedura slave in corso
+R    ST_ENDP                       ** Stato procedura terminata
+
+* Procedura non corretta per allarme asse
+
+LD   AP_ENDPSL                     ** Appoggio procedura slave terminata
+AND  AP_ALLM                       ** allarme o emergenza asse
+S    yax_ERRCODE.0                 ** Stato procedura terminata con allarme
+
+* Procedura non corretta per abort
+
+LD   AP_ENDPSL                     ** Appoggio procedura slave terminata
+AND  ST_ABORT                      ** Stato abort procedura
+S    yax_ERRCODE.1                 ** Stato proc. slave terminata per abort
+
+* Gestione errori da slave
+
+LD   FB_ERRCODE                    ** fb14 Codice errore procedura
+GT   100
+AND  AP_ENDPSL                     ** Appoggio procedura slave terminata
+ANDN ST_ABORT                      ** Stato abort procedura
+S    yax_ERRCODE.2                 ** Stato errore da slave
+
+* Memorizza start con asse non pronto
+
+LD   AP_NOTRDY                     ** Appoggio errore asse non pronto
+ANDN AP_BUSY                       ** slave busy
+S    yax_ERRCODE.3                 ** Stato errore asse non pronto
+
+LD   AP_NOTRDY                     ** Appoggio errore asse non pronto
+AND  AP_BUSY                       ** slave busy
+S    yax_ERRCODE.4                 ** Stato errore slave busy
+
+LDN  ST_ENDP                       ** Stato procedura terminata
+R    yax_ERRCODE.0                 ** Stato procedura terminata con allarme
+R    yax_ERRCODE.1                 ** Stato proc. slave terminata per abort
+R    yax_ERRCODE.2                 ** Stato errore da slave
+R    yax_ERRCODE.3                 ** Stato errore asse non pronto
+R    yax_ERRCODE.4                 ** Stato errore slave busy
+
+* Gestione procedura interrotta
+
+LDN  xax_ENABLE                    ** abilita FB
+S    ST_ABORT                      ** Stato abort procedura
+
+LDN  yax_RUNSLV                    ** Esecuzione procedura slave in corso
+R    ST_ABORT                      ** Stato abort procedura
+
+* Comando segnali allo slave
+
+LD   yax_RUNSLV                    ** Esecuzione procedura slave in corso
+JMPCN END_COMMAND
+
+LDN  yax_RUNEXEC                   ** Esecuzione procedura slave confermata
+ST   BAI_START                     ** ra0.29 Esecuzione comando impostato da PLC
+
+LD   ST_ABORT                      ** Stato abort procedura
+AND  BAO_ORDM                      ** ra3.13  Ordine di moto
+ST   BAI_HALT                      ** ra0.30 Abort comando impostato da PLC
+
+END_COMMAND:
+
+* Azzeramento segnali slave a fine procedura
+
+LD   AP_ENDPSL                     ** Appoggio procedura slave terminata
+OR   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+JMPCN END_AZZSLV
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   BAI_START                     ** ra0.29 Esecuzione comando impostato da PLC
+ST   BAI_HALT                      ** ra0.30 Abort comando impostato da PLC
+
+END_AZZSLV:
+
+* Comando uscite FB
+
+LD   yax_RUNSLV                    ** Esecuzione procedura slave in corso
+OR   AP_NOTRDY                     ** Appoggio errore asse non pronto
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   yax_RUNSLV                    ** Esecuzione procedura slave in corso
+ANDN SP_RUNSLV                     ** Stato prec. esecuzione procedura slave
+ST   yax_TRDATA                    ** Impulso trasferimento dati a slave
+
+LD   yax_RUNSLV                    ** Esecuzione procedura slave in corso
+ST   SP_RUNSLV                     ** Stato prec. esecuzione procedura slave
+
+LD   yax_ERRCODE                   ** codice errore ( maschera bit )
+EQ   0
+AND  ST_ENDP                       ** Stato procedura terminata
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   ST_ENDP                       ** Stato procedura terminata
+ANDN yax_ENDOK                     ** Comando terminato correttamente
+ANDN yax_RUNNING                   ** Esecuzione FB in corso
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------*
+* Blocco Funzionale posizionamento asse
+* --------------------------------------------*
+
+FUNCTION_BLOCK AX_POSIZ
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (vmax, rampe) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_INCMODE:  BOOL;       * 0 = assoluto, 1 = incrementale
+xax_QUOTA:    DWORD;      * Quota target (0.001 mm)
+xax_VEL:      DWORD;      * Velocita' posizionamento (mm/min)
+xax_VMAX:     DWORD;      * Velocita' massima (mm/min)
+xax_ACCEL:    DWORD;      * Accelerazione (msec o mm/s2)
+xax_DECEL:    DWORD;      * Decelerazione (msec o mm/s2)
+xax_RAMPES:   DWORD;      * Tempo Rampe S (msec o mm/s3)
+xax_TOLLP:    DWORD;      * Tolleranza (0.001 mm)
+xax_MINICS:   DWORD;      * Vel min in regime di tempo cost. [mm/min]
+xax_ICSTIME:  DWORD;      * Tempo addiz. in regime di tempo cost. [ms]
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   xax_INCMODE                   ** 0 = assoluto, 1 = incrementale
+JMPC INCMODE
+
+LD   1
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_INCMODE
+
+INCMODE:
+
+LD   2
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+END_INCMODE:
+
+LD   xax_QUOTA                     ** Quota target (0.001 mm)
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_VEL                       ** Velocita' posizionamento (mm/min)
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   xax_IMMDATA                   ** dati (vmax, rampe) immediati
+JMPC IMMDATA
+
+LD   AP_AXTYPE                     ** pa0 Tipo asse
+EQ   20
+JMPC NVEL
+
+LD   AP_VELMAX                     ** pa9 Velocità massima
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   AP_DECEL                      ** pa2 Decelerazione massima
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   AP_JERK                       ** pa25 Jerk massimo
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   AP_TOLLERG                    ** pa6 Quota tolleranza grossolana
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+JMP  END_DATA
+
+NVEL:
+
+LD   NV_VELMAX                     ** pa4 Velocità massima (NVEL)
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   0
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   NV_TOLLERG                    ** pa2 Quota tolleranza grossolana (NVEL)
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_VMAX                      ** Velocita' massima (mm/min)
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   xax_ACCEL                     ** Accelerazione (msec o mm/s2)
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_DECEL                     ** Decelerazione (msec o mm/s2)
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_RAMPES                    ** Tempo Rampe S (msec o mm/s3)
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   xax_TOLLP                     ** Tolleranza (0.001 mm)
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+LD   xax_MINICS                    ** Vel min in regime di tempo cost. [mm/min]
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+LD   xax_ICSTIME                   ** Tempo addiz. in regime di tempo cost. [ms]
+ST   FB_GAINV                      ** fb9 Feed forward (0.001 DAC/(pulses/sec) o 0.1 %)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+
+
+* --------------------------------------------*
+* Blocco Funzionale preset asse
+* --------------------------------------------*
+
+FUNCTION_BLOCK AX_PRESET
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_INCMODE:  BOOL;       * 0 = assoluto, 1 = incrementale
+xax_QUOTA:    DWORD;      * Quota target assoluta ( 0.001 mm )
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   xax_INCMODE                   ** 0 = assoluto, 1 = incrementale
+JMPC INCMODE
+
+LD   10
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_INCMODE
+
+INCMODE:
+
+LD   11
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+END_INCMODE:
+
+LD   xax_QUOTA                     ** Quota target assoluta ( 0.001 mm )
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+
+
+* --------------------------------------------*
+* Blocco Funzionale comando singvar
+* --------------------------------------------*
+
+FUNCTION_BLOCK AX_SINGVAR
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (vmax, rampe) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_QUOTA:    DWORD;      * Quota target assoluta ( 0.001 mm )
+xax_VEL:      DWORD;      * Velocita' posizionamento ( mm/min )
+xax_VMAX:     DWORD;      * Velocita' massima ( mm/min )
+xax_ACCEL:    DWORD;      * Accelerazione (msec o mm/s2)
+xax_DECEL:    DWORD;      * Decelerazione (msec o mm/s2)
+xax_RAMPES:   DWORD;      * Tempo Rampe S (msec o mm/s3)
+xax_TOLLP:    DWORD;      * Tolleranza ( 0.001 mm )
+xax_TARGR:    DWORD;      * Quota limite ritorno ( 0.001 mm )
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+* NB: il trasferimento deve essere effettuato continuamente
+* per potere variare il target al volo, quindi uso un segnale diverso.
+
+LD   AXFB.yax_RUNSLV
+JMPCN END_DATA
+
+LD   18
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_QUOTA                     ** Quota target assoluta ( 0.001 mm )
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_VEL                       ** Velocita' posizionamento ( mm/min )
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   xax_TARGR                     ** Quota limite ritorno ( 0.001 mm )
+ST   FB_TARGR                      ** fb10 Numero utensile target (1-12)
+
+LD   xax_IMMDATA                   ** dati (vmax, rampe) immediati
+JMPC IMMDATA
+
+LD   AP_VELMAX                     ** pa9 Velocità massima
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   AP_DECEL                      ** pa2 Decelerazione massima
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   AP_JERK                       ** pa25 Jerk massimo
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   AP_TOLLERG                    ** pa6 Quota tolleranza grossolana
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_VMAX                      ** Velocita' massima ( mm/min )
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   xax_ACCEL                     ** Accelerazione (msec o mm/s2)
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_DECEL                     ** Decelerazione (msec o mm/s2)
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_RAMPES                    ** Tempo Rampe S (msec o mm/s3)
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   xax_TOLLP                     ** Tolleranza ( 0.001 mm )
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+
+* ---------------------------------------------------*
+* Blocco Funzionale posizionamento asse rotativo tondo
+* ---------------------------------------------------*
+
+FUNCTION_BLOCK AX_POS_ROT
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (vmax, rampe) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_MODE:     DWORD;      * Modo di posizionamento
+                          * 0 = assoluto standard
+                          * 1 = assoluto avanti
+                          * 2 = assoluto indietro
+                          * 3 = assoluto breve
+                          * 4 = incrementale
+xax_QUOTA:    DWORD;      * Quota target (0.001 deg)
+xax_VEL:      DWORD;      * Velocita' posizionamento (deg/min)
+xax_VMAX:     DWORD;      * Velocita' massima (deg/min)
+xax_ACCEL:    DWORD;      * Accelerazione (msec o deg/s2)
+xax_DECEL:    DWORD;      * Decelerazione (msec o deg/s2)
+xax_RAMPES:   DWORD;      * Tempo Rampe S (msec o deg/s3)
+xax_TOLLP:    DWORD;      * Tolleranza (0.001 deg)
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   xax_MODE                      ** Modo di posizionamento
+NE   1
+JMPC CMDMODE2
+
+LD   14
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_CMDMODE
+
+CMDMODE2:
+
+LD   xax_MODE                      ** Modo di posizionamento
+NE   2
+JMPC CMDMODE3
+
+LD   15
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_CMDMODE
+
+CMDMODE3:
+
+LD   xax_MODE                      ** Modo di posizionamento
+NE   3
+JMPC CMDMODE4
+
+LD   16
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_CMDMODE
+
+CMDMODE4:
+
+LD   xax_MODE                      ** Modo di posizionamento
+NE   4
+JMPC CMDMODE0
+
+LD   17
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+JMP  END_CMDMODE
+
+CMDMODE0:
+
+LD   13
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+END_CMDMODE:
+
+LD   xax_QUOTA                     ** Quota target (0.001 deg)
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_VEL                       ** Velocita' posizionamento (deg/min)
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   xax_IMMDATA                   ** dati (vmax, rampe) immediati
+JMPC IMMDATA
+
+LD   AP_VELMAX                     ** pa9 Velocità massima
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   AP_DECEL                      ** pa2 Decelerazione massima
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   AP_JERK                       ** pa25 Jerk massimo
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   AP_TOLLERG                    ** pa6 Quota tolleranza grossolana
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_VMAX                      ** Velocita' massima (deg/min)
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   xax_ACCEL                     ** Accelerazione (msec o deg/s2)
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_DECEL                     ** Decelerazione (msec o deg/s2)
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_RAMPES                    ** Tempo Rampe S (msec o deg/s3)
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   xax_TOLLP                     ** Tolleranza (0.001 deg)
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+
+
+* --------------------------------------------*
+* Blocco Funzionale reset bit asse tarato
+* --------------------------------------------*
+
+FUNCTION_BLOCK AX_RESTAR
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   12
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+
+* --------------------------------------------*
+* Blocco Funzionale ciclo di taratura
+* --------------------------------------------*
+
+FUNCTION_BLOCK AX_HOMING
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (vmax, rampe) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_REVERSE:  BOOL;       * 0 = quote decrescenti, 1 = quote crescenti
+xax_MODE:     DWORD;      * Modo di taratura
+xax_QUOTA:    DWORD;      * Quota di taratura ( 0.001 mm )
+xax_VEL:      DWORD;      * Velocita' ricerca micro e tacca ( mm/min )
+xax_VMAX:     DWORD;      * Velocita' massima ( mm/min )
+xax_ACCEL:    DWORD;      * Accelerazione e decelerazione (msec o mm/s2)
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   22
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_IMMDATA                   ** dati (vmax, rampe) immediati
+JMPC IMMDATA
+
+LD   AP_TARQUOTA                   ** pa18 Quota di taratura
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   AP_VELMICRO                   ** pa19 Velocità ricerca micro in taratura
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   AP_VELMAX                     ** pa9 Velocità massima
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   AP_DRVTYPE                    ** nvel11 Tipo drive (0=analogico)
+EQ   0
+JMPC AN_DRIVE
+
+* In questo comando il registro della decelerazione è usato per il modo
+LD   AP_TARTYPE                    ** pa16 Tipo di taratura
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   AP_OPZIONI0                   ** pa3.0 Bit inversione direzione taratura
+ST   FB_TARGR.0
+
+JMP  END_DATA
+
+AN_DRIVE:
+
+LD   AP_OPZIONI0                   ** pa3.0 Bit inversione direzione taratura
+JMPC INVDIR
+
+LD   2
+ST   %fb5
+
+JMP  END_DATA
+
+INVDIR:
+
+LD   1
+ST   %fb5
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_QUOTA                     ** Quota di taratura ( 0.001 mm )
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_VEL                       ** Velocita' ricerca micro e tacca ( mm/min )
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   xax_VMAX                      ** Velocita' massima ( mm/min )
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   xax_ACCEL                     ** Accelerazione e decelerazione (msec o mm/s2)
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   AP_DRVTYPE                    ** nvel11 Tipo drive (0=analogico)
+EQ   0
+JMPC AN_DRIVEI
+
+* In questo comando il registro della decelerazione è usato per il modo
+LD   xax_MODE                      ** Modo di taratura
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_REVERSE                   ** 0 = quote decrescenti, 1 = quote crescenti
+ST   FB_TARGR.0
+
+JMP  END_DATA
+
+AN_DRIVEI:
+
+LD   xax_REVERSE                   ** 0 = quote decrescenti, 1 = quote crescenti
+JMPC INVDIRI
+
+LD   2
+ST   %fb5
+
+JMP  END_DATA
+
+INVDIRI:
+
+LD   1
+ST   %fb5
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------*
+* Blocco Funzionale ciclo di movimento in JOG
+* --------------------------------------------*
+
+FUNCTION_BLOCK AX_JOGGING
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (vmax, rampe) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_VARVEL:   BOOL;       * velocità variabile (0 NO(sistema), 1 SI (input FB))
+xax_REVERSE:  BOOL;       * 0 = quote decrescenti, 1 = quote crescenti
+xax_OPENLOOP: BOOL;       * 0 = JOG standard, 1 = JOG open
+xax_VEL:      DWORD;      * Velocita' ( mm/min ) o tensione (mV)
+xax_VMAX:     DWORD;      * Velocita' massima (mm/min o mV)
+xax_ACCEL:    DWORD;      * Accelerazione (msec o mm/s2)
+xax_DECEL:    DWORD;      * Decelerazione (msec o mm/s2)
+xax_RAMPES:   DWORD;      * Tempo Rampe S (msec o mm/s3)
+xax_TOLLP:    DWORD;      * Tolleranza ( 0.001 mm )
+xax_TTOLL:    DWORD;      * Timer tolleranza ( 0.001 s, min = Tcalc, solo per JogOpen)
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   xax_OPENLOOP                  ** 0 = JOG standard, 1 = JOG open
+JMPC JOG_OPEN
+
+LD   23
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   AP_VELMAN                     ** pa23 Velocità di JOG
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+JMP  END_CMDCODE
+
+JOG_OPEN:
+
+LD   24
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   UP_JOGOPEN                    ** ui23 Tensione per JOG OPEN (mVolt)
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+END_CMDCODE:
+
+LD   xax_REVERSE                   ** 0 = quote decrescenti, 1 = quote crescenti
+ST   FB_TARGR.0
+
+LD   xax_VARVEL                    ** velocità variabile (0 NO(sistema), 1 SI (input FB))
+*ANDN xax_OPENLOOP  ** 0 = JOG standard, 1 = JOG open
+ST   FB_TARGR.1
+
+LD   xax_IMMDATA                   ** dati (vmax, rampe) immediati
+JMPC IMMDATA
+
+LD   xax_OPENLOOP                  ** 0 = JOG standard, 1 = JOG open
+JMPC JOPEN_VEL
+
+LD   AP_VELMAX                     ** pa9 Velocità massima
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+JMP  END_JOPEN_VEL
+
+JOPEN_VEL:
+
+LD   10000
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+END_JOPEN_VEL:
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   AP_DECEL                      ** pa2 Decelerazione massima
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   AP_JERK                       ** pa25 Jerk massimo
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   AP_TOLLERG                    ** pa6 Quota tolleranza grossolana
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_VMAX                      ** Velocita' massima (mm/min o mV)
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   xax_ACCEL                     ** Accelerazione (msec o mm/s2)
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_DECEL                     ** Decelerazione (msec o mm/s2)
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_RAMPES                    ** Tempo Rampe S (msec o mm/s3)
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   xax_TOLLP                     ** Tolleranza ( 0.001 mm )
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+LD   xax_TTOLL                     ** Timer tolleranza ( 0.001 s, min = Tcalc, solo per JogOpen)
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+END_DATA:
+
+LD   AXFB.yax_RUNSLV
+AND  xax_VARVEL                    ** velocità variabile (0 NO(sistema), 1 SI (input FB))
+JMPCN END_VARDATA
+
+LD   xax_VEL                       ** Velocita' ( mm/min ) o tensione (mV)
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+END_VARDATA:
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------*
+* Blocco Funzionale ciclo di jog per assi NVEL
+* --------------------------------------------*
+
+FUNCTION_BLOCK AX_JOGNV
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * 0= Carica dati di sistema 1= da input FB
+xax_REVERSE:  BOOL;       * 0= Quote decrescenti, 1= quote crescenti
+xax_ENABY:    BOOL;       * 0= Un asse, 1= due assi
+xax_STOP:     BOOL;       * Stop allineamento assi
+xax_ASSEY:    DWORD;      * Nro secondo asse
+xax_VEL:      DWORD;      * Velocita' ( 1/2/3 )
+xax_TOLLP:    DWORD;      * Tolleranza ( 0.001 mm )
+xax_QOFFSET:  DWORD;      * Offset quote ( QtaY-QtaX )
+xax_INRZ1X:   DWORD;      * Inerzia X V1 (mm)
+xax_INRZ2X:   DWORD;      * Inerzia X V2 (mm)
+xax_INRZ1Y:   DWORD;      * Inerzia Y V1 (mm)
+xax_INRZ2Y:   DWORD;      * Inerzia Y V2 (mm)
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   30
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_ASSEY                     ** Nro secondo asse
+AND  16#FF
+ST   %fb3
+LD   xax_ENABY                     ** 0= Un asse, 1= due assi
+ST   %fb3.8
+LD   xax_REVERSE                   ** 0= Quote decrescenti, 1= quote crescenti
+ST   %fb3.9
+LD   xax_QOFFSET                   ** Offset quote ( QtaY-QtaX )
+ST   %fb1
+
+LD   xax_IMMDATA                   ** 0= Carica dati di sistema 1= da input FB
+JMPC IMMDATA
+
+LD   %pa12        ** NV_VELMAN Velocità di JOG
+ST   %fb2         ** fb2 Velocita' posizionamento (mm/min)
+
+LD   %pa2         ** NV_TOLLERG
+ST   %fb8         ** fb8 tolleranza (mm)
+
+LD   xax_REVERSE                   ** 0= Quote decrescenti, 1= quote crescenti
+JMPC INERZIA_AVA
+
+LD   %pa28        ** NV_INERZIND Quota inerzia indietro
+ST   %fb4         ** InerziaX V1
+ST   %fb5         ** InerziaX V2
+ST   %fb6         ** InerziaY V1
+ST   %fb7         ** InerziaY V2
+JMP  END_DATA
+
+INERZIA_AVA:
+LD   %pa27        ** NV_INERZAV Quota inerzia avanti
+ST   %fb4         ** InerziaX V1
+ST   %fb5         ** InerziaX V2
+ST   %fb6         ** InerziaY V1
+ST   %fb7         ** InerziaY V2
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_VEL                       ** Velocita' ( 1/2/3 )
+ST   %fb2         ** fb2 Velocita' posizionamento (mm/min)
+
+LD   xax_TOLLP                     ** Tolleranza ( 0.001 mm )
+ST   %fb8         ** fb8 tolleranza (mm)
+
+LD   xax_INRZ1X                    ** Inerzia X V1 (mm)
+ST   %fb4
+
+LD   xax_INRZ2X                    ** Inerzia X V2 (mm)
+ST   %fb5
+
+LD   xax_INRZ1Y                    ** Inerzia Y V1 (mm)
+ST   %fb6
+
+LD   xax_INRZ2Y                    ** Inerzia Y V2 (mm)
+ST   %fb7
+
+END_DATA:
+
+LD   AXFB.yax_RUNSLV
+JMPCN END_VARDATA
+
+LD   xax_STOP                      ** Stop allineamento assi
+ST   %fb3.10
+
+END_VARDATA:
+
+END_FUNCTION_BLOCK
+
+
+* ----------------------------------------------------*
+* Blocco Funzionale abilita/disabilita albero elettrico
+* ----------------------------------------------------*
+
+FUNCTION_BLOCK AX_GEARING
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_IMMDATA:  BOOL;       * dati (guadagni, ecc.) immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xax_MASTER:   DWORD;      * Numero asse master
+xax_TRNUM:    DWORD;      * Numeratore costante inseguimento
+xax_TRDEN:    DWORD;      * Denominatore costante inseguimento
+xax_MODE:     DWORD;      * Modalità di funzionamento (maschera)
+                          * Bit 0: scrive ErrGear su fb16
+                          * Bit 1: scrive ErrMaxPos su fb17
+                          * Bit 2: scrive ErrMaxNeg su fb18
+                          * Bit 7: insegue solo la quota misurata
+xax_VMAX:     DWORD;      * Velocita' massima (mm/min)
+xax_GAINP:    DWORD;      * Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+xax_GAINV:    DWORD;      * Feed forward (0.001 DAC/(pulses/sec) o 0.1 %)
+xax_EFS:      DWORD;      * Tensione di fondo scala (mV)
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   25
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_MASTER                    ** Numero asse master
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_TRNUM                     ** Numeratore costante inseguimento
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_TRDEN                     ** Denominatore costante inseguimento
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_MODE                      ** Modalità di funzionamento (maschera)
+ST   FB_TARGR                      ** fb10 Numero utensile target (1-12)
+
+LD   xax_IMMDATA                   ** dati (guadagni, ecc.) immediati
+JMPC IMMDATA
+
+LD   AP_VELMAX                     ** pa9 Velocità massima
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   %cn0.wScaling       ** non si puo' usare wScaling senza path
+NE   0
+JMPCN END_SCAL
+
+LD   AP_VELMAX                     ** pa9 Velocità massima
+DIV  %cn0.wScaling       ** non si puo' usare wScaling senza path
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+END_SCAL:
+
+LD   AP_KPGAIN                     ** pa10 Guadagno P
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+LD   AP_KVFFGAIN                   ** pa12 Feed forward
+ST   FB_GAINV                      ** fb9 Feed forward (0.001 DAC/(pulses/sec) o 0.1 %)
+
+LD   DC_DACREF                     ** dDacRef Tensione a Vel. Max (mVolt)
+ST   FB_EFS                        ** fb11 Tensione di fondo scala (mV)
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xax_VMAX                      ** Velocita' massima (mm/min)
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   xax_GAINP                     ** Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+LD   xax_GAINV                     ** Feed forward (0.001 DAC/(pulses/sec) o 0.1 %)
+ST   FB_GAINV                      ** fb9 Feed forward (0.001 DAC/(pulses/sec) o 0.1 %)
+
+LD   xax_EFS                       ** Tensione di fondo scala (mV)
+ST   FB_EFS                        ** fb11 Tensione di fondo scala (mV)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* ------------------------------------------------------------*
+* Blocco Funzionale abilita/disabilita inseguimento di velocità
+* unidirezionale di uno o due assi.
+* ------------------------------------------------------------*
+
+FUNCTION_BLOCK AX_INSVEL
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_MASTER1:  DWORD;      * Numero asse master 1
+xax_MASTER2:  DWORD;      * Numero asse master 2
+xax_INS1:     BOOL;       * Abilita inseguimento asse master 1
+xax_INS2:     BOOL;       * Abilita inseguimento asse master 2
+xax_TRNUM:    DWORD;      * Numeratore costante inseguimento
+xax_TRDEN:    DWORD;      * Denominatore costante inseguimento
+xax_CUTFREQ:  DWORD;      * Frequenza di taglio sulla velocità
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_RUNSLV
+JMPCN END_DATA
+
+LD   26
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_MASTER1                   ** Numero asse master 1
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_MASTER2                   ** Numero asse master 2
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   xax_INS1                      ** Abilita inseguimento asse master 1
+ST   FB_TARGR.0
+
+LD   xax_INS2                      ** Abilita inseguimento asse master 2
+ST   FB_TARGR.1
+
+LD   xax_TRNUM                     ** Numeratore costante inseguimento
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_TRDEN                     ** Denominatore costante inseguimento
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_CUTFREQ                   ** Frequenza di taglio sulla velocità
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* ------------------------------------------------------------*
+* Blocco Funzionale abilita/disabilita inseguimento di velocità
+* bidirezionale di un asse.
+* ------------------------------------------------------------*
+
+FUNCTION_BLOCK AX_INSVELX
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_MASTER:   DWORD;      * Numero asse master
+xax_MODE:     DWORD;      * Modalità di funzionamento (maschera)
+                          * Bit 0: insegue la velocità misurata
+xax_TRNUM:    DWORD;      * Numeratore costante inseguimento
+xax_TRDEN:    DWORD;      * Denominatore costante inseguimento
+xax_CUTFREQ:  DWORD;      * Frequenza di taglio sulla velocità
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_RUNSLV
+JMPCN END_DATA
+
+LD   28
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_MASTER                    ** Numero asse master
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_MODE                      ** Modalità di funzionamento (maschera)
+ST   FB_TARGR                      ** fb10 Numero utensile target (1-12)
+
+LD   xax_TRNUM                     ** Numeratore costante inseguimento
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_TRDEN                     ** Denominatore costante inseguimento
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_CUTFREQ                   ** Frequenza di taglio sulla velocità
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* ------------------------------------------------------------*
+* Blocco Funzionale abilita/disabilita controlli vari
+* ------------------------------------------------------------*
+
+FUNCTION_BLOCK AX_CONTROLS
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_ENMASK:   DWORD;      * Maschera abilitazioni
+xax_DISMASK:  DWORD;      * Maschera disabilitazioni
+                          * Bit 0: allarme errore inseguimento
+                          * Bit 1: allarme tolleranza
+                          * Bit 2: compensazione offset automatica
+                          * Bit 3: allarme limiti SW
+                          * Bit 4: correzione a zone
+                          * Bit 5: asse tarato
+                          * Bit 6: filtro FIR
+                          * Bit 7: guadagno variabile
+                          * Bit 8: filtro IIR
+xax_FREQCUT:  DWORD;      * Frequenza taglio filtro FIR
+xax_KPINC:    DWORD;      * Costante incremento KpInc
+xax_FREQIIR:  DWORD;      * Frequenza taglio filtro IIR
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_TRDATA:   BOOL;       * Impulso trasferimento dati a slave
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+yax_STATUS:   DWORD;      * stato attuale controlli ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+LD   FB_STCTRL                     ** fb16 Stato controlli AX_CONTROLS
+ST   yax_STATUS                    ** stato attuale controlli ( maschera bit )
+
+LD   AXFB.yax_TRDATA
+ST   yax_TRDATA                    ** Impulso trasferimento dati a slave
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   27
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_ENMASK                    ** Maschera abilitazioni
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_DISMASK                   ** Maschera disabilitazioni
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   xax_FREQCUT                   ** Frequenza taglio filtro FIR
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   xax_KPINC                     ** Costante incremento KpInc
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_FREQIIR                   ** Frequenza taglio filtro IIR
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------*
+* Blocco Funzionale posizionamento round table
+* --------------------------------------------*
+
+FUNCTION_BLOCK AX_RTABLE
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_POSMODE:  BOOL;       * 0=AbsBreve, 1=INCMODE/REVERSE
+xax_INCMODE:  BOOL;       * 0=Assoluto, 1=Relativo
+xax_REVERSE:  BOOL;       * 0=Indietro, 1=Avanti
+xax_QUOTA:    DWORD;      * Indice target (n)
+xax_VEL:      DWORD;      * Velocita' posizionamento (mm/min)
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   7
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_POSMODE                   ** 0=AbsBreve, 1=INCMODE/REVERSE
+ST   FB_TARGR.2
+
+LD   xax_INCMODE                   ** 0=Assoluto, 1=Relativo
+ST   FB_TARGR.1
+
+LDN  xax_REVERSE                   ** 0=Indietro, 1=Avanti
+ST   FB_TARGR.0
+
+LD   xax_QUOTA                     ** Indice target (n)
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_VEL                       ** Velocita' posizionamento (mm/min)
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   AP_VELMAX                     ** pa9 Velocità massima
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   AP_ACCEL                      ** pa1 Accelerazione massima
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   AP_DECEL                      ** pa2 Decelerazione massima
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* -----------------------------------------------------------*
+* Blocco Funzionale per movimento asse da PLC con comandi ISO
+* -----------------------------------------------------------*
+
+FUNCTION_BLOCK AX_FROM_ISO
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita gestione asse da ISO
+xax_PASSMOV:  BOOL;       * abilita movimento asse passante
+END_VAR
+
+VAR_OUTPUT
+yax_BUSY:     BOOL;       * Comando asse da ISO in corso
+yax_PASSEND:  BOOL;       * abilita movimento asse passante
+yax_ACTCMD:   DWORD;      * Tipo di comando attivo
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * Codice errore ( maschera bit )
+END_VAR
+
+VAR
+POSAX: AX_POSIZ;
+TARAX: AX_PRESET;
+POS_REQUEST: BOOL;        * Richiesto posizionamento
+TAR_REQUEST: BOOL;        * Richiesto preset
+MEMCMD_RUNN: BOOL;        * Mem. posizionamento passante in corso
+CMD_REQUEST: BOOL;        * Richiesto comando
+START_REQUEST: BOOL;      * Condizioni per start comando presenti
+CMD_FINISH: BOOL;         * Comando completato
+END_VAR
+
+LD   CA_CODE                       ** canopen0 Codice Operativo comando da ISO
+EQ   1
+ST   POS_REQUEST                   ** Richiesto posizionamento
+
+LD   CA_CODE                       ** canopen0 Codice Operativo comando da ISO
+EQ   10
+ST   TAR_REQUEST                   ** Richiesto preset
+
+LD   CA_REQUEST                    ** canopen15.17 Richiesta comando asse da ISO
+AND  POS_REQUEST                   ** Richiesto posizionamento
+S    MEMCMD_RUNN                   ** Mem. posizionamento passante in corso
+
+LDN  xax_PASSMOV                   ** abilita movimento asse passante
+ORN  xax_ENABLE                    ** abilita gestione asse da ISO
+R    MEMCMD_RUNN                   ** Mem. posizionamento passante in corso
+
+LD   CA_REQUEST                    ** canopen15.17 Richiesta comando asse da ISO
+OR   MEMCMD_RUNN                   ** Mem. posizionamento passante in corso
+ST   CMD_REQUEST                   ** Richiesto comando
+
+LD   xax_ENABLE                    ** abilita gestione asse da ISO
+ST   POSAX.xax_ENABLE
+ST   TARAX.xax_ENABLE
+
+LD   xax_ENABLE                    ** abilita gestione asse da ISO
+AND  CA_REQUEST                    ** canopen15.17 Richiesta comando asse da ISO
+AND  POSAX.yax_READY
+ANDN POSAX.yax_RUNNING
+ANDN POSAX.yax_ENDOK
+ANDN POSAX.yax_ENDERR
+AND  TARAX.yax_READY
+ANDN TARAX.yax_RUNNING
+ANDN TARAX.yax_ENDOK
+ANDN TARAX.yax_ENDERR
+ST   START_REQUEST                 ** Condizioni per start comando presenti
+
+LD   START_REQUEST                 ** Condizioni per start comando presenti
+AND  POS_REQUEST                   ** Richiesto posizionamento
+ST   POSAX.xax_START
+JMPCN END_POSDATA
+
+LD   CA_QUOTA                      ** canopen1 Quota target da ISO
+ST   POSAX.xax_QUOTA
+
+LD   CA_VEL                        ** canopen2 Velocita' posizionamento da ISO
+ST   POSAX.xax_VEL
+
+LD   CA_VMAX                       ** canopen3 Velocita' massima da ISO
+ST   POSAX.xax_VMAX
+
+LD   CA_ACCEL                      ** canopen4 Accelerazione da ISO
+ST   POSAX.xax_ACCEL
+
+LD   CA_DECEL                      ** canopen5 Decelerazione da ISO
+ST   POSAX.xax_DECEL
+
+LD   CA_RAMPES                     ** canopen6 Tempo Rampe S da ISO
+ST   POSAX.xax_RAMPES
+
+* Provvisorio, perché l'ISO non passa la tolleranza
+LD   AP_TOLLERG                    ** pa6 Quota tolleranza grossolana
+*LD   CA_TOLLP           ** Tolleranza da ISO
+ST   POSAX.xax_TOLLP
+
+END_POSDATA:
+
+LD   START_REQUEST                 ** Condizioni per start comando presenti
+AND  TAR_REQUEST                   ** Richiesto preset
+ST   TARAX.xax_START
+JMPCN END_TARDATA
+
+LD   CA_QUOTA                      ** canopen1 Quota target da ISO
+ST   TARAX.xax_QUOTA
+
+END_TARDATA:
+
+LDN  CMD_REQUEST                   ** Richiesto comando
+ST   POSAX.xax_CLEAR
+ST   TARAX.xax_CLEAR
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   POSAX.xax_IMMDATA
+
+CAL  POSAX
+
+CAL  TARAX
+
+LD   POSAX.yax_ENDOK
+OR   TARAX.yax_ENDOK
+AND  CMD_REQUEST                   ** Richiesto comando
+ST   CMD_FINISH                    ** Comando completato
+
+LDN  BAO_GRANTPLC                  ** ra3.28 conferma asse gestito da PLC
+ORN  AP_OPZIONI31                  ** pa3.31 Asse in simulato
+AND  CMD_FINISH                    ** Comando completato
+OR   (
+LD   POSAX.yax_RUNNING
+AND  MEMCMD_RUNN                   ** Mem. posizionamento passante in corso
+)
+AND  CA_REQUEST                    ** canopen15.17 Richiesta comando asse da ISO
+ST   CA_FINISH                     ** canopen14.29 Comando asse da ISO completato
+
+LD   CMD_REQUEST                   ** Richiesto comando
+ANDN CMD_FINISH                    ** Comando completato
+ST   yax_BUSY                      ** Comando asse da ISO in corso
+
+LD   CMD_FINISH                    ** Comando completato
+AND  MEMCMD_RUNN                   ** Mem. posizionamento passante in corso
+ST   yax_PASSEND                   ** abilita movimento asse passante
+
+LD   CA_CODE                       ** canopen0 Codice Operativo comando da ISO
+ST   yax_ACTCMD                    ** Tipo di comando attivo
+
+LD   POSAX.yax_ENDERR
+OR   TARAX.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   POSAX.yax_ERRCODE
+OR   TARAX.yax_ERRCODE
+ST   yax_ERRCODE                   ** Codice errore ( maschera bit )
+
+END_FUNCTION_BLOCK
+
+
+VAR_IN_OUT
+* Emulazione registro stato asse all'interno del canale.
+* Usa VAR_IN_OUT per evitare di rinfrescare ra19 anche quando l'asse
+* viene comandato da ISO, in questo caso ci deve scrivere l'ISO.
+DIR_ISO_NULLO   AT %ra19.0; * ra19.0 Stato NULLO all'interno del canale
+DIR_ISO_JOG     AT %ra19.1; * ra19.1 Stato JOG all'interno del canale
+DIR_ISO_REF     AT %ra19.2; * ra19.2 Stato REF all'interno del canale
+DIR_ISO_INC     AT %ra19.3; * ra19.3 Stato INC all'interno del canale
+DIR_ISO_ALARM   AT %ra19.4; * ra19.4 Stato ALLARME all'interno del canale
+END_VAR
+
+* -----------------------------------------------------------*
+* Blocco Funzionale per trasformare i comandi ausiliari asse
+* JOG, REF, INC dai bit ra0.8-9 a blocchi funzionali
+* -----------------------------------------------------------*
+
+FUNCTION_BLOCK AX_CMD_AUX
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita gestione asse da FB
+END_VAR
+
+VAR_OUTPUT
+yax_BUSY:     BOOL;       * Comando asse in corso
+yax_ACTCMD:   DWORD;      * Tipo di comando attivo
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * Codice errore ( maschera bit )
+END_VAR
+
+VAR
+JOGAX: AX_JOGGING;
+HOMAX: AX_HOMING;
+CMD_REQUEST: BOOL;        * Richiesto comando
+ANTIRIP_CMD: BOOL;        * Antiripetizione comando dopo arresto
+END_VAR
+
+LD   BAI_AV                        ** ra0.8 Comando avanti
+OR   BAI_IND                       ** ra0.9 Comando indietro
+ST   CMD_REQUEST                   ** Richiesto comando
+
+LDN  xax_ENABLE                    ** abilita gestione asse da FB
+S    ANTIRIP_CMD                   ** Antiripetizione comando dopo arresto
+
+LDN  CMD_REQUEST                   ** Richiesto comando
+R    ANTIRIP_CMD                   ** Antiripetizione comando dopo arresto
+
+LD   CMD_REQUEST                   ** Richiesto comando
+ORN  JOGAX.yax_RUNNING
+AND  xax_ENABLE                    ** abilita gestione asse da FB
+ST   JOGAX.xax_ENABLE
+
+LD   xax_ENABLE                    ** abilita gestione asse da FB
+AND  CMD_REQUEST                   ** Richiesto comando
+ANDN ANTIRIP_CMD                   ** Antiripetizione comando dopo arresto
+AND  BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+AND  JOGAX.yax_READY
+ANDN JOGAX.yax_RUNNING
+ANDN JOGAX.yax_ENDOK
+ANDN JOGAX.yax_ENDERR
+ST   JOGAX.xax_START
+
+LDN  CMD_REQUEST                   ** Richiesto comando
+AND  JOGAX.yax_ENDOK
+OR   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+OR   (
+LD   JOGAX.yax_ENDERR
+AND  JOGAX.yax_ERRCODE.1
+)
+ST   JOGAX.xax_CLEAR
+
+LD   BAI_AV                        ** ra0.8 Comando avanti
+ST   JOGAX.xax_REVERSE
+
+LD   BCI_JOGOPEN                   ** rc0.22  Abilita esecuzione JOG a Loop Aperto
+ST   JOGAX.xax_OPENLOOP
+
+CAL  JOGAX
+
+LD   xax_ENABLE                    ** abilita gestione asse da FB
+ST   HOMAX.xax_ENABLE
+
+LD   xax_ENABLE                    ** abilita gestione asse da FB
+AND  CMD_REQUEST                   ** Richiesto comando
+ANDN ANTIRIP_CMD                   ** Antiripetizione comando dopo arresto
+AND  BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+AND  HOMAX.yax_READY
+ANDN HOMAX.yax_RUNNING
+ANDN HOMAX.yax_ENDOK
+ANDN HOMAX.yax_ENDERR
+ST   HOMAX.xax_START
+
+LDN  CMD_REQUEST                   ** Richiesto comando
+AND  HOMAX.yax_ENDOK
+OR   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+OR   (
+LD   HOMAX.yax_ENDERR
+AND  HOMAX.yax_ERRCODE.1
+)
+ST   HOMAX.xax_CLEAR
+
+CAL  HOMAX
+
+LD   BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+OR   BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+AND  CMD_REQUEST                   ** Richiesto comando
+OR   JOGAX.yax_RUNNING
+OR   HOMAX.yax_RUNNING
+ST   yax_BUSY                      ** Comando asse in corso
+
+LD   FB_CODE                       ** fb0 Codice Operativo comando
+ST   yax_ACTCMD                    ** Tipo di comando attivo
+
+LD   JOGAX.yax_ENDERR
+OR   HOMAX.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   JOGAX.yax_ERRCODE
+OR   HOMAX.yax_ERRCODE
+ST   yax_ERRCODE                   ** Codice errore ( maschera bit )
+
+LD   JOGAX.yax_RUNNING
+ST   DIR_ISO_JOG                   ** ra19.1 Stato JOG all'interno del canale
+
+LD   HOMAX.yax_RUNNING
+ST   DIR_ISO_REF                   ** ra19.2 Stato REF all'interno del canale
+
+LD   yax_ENDERR                    ** Comando terminato non correttamente
+ST   DIR_ISO_ALARM                 ** ra19.4 Stato ALLARME all'interno del canale
+
+LDN  DIR_ISO_JOG                   ** ra19.1 Stato JOG all'interno del canale
+ANDN DIR_ISO_REF                   ** ra19.2 Stato REF all'interno del canale
+ANDN DIR_ISO_ALARM                 ** ra19.4 Stato ALLARME all'interno del canale
+ST   DIR_ISO_NULLO                 ** ra19.0 Stato NULLO all'interno del canale
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------------------------*
+* Blocco Funzionale gestione procedura processo ausiliario canale
+* --------------------------------------------------------------*
+
+FUNCTION_BLOCK CN_COMMAND
+
+VAR_INPUT
+xcn_ENABLE:   BOOL;       * abilita FB
+xcn_START:    BOOL;       * start richiesta azione
+xcn_CLEAR:    BOOL;       * conferma fine comando
+END_VAR
+
+VAR_OUTPUT
+#defcom ycn_ERRCODE.0 Stato procedura terminata con allarme
+#defcom ycn_ERRCODE.1 Stato proc. slave terminata per abort
+#defcom ycn_ERRCODE.2 Stato errore da slave
+#defcom ycn_ERRCODE.3 Stato errore asse non pronto
+#defcom ycn_ERRCODE.4 Stato errore slave busy
+ycn_READY:    BOOL;       * FB pronto per START
+ycn_RUNNING:  BOOL;       * Esecuzione FB in corso
+ycn_ENDOK:    BOOL;       * Comando terminato correttamente
+ycn_ENDERR:   BOOL;       * Comando terminato non correttamente
+ycn_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+ycn_RUNSLV:   BOOL;       * Esecuzione procedura slave in corso
+ycn_TRDATA:   BOOL;       * Impulso trasferimento dati a slave
+ycn_RUNEXEC:  BOOL;       * Esecuzione procedura slave confermata
+END_VAR
+
+VAR
+AP_ENDPSL:    BOOL;       * Appoggio procedura slave terminata
+AP_ENDPFB:    BOOL;       * Appoggio procedura FB terminata
+AP_NOTRDY:    BOOL;       * Appoggio errore processo non pronto
+AP_BUSY:      BOOL;       * slave busy
+AP_ALLM:      BOOL;       * allarme o emergenza processo
+ST_ENDP:      BOOL;       * Stato procedura terminata
+ST_ABORT:     BOOL;       * Stato abort procedura
+FR_START:     BOOL;       * Fronte su ingresso di start
+SP_START:     BOOL;       * Stato prec. ingresso di start
+SP_RUNSLV:    BOOL;       * Stato prec. esecuzione procedura slave
+END_VAR
+
+* Controllo asse pronto per start
+
+LD   BCI_PSTART                    ** cnfb23.29 Esecuzione comando impostato da PLC
+OR   BCO_PEXEC                     ** cnfb24.29 Exec procedura attivo da slave
+ST   AP_BUSY                       ** slave busy
+
+LD   BCO_IN_ALARM                  ** rc8.3  Canale in allarme
+OR   BCI_EMERG                     ** rc0.1  Emergenza
+ST   AP_ALLM                       ** allarme o emergenza processo
+
+LD   xcn_ENABLE                    ** abilita FB
+AND  BCO_GRANTPLC                  ** cnfb24.28 conferma processo gestito da PLC
+AND  BCI_PLCREQ                    ** cnfb23.28 Richiesta gestione processo da PLC
+ANDN AP_ALLM                       ** allarme o emergenza processo
+ANDN AP_BUSY                       ** slave busy
+ST   ycn_READY                     ** FB pronto per START
+
+* Fronte di salita sullo start
+
+LD   xcn_START                     ** start richiesta azione
+ANDN SP_START                      ** Stato prec. ingresso di start
+ST   FR_START                      ** Fronte su ingresso di start
+
+LD   xcn_START                     ** start richiesta azione
+ST   SP_START                      ** Stato prec. ingresso di start
+
+* Gestione start non accettato
+
+LD   FR_START                      ** Fronte su ingresso di start
+ANDN ycn_READY                     ** FB pronto per START
+ANDN ycn_RUNEXEC                   ** Esecuzione procedura slave confermata
+ST   AP_NOTRDY                     ** Appoggio errore processo non pronto
+
+* Impulso fine procedura
+
+LDN  BCO_PEXEC                     ** cnfb24.29 Exec procedura attivo da slave
+AND  ycn_RUNEXEC                   ** Esecuzione procedura slave confermata
+OR   (                     * Aggiunto per problemi slave
+LD   AP_ALLM                       ** allarme o emergenza processo
+AND  ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+)
+OR   (
+LDN  BCO_GRANTPLC                  ** cnfb24.28 conferma processo gestito da PLC
+AND  ST_ABORT                      ** Stato abort procedura
+)
+ST   AP_ENDPSL                     ** Appoggio procedura slave terminata
+
+LD   AP_ENDPSL                     ** Appoggio procedura slave terminata
+OR   AP_NOTRDY                     ** Appoggio errore processo non pronto
+ST   AP_ENDPFB                     ** Appoggio procedura FB terminata
+
+* Gestione start valido
+
+LD   FR_START                      ** Fronte su ingresso di start
+AND  ycn_READY                     ** FB pronto per START
+S    ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+
+LD   BCO_PEXEC                     ** cnfb24.29 Exec procedura attivo da slave
+AND  ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+S    ycn_RUNEXEC                   ** Esecuzione procedura slave confermata
+
+LD   AP_ENDPFB                     ** Appoggio procedura FB terminata
+R    ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+R    ycn_RUNEXEC                   ** Esecuzione procedura slave confermata
+
+* memoria fine procedura
+
+LD   AP_ENDPFB                     ** Appoggio procedura FB terminata
+S    ST_ENDP                       ** Stato procedura terminata
+
+LD   xcn_CLEAR                     ** conferma fine comando
+OR   ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+R    ST_ENDP                       ** Stato procedura terminata
+
+* Procedura non corretta per allarme asse
+
+LD   AP_ENDPSL                     ** Appoggio procedura slave terminata
+AND  AP_ALLM                       ** allarme o emergenza processo
+S    ycn_ERRCODE.0                 ** Stato procedura terminata con allarme
+
+* Procedura non corretta per abort
+
+LD   AP_ENDPSL                     ** Appoggio procedura slave terminata
+AND  ST_ABORT                      ** Stato abort procedura
+S    ycn_ERRCODE.1                 ** Stato proc. slave terminata per abort
+
+* Gestione errori da slave
+
+LD   CNFB_ERRCODE                  ** cnfb25 Codice errore procedura
+GT   100
+AND  AP_ENDPSL                     ** Appoggio procedura slave terminata
+ANDN ST_ABORT                      ** Stato abort procedura
+S    ycn_ERRCODE.2                 ** Stato errore da slave
+
+* Memorizza start con asse non pronto
+
+LD   AP_NOTRDY                     ** Appoggio errore processo non pronto
+ANDN AP_BUSY                       ** slave busy
+S    ycn_ERRCODE.3                 ** Stato errore asse non pronto
+
+LD   AP_NOTRDY                     ** Appoggio errore processo non pronto
+AND  AP_BUSY                       ** slave busy
+S    ycn_ERRCODE.4                 ** Stato errore slave busy
+
+LDN  ST_ENDP                       ** Stato procedura terminata
+R    ycn_ERRCODE.0                 ** Stato procedura terminata con allarme
+R    ycn_ERRCODE.1                 ** Stato proc. slave terminata per abort
+R    ycn_ERRCODE.2                 ** Stato errore da slave
+R    ycn_ERRCODE.3                 ** Stato errore asse non pronto
+R    ycn_ERRCODE.4                 ** Stato errore slave busy
+
+* Gestione procedura interrotta
+
+LDN  xcn_ENABLE                    ** abilita FB
+S    ST_ABORT                      ** Stato abort procedura
+
+LDN  ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+R    ST_ABORT                      ** Stato abort procedura
+
+* Comando segnali allo slave
+
+LD   ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+JMPCN END_COMMAND
+
+LDN  ycn_RUNEXEC                   ** Esecuzione procedura slave confermata
+ST   BCI_PSTART                    ** cnfb23.29 Esecuzione comando impostato da PLC
+
+LD   ST_ABORT                      ** Stato abort procedura
+ST   BCI_HALT                      ** cnfb23.30 Abort comando impostato da PLC
+
+END_COMMAND:
+
+* Azzeramento segnali slave a fine procedura
+
+LD   AP_ENDPSL                     ** Appoggio procedura slave terminata
+OR   ON_ONE_SCAN                   ** PLCFLAGS.8  Flag on alla prima scansione PLC
+JMPCN END_AZZSLV
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   BCI_PSTART                    ** cnfb23.29 Esecuzione comando impostato da PLC
+ST   BCI_HALT                      ** cnfb23.30 Abort comando impostato da PLC
+
+END_AZZSLV:
+
+* Comando uscite FB
+
+LD   ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+OR   AP_NOTRDY                     ** Appoggio errore processo non pronto
+ST   ycn_RUNNING                   ** Esecuzione FB in corso
+
+LD   ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+ANDN SP_RUNSLV                     ** Stato prec. esecuzione procedura slave
+ST   ycn_TRDATA                    ** Impulso trasferimento dati a slave
+
+LD   ycn_RUNSLV                    ** Esecuzione procedura slave in corso
+ST   SP_RUNSLV                     ** Stato prec. esecuzione procedura slave
+
+LD   ycn_ERRCODE                   ** codice errore ( maschera bit )
+EQ   0
+AND  ST_ENDP                       ** Stato procedura terminata
+ST   ycn_ENDOK                     ** Comando terminato correttamente
+
+LD   ST_ENDP                       ** Stato procedura terminata
+ANDN ycn_ENDOK                     ** Comando terminato correttamente
+ANDN ycn_RUNNING                   ** Esecuzione FB in corso
+ST   ycn_ENDERR                    ** Comando terminato non correttamente
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------*
+* Blocco Funzionale rototraslazione quote
+* --------------------------------------------*
+
+FUNCTION_BLOCK CN_ROTRA
+
+VAR_INPUT
+xcn_ENABLE:   BOOL;       * abilita FB
+xcn_START:    BOOL;       * start richiesta azione
+xcn_CLEAR:    BOOL;       * conferma fine comando
+xcn_ASSEX:    DWORD;      * Asse X
+xcn_ASSEY:    DWORD;      * Asse Y
+xcn_ROTAZ:    DWORD;      * Rotazione (gradi)
+xcn_TRASX:    DWORD;      * Traslazione X
+xcn_TRASY:    DWORD;      * Traslazione Y
+END_VAR
+
+VAR_OUTPUT
+ycn_READY:    BOOL;       * FB pronto per START
+ycn_RUNNING:  BOOL;       * Esecuzione FB in corso
+ycn_ENDOK:    BOOL;       * Comando terminato correttamente
+ycn_ENDERR:   BOOL;       * Comando terminato non correttamente
+ycn_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+CNFB: CN_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xcn_ENABLE                    ** abilita FB
+ST   CNFB.xcn_ENABLE
+
+LD   xcn_START                     ** start richiesta azione
+ST   CNFB.xcn_START
+
+LD   xcn_CLEAR                     ** conferma fine comando
+ST   CNFB.xcn_CLEAR
+
+CAL  CNFB
+
+* Comando uscite da FB standard
+
+LD   CNFB.ycn_READY
+ST   ycn_READY                     ** FB pronto per START
+
+LD   CNFB.ycn_RUNNING
+ST   ycn_RUNNING                   ** Esecuzione FB in corso
+
+LD   CNFB.ycn_ENDOK
+ST   ycn_ENDOK                     ** Comando terminato correttamente
+
+LD   CNFB.ycn_ENDERR
+ST   ycn_ENDERR                    ** Comando terminato non correttamente
+
+LD   CNFB.ycn_ERRCODE
+ST   ycn_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   CNFB.ycn_TRDATA
+JMPCN END_DATA
+
+LD   1
+ST   CNFB_CODE                     ** cnfb0 Codice Operativo comando
+
+LD   CC_MAINPROC                   ** cc15 Processo principale canale
+ST   CNFB_MPROC                    ** cnfb1 Processo principale comando
+
+LD   xcn_ASSEX                     ** Asse X
+ST   CNFB_PAR2                     ** cnfb2 Parametro 2 FB processo aux
+
+LD   xcn_ASSEY                     ** Asse Y
+ST   CNFB_PAR3                     ** cnfb3 Parametro 3 FB processo aux
+
+LD   2
+ST   CNFB_PAR4                     ** cnfb4 Parametro 4 FB processo aux
+
+LD   xcn_ROTAZ                     ** Rotazione (gradi)
+ST   CNFB_PAR5                     ** cnfb5 Parametro 5 FB processo aux
+
+LD   xcn_TRASX                     ** Traslazione X
+ST   CNFB_PAR6                     ** cnfb6 Parametro 6 FB processo aux
+
+LD   xcn_TRASY                     ** Traslazione Y
+ST   CNFB_PAR7                     ** cnfb7 Parametro 7 FB processo aux
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------*
+* Blocco Funzionale rototraslazione quote estesa con asse Z
+* --------------------------------------------*
+
+FUNCTION_BLOCK CN_ROTRAX
+
+VAR_INPUT
+xcn_ENABLE:   BOOL;       * abilita FB
+xcn_START:    BOOL;       * start richiesta azione
+xcn_CLEAR:    BOOL;       * conferma fine comando
+xcn_ASSEX:    DWORD;      * Asse X
+xcn_ASSEY:    DWORD;      * Asse Y
+xcn_ROTAZ:    DWORD;      * Rotazione (gradi)
+xcn_TRASX:    DWORD;      * Traslazione X
+xcn_TRASY:    DWORD;      * Traslazione Y
+xcn_ASSEZ:    DWORD;      * Asse Z
+xcn_TRASZ:    DWORD;      * Traslazione Z
+END_VAR
+
+VAR_OUTPUT
+ycn_READY:    BOOL;       * FB pronto per START
+ycn_RUNNING:  BOOL;       * Esecuzione FB in corso
+ycn_ENDOK:    BOOL;       * Comando terminato correttamente
+ycn_ENDERR:   BOOL;       * Comando terminato non correttamente
+ycn_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+CNFB: CN_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xcn_ENABLE                    ** abilita FB
+ST   CNFB.xcn_ENABLE
+
+LD   xcn_START                     ** start richiesta azione
+ST   CNFB.xcn_START
+
+LD   xcn_CLEAR                     ** conferma fine comando
+ST   CNFB.xcn_CLEAR
+
+CAL  CNFB
+
+* Comando uscite da FB standard
+
+LD   CNFB.ycn_READY
+ST   ycn_READY                     ** FB pronto per START
+
+LD   CNFB.ycn_RUNNING
+ST   ycn_RUNNING                   ** Esecuzione FB in corso
+
+LD   CNFB.ycn_ENDOK
+ST   ycn_ENDOK                     ** Comando terminato correttamente
+
+LD   CNFB.ycn_ENDERR
+ST   ycn_ENDERR                    ** Comando terminato non correttamente
+
+LD   CNFB.ycn_ERRCODE
+ST   ycn_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   CNFB.ycn_TRDATA
+JMPCN END_DATA
+
+LD   6
+ST   CNFB_CODE                     ** cnfb0 Codice Operativo comando
+
+LD   CC_MAINPROC                   ** cc15 Processo principale canale
+ST   CNFB_MPROC                    ** cnfb1 Processo principale comando
+
+LD   xcn_ASSEX                     ** Asse X
+ST   CNFB_PAR2                     ** cnfb2 Parametro 2 FB processo aux
+
+LD   xcn_ASSEY                     ** Asse Y
+ST   CNFB_PAR3                     ** cnfb3 Parametro 3 FB processo aux
+
+LD   2
+ST   CNFB_PAR4                     ** cnfb4 Parametro 4 FB processo aux
+
+LD   xcn_ROTAZ                     ** Rotazione (gradi)
+ST   CNFB_PAR5                     ** cnfb5 Parametro 5 FB processo aux
+
+LD   xcn_TRASX                     ** Traslazione X
+ST   CNFB_PAR6                     ** cnfb6 Parametro 6 FB processo aux
+
+LD   xcn_TRASY                     ** Traslazione Y
+ST   CNFB_PAR7                     ** cnfb7 Parametro 7 FB processo aux
+
+LD   xcn_ASSEZ                     ** Asse Z
+ST   CNFB_PAR8                     ** cnfb8 Parametro 8 FB processo aux
+
+LD   xcn_TRASZ                     ** Traslazione Z
+ST   CNFB_PAR9                     ** cnfb9 Parametro 9 FB processo aux
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+* --------------------------------------------*
+* Blocco Funzionale annulla percorso residuo
+* --------------------------------------------*
+
+FUNCTION_BLOCK CN_ENDRUN
+
+VAR_INPUT
+xcn_ENABLE:   BOOL;       * abilita FB
+xcn_START:    BOOL;       * start richiesta azione
+xcn_CLEAR:    BOOL;       * conferma fine comando
+END_VAR
+
+VAR_OUTPUT
+ycn_READY:    BOOL;       * FB pronto per START
+ycn_RUNNING:  BOOL;       * Esecuzione FB in corso
+ycn_ENDOK:    BOOL;       * Comando terminato correttamente
+ycn_ENDERR:   BOOL;       * Comando terminato non correttamente
+ycn_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+CNFB: CN_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xcn_ENABLE                    ** abilita FB
+ST   CNFB.xcn_ENABLE
+
+LD   xcn_START                     ** start richiesta azione
+ST   CNFB.xcn_START
+
+LD   xcn_CLEAR                     ** conferma fine comando
+ST   CNFB.xcn_CLEAR
+
+CAL  CNFB
+
+* Comando uscite da FB standard
+
+LD   CNFB.ycn_READY
+ST   ycn_READY                     ** FB pronto per START
+
+LD   CNFB.ycn_RUNNING
+ST   ycn_RUNNING                   ** Esecuzione FB in corso
+
+LD   CNFB.ycn_ENDOK
+ST   ycn_ENDOK                     ** Comando terminato correttamente
+
+LD   CNFB.ycn_ENDERR
+ST   ycn_ENDERR                    ** Comando terminato non correttamente
+
+LD   CNFB.ycn_ERRCODE
+ST   ycn_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   CNFB.ycn_TRDATA
+JMPCN END_DATA
+
+LD   2
+ST   CNFB_CODE                     ** cnfb0 Codice Operativo comando
+
+LD   CC_MAINPROC                   ** cc15 Processo principale canale
+ST   CNFB_MPROC                    ** cnfb1 Processo principale comando
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------*
+* Blocco Funzionale regolazione altezza torcia al plasma
+* --------------------------------------------*
+
+FUNCTION_BLOCK CN_TORCIA
+
+VAR_INPUT
+xcn_ENABLE:   BOOL;       * abilita FB
+xcn_START:    BOOL;       * start richiesta azione
+xcn_CLEAR:    BOOL;       * conferma fine comando
+xcn_ONOFF:    BOOL;       * abil. regolatore
+xcn_RESET:    BOOL;       * reset regolatore
+END_VAR
+
+VAR_OUTPUT
+ycn_READY:    BOOL;       * FB pronto per START
+ycn_RUNNING:  BOOL;       * Esecuzione FB in corso
+ycn_ENDOK:    BOOL;       * Comando terminato correttamente
+ycn_ENDERR:   BOOL;       * Comando terminato non correttamente
+ycn_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+CNFB: CN_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xcn_ENABLE                    ** abilita FB
+ST   CNFB.xcn_ENABLE
+
+LD   xcn_START                     ** start richiesta azione
+ST   CNFB.xcn_START
+
+LD   xcn_CLEAR                     ** conferma fine comando
+ST   CNFB.xcn_CLEAR
+
+CAL  CNFB
+
+* Comando uscite da FB standard
+
+LD   CNFB.ycn_READY
+ST   ycn_READY                     ** FB pronto per START
+
+LD   CNFB.ycn_RUNNING
+ST   ycn_RUNNING                   ** Esecuzione FB in corso
+
+LD   CNFB.ycn_ENDOK
+ST   ycn_ENDOK                     ** Comando terminato correttamente
+
+LD   CNFB.ycn_ENDERR
+ST   ycn_ENDERR                    ** Comando terminato non correttamente
+
+LD   CNFB.ycn_ERRCODE
+ST   ycn_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   CNFB.ycn_TRDATA
+JMPCN END_DATA
+
+LD   3
+ST   CNFB_CODE                     ** cnfb0 Codice Operativo comando
+
+LD   CC_MAINPROC                   ** cc15 Processo principale canale
+ST   CNFB_MPROC                    ** cnfb1 Processo principale comando
+
+LD   xcn_ONOFF                     ** abil. regolatore
+JMPCN END_ONDATA
+
+LD   16#1F
+ST   CNFB_PAR2                     ** cnfb2 Parametro 2 FB processo aux
+
+JMP  END_OFFDATA
+
+END_ONDATA:
+
+LD   0
+ST   CNFB_PAR2                     ** cnfb2 Parametro 2 FB processo aux
+
+END_OFFDATA:
+
+LD   xcn_RESET                     ** reset regolatore
+ST   CNFB_PAR2.5
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* --------------------------------------------*
+* Blocco Funzionale assi gantry
+* --------------------------------------------*
+
+FUNCTION_BLOCK CN_GANTRY
+
+VAR_INPUT
+xcn_ENABLE:   BOOL;       * abilita FB
+xcn_START:    BOOL;       * start richiesta azione
+xcn_CLEAR:    BOOL;       * conferma fine comando
+xcn_ONOFF:    BOOL;       * abilita gantry
+xcn_COPY:     BOOL;       * copia parametri
+xcn_REFTOLL:  BOOL;       * utilizza tolleranza allarme REF
+xcn_IMMDATA:  BOOL;       * dati immediati
+                          * 0 = carica dati di sistema
+                          * 1 = carica dati da input FB
+xcn_INDEX:    DWORD;      * Indice tabella gantry
+xcn_MASTER:   DWORD;      * Numero asse master
+xcn_KBIL:     DWORD;      * Costante bilanciamento in impulsi
+xcn_FCUT:     DWORD;      * Frequenza di taglio in millesimi di Hz
+xcn_ERRMAX:   DWORD;      * Sbilanciamento allarme (micron)
+xcn_ERRWRN:   DWORD;      * Sbilanciamento warning (micron)
+END_VAR
+
+VAR_OUTPUT
+ycn_READY:    BOOL;       * FB pronto per START
+ycn_RUNNING:  BOOL;       * Esecuzione FB in corso
+ycn_ENDOK:    BOOL;       * Comando terminato correttamente
+ycn_ENDERR:   BOOL;       * Comando terminato non correttamente
+ycn_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+CNFB: CN_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xcn_ENABLE                    ** abilita FB
+ST   CNFB.xcn_ENABLE
+
+LD   xcn_START                     ** start richiesta azione
+ST   CNFB.xcn_START
+
+LD   xcn_CLEAR                     ** conferma fine comando
+ST   CNFB.xcn_CLEAR
+
+CAL  CNFB
+
+* Comando uscite da FB standard
+
+LD   CNFB.ycn_READY
+ST   ycn_READY                     ** FB pronto per START
+
+LD   CNFB.ycn_RUNNING
+ST   ycn_RUNNING                   ** Esecuzione FB in corso
+
+LD   CNFB.ycn_ENDOK
+ST   ycn_ENDOK                     ** Comando terminato correttamente
+
+LD   CNFB.ycn_ENDERR
+ST   ycn_ENDERR                    ** Comando terminato non correttamente
+
+LD   CNFB.ycn_ERRCODE
+ST   ycn_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   CNFB.ycn_TRDATA
+JMPCN END_DATA
+
+LD   4
+ST   CNFB_CODE                     ** cnfb0 Codice Operativo comando
+
+LD   CC_MAINPROC                   ** cc15 Processo principale canale
+ST   CNFB_MPROC                    ** cnfb1 Processo principale comando
+
+LD   xcn_MASTER                    ** Numero asse master
+ST   CNFB_PAR2                     ** cnfb2 Parametro 2 FB processo aux
+
+LD   xcn_ONOFF                     ** abilita gantry
+ST   CNFB_PAR3.0
+
+LD   xcn_COPY                      ** copia parametri
+ST   CNFB_PAR3.1
+
+LDN  xcn_ONOFF                     ** abilita gantry
+ORN  xcn_COPY                      ** copia parametri
+JMPC END_DATA
+
+LD   xcn_IMMDATA                   ** dati immediati
+JMPC IMMDATA
+
+PATH %gantry[xcn_INDEX]            ** Indice tabella gantry
+
+LD   GDAT4                         ** Gdat4 Guadagno Bilanciamento
+ST   CNFB_PAR4                     ** cnfb4 Parametro 4 FB processo aux
+
+LD   GDAT5                         ** Gdat5 Frequenza Taglio
+ST   CNFB_PAR5                     ** cnfb5 Parametro 5 FB processo aux
+
+LD   xcn_REFTOLL                   ** utilizza tolleranza allarme REF
+JMPC REFTOLL
+
+LD   GDAT2                         ** Gdat2 Tolleranza Allarme
+ST   CNFB_PAR6                     ** cnfb6 Parametro 6 FB processo aux
+
+LD   %cn0.wScaling       ** non si puo' usare wScaling senza path
+EQ   0
+JMPC WSCAL0
+
+LD   GDAT2                         ** Gdat2 Tolleranza Allarme
+DIV  %cn0.wScaling       ** non si puo' usare wScaling senza path
+ST   CNFB_PAR6                     ** cnfb6 Parametro 6 FB processo aux
+
+WSCAL0:
+JMP  END_REFTOLL
+
+REFTOLL:
+
+LD   GDAT3                         ** Gdat3 Tolleranza Allarme REF
+ST   CNFB_PAR6                     ** cnfb6 Parametro 6 FB processo aux
+
+END_REFTOLL:
+
+LD   GDAT1                         ** Gdat1 Tolleranza Warning
+ST   CNFB_PAR7                     ** cnfb7 Parametro 7 FB processo aux
+
+LD   %cn0.wScaling       ** non si puo' usare wScaling senza path
+EQ   0
+JMPC WSCAL1
+
+LD   GDAT1                         ** Gdat1 Tolleranza Warning
+DIV  %cn0.wScaling       ** non si puo' usare wScaling senza path
+ST   CNFB_PAR7                     ** cnfb7 Parametro 7 FB processo aux
+
+WSCAL1:
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xcn_KBIL                      ** Costante bilanciamento in impulsi
+ST   CNFB_PAR4                     ** cnfb4 Parametro 4 FB processo aux
+
+LD   xcn_FCUT                      ** Frequenza di taglio in millesimi di Hz
+ST   CNFB_PAR5                     ** cnfb5 Parametro 5 FB processo aux
+
+LD   xcn_ERRMAX                    ** Sbilanciamento allarme (micron)
+ST   CNFB_PAR6                     ** cnfb6 Parametro 6 FB processo aux
+
+LD   xcn_ERRWRN                    ** Sbilanciamento warning (micron)
+ST   CNFB_PAR7                     ** cnfb7 Parametro 7 FB processo aux
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* ----------------------------------------------*
+* Blocco Funzionale imposta velocità limite assi
+* ----------------------------------------------*
+
+FUNCTION_BLOCK CN_VELLIM
+
+VAR_INPUT
+xcn_ENABLE:   BOOL;       * abilita FB
+xcn_START:    BOOL;       * start richiesta azione
+xcn_CLEAR:    BOOL;       * conferma fine comando
+xcn_NCHAN:    DWORD;      * numero canale
+xcn_VELLIM:   DWORD;      * Velocità limite assi (mm/min) - 0 = VMAX
+END_VAR
+
+VAR_OUTPUT
+ycn_READY:    BOOL;       * FB pronto per START
+ycn_RUNNING:  BOOL;       * Esecuzione FB in corso
+ycn_ENDOK:    BOOL;       * Comando terminato correttamente
+ycn_ENDERR:   BOOL;       * Comando terminato non correttamente
+ycn_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+CNFB: CN_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xcn_ENABLE                    ** abilita FB
+ST   CNFB.xcn_ENABLE
+
+LD   xcn_START                     ** start richiesta azione
+ST   CNFB.xcn_START
+
+LD   xcn_CLEAR                     ** conferma fine comando
+ST   CNFB.xcn_CLEAR
+
+CAL  CNFB
+
+* Comando uscite da FB standard
+
+LD   CNFB.ycn_READY
+ST   ycn_READY                     ** FB pronto per START
+
+LD   CNFB.ycn_RUNNING
+ST   ycn_RUNNING                   ** Esecuzione FB in corso
+
+LD   CNFB.ycn_ENDOK
+ST   ycn_ENDOK                     ** Comando terminato correttamente
+
+LD   CNFB.ycn_ENDERR
+ST   ycn_ENDERR                    ** Comando terminato non correttamente
+
+LD   CNFB.ycn_ERRCODE
+ST   ycn_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   CNFB.ycn_TRDATA
+JMPCN END_DATA
+
+LD   5
+ST   CNFB_CODE                     ** cnfb0 Codice Operativo comando
+
+LD   xcn_NCHAN                     ** numero canale
+ST   CNFB_MPROC                    ** cnfb1 Processo principale comando
+
+LD   xcn_VELLIM                    ** Velocità limite assi (mm/min) - 0 = VMAX
+EQ   0
+JMPC SEL_VMAX
+
+LD   xcn_VELLIM                    ** Velocità limite assi (mm/min) - 0 = VMAX
+ST   CNFB_PAR2                     ** cnfb2 Parametro 2 FB processo aux
+
+JMP  END_DATA
+
+SEL_VMAX:
+
+LD   CP_VELMAX                     ** pc8 Velocità massima canale
+ST   CNFB_PAR2                     ** cnfb2 Parametro 2 FB processo aux
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+
+* ------------------------------------------------------------*
+* Blocco Funzionale di switch encoder canopen
+* Richiede la dll del canopen interpolato SlaCan.dll
+* ------------------------------------------------------------*
+
+FUNCTION_BLOCK AX_ENCSWITCH
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_NODE:     DWORD;      * Numero nodo richiesto (2-60) o maschera
+                          * Maschera nodi: Bit1=Node1, Bit2=Node2, ...Bit31=Node31
+xax_MODE:     DWORD;      * Tipo di comando
+                          * Bit0: 0=Reg.Standard / 1=Reg.Monodirezionale
+                          * Bit1: Switch node (non usare)
+                          * Bit2: Stop nodo singolo
+                          * Bit3: Start nodo singolo
+                          * Bit4: Stop nodo multiplo
+                          * Bit5: Start nodo multiplo
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_RUNSLV
+JMPCN END_DATA
+
+LD   29
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_NODE                      ** Numero nodo richiesto (2-60) o maschera
+ST   %fb1
+
+LD   xax_MODE                      ** Tipo di comando
+ST   %fb2
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+* ----------------------------------------------------*
+* Blocco Funzionale abilita/disabilita operatore dinamico su un asse
+* ----------------------------------------------------*
+
+FUNCTION_BLOCK AX_COUP
+
+VAR_INPUT
+xax_ENABLE:   BOOL;       * abilita FB
+xax_START:    BOOL;       * start richiesta azione
+xax_CLEAR:    BOOL;       * conferma fine comando
+xax_MODE:     DWORD;      * Funzione selezionata
+xax_INSTANCE: DWORD;      * Numero istanza tabella dati
+xax_MASTER0:  DWORD;      * Numero asse master 0
+xax_MASTER1:  DWORD;      * Numero asse master 1
+xax_MASTER2:  DWORD;      * Numero asse master 2
+xax_MASTER3:  DWORD;      * Numero asse master 3
+xax_MASTER4:  DWORD;      * Numero asse master 4
+xax_MASTER5:  DWORD;      * Numero asse master 5
+
+END_VAR
+
+VAR_OUTPUT
+yax_READY:    BOOL;       * FB pronto per START
+yax_RUNNING:  BOOL;       * Esecuzione FB in corso
+yax_ENDOK:    BOOL;       * Comando terminato correttamente
+yax_ENDERR:   BOOL;       * Comando terminato non correttamente
+yax_ERRCODE:  DWORD;      * codice errore ( maschera bit )
+END_VAR
+
+VAR
+AXFB: AX_COMMAND;
+END_VAR
+
+
+
+* Chiamata FB standard gestione comandi slave
+
+LD   xax_ENABLE                    ** abilita FB
+ST   AXFB.xax_ENABLE
+
+LD   xax_START                     ** start richiesta azione
+ST   AXFB.xax_START
+
+LD   xax_CLEAR                     ** conferma fine comando
+ST   AXFB.xax_CLEAR
+
+CAL  AXFB
+
+* Comando uscite da FB standard
+
+LD   AXFB.yax_READY
+ST   yax_READY                     ** FB pronto per START
+
+LD   AXFB.yax_RUNNING
+ST   yax_RUNNING                   ** Esecuzione FB in corso
+
+LD   AXFB.yax_ENDOK
+ST   yax_ENDOK                     ** Comando terminato correttamente
+
+LD   AXFB.yax_ENDERR
+ST   yax_ENDERR                    ** Comando terminato non correttamente
+
+LD   AXFB.yax_ERRCODE
+ST   yax_ERRCODE                   ** codice errore ( maschera bit )
+
+*** TRASFERIMENTO DEI REGISTRI FB ALLO SLAVE ***
+
+LD   AXFB.yax_TRDATA
+JMPCN END_DATA
+
+LD   31
+ST   FB_CODE                       ** fb0 Codice Operativo comando
+
+LD   xax_MODE                      ** Funzione selezionata
+ST   FB_QUOTA                      ** fb1 Quota target assoluta (0.001 mm)
+
+LD   xax_INSTANCE                  ** Numero istanza tabella dati
+ST   FB_VEL                        ** fb2 Velocita' posizionamento (mm/min)
+
+LD   xax_MASTER0                   ** Numero asse master 0
+ST   FB_VMAX                       ** fb3 Velocita' massima (mm/min)
+
+LD   xax_MASTER1                   ** Numero asse master 1
+ST   FB_ACCEL                      ** fb4 Accelerazione (msec o mm/s2)
+
+LD   xax_MASTER2                   ** Numero asse master 2
+ST   FB_DECEL                      ** fb5 Decelerazione (msec o mm/s2)
+
+LD   xax_MASTER3                   ** Numero asse master 3
+ST   FB_RAMPES                     ** fb6 Tempo Rampe S (msec o mm/s3)
+
+LD   xax_MASTER4                   ** Numero asse master 4
+ST   FB_TOLLP                      ** fb7 Tolleranza (0.001 mm)
+
+LD   xax_MASTER5                   ** Numero asse master 5
+ST   FB_GAINP                      ** fb8 Guadagno P (0.001 DAC/pulses o 0.001 sec-1)
+
+END_DATA:
+
+END_FUNCTION_BLOCK
+
+*******************************************************************************
+*   FB gestione FC minimo/massimo e FC di taratura
+*******************************************************************************
+FUNCTION_BLOCK AX_LS_REF
+
+VAR_INPUT
+x_TYPE_LS:      DWORD;      * (1=NC, 0=NO)
+x_REF_mode:     DWORD;      * 0=use ref switch NO
+                            * 1=use ref switch NC
+                            * 2=use MAX limit switch
+                            * 3=use MIN limit switch
+x_MIN_LS:       BOOL;       * Min Limit switch
+x_MAX_LS:       BOOL;       * Max Limit switch
+x_REF_S:        BOOL;       * Reference switch
+END_VAR
+
+VAR_OUTPUT
+y_MIN_LS:       BOOL;       * Min Limit switch
+y_MAX_LS:       BOOL;       * Max Limit switch
+y_REF_S:        BOOL;       * Reference switch
+END_VAR
+
+VAR
+l_MIN_LS:       BOOL;       * Min Limit switch
+l_MAX_LS:       BOOL;       * Max Limit switch
+l_REF_S:        BOOL;       * Reference switch
+END_VAR
+*******************************************************************************
+
+LD   x_MIN_LS                      ** Min Limit switch
+ST   l_MIN_LS                      ** Min Limit switch
+
+LD   x_MAX_LS                      ** Max Limit switch
+ST   l_MAX_LS                      ** Max Limit switch
+
+LD   x_REF_S                       ** Reference switch
+ST   l_REF_S                       ** Reference switch
+
+LD   x_TYPE_LS                     ** (1=NC, 0=NO)
+EQ   1
+JMPCN NoNClose
+
+LD   l_MIN_LS                      ** Min Limit switch
+XOR  1
+ST   l_MIN_LS                      ** Min Limit switch
+
+LD   l_MAX_LS                      ** Max Limit switch
+XOR  1
+ST   l_MAX_LS                      ** Max Limit switch
+
+NoNClose:
+LD   x_REF_mode                    ** 0=use ref switch NO
+EQ   0
+JMPC exit_0
+
+LD   x_REF_mode                    ** 0=use ref switch NO
+EQ   1
+JMPCN check_v2
+
+LD   x_REF_S                       ** Reference switch
+XOR  1
+ST   l_REF_S                       ** Reference switch
+JMP  exit_0
+
+*****************************
+*   FC +
+*****************************
+check_v2:
+LD   x_REF_mode                    ** 0=use ref switch NO
+EQ   2
+JMPCN check_v3
+
+LD   %ui16.1                        ** Selezione Modo REF da Plc
+JMPCN check_v3
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   l_MAX_LS                      ** Max Limit switch
+
+LD   x_TYPE_LS                     ** (1=NC, 0=NO)
+EQ   1                              ** nc condition
+JMPCN no_switch
+
+LDN  x_MAX_LS                      ** Max Limit switch
+ST   l_REF_S                       ** Reference switch
+
+JMP  exit_0
+no_switch:
+
+LD   x_MAX_LS                      ** Max Limit switch
+ST   l_REF_S                       ** Reference switch
+
+
+JMP  exit_0
+
+*****************************
+*   FC -
+*****************************
+check_v3:
+LD   x_REF_mode                    ** 0=use ref switch NO
+EQ   3
+JMPCN check_v4
+
+LD   %ui16.1                        ** Selezione Modo REF da Plc
+JMPCN check_v4
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   l_MIN_LS                      ** Min Limit switch
+
+LD   x_TYPE_LS                     ** (1=NC, 0=NO)
+EQ   1                              ** nc condition
+JMPCN no_switch1
+
+LDN  x_MIN_LS                      ** Min Limit switch
+ST   l_REF_S                       ** Reference switch
+
+JMP  exit_0
+no_switch1:
+
+LD   x_MIN_LS                      ** Min Limit switch
+ST   l_REF_S                       ** Reference switch
+
+JMP  exit_0
+
+check_v4:
+exit_0:
+LD   l_MIN_LS                      ** Min Limit switch
+ST   y_MIN_LS                      ** Min Limit switch
+
+LD   l_MAX_LS                      ** Max Limit switch
+ST   y_MAX_LS                      ** Max Limit switch
+
+LD   l_REF_S                       ** Reference switch
+ST   y_REF_S                       ** Reference switch
+JMP  exit_com
+
+exit_com:
+
+END_FUNCTION_BLOCK
+
+

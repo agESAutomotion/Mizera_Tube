@@ -1,0 +1,16 @@
+
+[KEYS]
+TITLE=
+TXT14=Clear Alarm
+
+[PROMPT]
+KEY_NODE=Node
+CALC_KP_DRIVE=Drive Kp Help
+X parameter1=Kp Drive Calculation
+Label1=Kp [Hz]
+Label2=Motor RPM
+Label3=Kp Drive
+
+[STATUS]
+
+[HELP]

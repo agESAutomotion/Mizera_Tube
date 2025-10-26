@@ -1,0 +1,17 @@
+[X] [Y] [Z] :G158
+;//Gestione origine additiva 1
+;//Scrive sulle variabili add1_x, ...
+DBL qox=CTOMM(VA23)
+DBL qoy=CTOMM(VA24)
+DBL qoz=CTOMM(VA25)
+DBL sav_G70=XGET("@G70")
+G71
+add1_x = 0
+add1_y = 0
+add1_z = 0
+IF(!ISQNAN(qox)) add1_x = qox
+IF(!ISQNAN(qoy)) add1_y = qoy
+IF(!ISQNAN(qoz)) add1_z = qoz
+G152
+G(sav_G70)
+RET

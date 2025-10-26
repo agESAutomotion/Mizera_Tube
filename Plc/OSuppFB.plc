@@ -1,0 +1,343 @@
+*******************************************************************************
+*   suppFB.plc
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "assi.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+
+*******************************************************************************
+*   Horizontal Supports Management (G.D)
+*******************************************************************************
+
+VAR_IN_OUT
+AxPos             AT  %ra4;      * Axis position
+AxPrePos          AT  %ra92;
+
+Go_Follow         AT  %rgau0;    * Force down by blending algh.
+AddFollow         AT  %rgau1;    * Add value during following
+BldState          AT  %rgau2;    * Blend switch output, (0->1000) (parking -> following)
+ParkingSet        AT  %rgau3;    * Real time parking position (input)
+AddFollow_Out     AT  %rgau4;    * Add value during following (output)
+ParkingSet_Out    AT  %rgau5;    * Real time parking position (output)
+
+filterT1Rate      AT  %rgdau0;   * Blendswitch filter rate [0.001/min]
+addValueVel       AT  %rgdau1;   * Following add value speed [um/min]
+addValueVelM      AT  %rgdau2;   * Parking speed [um/min]
+
+ISO_SupHor_Init   AT %SUPPORTS_SYSTEM.boolean1.30;
+END_VAR
+
+FUNCTION_BLOCK    HOR_SUPPORT
+
+VAR_INPUT    
+xReset:           BOOL;          * Emergency and Reset for PosAx
+xHoldExem:        BOOL;          * Support Hold Exemption (in case of initialization)	
+xEnJogPrk:        BOOL;          * Enable Non Auto Cycle Hor Ax Parking 
+xEnabAutoDwn:     BOOL;          * Enable Auto Support Down
+xEnabAutoUp:      BOOL;          * Enable Auto Support Up (Blend)
+xBlendSwitchEn:   BOOL;          * blendswitch enable
+xParkCmd:         BOOL;          * JOG / Auto Cmd to park
+xVerParked:       BOOL;          * The corresponding vertical support parked
+xEnSecFollow:     BOOL;          * Enable addvalue during support following 
+xEnBldFeed:       BOOL;          * Blend switch feedrate management
+
+xHoldSuperviAxis: BOOL;          * (From Support FB outputs)
+xHoldSuppAxis:    BOOL;          * (From Support FB outputs)
+
+xColiQta:         DWORD;         * Colision quota to allow master movement (-9999999 to Disable)
+xParkingPos:      DWORD;         * Support Parking position 
+xAddFollPos:      DWORD;         * Added following targets
+xBlendId:         DWORD;         * Blend ID for speed reset ([lv, lat, ulv, uhor]=[0,1,2,3])
+xBldFeed:         DWORD;         * Blend switch feedrate % (0-100) 
+END_VAR
+
+VAR_OUTPUT
+yReqGrant:        BOOL;
+yHoldMovSupp:     BOOL;
+yHoldMovSuperv:   BOOL; 
+yAxInParkPos:     BOOL;
+yVerForceDwn:     BOOL;          * Force the vertical support to be down depends on the O support motion direction 
+END_VAR
+
+VAR
+resReq:           BOOL;
+appoggio:         BOOL; 
+Safezone:         BOOL;
+Req_Parking:      BOOL;
+HoldSuppAxis:     BOOL;
+HoldSuperviAxis:  BOOL;
+
+TON_CLOSE_LOOP:   TON;
+TRIG_PRKCON:      TRIG;
+R_RES_REQ:        R_TRIG;
+RTRIG_REQ_PARK:   R_TRIG;
+RTRIG_PARK:       R_TRIG;
+RTRIG_SAFE_DWN:   R_TRIG;
+FTRIG_PRGRUN:     F_TRIG;
+MinMax:           COMPARE;
+PosSupp:          AX_POSIZ;
+END_VAR
+
+*// The input must check safe condition //
+
+*// xParkCmd
+
+*// --------------------------------------------------------------------------- //
+
+*// Those inputs should be the same outputs of vertical supports //
+*// Maybe not the direct outputs but depending the usage
+
+*// xHoldSuperviAxis
+*// xHoldSuppAxis
+*// xEnabAutoUp
+*// xEnabAutoDwn
+*// xBlendSwitchEn
+
+*// --------------------------------------------------------------------------- //
+
+LD   AxPrePos
+GT   xColiQta
+AND  ( 
+LD   AxPos
+GT   xColiQta        
+)  
+ST   Safezone
+
+LDN  xEnSecFollow
+JMPCN _CLRFOFFSET
+     LD   0
+	 ST   AddFollow
+_CLRFOFFSET:
+
+CAL   TON_CLOSE_LOOP (IN:=%ra0.0,PT:=300)
+
+LD    xHoldSuperviAxis
+OR(
+LD    xHoldSuppAxis
+AND   xVerParked
+)
+ANDN  Safezone
+AND   TON_CLOSE_LOOP.Q
+ST    HoldSuperviAxis
+
+* In case of ver not fully down, but hor to be in 
+
+LD    xHoldSuppAxis
+ANDN  (
+* Jog + always allowed
+LD    %ra0.8
+ANDN  %cn0.rc8.0
+)
+AND   TON_CLOSE_LOOP.Q
+ST    HoldSuppAxis 
+
+LD    HoldSuppAxis
+AND   xEnJogPrk
+ANDN  %cn0.rc8.0
+ST    appoggio
+CAL   RTRIG_SAFE_DWN(CLK:=appoggio)
+CAL   RTRIG_REQ_PARK (CLK:=HoldSuppAxis)
+CAL   RTRIG_PARK (CLK:=xParkCmd)
+	  
+LD    RTRIG_SAFE_DWN.Q 
+OR    RTRIG_REQ_PARK.Q
+AND   xEnabAutoDwn
+OR    RTRIG_PARK.Q
+ANDN  %rc0.8                 *in ref
+AND   TON_CLOSE_LOOP.Q   
+S     Req_Parking  
+
+*//============================================================================                 	  
+*// JOG Mode Supports Parking		
+*//============================================================================		  
+LDN   %cn0.rc8.0 
+OR(
+LD    xParkCmd
+OR    Req_Parking
+ANDN  xBlendSwitchEn 
+AND   %cn0.rc8.0 
+)                   
+JMPCN _Jog_management 
+      LD   Req_Parking   
+      AND  TON_CLOSE_LOOP.Q  
+      ANDN PosSupp.yax_ENDERR	  
+      ST   PosSupp.xax_ENABLE
+	  CAL  TRIG_PRKCON(CLK=PosSupp.xax_ENABLE)
+      
+      LDN  PosSupp.xax_ENABLE
+	  OR   TRIG_PRKCON.Q
+      ST   PosSupp.xax_CLEAR
+      
+      LD   PosSupp.xax_ENABLE
+      AND  PosSupp.yax_READY
+      ANDN PosSupp.yax_ENDERR
+      ST   PosSupp.xax_START
+      
+      LD   xParkingPos
+      ST   PosSupp.xax_QUOTA  
+      
+      LD   %pa9
+      ST   PosSupp.xax_VEL
+      
+      CAL  PosSupp
+      
+      LD   PosSupp.yax_ENDOK
+      OR   xReset
+      ST   resReq
+      
+      CAL  R_RES_REQ (CLK:=resReq)
+      LD   R_RES_REQ.Q
+      R    Req_Parking
+_Jog_management:
+
+CAL   FTRIG_PRGRUN (CLK:=%cn0.rc8.0)
+LD    FTRIG_PRGRUN.Q
+R     Req_Parking
+
+*//============================================================================
+*// Blendswitch Veladdval / Hold Condition initialization
+*//============================================================================
+LD   %BLEND_VEL.filTRate[xBlendId]
+ST   filterT1Rate
+   
+LD   %BLEND_VEL.velAddVal[xBlendId]
+ST   addValueVel 
+ST   addValueVelM
+
+LD   xEnBldFeed
+JMPCN _BLENDFEED	  
+	  LD   xBldFeed
+	  MULDIV(M=filterT1Rate,D=100)
+	  ST   filterT1Rate
+	  
+	  LD   xBldFeed
+	  MULDIV(M=addValueVel,D=100)
+	  ST   addValueVel 
+      ST   addValueVelM
+_BLENDFEED:	  
+	  
+LD    %cn0.rc8.1  
+AND   xBlendSwitchEn
+JMPCN _BLENDHOLD
+      LD   0
+      ST   filterT1Rate
+      ST   addValueVel 
+      ST   addValueVelM
+_BLENDHOLD:
+
+*//============================================================================
+*// Auto Mode Supports (Bi-State CMD)
+*//============================================================================
+LD    %cn0.rc8.0  
+AND   xBlendSwitchEn
+AND   xEnabAutoDwn
+JMPCN _AUTO_MANAGEMENT
+      LD   HoldSuppAxis
+	  OR(
+	       LD   HoldSuperviAxis
+           ANDN HoldSuppAxis 
+	  )
+      OR   xParkCmd
+	  OR   Req_Parking
+      JMPCN _BLEND_PARK_STATUS             *++++++
+           LD   0
+           ST   Go_Follow
+		   ST   AddFollow
+		   
+		   LD   xParkingPos
+		   ST   ParkingSet
+				   		   	   
+      JMP  _BLEND_SKIP_FOLLOW              *//////
+      _BLEND_PARK_STATUS:                  *++++++
+	  
+	       LD   xEnabAutoUp
+		   JMPCN _STATUS_ENUP
+                 LD   1
+                 ST   Go_Follow							
+		   _STATUS_ENUP:	
+		   
+		   * Added value management following
+		   * V shape unloading supports may need different horizontal position
+		   LD    BldState
+		   EQ    1000
+		   AND   xEnSecFollow
+		   JMPCN _STATUS_FOFFSET
+		         LD   xAddFollPos
+			     ST   AddFollow
+		   _STATUS_FOFFSET: 
+		    
+      _BLEND_SKIP_FOLLOW:                  *//////
+	  	  
+      LD   %PLCFLAGS.0
+      ST   Req_Parking 
+_AUTO_MANAGEMENT:
+
+LDN   %cn0.rc8.0  
+JMPCN _RSTBLEND
+      LD    0
+      ST    Go_Follow
+_RSTBLEND:
+
+*//============================================================================
+*// Output
+*//============================================================================
+LD    AxPos
+SUB   xParkingPos
+ABS   
+LT    1000
+ST    yAxInParkPos
+	  
+LD    Req_Parking
+ANDN  %cn0.rc8.0  
+OR(
+LD    xParkCmd
+OR    Req_Parking
+ANDN  xBlendSwitchEn 
+AND   %cn0.rc8.0 
+)   
+AND   TON_CLOSE_LOOP.Q
+ANDN (
+LD    xHoldExem
+ANDN  xBlendSwitchEn 
+AND   %cn0.rc8.0   
+)
+ST    yReqGrant
+	  
+LD    HoldSuppAxis
+ANDN (
+LD    xHoldExem
+ANDN  xBlendSwitchEn 
+AND   %cn0.rc8.0   
+)
+ANDN  yReqGrant
+OR(
+LD    %cn0.rc9           
+EQ    30
+AND   %cn0.rc8.4          
+)
+ST    yHoldMovSupp
+
+LD    HoldSuperviAxis    
+ST    yHoldMovSuperv
+
+* Unloading process condition released
+* Please select proper unloading position
+* 
+CAL   MinMax(A:=%gIso23,B:=%gIso24)
+LD    Go_Follow   
+EQ    1  
+AND   xBlendSwitchEn        
+ANDN(
+      LD  AxPos
+      ABS
+      LT (
+	  LD  MinMax.yMin
+      MULDIV(M=1000,D=2)    
+	  )             
+)         
+AND   %cn0.rc8.0 
+ST    yVerForceDwn
+
+END_FUNCTION_BLOCK

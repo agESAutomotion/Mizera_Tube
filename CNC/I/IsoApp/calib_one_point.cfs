@@ -1,0 +1,90 @@
+:
+;******************************************************************************
+;   CALIB_ONE_POINT (Calibration cycle for 1 point)
+;   ESAutomotion
+;   LASER machine
+;******************************************************************************
+INCLUDE "var_usr.cfs"
+
+DBL ABSINC  = 0x01
+DBL VOUT0   = 0x04
+DBL VOUT    = 0x08
+DBL VMAX    = 0x10
+
+DBL VHIGH   = 2000
+DBL VLOW    = 100
+DBL LevelE = 0                     ; [(Normale close)  Aspetta il segnale a 0 per uscire dal comando]
+DBL LevelS = 1                     ; [(Normale open)   Aspetta il segnale a 1 per uscire dal comando]                                  
+                                   
+DBL i                              ;
+DBL Speed = 5000    ; Velocita' di discesa Z2
+DBL Attesa = 0.5    ; Attesa tra un posiz e l'altro  
+DBL IncStep = 0
+
+
+?%LsIso10.0 = 0     ;ISO said Sensor Calibration OK
+?%C30.7 = 0              ;===>>> Reset segnale calibrazione
+?%C30.8 = 0              ;===>>> Reset segnale strobe
+
+$ CALIBRATION IN PROGRESS...
+SYN
+
+G0 Z((MaxQta_Z) - 10)      ;Posizione "Z" al finecorsa Software - 10 mm 
+SYN
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;           
+;Tastatura
+G153
+IF( %LSRPlcOp0.20 ) THEN        ; FAR INPUT management enabled
+    _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%C31.0", LevelE ) ; Aspetta il segnale basso per uscire
+ENDIF
+
+
+?%C30.7 = 1              ;===>>> Richiesta calibrazione
+G4 F0.2
+
+; ready   
+SYN
+AWAIT( !%C31.2 )         ;===>>> Attendo basso il segnale Ready da precitec
+
+_singfc( ( VMAX | VOUT0 ), Z, 2, VLOW, 0, "%C31.1", LevelS )  ; Aspetta il segnale alto per uscire
+_singfc( ( VMAX | VOUT0 ), Z, 1, VLOW/4, 0, "%C31.1", LevelE )  ; Aspetta il segnale basso per uscire
+G4 F0.2
+SYN
+kine_z = GET(Z) 
+G10 G0 Z(QCALC(Z)) 
+
+SYN
+IF ((%LSRCostK[31]/1000)== 10)  G153 G0 Z(kine_z+10) ;Posizionamento a 10mm dalla lamiera tastata
+IF ((%LSRCostK[31]/1000)== 20)  G153 G0 Z(kine_z+20) ;Posizionamento a 20mm dalla lamiera tastata
+       
+G4 F(Attesa)             
+; Strobe
+?%C30.8 = 1         ;===>>>
+G4 F0.25
+; Strobe
+?%C30.8 = 0
+; pos reached
+SYN
+AWAIT(!%C31.3 )     ;===>>> Attendo basso il segnale Precitec:Posizione raggiunta
+G4 F0.10
+    
+G91
+G1 Z(HeightEnd) F20000    ;Posizionamento a HeightEnd dalla lamiera tastata
+G90
+          
+G4 F0.25
+
+; Calibration request
+?%C30.7 = 0
+
+SYN
+IF( %LSRPlcOp0.20 ) THEN        ; FAR INPUT management enabled
+    AWAIT(%C31.0)       ; WAIT FAR SIGNAL APPEAR
+ENDIF
+
+?%LsIso10.0 = 1     ;ISO said Sensor Calibration OK
+
+$ 
+
+RET

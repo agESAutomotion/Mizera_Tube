@@ -1,0 +1,50 @@
+[PROMPT]
+KEY_FDC =ËÙ¶È¿ØÖÆÊý¾Ý
+
+FDC_DLE =¼õËÙ¿ØÖÆÓÐÐ§
+FDC_DLM =¼õËÙ¿ØÖÆ·½Ê½
+FDC_DLS =Ô¤Ëã²½ÖèÊýÄ¿
+FDC_CON =Extended limitation for constraints
+FDC_FCE =ËÙ¶È¿ØÖÆÓÐÐ§
+FDC_FC0 =VRef[mm/min] Ô²»¡ R=1m, a=90°
+FDC_FC1 =VRef[mm/min] Ô²»¡ R=0.01m, a=90°
+FDC_FC2 =VRef[mm/min] Ô²»¡ R=1m, a->0°
+FDC_FC3 =VRef[mm/min] Ô²»¡ R=0.01m, a->0°
+FDC_TCE =ÔÊÐí¿ØÖÆÖÐ¶Ï
+FDC_TC0 =VRef[mm/min] disc. a=90°
+FDC_TC1 =VRef[°/min] disc. arc-lin
+FDC_TC2 =VRef[mm/min] disc. a->0°
+FDC_TC3 =VRef[°/min] disc. lin-arc
+FDC_TC0_VIMO =VIMO: max NEG jump [mm/min]
+FDC_TC1_VIMO =VIMO: max NEG jump [°/min]
+FDC_TC2_VIMO =VIMO: max POS jump [mm/min]
+FDC_TC3_VIMO =VIMO: max POS jump [°/min]
+FDC_ARC =Ô²»¡°ë¾¶¹«²î [mm]
+FDC_SAJ =¼ÓËÙ¶È¼«ÏÞ [mm/s]
+FDC_JRK =Arc jerk [mm/s³]
+FDC_CURV=Curvature-based acceleration limit [mm/s²]
+FDC_ANG =Angular threshold [°]
+FDC_TC_APN =VIMO: max pos/neg jump (A axis) [°/min]
+FDC_TC_BPN =VIMO: max pos/neg jump (B axis) [°/min]
+FDC_TC_CPN =VIMO: max pos/neg jump (C axis) [°/min]
+
+[HELP]
+FDC_DLE =Allows the speeds of the sections to be controlled, taking into account the dynamics of the axes, the utilized mechanisms, the machining properties within a certain number of steps. 1=Enables, 0=Disables
+FDC_DLM =Deceleration control mode (do NOT use)
+FDC_DLS =Number of look-ahead steps
+FDC_FCE =(Not used)  Speed control enabling
+FDC_FC0 =Reference speed for arcs with 1 meter radius and 90 degrees angle [mm/min]
+FDC_FC1 =Reference speed for arcs with 0.01 meter radius and 90 degree angle [mm/min]
+FDC_FC2 =Reference speed for arcs with 1 meter radius and angle near to 0 degrees [mm/min]
+FDC_FC3 =Reference speed for arcs with 0.01 meter radius and angle near to 0 degrees [mm/min]
+FDC_TCE =(Not used)  Discontinuity control enabling
+FDC_TC0 =Reference speed for discontinuity change with 90 degree angle [mm/min]
+FDC_TC1 =Angular reference speed for arc-line change [°/min]
+FDC_TC2 =Reference speed for discontinuity change with angle near to 0 degrees [mm/min]
+FDC_TC3 =Angular reference speed for arc-line change [°/min]
+FDC_ARC =Arcs radius tolerance for automatic feed limitation [mm];  arc radius and contouring axes gains are taken into account to limit the machining feed, in order to keep the radius error within the set up limit.  Set to 0 to disable feed limitation.
+FDC_SAJ =Side Acceleration Jump limit [mm/s²]
+FDC_ANG =Angular threshold [°]
+FDC_TC_APN =VIMO: max pos/neg jump (A axis) [°/min]
+FDC_TC_BPN =VIMO: max pos/neg jump (B axis) [°/min]
+FDC_TC_CPN =VIMO: max pos/neg jump (C axis) [°/min]

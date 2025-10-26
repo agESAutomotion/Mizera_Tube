@@ -1,0 +1,116 @@
+//-------------------------------------------------------------------------
+//                      DEFCN.USR
+//-------------------------------------------------------------------------
+SECTION User
+
+typedef struct{
+    dword  filTRate[5];       //Blend time control
+	dword  velAddVal[5];      //Add value speed control
+} USR_BLEND_VEL;
+
+typedef struct{
+    dword  tot_piece;       //Total cut pieces
+	double min_piece;       //Min piece length
+	double last_piu_rena;   //Last piece + Renament length
+	dword  track_num[10];   //Track number of piece length saved
+    dword  piece_num[10];   //Piece number (Number of G520 with values)
+	double piece_len[10];   //To save piece length longer than first flap
+} USR_PIECE_INFO;
+
+typedef struct{
+	dword posax[88];
+	dword poswks[9];
+	dword rot;
+	dword sin_rot;
+	dword cos_rot;
+} USR_POS;
+
+typedef struct{	
+	dword mcp_in[6];	// MCP INPUTS
+	dword mcp_out[6];	// MCP OUTPUTS
+	dword value[30];  // VARIABLES FOR VISUALIZZATION
+} USR_HMI;     
+
+typedef struct{
+    dword boolean;
+    dword values[16];	
+} USR_PROG;
+
+typedef struct{
+    dword boolean;
+	  dword values[64];
+} USR_SPINDLE;
+
+typedef struct{
+    dword boolean[2];
+	  dword values[64];
+} USR_SUPPORT;
+
+typedef struct{
+    dword boolean[3];
+	  dword values[64];
+} USR_LOADER;
+
+typedef struct{
+    dword boolean[2];
+	  dword values[32];
+} USR_STORE;
+
+typedef struct{
+    dword boolean;
+    dword values[16];
+} USR_SETUP;
+
+typedef struct{
+    dword boolean;
+	  dword values[64];
+} USR_UNLOADER;
+
+typedef struct{	
+    dword boolean;
+	  dword values[64];
+} USR_TIMES;
+
+typedef struct{
+    dword boolean;
+	  dword values[16];
+} USR_LUB;
+
+//-------------------------------------------------------------------------
+// Data logger
+
+typedef struct {						         	// SERVE PER DATALOGGER
+        dword    StateMachine[3];			// SERVE PER DATALOGGER
+        dword    EventMachine[3];			// SERVE PER DATALOGGER
+        dword    CounterMachine[50];	// SERVE PER DATALOGGER
+        dword    UserCmdInt;				  // SERVE PER DATALOGGER
+        dword    UserCmdExt;				  // SERVE PER DATALOGGER
+} USER_DATA_LOG;							        // SERVE PER DATALOGGER
+
+PERSIST USER_DATA_LOG  UserDataLog;   // SERVE PER DATALOGGER
+
+//-------------------------------------------------------------------------
+
+USR_BLEND_VEL            BLEND_VEL;
+RETAIN USR_PIECE_INFO    PIECE_INFO;
+
+// AVAILABLE FOR HMI
+
+RETAIN USR_POS           POS;
+RETAIN USR_HMI           HMI_ONE;                   
+RETAIN USR_PROG          PROG_ONE;
+RETAIN USR_SPINDLE       SPINDLE_SYSTEM;
+RETAIN USR_SUPPORT       SUPPORTS_SYSTEM;       
+RETAIN USR_LOADER        LOADER;
+RETAIN USR_STORE         STORE;
+RETAIN USR_SETUP         GENERAL_SETUP;
+RETAIN USR_UNLOADER      UNLOADER;
+RETAIN USR_TIMES         TIMES;
+RETAIN USR_LUB           LUB_ONE;
+
+dword                    USR_M[50];            // Global Usr Variable
+
+ENDSECTION User
+
+// Modbus
+#include <defcn_PLCClientModbus.usr>

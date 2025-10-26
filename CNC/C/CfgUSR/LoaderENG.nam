@@ -1,0 +1,65 @@
+
+[KEYS]
+TITLE=TP6022-6 Loader
+
+[PROMPT]
+KEY_NODE=Node
+LOADER=TP6022-6 Loader
+Label31=Offset Close Mobile Spindle [mm] (Tube to Clamp)
+Label1=Offset Tube In Machine [mm] (Head to Spindle)
+Label7=Tube Length From Graph
+Label8=Loader Paddle Quota [mm]
+Label9=Loading X Tube Catching Offset [mm]
+Label10=Disable Load / Semi-Load
+Label11=Parameters
+Label13=Outputs
+P_REF2=Feed +
+Label14=%
+P_REF1=Feed -
+Label23=M1-2-3 Close
+Label24=M1-2-3 Open
+Label25=Centering Close Z1
+Label26=Centering Open Z1
+Button1=M  Zero
+Button2=M  in Machine
+Button3=Open Centering Z3
+Button4=Close Centering Z3
+Button5=G Up
+Button6=G Down
+Label27=G Up
+Label28=G Down
+Label30=Push Tube More In Machine After Loading [mm]
+Label2=G
+Label3=F
+Label5=Chain
+Label6=Chain Zero
+Label16=M Zero / Slow
+Label17=M In Machine
+Label4=M
+Button7=F In Machine
+Button8=F Retrace
+Button9=Chain moves forward
+Button10=Chain Zero Pos
+Label12=F in Machine
+Label15=F Retrace
+Label18=Chain Forward
+Label19=Chain Zero
+Button11=Open Centering Z1
+Button12=Close Centering Z1
+Button13=Open Centering Z2
+Button14=Close Centering Z2
+Button15=Open Centering Z4
+Button16=Close Centering Z4
+Label20=Centering Close Z2
+Label21=Centering Open Z2
+Label22=Centering Close Z3
+Label29=Centering Open Z3
+Label32=Centering Close Z4
+Label33=Centering Open Z4
+Label34=Disable Sensor Tube On Arm M
+Label35=Last Loader Step:
+Button17=Clear  Zero
+
+[STATUS]
+
+[HELP]

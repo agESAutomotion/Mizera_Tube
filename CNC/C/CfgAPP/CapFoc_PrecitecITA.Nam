@@ -1,0 +1,69 @@
+
+[KEYS]
+TITLE=PRECITEC
+TXT4=Linearizzazione capacitivo
+TXT5=Capacitive Test
+TXT6=Linearizzazione Focale
+TXT7=Parameters
+TXT8=Height control
+TXT16=Service 1
+TXT17=Service 2 (MDI)
+TXT18=Service 3
+
+[PROMPT]
+KEY_NODE=
+CAPFOC_PROCON=Leaf
+GroupBoxDiag=Diagnostic
+LabelAitOff1=Air
+LabelN2Off1=N2
+LabelO2Off1=O2
+LabelAit1=Air
+LabelN1=N2
+LabelO1=O2
+lbDiagPar1=Actual POWER [w]
+lbDiagPar2=Actual DUTY [%]
+lbDiagPar3=Actual FREQUENCY [Hz]
+lbDiagPresSetted=GAS PRESSURE setted [BAR]
+lbDiagPresReaded=GAS PRESSURE readed [BAR]
+GroupBoxCapacitive=Capacitive
+LabelPrec0=I_FAR_A10
+LabelPrec1=I_TIP_BODY_TOUCH_A11
+LabelPrec2=I_CABLE_CUT_A12
+LabelPrec3=I_READY_A13
+LabelPrec4=I_BODY_TOUCH_A14
+LabelPrec5=I_NOZZLE_LOST_A15
+LabelPrec6=O_CAL_REQUEST_A3
+LabelPrec7=O_STROBE_A7
+LabelPrec8=O_SELCHAR_BIT1_A5
+LabelPrec9=O_SELCHAR_BIT0_A4
+LabelPrec10=O_SELCHAR_BIT2_A6
+LabelPrec11=CAPACITIVE
+ButtonStartCalib1=START CALIBRATION
+GroupBoxFocal=Focal
+LabelFoc1=FOCAL [mm]
+LabelRotateOrig1=Rotate Origin
+LabelPauseGeometry1=Hold End Geomet
+LabelPausePiece1=Hold End Piece
+LabelZhigh1=Force Z Up
+LabelInForced1=Inputs Forced
+LabelOutForced1=Outputs Forced
+LabelZhigh2=Auto. Acq. Origin
+LabelDryRun1=Dry Run
+LabelSIM3=No Z Movement
+Resume Re1=Resume Ready
+LabelPlcSIM2=PLC SIMULATED
+LabelPallInMan2=Save Gas Active
+LabelSIM1=LASER SIMULATED
+LabelSIM4=CAPACITIVE SIM.
+LabelEnabAutorestart1=Autorestart
+LabelRegON1=REGOL. ON
+LabelJogRTCP1=JOG RTCP
+LabelPrec12=I_PRECITEC_ERROR
+LabelPrec13=I_PREC_POS_REACHED
+LabelPrec14=O_PREC_REFERENCE
+LabelPrec15=O_PREC_AUTOMATIC
+Reference travel=Reference Travel
+
+[STATUS]
+
+[HELP]

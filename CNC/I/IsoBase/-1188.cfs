@@ -1,0 +1,67 @@
+ [C]0 [B]0 [R]0 [X]0 [Y]0 [Z]0 [L] [M]0 :G188
+;//
+;// G188    [C<rot_z1>] [B<rot_y>] [R<rot_z2>]
+;//         [X<org_x>]  [Y<org_y>] [Z<org_z>]
+;//         [L<ml_index>][M<inc_flag>]
+;//
+;//Gestione trasformazione matriciale da angoli EUL variante Y (ZYZ)
+;//Scrive sui coefficienti mx_...
+DBL rot_z1, rot_y, rot_z2
+DBL ml = VA11
+DBL inc = VA12
+DBL mt_a11=1, mt_a12=0, mt_a13=0
+DBL mt_a21=0, mt_a22=1, mt_a23=0
+DBL mt_a31=0, mt_a32=0, mt_a33=1
+DBL or_x=CTOMM(VA23)
+DBL or_y=CTOMM(VA24)
+DBL or_z=CTOMM(VA25)
+DBL sav_G70=XGET("@G70")
+G71
+
+IF(ISQNAN(ml)) ml = ml_curr
+IF(ml < 0) ERROR(61)  ;//Valore troppo elevato
+IF(ml > ml_curr) ERROR(61)  ;//Valore troppo elevato
+
+rot_z1=VA2
+rot_y=VA1
+rot_z2=VA17
+
+;//Coseni direttori asse Xrel
+mt_a11=COS(rot_z1)*COS(rot_y)*COS(rot_z2)-SIN(rot_z1)*SIN(rot_z2)
+mt_a21=SIN(rot_z1)*COS(rot_y)*COS(rot_z2)+COS(rot_z1)*SIN(rot_z2)
+mt_a31=-SIN(rot_y)*COS(rot_z2)
+;//Coseni direttori asse Yrel
+mt_a12=-COS(rot_z1)*COS(rot_y)*SIN(rot_z2)-SIN(rot_z1)*COS(rot_z2)
+mt_a22=-SIN(rot_z1)*COS(rot_y)*SIN(rot_z2)+COS(rot_z1)*COS(rot_z2)
+mt_a32=SIN(rot_y)*SIN(rot_z2)
+;//Coseni direttori asse Zrel
+mt_a13=COS(rot_z1)*SIN(rot_y)
+mt_a23=SIN(rot_z1)*SIN(rot_y)
+mt_a33=COS(rot_y)
+
+IF( inc ) THEN
+    G1160
+ELSE
+    ;//Coseni direttori asse Xrel
+    ml_a11[ml]=mt_a11
+    ml_a21[ml]=mt_a21
+    ml_a31[ml]=mt_a31
+    ;//Coseni direttori asse Yrel
+    ml_a12[ml]=mt_a12
+    ml_a22[ml]=mt_a22
+    ml_a32[ml]=mt_a32
+    ;//Coseni direttori asse Zrel
+    ml_a13[ml]=mt_a13
+    ml_a23[ml]=mt_a23
+    ml_a33[ml]=mt_a33
+
+    ;//Centro di rotazione
+    ml_ro1[ml]=or_x
+    ml_ro2[ml]=or_y
+    ml_ro3[ml]=or_z
+ENDIF
+
+G1152
+G152
+G(sav_G70)
+RET

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--Invance-->
+<Config DeviceConfig="SV660_1Axis_V0.08.xml">
+
+    <Device>InoSV660N</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+
+	<RxPdo Index="#x1600">
+	</RxPdo>
+	
+	<TxPdo Index="#x1A00">
+	</TxPdo>
+
+
+	<DistribuitedClock>1</DistribuitedClock>
+	
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>500</Sync1ShiftTime>
+	</CyclicOperation>
+
+	<DictionaryExceptions>
+		<Emcy>
+			<Object>#x603F0010</Object>
+		</Emcy>
+		
+		<Objects>
+        </Objects>
+	</DictionaryExceptions>
+
+	<PublicDictionary>
+		<Objects>
+            <Comment><![CDATA[Formato Addr IIIISSLL]]></Comment>
+        </Objects>
+	</PublicDictionary>
+
+</Config>
+
+
+

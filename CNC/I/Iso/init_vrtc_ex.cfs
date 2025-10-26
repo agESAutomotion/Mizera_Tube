@@ -1,0 +1,45 @@
+:
+;// Initializes VRTC gateway
+
+DBL i
+
+DBL hix = 0 
+
+;//select arbitary vector (e.g.: tool)
+?%uvHeads[hix].uvhToolCommand[cr_VectorSelect] = 1
+?%uvHeads[hix].uvhSurfaceCommand[cr_VectorSelect] = 1
+;//reset simoffset and setpoint command registers
+?%uvHeads[hix].uvhToolCommand[cr_SimOffsetSet] = 0
+?%uvHeads[hix].uvhToolCommand[cr_Setpoint] = 0
+?%uvHeads[hix].uvhSurfaceCommand[cr_SimOffsetSet] = 0
+?%uvHeads[hix].uvhSurfaceCommand[cr_Setpoint] = 0
+
+?%uvHeads[hix].uvhCommand[1].0 = 0           ; Probing in progress
+
+;//initialize T and S VRTCs by cycling reset
+;//(at least twice to avoid race conditions)
+FOR i = 1 TO 4
+    ;//reset        
+  
+    tcr = tcr | c_reset | c_simul | c_error_amp
+    tcr = XOR(tcr, c_toggle)
+    ?%uvHeads[hix].uvhToolCommand[0] = tcr    
+    scr = scr | c_reset | c_simul | c_error_amp
+    scr = XOR(scr, c_toggle)
+    ?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+    ;//wait for not busy state
+    WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+    WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+    ;//clear reset
+    tcr = tcr & XOR(c_reset, -1)
+    tcr = XOR(tcr, c_toggle)
+    ?%uvHeads[hix].uvhToolCommand[0] = tcr
+    scr = scr & XOR(c_reset, -1)
+    scr = XOR(scr, c_toggle)
+    ?%uvHeads[hix].uvhSurfaceCommand[0] = scr
+    ;//wait for not busy state
+    WAITBIT("%uvHeads[hix].uvhToolStatus[0].31", ((tcr & c_toggle) != 0))
+    WAITBIT("%uvHeads[hix].uvhSurfaceStatus[0].31", ((scr & c_toggle) != 0))
+ENDFOR
+
+RET

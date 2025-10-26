@@ -1,0 +1,174 @@
+ [F]0x01 : Vector Display helper
+;// F flags:
+;//     0x01    display tool vector
+;//     0x02    display surface normal vector
+;// Following combinations are handled:
+;// G176 mode:
+;//     tool vector
+;// G172 mode:
+;//     A/B    head [camber] [A2 table (as C)]
+;//     B/A    head [camber] [A2 table (as C)]
+;//     C/A    head          [A2 table (as B)]
+;//     C/Anut head          [A2 table (as B)]
+;//     A/B    head [camber] [B2 table (as C)]
+;//     B/A    head [camber] [B2 table (as C)]
+;//     C/A    head          [B2 table (as B)]
+;//     C/Anut head          [B2 table (as B)]
+;//     3ax    head          [A  table (as C)]
+;//     3ax    head          [A  table (as B)]
+;//     3ax    head          [B  table (as C)]
+;//     3ax    head          [B  table (as B)]
+IF (!%cn[WHO()].pc[14].25) RET
+
+DBL colorT = 7   ;//white
+DBL colorN = 11  ;//light cyan
+DBL lenT = 15.0  ;//vector length
+DBL lenN = 10.0  ;//vector length
+DBL flags = VA5
+DBL i, j, k
+DBL ijk
+DBL ti, tj, tk
+DBL thi, thj, thk
+DBL tilt, camber
+DBL tiltsn, tiltcs, cambersn, cambercs
+DBL aC, bC
+DBL r
+DBL shx = 0, shy = 0, shz = 0
+DBL sav_G70=XGET("@G70")
+G71
+DBL x = XGET("@*DEF[X]")+XGET("@U") 
+DBL y = XGET("@*DEF[Y]")
+DBL z = XGET("@*DEF[Z]")
+DBL a = XGET("@*DEF[A]") + pl_orig_a
+DBL b = XGET("@*DEF[B]") + pl_orig_b
+DBL c = XGET("@*DEF[C]") + pl_orig_c
+
+IF (f_ortho) THEN
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+ENDIF
+
+IF ((flags & 0x01) != 0) THEN
+    IF (!rtcp_on) THEN
+        ;// tool vector
+        thi = tool_cosx
+        thj = tool_cosy
+        thk = tool_cosz
+    ELSEIF (%twi[TWIIDX(twist_head_no)].htwi.oarh.yOrient == 6) THEN
+        ;// A/B head
+        camber = %twi[TWIIDX(twist_head_no)].htwi.oarh.dCamber
+        cambersn = SIN(camber)
+        cambercs = COS(camber)
+        aC = a - camber
+        thi = cambercs*SIN(b)
+        thj = -cambercs*COS(b)*SIN(aC) - cambersn*COS(aC)
+        thk = cambercs*COS(aC)*COS(b) - cambersn*SIN(aC)
+    ELSEIF (%twi[TWIIDX(twist_head_no)].htwi.oarh.yOrient == 8) THEN
+        ;// B/A head
+        camber = %twi[TWIIDX(twist_head_no)].htwi.oarh.dCamber
+        cambersn = SIN(camber)
+        cambercs = COS(camber)
+        bC = b + camber
+        thi = cambercs*COS(a)*SIN(bC) - cambersn*COS(bC)
+        thj = -cambercs*SIN(a)
+        thk = cambercs*COS(a)*COS(bC) + cambersn*SIN(bC)
+    ELSEIF (%twi[TWIIDX(twist_head_no)].htwi.oarh.yECAx == 9) THEN
+        ;// C/A head
+        IF (rtcp_iclnut==1) THEN
+            thi = SIN(c)*SIN(a)
+            thj = -COS(c)*SIN(a)
+            thk = COS(a)
+        ELSE
+            tilt = %twi[TWIIDX(twist_head_no)].htwi.oarh.dTilt
+            tiltsn = SIN(tilt)
+            tiltcs = COS(tilt)
+            thi = COS(c)*tiltcs*tiltsn + tiltcs*SIN(c)*SIN(a) - tiltcs*COS(c)*tiltsn*COS(a)
+            thj = SIN(c)*tiltcs*tiltsn - tiltcs*COS(c)*SIN(a) - tiltcs*SIN(c)*tiltsn*COS(a)
+            thk = tiltsn*tiltsn + tiltcs*tiltcs*COS(a)
+        ENDIF
+    ELSE
+        ;// 3ax head
+        thi = 0.0
+        thj = 0.0
+        thk = 1.0
+    ENDIF
+
+    IF (rtcp_iclnut==2) THEN
+        tj = thj * COS(pl_tool_a) - thk * SIN(pl_tool_a)
+        tk = thj * SIN(pl_tool_a) + thk * COS(pl_tool_a)
+        thj = tj
+        thk = tk
+        tk = thk * COS(pl_tool_b) - thi * SIN(pl_tool_b)
+        ti = thk * SIN(pl_tool_b) + thi * COS(pl_tool_b)
+        thk = tk
+        thi = ti
+        ti = thi * COS(pl_tool_c) - thj * SIN(pl_tool_c)
+        tj = thi * SIN(pl_tool_c) + thj * COS(pl_tool_c)
+        thi = ti
+        thj = tj
+    ENDIF
+
+    IF (twist_table_no == 0) THEN
+        ;// no table
+        ti = thi
+        tj = thj
+        tk = thk
+    ELSE
+        SWITCH (%tab[TABIDX(twist_table_no)].t_ttab.t_oart.t_yECAx)
+        CASE 9      ;// (as C)
+            r = c
+        CASE 8      ;// (as B)
+            r = b
+        OTHERWISE   ;// fixed table
+            r = 0
+        ENDSWITCH
+
+        IF (%tab[TABIDX(twist_table_no)].t_ttab.t_oart.t_yOrient == 6) THEN
+            ;// A[2] table
+            ti = thi
+            tj = COS(-r)*thj-SIN(-r)*thk
+            tk = SIN(-r)*thj+COS(-r)*thk
+        ELSE
+            ;// B[2] table
+            ti = SIN(-r)*thk+COS(-r)*thi
+            tj = thj
+            tk = COS(-r)*thk-SIN(-r)*thi
+        ENDIF
+    ENDIF
+    i = mx_a11*ti + mx_a21*tj + mx_a31*tk
+    j = mx_a12*ti + mx_a22*tj + mx_a32*tk
+    k = mx_a13*ti + mx_a23*tj + mx_a33*tk
+    MOVE(15, colorT, x+shx, y+shy, z+shz)
+    LINETO(15, colorT, x+shx+lenT*i, y+shy+lenT*j, z+shz+lenT*k)
+ENDIF
+
+IF ((flags & 0x02) != 0) THEN
+    ti = XGET("@EI")
+    tj = XGET("@EJ")
+    tk = XGET("@EK")
+    IF (XGET("@ECLMXM") == 0) THEN
+        i = mx_a11*ti + mx_a21*tj + mx_a31*tk
+        j = mx_a12*ti + mx_a22*tj + mx_a32*tk
+        k = mx_a13*ti + mx_a23*tj + mx_a33*tk
+    ELSE
+        i = ti
+        j = tj
+        k = tk
+    ENDIF
+    IF (t_comp == 2) THEN
+        lenN = 1
+    ELSE
+        ijk = SQRT(i*i + j*j + k*k)
+        IF (ijk > 0.001) THEN
+            i = i / ijk
+            j = j / ijk
+            k = k / ijk
+        ENDIF
+    ENDIF
+    MOVE(15, colorN, x+shx, y+shy, z+shz)
+    LINETO(15, colorN, x+shx+lenN*i, y+shy+lenN*j, z+shz+lenN*k)
+ENDIF
+
+G(sav_G70)
+RET

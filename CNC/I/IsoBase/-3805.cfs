@@ -1,0 +1,29 @@
+ [C]12 [X]0 [Y]0 [Z]0 : G2805
+;//Crosshair graphics
+DBL color = VA2
+DBL xc = CTOMM(VA23), yc = CTOMM(VA24), zc = CTOMM(VA25)
+DBL shx = 0, shy = 0, shz = 0
+DBL sav_G70=XGET("@G70")
+DBL csz = 1.0               ;//crosshair size
+G71
+
+IF(f_ortho) THEN
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+ENDIF
+
+MOVE(  15,color,xc+shx-csz,yc+shy-csz,zc+shz-csz)
+LINETO(15,color,xc+shx+csz,yc+shy+csz,zc+shz+csz)
+
+MOVE(  15,color,xc+shx+csz,yc+shy-csz,zc+shz-csz)
+LINETO(15,color,xc+shx-csz,yc+shy+csz,zc+shz+csz)
+
+MOVE(  15,color,xc+shx-csz,yc+shy+csz,zc+shz-csz)
+LINETO(15,color,xc+shx+csz,yc+shy-csz,zc+shz+csz)
+
+MOVE(  15,color,xc+shx+csz,yc+shy+csz,zc+shz-csz)
+LINETO(15,color,xc+shx-csz,yc+shy-csz,zc+shz+csz)
+
+G(sav_G70)
+RET

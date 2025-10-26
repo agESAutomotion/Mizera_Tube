@@ -1,0 +1,13 @@
+ [B] [E] [P] [Q] [T]1 [R]0 [S]0 [L] X Y I J [F]: G702
+
+;// Prosegue con un arco in senso orario.
+;// Vedi [Sintassi Cicli Opzione Bevel]
+;//
+;// G702 [B<bevel_iniziale>] [E<bevel_finale>]
+;//     [P<lead_iniziale>] [Q<lead_finale>]
+;//     [T<tipo_raccordo>] [R<par1>] [S<par2>] [L<angolo_limite>]
+;//     X<quota> Y<quota> I<quota> J<quota> [F<feed>]
+
+G709 M2 B(VA1) E(VA4) P(VA15) Q(VA16) T(VA19) R(VA17) S(VA18) L(VA11) X(VA23) Y(VA24) I(VA8) J(VA9) F(VA5)
+RET
+

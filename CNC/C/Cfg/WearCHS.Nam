@@ -1,0 +1,26 @@
+[PROMPT]
+KEY_WEAR      =刀具寿命和磨损数据
+
+WEAR_MODE    =刀具磨损计算方式
+WEAR_ELACYC  =通路周期
+WEAR_ELATIM  =总计时间
+WEAR_ELASPC  =最大距离
+WEAR_MAXCYC  =最大循环周期
+WEAR_MAXTIM  =最大允许时间
+WEAR_MAXSPC  =最大允许空间
+WEAR_WEALENZ =刀具 Z 磨损长度系数
+WEAR_WEALENX =刀具 X 磨损长度系数
+WEAR_WEALENY =刀具 Y 磨损长度系数
+WEAR_ACTRAD  =当前刀具磨损半径
+WEAR_ACTLENZ =当前刀具 Z 磨损长度
+WEAR_ACTLENX =当前刀具 X 磨损长度
+WEAR_ACTLENY =当前刀具 Y 磨损长度
+WEAR_MAXRAD  =最大允许刀具半径磨损
+WEAR_MAXLENZ =最大允许刀具 Z 长度磨损
+WEAR_MAXLENX =最大允许刀具 X 长度磨损
+WEAR_MAXLENY =最大允许刀具 Y 长度磨损
+WEAR_WRAD    =刀具半径磨损系数
+
+
+[HELP]
+

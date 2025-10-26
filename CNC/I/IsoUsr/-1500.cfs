@@ -1,0 +1,571 @@
+H W R T L : 500 
+
+
+RET
+
+;G500 Carico tubo
+;**********************************************************
+;(VA7)  H   Altezza
+;(VA22) W   Larghezza
+;(VA17) R   Raggiatura
+;(VA19) T   0 Tondo
+;           1 Quadrato
+;           2 Triangolo
+;(VA11) L   Lunghezza
+;
+;**********************************************************
+
+IF( %M33 ) RET      ; Se simulazione su PC non considerare caricatore/scaricatore !
+
+;If graphic channel do RET
+IF (%cn[WHO()].pc[14].25) RET
+
+SYN
+;Dati tubo
+;--------------------------------------
+DBL TubH=VA7
+DBL TubW=VA22
+DBL TubR=VA17
+DBL TubT=VA19
+DBL TubL=VA11
+
+DBL TubLenCp=0
+DBL TubLenReq=0
+
+
+;Salva dati di tubo
+;--------------------------------------
+SYN
+%Rd[100]=(TubT)
+%Rd[101]=(TubH*1000.0)
+%Rd[102]=(TubW*1000.0)
+%Rd[103]=(TubR*1000.0) 
+;%Rd[130]=(TubD*1000.0)
+%Rd[136]=(TubL*1000.0)
+
+
+;Inizio ciclo
+;**********************************************************
+;**********************************************************
+SYN
+%Md[150].0=1                 ;Ciclo di Carico
+%Ru[100]=0                   ;LSR->CP Reset dati
+%Ru[100].4=%Ru[80].15        ;LSR->CP Predisponi tubo
+
+;Verifica dati tubo e allinea mandrini
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 500.21
+G580 A0
+G580 A1
+;Regolazione JawReg
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 500.22
+G550
+;Regolazione TubeSupp
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 500.23
+G560
+;Regolazione Unload
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 500.24
+G520 B9
+
+
+;Ciclo di carico
+;**********************************************************
+SYN
+%Rd[10].10=0                ;Disabilita presenza tubo
+%Rd[11].15=0                ;Disabilita sostenitori con quota U
+%Rd[13].15=0                ;Disabilita scarico con misura tubo
+JSR "ErrorIso.cfs" 2 500.25
+SYN
+ ;Invia dati a CP
+ %Ru[01]=%Rd[101]           ;Altezza tubo
+ %Ru[02]=%Rd[102]           ;Larghezza tubo
+ 
+ SYN
+ %Ru[100].7=1               ;LSR->CP Laser ISO Start
+
+ ;Svincola U e C
+ ;-------------------------------
+ VG100=0
+ VG101=(%ax[30].pa[22]/1000.0)
+ VG102=45.0  
+ RPT .STR_POS_UC, .END_POS_UC, 1 
+  
+ G601 C7 M52                 ;TubeSupp discesa all
+
+ ;Start CP
+ ;------------------------------- 
+ REPEAT
+  SYN
+  %Ru[100].7=1               ;LSR->CP Laser ISO Start  
+  %Ru[100].0=1               ;LSR->CP Laser in svincolo
+  
+  ;Attesa start ISO CP
+  SYN
+  IF (%Ru[101].7==0) JSR "ErrorIso.cfs" 0 500.1
+  
+  %Ru[100].4=%Rd[80].15      ;LSR->CP Predisponi tubo
+  
+
+  G4F0.1
+ UNTIL(%Ru[101].7==1)
+ SYN
+ MSGOUT " "
+
+
+ ;Start misurazione CP
+ ;------------------------------- 
+ REPEAT
+  SYN
+  %Ru[100].7=1               ;LSR->CP Laser ISO Start  
+  %Ru[100].0=1               ;LSR->CP Laser in svincolo  
+  %Ru[100].6=1               ;LSR->CP Start misura pezzo
+  
+
+
+  ;Verifica barriere
+  SYN
+  IF (!%Ru[80].25) THEN
+    JSR "ErrorIso.cfs" 2 500.3
+  ELSE
+    ;Conferma pezzo in CP
+    SYN
+    IF (%Ru[101].5==1) THEN
+     SYN
+     JSR "ErrorIso.cfs" 1 500.2
+     %Ru[100].5=1                ;LSR->CP Conferma pezzo
+    ELSE
+     SYN
+     IF (%Ru[100].5==1) MSGOUT " "
+     %Ru[100].5=0                ;LSR->CP Conferma pezzo
+      
+     IF (%Ru[101].4==1) THEN
+       JSR "ErrorIso.cfs" 2 500.15
+     ELSE
+       ;Attesa carico
+       SYN
+       IF (%Ru[101].6==0) JSR "ErrorIso.cfs" 2 500.4
+
+       ;Attesa carico
+       SYN
+       IF ((%Ru[101].6==1) && (%Ru[00]<=0)) JSR "ErrorIso.cfs" 2 500.9
+     ENDIF
+    ENDIF
+  ENDIF
+
+  G4F1
+ UNTIL((%Ru[101].6==1) && (%Ru[00]>0))
+ SYN
+ %Ru[100].6=0               ;LSR->CP Start misura pezzo
+ MSGOUT " "
+
+
+ ;Verifica lunghezza
+ ;------------------------------- 
+ SYN
+ TubLenCp=%Ru[00]/1000.0
+ TubLenReq=(TubL+(%Rd[112]/1000.0))
+ SYN
+ ;@ Test eseguito su G510
+ ;;Lunghezza CP più piccola di quella richiesta
+ ;IF (TubLenCp<TubLenReq) JSR "ErrorIso.cfs" 1 500.5 TubLenCp TubLenReq
+ ;
+ ;Lunghezza CP più grande di quella richiesta
+ IF (%Rd[194]>0) THEN
+   IF (TubLenCp>(TubL+(%Rd[194]/1000.0))) JSR "ErrorIso.cfs" 1 500.6 TubLenCp TubL
+ ENDIF
+ SYN
+ %Ru[00]=0
+ %Rd[110]=TubLenCp
+ G601 C7 M52                 ;TubeSupp discesa all
+
+ ;Start carico in macchina
+ ;-------------------------------   
+ REPEAT
+  SYN
+  %Ru[100].7=1               ;LSR->CP Laser ISO Start  
+  %Ru[100].0=1               ;LSR->CP Laser in svincolo  
+  %Ru[100].1=1               ;LSR->CP Start carico in machina
+  
+  ;Attesa start ISO CP
+  SYN
+  IF (%Ru[101].1==0) JSR "ErrorIso.cfs" 2 500.7
+  
+  G4F0.1
+ UNTIL(%Ru[101].1==1)
+ SYN
+ %Ru[100].0=0               ;LSR->CP Laser in svincolo  
+ %Ru[100].1=0               ;LSR->CP Start carico in machina
+ MSGOUT " "
+  
+  
+ ;Prese tubo
+ ;------------------------------- 
+ SYN
+ G601 C7 M62                 ;TubeSupp salita all
+ G601 C0 M100                ;Disabilita gear mandrini
+
+ SYN
+ ;Spinta tubo
+ IF (%Rd[184]>0) THEN
+   ;Chiusura griffe master (Mobile)
+   G601 C0 M50
+ 
+   ;Rapido U
+   ;Lunghezza misurata + Offset CP-LSR + Quota spinta
+   VG100=20000
+   VG101=(TubLenCp + ((%Rd[181]+%Rd[184])/1000.0))
+   RPT .STR_POS_U, .END_POS_U, 1
+ 
+   ;Spinta U
+   ;Lunghezza misurata + Offset CP-LSR - Quota spinta
+   VG100=2000
+   VG101=(TubLenCp + ((%Rd[181]-%Rd[184])/1000.0))
+   RPT .STR_POS_U, .END_POS_U, 1
+  
+   ;Svincola U
+   ;Lunghezza misurata + Offset CP-LSR
+   VG100=20000
+   VG101=(TubLenCp + (%Rd[181]/1000.0))
+   RPT .STR_POS_U, .END_POS_U, 1
+ ELSE
+   %Rd[184]=0
+ ENDIF
+ 
+ ;Apertura griffe master (Mobile)
+ G601 C0 M40 
+ 
+ ;Inserimento U
+ ;Lunghezza misurata + Offset CP-LSR - Quota presa Cm - Quota spinta
+ VG100=20000
+ VG101=(TubLenCp + ((%Rd[181]-%Rd[182]-%Rd[184])/1000.0)+(%Rd[180]/1000.0))
+ RPT .STR_POS_U, .END_POS_U, 1
+ 
+ ;Chiusura griffe master (Mobile)
+ G601 C0 M50 
+
+ SYN
+ %Rd[104]=(TubLenCp*1000.0)
+
+
+ ;Parcheggia bracci centrali
+ ;-------------------------------
+ SYN
+ %Ru[100].2=1                ;LSR-ZCP Parcheggio bracci centrali
+ 
+ ;Apertura griffe slave (Fisso)
+ G601 C0 M41
+ 
+ REPEAT
+  SYN
+  %Ru[100].2=1               ;LSR-ZCP Parcheggio bracci centrali  
+  
+  ;Attesa start ISO CP
+  SYN
+  IF (%Ru[101].2==0) JSR "ErrorIso.cfs" 2 500.8
+  
+  G4F0.1
+ UNTIL(%Ru[101].2==1)
+ SYN
+ %Ru[100].2=0                ;LSR->CP Start carico in machina
+ MSGOUT " " 
+
+
+ ;Inserimento in mandrino slave
+ ;-------------------------------
+ ;Chiusura griffe master (Mobile)
+ G601 C0 M50  
+ ;Apertura griffe slave (Fisso)
+ G601 C0 M41
+ 
+ ;Posizione U su FC
+ ;Lungezza - (presa Cm + distanza Fc *2)
+ VG100=20000
+ VG101=(TubLenCp - ((%Rd[182]+(%Rd[113]*2))/1000.0))
+ RPT .STR_POS_U, .END_POS_U, 1
+
+ ;Chiusura griffe slave (Fisso)
+ G601 C0 M51
+ ;Abilita gear mandrini
+ G601 C0 M101
+  
+ 
+ SYN
+ %Ru[100].3=1                ;LSR-ZCP Start parcheggio bracci
+ IF (%Rd[10].8==0) JSR "ErrorIso.cfs" 0 500.11
+  
+ ;Verifica presa/posizione tubo
+ ;-------------------------------  
+ ;Svicnola fotocellula
+ ;Lungezza - (presa Cm + distanza Fc /2)
+ SYN
+ %Rd[10].10=0                ;Disabilita presenza tubo
+ VG100=10000
+ VG101=(TubLenCp - ((%Rd[182]+(%Rd[113]/2))/1000.0))
+ RPT .STR_POS_U, .END_POS_U, 1  
+ 
+ SYN
+ IF (%Rd[10].8==1) JSR "ErrorIso.cfs" 0 500.12
+  
+  
+ ;Probing cycle
+ ;---------------------------------
+ SYN
+ IF (%Rd[193]>0) THEN
+   RPT .STR_ZERO_T, .END_ZERO_T, 1
+   VA10=(%ax[30].ra[4]+%Rd[113]+%Rd[182])/1000.0
+   
+   SYN
+   IF (ABS(TubLenCp-VA10)>(%Rd[193]/1000.0)) THEN
+     JSR "ErrorIso.cfs" 1 500.13 TubLenCp VA10
+   ENDIF
+ ENDIF
+  
+
+ ;Posizione U per zero
+ ;---------------------------------
+ G601 C0 M65                 ;Start aspiratore
+
+ VG100=10000
+ VG101=(TubLenCp - ((%Rd[182]+%Rd[111]+%Rd[119])/1000.0))
+ RPT .STR_POS_U, .END_POS_U, 1  
+  
+ ;Origine tubo
+ SYN
+ RPT .STR_ZERO_POS, .END_ZERO_POS, 1
+
+ SYN
+ %funz[%IndexORG].origprgX = ((%ax[30].ra[4] + %Rd[119])/1000)
+ %funz[%IndexORG].origprgY = 0
+ orig_x = %funz[%IndexORG].origprgX
+
+ 
+ ;Azzera lunghezza tubo
+ SYN
+ %Rd[110]=(TubLenCp*1000.0)-%Rd[182]
+ %Rd[10].10=1                ;Abilita presenza tubo
+ %Rd[11].15=1                ;Abilita sostenitori con quota U
+ %Rd[13].15=1                ;Abilita scarico con misura tubo
+
+
+ ;Attesa parcheggia bracci
+ ;-------------------------------
+ REPEAT
+  SYN
+  %Ru[100].3=1              ;LSR-ZCP Parcheggio tutti bracci 
+  
+  ;Attesa end CP
+  SYN
+  IF (%Ru[101].1==1) JSR "ErrorIso.cfs" 2 500.14
+  
+  G4F0.1
+ UNTIL(%Ru[101].1==0)
+ SYN
+ MSGOUT " " 
+ SYN
+ %Ru[100]=0
+ %Ru[100].4=%Rd[80].15      ;LSR->CP Predisponi tubo
+ %Md[150].0=0               ;Ciclo di Carico
+
+SYN 
+RET
+
+
+;Gestione posizionamenti
+;**********************************************************
+;Posizione Z
+;--------------------------------------
+.STR_POS_Z
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,Z))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+  G4099
+  G152
+
+  SYN
+  G153
+  ;Movimento Z
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) Z(VG101) 
+  ELSE
+    G153 G0 Z(VG101)  
+  ENDIF
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,Z))
+  G4099
+
+  G64
+  SYN
+.END_POS_Z
+
+;Posizione U
+;--------------------------------------
+.STR_POS_U
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(U)) S(AXIDX(3,U)) I1
+  G4099
+  G152
+
+  ;Calcella origini
+  G178 U0 
+
+  SYN
+  G153
+  ;Movimento U
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) U(VG101)
+  ELSE
+    G153 G0 U(VG101)  
+  ENDIF
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  G64
+  SYN
+.END_POS_U
+
+;Posizione U e C
+;--------------------------------------
+.STR_POS_UC
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4005 S(AXIDX(3,C))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(U)) S(AXIDX(3,U)) I1
+  G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1
+  G4099
+  G152
+
+  ;Calcella origini
+  G178 U0 
+  G178 C0
+
+  SYN
+  G153
+  ;Movimento U
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) U(VG101) C(VG102)
+  ELSE
+    G153 G0 U(VG101) C(VG102)
+  ENDIF
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4005 S(AXIDX(3,C))
+  G4099
+
+  G64
+  SYN
+.END_POS_UC
+
+
+;Posizione Zero testa
+;--------------------------------------
+.STR_ZERO_T
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(U)) S(AXIDX(3,U)) I1
+  G4099
+  G152
+
+  ;Calcella origini
+  G178 U0 
+
+  SYN
+  G153
+   ;_singfc( Flags, nAx, Direz, VMax, VOut, “%IWx.y”, Level)
+   SYN
+   _singfc( 0x10, U, 2, 250, 0, %IW5.9, 0 );%Rd[10].8
+   G4F0.1
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  G64
+  SYN
+.END_ZERO_T
+
+;******************************************************************************
+;   POSIZIONAMENTO ASSI LASER PRIMA DI ACQUISIZIONE ORIGINE
+;   Asse X = 0 2D
+;   Asse Y = 0
+;   Asse B = 0
+;   Asse Z = quota massima -1.5
+;******************************************************************************
+.STR_ZERO_POS
+  SYN
+    ; Sgancio assi
+    G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,Z))
+    IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+    IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+	G4099
+	
+    ; Aggancia assi ai virtuali
+	G153
+    G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+    G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+    IF (AEXISTS(3,A)) G4010 M(AXIDX(A)) S(AXIDX(3,A)) I1
+    IF (AEXISTS(3,B)) G4010 M(AXIDX(B)) S(AXIDX(3,B)) I1
+	G4099
+	G152
+    
+    G153 G1 Z((%ax[29].pa[22]/1000) - 1.5 ) F2000
+    IF( (AEXISTS(3,A)) && (AEXISTS(3,B)) ) G153 G1 A0 B0 F1000
+    IF( !(AEXISTS(3,A)) && (AEXISTS(3,B)) ) G153 G1 B0 F1000
+    G153 G0 X(%Rd[119]/1000) Y0
+    
+    SYN    
+    ; Sgancio assi
+    G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,Z))
+    IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+    IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+	G4099
+  SYN
+.END_ZERO_POS

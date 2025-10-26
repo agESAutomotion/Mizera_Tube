@@ -1,0 +1,95 @@
+**************************************************************************
+* FB INSERIMENTO RAMPA
+**************************************************************************
+
+FUNCTION_BLOCK RAMP
+
+VAR_INPUT
+xValue: DWORD; * Valore in input (0-1000)
+xRiseTime: DWORD; * Tempo rampa di salita (ms)
+xFallTime: DWORD; * Tempo rampa di discesa (ms)
+END_VAR
+
+VAR_OUTPUT
+yBusy: BOOL; * Output operativo
+yValue: DWORD; * Valore in output (0-1000)
+END_VAR
+
+VAR
+ActualInput: DWORD; * Valore attuale input in alta precisione (0-1000000)
+ActualOutput: DWORD; * Valore attuale output in alta precisione (0-1000000)
+END_VAR
+
+LD   xValue        ** Valore in input (0-1000)
+MUL  1000
+ST   ActualInput   ** Valore attuale input in alta precisione (0-1000000)
+
+LD   ActualInput   ** Valore attuale input in alta precisione (0-1000000)
+GT   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+JMPC MUST_RISE
+
+LD   ActualInput   ** Valore attuale input in alta precisione (0-1000000)
+LT   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+JMPC MUST_FALL
+
+JMP  OUT_VAL
+
+MUST_RISE:
+
+LD   xRiseTime     ** Tempo rampa di salita (ms)
+LE   0
+JMPC VALUE_REACHED
+
+LD   1000000
+MUL  %plc0.PlcCycle
+DIV  xRiseTime     ** Tempo rampa di salita (ms)
+ADD  ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+ST   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+
+LD   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+GE   ActualInput   ** Valore attuale input in alta precisione (0-1000000)
+JMPC VALUE_REACHED
+
+JMP OUT_VAL
+
+MUST_FALL:
+
+LD   xFallTime     ** Tempo rampa di discesa (ms)
+LE   0
+JMPC VALUE_REACHED
+
+LD   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+SUB  (
+LD   1000000
+MUL  %plc0.PlcCycle
+DIV  xFallTime     ** Tempo rampa di discesa (ms)
+)
+ST   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+
+LD   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+LE   ActualInput   ** Valore attuale input in alta precisione (0-1000000)
+JMPC VALUE_REACHED
+
+JMP OUT_VAL
+
+VALUE_REACHED:
+
+LD   ActualInput   ** Valore attuale input in alta precisione (0-1000000)
+ST   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+
+OUT_VAL:
+
+LD   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+DIV  1000
+ST   yValue        ** Valore in output (0-1000)
+
+LD   ActualOutput  ** Valore attuale output in alta precisione (0-1000000)
+NE   0
+OR   (
+LD   ActualInput   ** Valore attuale input in alta precisione (0-1000000)
+NE   0
+)
+ST   yBusy         ** Output operativo
+
+END_FUNCTION_BLOCK
+

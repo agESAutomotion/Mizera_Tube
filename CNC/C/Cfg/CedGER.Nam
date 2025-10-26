@@ -1,0 +1,51 @@
+[PROMPT]
+KEY_CED       =Daten Werkzeuge
+
+CED_RAD       =Radius Werkzeug [mm]
+CED_TRAD      =Radius Anschluß für Ringfräse
+CED_LENZ      =Z-Länge Werkzeug [mm]
+CED_THICK     =Stärke Scheibenwerkzeug
+CED_LENX      =Länge X Drehwerkzeug
+CED_LENY      =Länge Y Drehwerkzeug
+CED_LATHE_ANG_A =Clearance angle A (lathe)
+CED_LATHE_ANG_B =Clearance angle B (lathe)
+CED_DSC       =Description
+CED_WEAIDX    =Kennung Nachsatz Verschleißkontr.
+
+CED_MINRPM    =Kleinste Drehzahl U/min
+CED_MAXRPM    =Größte Drehzahl U/min
+CED_STDRPM    =Drehzahl U/min
+CED_CCW       =Linksdrehendes Werkzeug
+CED_MAXFEED   =Max. lineare Vorschubgeschwindigk.
+CED_STDFEED   =Lineare Default-Vorschubgeschw.
+CED_DIR       =Freigabe Kontrolle Schnittrichtung
+CED_TG        =Zulässiger Vorschubstyp
+CED_TGTHRE    =Winkeltoleranz (Grad)
+CED_STATUS    =Werkzeugrelevante Ereignisse
+CED_MAXACC    =Max. Beschleunigung [rev/s²]
+CED_MAXDEC    =Max. Abbremsung [rev/s²]
+
+[HELP]
+
+CED_RAD       =Radius Werkzeug: Radius des Werkzeugs, gestattet den tatsächlichen Platzbedarf des Werkzeugs während der Fertigung zu berücksichtigen
+CED_TRAD      =Radius für Anschluß Ringfräse
+CED_LENZ      =Z-Länge Werkzeug [mm]
+CED_THICK     =Die Abbildung zeigt ein Beispiel zur Parametrierung eines Scheibenwerkzeugs, man betrachte insbesondere dThick, was die Stärke des Scheibenwerkzeugs darstellt
+CED_LENX      =X Hilfslänge: Hilfslänge 1 Drehwerkzeug
+CED_LENY      =Y Hilfslänge: Hilfslänge 2 Drehwerkzeug
+CED_LATHE_ANG_A =Clearance angle A (lathe)
+CED_LATHE_ANG_B =Clearance angle B (lathe)
+CED_WEAIDX    =Kennung des Nachsatzes der Werkzeugdaten für Verschleißsteuerung
+
+CED_MINRPM    =Kleinste Drehzahl U/min
+CED_MAXRPM    =Größte Drehzahl U/min
+CED_STDRPM    =Drehzahl U/min
+CED_CCW       =Linksdrehendes Werkzeug
+CED_MAXFEED   =Max. lineare Vorschubgeschwindigk.
+CED_STDFEED   =Lineare Default-Vorschubgeschw.
+CED_DIR       =Freigabe Kontrolle Schnittrichtung
+CED_TG        =Während der Fertigung zulässiger Vorschubtyp:  0-beliebig (Bsp.:  zylindrischer Fräser);  1-nur Axialvorschub (Bsp.:  Bohrer);  2-nur Radialvorschub (Bsp.:  Messer)
+CED_TGTHRE    =Winkeltoleranz für Überwachung des Vorschubs während der Fertigung (Grad)
+CED_STATUS    =Ereignisse, die sich auf die Benutzung des Werkzeugs auswirken können
+CED_MAXACC    =Max. Beschleunigung [U/s²]; das ist die maximale Rotationsgeschwindigkeit [U/s] geteilt durch die Zeit [s], die man benötigt, um sie zu erreichen
+CED_MAXDEC    =Max. Abbremsung [U/s²]; das ist die maximale Rotationsgeschwindigkeit [U/s] geteilt durch die Zeit [s], die benötigt wird, um ausgehend von dieser rotationsgeschwindigkeit zum Stehen zu kommen

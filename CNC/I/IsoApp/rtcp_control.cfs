@@ -1,0 +1,151 @@
+:  
+;******************************************************************************
+;   RTCP_CONTROL.CFS
+;   ESAutomotion
+;   LASER machine
+;******************************************************************************
+INCLUDE "var_usr.cfs"
+                                   
+DBL Speed
+DBL Attesa
+DBL pdsel
+DBL sel                     ; offset calibration tables (for head1 or head2)
+DBL angle
+DBL pds_index
+DBL start_pds_index, i, err, err1, err1_mm
+
+DBL ABSINC = 0x01
+DBL VOUT0 = 0x04
+DBL VOUT = 0x08
+DBL VMAX = 0x10
+DBL VHIGH = 2000
+DBL VLOW = 300
+DBL LevelE = 0                      ; [(Normale close)  Aspetta il segnale a 0 per uscire dal comando]
+DBL LevelS = 1                      ; [(Normale open)   Aspetta il segnale a 1 per uscire dal comando]
+
+DBL z_ini = (MaxQta_Z)-10
+
+
+$ RTCP TEST: Axes moving to test point...
+
+SYN
+JSR "Sel_Y3Z3.cfs"
+DBL x_ini = QCALC(X)
+DBL y_ini = 0
+
+G153 G1 Z(z_ini) F10000
+G153 G1 X(x_ini) Y(y_ini) A0 B0 C(%rLsGui71/1000) F10000
+
+$ RTCP TEST: set the cutting height and then press START
+M0
+
+SYN
+$ RTCP TEST: in progress...
+
+?%C26.0=1                   ; Calibrazione in corso (serve per disab. tip touch)
+?%C26.3=1                   ; ISOTipTouchDisable
+
+;Tastatura
+G153
+
+IF( %M33 == 0 ) THEN
+    ; FAR INPUT management enabled
+    IF( (%LSRPlcOp0.20) && (%config_machine26 != 3) ) _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%C31.0", LevelE )
+	IF( (%LSRPlcOp0.20) && (%config_machine26 == 3) ) _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%EmConfig.Far_signal.0 ", LevelE )
+	
+    VLOW = 300
+
+    _singfc( ( VMAX | VOUT0 ), Z, 2, VLOW, 0, "%C31.1", LevelS )  ; Aspetta TIP TOUCH alto per uscire
+    _singfc( ( VMAX | VOUT0 ), Z, 1, VLOW/4, 0, "%C31.1", LevelE )  ; Aspetta TIP TOUCH basso per uscire
+    G4 F0.2
+    SYN
+    kine_z = GET(Z) 
+    G10 G0 Z(QCALC(Z)) 
+ELSE
+    kine_z = %TabLsr1.L_Tickness / 1000
+ENDIF
+
+G152
+
+SYN
+G153 G0 Z(kine_z+%TabLsr0.L_CutDistance)         ;Posizionamento a distanza specificata dal pezzo
+?%C26.3=0                   ; ISOTipTouchDisable
+?%C26.0=0
+
+SYN
+G172 T1 H1 D1       ; Select the head to work with tcp coordinates
+
+Speed = 3000
+Attesa = 1
+pds_index = 0
+pdsel = 145
+SYN
+%pd_splines[pdsel].pdh_nPoints = 0
+%rLsGui70 = 0       ; Errore massimo rilevato
+
+;**************************************
+;   10 punti da 0 a 45 gradi
+;**************************************
+FOR angle=0 TO 45  BY 5
+	G1 X(x_ini) Y(y_ini) B(angle)
+    G4 F(Attesa)   
+
+    ?%pd_splines[pdsel].pdh_X[pds_index] = angle 
+    IF( %M33 ) THEN
+        ?%pd_splines[pdsel].pdh_Y[pds_index] = 3000 - (ABS(angle)*30)
+    ELSE
+	    SYN
+        ?%pd_splines[pdsel].pdh_Y[pds_index] = %M[41]       ; Capacitive filtered
+    ENDIF
+    pds_index = pds_index + 1
+    ?%pd_splines[pdsel].pdh_nPoints = pds_index  
+ENDFOR    
+
+;**************************************
+;   10 punti da 0 a -45 gradi
+;**************************************
+start_pds_index = pds_index
+
+FOR angle=0 TO -45  BY 5
+
+	G1 X(x_ini) Y(y_ini) B(angle)
+    G4 F(Attesa)   
+
+    ?%pd_splines[pdsel].pdh_X[pds_index] = angle 
+    IF( %M33 ) THEN
+        ?%pd_splines[pdsel].pdh_Y[pds_index] = 3000 - (ABS(angle)*30)
+    ELSE
+	    SYN
+        ?%pd_splines[pdsel].pdh_Y[pds_index] = %M[41]       ; Capacitive filtered
+    ENDIF
+    pds_index = pds_index + 1
+    ?%pd_splines[pdsel].pdh_nPoints = pds_index  
+
+ENDFOR    
+
+;**************************************
+; Check the error
+; from -45 side and +45 side
+;**************************************
+err = 0
+FOR i=0 TO start_pds_index-2
+
+    SYN
+    ;err1 = (ABS(%pd_splines[pdsel].pdh_Y[i] - %pd_splines[pdsel].pdh_Y[start_pds_index+i]) / %pd_splines[pdsel].pdh_Y[start_pds_index+i])*100
+    
+    ; Differenza in punti ADC 
+    err1 = ABS(%pd_splines[pdsel].pdh_Y[i] - %pd_splines[pdsel].pdh_Y[start_pds_index+i])
+    
+    ; Errore in 0.001 mm
+    err1_mm = (err1 * %LSRCostK31) / %LsrGest0.ParDACres 
+
+    IF( err1_mm > err )    err = err1_mm
+ENDFOR
+
+SYN
+%rLsGui70 = err
+   
+G153 G1 Z(z_ini) F10000
+G153 G1 X(x_ini) Y(y_ini) A0 B0 F10000
+
+RET

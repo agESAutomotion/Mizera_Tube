@@ -1,0 +1,59 @@
+
+[PROMPT]
+
+//---Drive Schneider Lexium --------
+DS_DRIVE_ERR_CODE=DRIVE ERROR CODE
+//----------------------------------
+
+KEY_NODEDRIVESTATUS=Drive Status
+LBL_BD_COBID1=Node address
+LBL_NO_AXNAM1=Axis name
+LBL_BD_DEVNAME1=Device name
+LBL_BD_HWVER1=HW Version
+LBL_BD_SWVER1=SW Version
+LBL_BD_SERNUM1=Serial Number
+LBL_DS_DR_TYPE0=DriveType
+LIST_DRIVE=Danaher,KebServo,Erl/Lahr,CiA-DS402,CiA-DS402X,Inverter,ED-DRIVE,OSAI,EBS-DRIVE,CMZ-DRIVE,TDE-DRIVE,MAXTON-DRIVE,ERL-DRIVE,RTA-DRIVE,LEXIUM_DRIVE,HSD_SM137
+LBL_DS_REPORT=Report
+DS_ALARMS=ALARMS
+LBL_A=A.
+LBL_SEP=-
+BTN_NO_REFRESH=Refresh
+EC_BTN_NO_REFRESH=Refresh
+LBL_F1=F00 Flash Failure
+LBL_F2=F01 Loaded default param
+LBL_F3=F02 Loaded default protected
+LBL_F4=F03 
+LBL_F5=F04 I2t Drive
+LBL_F6=F05 Over voltage
+LBL_F7=F06 Under voltage
+LBL_F8=F07 Power fail
+LBL_F9=F08 Heatsink temperature
+LBL_F10=F09 Motor temperature
+LBL_F11=F10 Regenerative resistance overload
+LBL_F12=F11 Internal temperature
+LBL_F13=F12 Over current regenerative circuit
+LBL_F14=F13 Over voltage 24V
+LBL_F15=F14 Under voltage 24V
+LBL_F16=F15 
+LBL_F17=F16 Brake
+LBL_F18=F17 Fan
+LBL_F19=F18 Phase loss
+LBL_F20=F19 Feedback
+LBL_F21=F20 Feedback initialization
+LBL_F22=F21 Current over range
+LBL_F23=F22 Sin Cos over range
+LBL_F24=F23 Overspeed
+LBL_F25=F24 Generic fault (Low Battery)
+LBL_F26=F25 
+LBL_F27=F26 Fieldbus
+LBL_F28=F27 
+LBL_F29=F28 
+LBL_F30=F29 External fault
+LBL_F31=F30 STO
+LBL_F32=F31 
+
+
+[STATUS]
+
+[HELP]

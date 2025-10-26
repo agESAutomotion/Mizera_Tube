@@ -1,0 +1,238 @@
+:Comp
+;******************************************************************************
+;   Computational cycle running on channel 6
+;   Started and stopped by PLC
+;   Called from 6666.PGM
+;******************************************************************************
+DBL i, a
+DBL num_linee = 19
+DBL ListEnabled = %LSRPlcOp0.5
+DBL sum
+DBL ind
+DBL prev_uiplpage
+DBL ListLine
+
+SYN
+SWITCH (%CompData[0])
+
+    ; Cancellazione totale memoria liste
+    CASE 1
+        IF( %WlistMngt.wl_ListRunning == 0 ) THEN
+            FOR i=0 TO num_linee
+                %WlistMngt.wl_Curret = ""
+                %Wlist[i].wl_parA = ""
+                %Wlist[i].wl_parB = ""
+                %Wlist[i].wl_parC = ""
+                %Wlist[i].wl_parD = ""
+                %Wlist[i].wl_dwpar[0] = 0
+                %Wlist[i].wl_dwpar[1] = 0
+                %Wlist[i].wl_dwpar[2] = 0
+                %Wlist[i].wl_dwpar[3] = 0
+                %Wlist[i].wl_dwpar[4] = 0
+                %Wlist[i].wl_dwpar[5] = 0
+                %Wlist[i].wl_dwpar[6] = 0
+                %Wlist[i].wl_dwpar[7] = 0
+                %Wlist[i].wl_dwpar[8] = 0
+                %Wlist[i].wl_dwpar[9] = 0
+                %Wlist[i].wl_dwpar[10] = 0
+                %Wlist[i].wl_dwpar[12] = 0
+                %Wlist[i].wl_dwpar[13] = 0
+                %Wlist[i].wl_endl = 0
+                %Wlist[i].wl_time = 0
+            ENDFOR
+
+            %R18 = 0
+            %PEZZO = 0
+            %GEOMETRIA = 0
+            %WlistMngt.wl_mngdwpar0 = 1
+        ENDIF
+
+        IF( (%ui33.7 == 0) && (%ui0.7 == 0) ) %ui0.7 = 1
+        
+        %CompData[0] = 0
+
+    ; Azzeramento di tutti i tempi
+    CASE 2
+        IF( %WlistMngt.wl_ListRunning == 0 ) THEN
+            FOR i=0 TO num_linee
+                %Wlist[i].wl_time = 0
+            ENDFOR
+        ENDIF
+        %CompData[0] = 0
+
+    ; Azzeramento tempo programma attualmente in funzione
+    CASE 3
+        ListLine = %WlistMngt.wl_mngdwpar0
+        IF( %WlistMngt.wl_ListRunning ) THEN
+            %Wlist[%WlistMngt.wl_Index].wl_time = 0
+        ELSE
+            %Wlist[ListLine].wl_time = 0
+        ENDIF
+        %CompData[0] = 0
+
+
+    ; 
+    CASE 4
+        %CompData[0] = 0
+
+
+    ; Refresh grafica
+    CASE 5
+        IF( (%ui33.7 == 0) && (%ui0.7 == 0) ) %ui0.7 = 1
+        %CompData[0] = 0
+
+
+    ;**********************************************************
+    ; Block search: M1000 load data base table
+    CASE 10
+        SYN
+        IF( %LsIso1 != -1 ) THEN
+            ?%LsIso0 = %LsIso1
+            ?%LsIso10.3 = 1
+            ?%CompData[0] = 11
+        ELSE
+            ?%CompData[0] = 0
+        ENDIF
+
+    CASE 11  
+        ; Load correct database during block search [set]
+        SYN
+        IF( %LsGui1.0 == 1 ) THEN     
+            ?%LsIso10.3 = 0
+            ?%CompData[0] = 12
+        ENDIF
+
+    CASE 12
+          ; Load correct database during block search  [res]
+         ?%LsIso10.3 = 0
+    ;**********************************************************
+
+ ; Save cut parameters cahnged run-time into actual working table (LASER)
+    CASE 20
+        ind = %C19
+        %TabLsr[ind].L_CutPower         = %TabLsr[0].L_CutPower
+        %TabLsr[ind].L_CutPressure      = %TabLsr[0].L_CutPressure
+        %TabLsr[ind].L_CutFocal         = %TabLsr[0].L_CutFocal
+        %TabLsr[ind].L_CutDuty          = %TabLsr[0].L_CutDuty
+        %TabLsr[ind].L_CutFreq          = %TabLsr[0].L_CutFreq
+        %TabLsr[ind].L_UserInt3         = %TabLsr[0].L_UserInt3    ; jerk
+        %TabLsr[ind].L_CutDistance      = %TabLsr[0].L_CutDistance
+        %CompData[0] = 0
+	
+;	; Second Loader Following Target	
+;	CASE 21
+;	    SYN
+;        POSA[A] = 20
+;	
+;        %CompData[0] = 0
+;		
+;    ; Clear Second Loader Following Target	
+;	CASE 22
+;	    SYN
+;        POSA[A] = 0
+;	
+;        %CompData[0] = 0	
+	
+		
+    OTHERWISE
+        IF( ListEnabled ) THEN
+
+            ; Gestione tempo totale LISTA
+            ; ---------------------------
+            sum = 0
+            FOR i=0 TO num_linee
+                sum = sum + %Wlist[i].wl_time
+            ENDFOR
+
+            IF( %WlistMngt.wl_parztime != sum ) %WlistMngt.wl_parztime = sum
+
+            ; todomag
+            ; Gestione rinfresco dati pagina lista
+            ; ------------------------------------
+            ;IF( (%M44 == 33) && (%Uipl.Field != 33) ) THEN
+            ;    ; Rinfresco grafica
+            ;    IF( (%ui33.7 == 0) && (%ui0.7 == 0) ) %ui0.7 = 1
+            ;ENDIF
+
+            ;%M44 = %Uipl.Field
+        ENDIF
+
+    ; Rinfresco grafica
+    IF( (%ui33.7 == 1) && (%ui0.7 == 1) ) %ui0.7 = 0
+
+    ; Ridisegna la pagina nel menu base in quanto quando gira la 1000.PGM
+    ; rimane visualizzata in grafica il pezzo e cambia colore parte delle
+    ; prime traccie come se eseguisse il pezzo stesso
+    IF( (%cn0.rc1 == 1000) && (%Uipl.Page == 105) && (prev_uiplpage != %Uipl.Page) ) THEN
+        ;%ui0.8 = 1
+    ELSE IF( %ui33.8 == 1 )
+        ;%ui0.8 = 0
+    ENDIF
+
+    prev_uiplpage = %Uipl.Page
+
+    
+ENDSWITCH
+
+RET
+
+
+
+
+;******************************************************************************
+;   REFRESH GRAFICA
+;   RPT .rfsh_graph_s, .rfsh_graph_e, 1
+;   (NON UTILIZZATO !)
+;******************************************************************************
+.rfsh_graph_s
+
+;*********** WAIT ACK=0 ****************
+FOR a=0 TO 100
+    SYN
+    IF( %ui33.7 == 0 ) THEN
+        POP(2)
+        JMP .Check1
+    ENDIF
+    G4 F0.1
+ENDFOR
+ERROR(798)
+
+.Check1
+
+;*********** STB=1 ****************
+?%ui0.7 = 1
+
+
+;*********** WAIT ACK=1 ****************
+FOR a=0 TO 100
+    SYN
+    IF( %ui33.7 == 1 ) THEN
+        POP(2)
+        JMP .Check2
+    ENDIF
+    G4 F0.1
+ENDFOR
+ERROR(798)
+
+.Check2
+
+;*********** STB=0 ****************
+?%ui0.7 = 0
+
+;*********** WAIT ACK=0 ****************
+FOR a=0 TO 100
+    SYN
+    IF( %ui33.7 == 1 ) THEN
+        POP(2)
+        JMP .Check3
+    ENDIF
+    G4 F0.1
+ENDFOR
+ERROR(798)
+
+.Check3
+
+.rfsh_graph_e
+;******************************************************************************
+
+

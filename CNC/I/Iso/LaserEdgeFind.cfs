@@ -1,0 +1,240 @@
+ : laser edge find routine
+;//richiede:
+;//  DBL lef_a ;//asse (system wide)
+;//  DBL lef_d ;//direzione (+1/-1)
+
+;//NOTE:
+;//attualmente sostituisce _singfc() nei cicli getori_.cfs
+;//richiede che sia invocato con G153 ed esce con G153.
+;//Le origini (ml_usr_origin) devono essere disabilitate.
+
+;//$APP
+DBL LevelE = 0                      ;//livello attivazione sensore
+DBL rew_dist = 20.0                 ;//spostamento indietro per 2o tentativo
+DBL check_dist = 2.0                ;//soglia validazione secondo tentativo
+DBL Vhigh  = %config_machine10      ;//velocità acquisizione 1o
+DBL Vlow   = 0                      ;//velocità acquisizione finale
+DBL Vcur
+DBL state                           ;//0=1o tent, 1=2o tent,
+DBL trg_x, trg_y
+DBL acq_x, acq_y
+DBL base_acq_x, base_acq_y
+DBL Zdisab = 0 ;;; %config_machine40      ; =0 APA with capacitive, 1= APA with sensor IN (no Z axis)
+DBL acq_safe_z = (60.0 - %twi1.htwi.oarh.dZZ)
+IF( acq_safe_z > (MaxQta_Z) ) acq_safe_z = (MaxQta_Z) - 10.0
+
+G152
+
+%gIso[0] = 3 ;//É un laser (XXX per evitare la G650)
+
+G806 T3 N1 H1 D1
+gOptimEnableG806 = 0
+
+G161 L(ml_usr_origin)
+G186 L(ml_usr_origin)
+ERROR(55) ;non consistente con tubo
+
+G179 C0
+G182
+
+G180 D1
+trg_x = kine_x
+trg_y = kine_y
+Vcur = Vhigh
+state = 0
+
+WHILE( state != 3 )
+    G180 X(trg_x) Y(trg_y) Z(0)
+    G153 G0 X(kine_x) Y(kine_y)
+    IF( !Zdisab ) G800 K0 D1 X(trg_x) Y(trg_y) Z0 F(Vcur) T1 R1 U0 V0 W1 P1
+
+    ;//Ricerca bordo lastra
+    IF( lef_a == AXIDX(X) ) THEN
+        IF( lef_d > 0 ) THEN
+            IF (state == 0) THEN
+                ?%LsIso82=1             ;During APA axis cannot go down
+                _singfc( ( vmax | vout0 ), X, 1, Vcur, 0, "%gPlc[2].13", LevelE )    ;//the execution
+                SYN
+                G153
+                G10 G0 X(QCALC(X)) Y(QCALC(Y))
+                G152
+            ELSE
+                state = 1
+.retry6
+                SYN
+                IF (%gPlc[2].13) THEN
+                    ?%LsIso82=1             ;During APA axis cannot go down
+                    G61
+                    G1 G91 X1.5 F40000
+                    G4 F0.05
+                    POP(1)
+                    IF ( !%cn[WHO()].rc[0].21 ) JMPF .retry6
+                ENDIF
+                SYN
+                G90
+                G64
+            ENDIF
+        ELSE
+            IF (state == 0) THEN
+                ?%LsIso82=1             ;During APA axis cannot go down
+                _singfc( ( vmax | vout0 ), X, 2, Vcur, 0, "%gPlc[2].13", LevelE )
+                SYN
+                G153
+                G10 G0 X(QCALC(X)) Y(QCALC(Y))
+                G152
+            ELSE
+                state = 1
+.retry
+                SYN
+                IF (%gPlc[2].13)	THEN
+                    ?%LsIso82=1             ;During APA axis cannot go down
+                    G61
+                    G1 G91 X-1.5 F40000
+			        G4 F0.05
+			   		POP(1)
+                    IF ( !%cn[WHO()].rc[0].21 ) JMPF .retry
+                ENDIF
+                SYN
+                G90
+                G64
+            ENDIF
+        ENDIF
+
+        G4 F0.1
+          SYN
+          IF(state == 0) THEN
+            acq_x = GET(X)
+            acq_y = QCALC(Y)
+          ELSE
+            ;acq_x = QCALC(X)
+            ;acq_y = QCALC(Y)
+			acq_x = %LsPlc59/1000
+		    acq_y = %LsPlc60/1000
+          ENDIF
+    ENDIF
+
+    IF( lef_a == AXIDX(Y) ) THEN
+        IF( lef_d > 0 ) THEN
+            IF (state == 0) THEN
+            ?%LsIso82=1             ;During APA axis cannot go down
+            _singfc( ( vmax | vout0 ), Y, 1, Vcur, 0, "%gPlc[2].13", LevelE )
+                SYN
+		G153
+                G10 G0 X(QCALC(X)) Y(QCALC(Y))
+	        G152
+            ELSE
+			state = 1
+.retry7
+            SYN
+			    IF (%gPlc[2].13) THEN
+			        ?%LsIso82=1             ;During APA axis cannot go down
+			        G61
+                    G1 G91 Y1.5 F40000
+			        G4 F0.05
+			   		POP(1)
+                    IF ( !%cn[WHO()].rc[0].21 ) JMPF .retry7
+                ENDIF
+		SYN
+                G90
+		G64
+            ENDIF
+        ELSE
+
+        IF (state == 0) THEN
+            ?%LsIso82=1             ;During APA axis cannot go down
+            _singfc( ( vmax | vout0 ), Y, 2, Vcur, 0, "%gPlc[2].13", LevelE )
+            SYN
+            G153
+            G10 G0 X(QCALC(X)) Y(QCALC(Y))
+            G152
+        ELSE
+            state = 1
+.retry4
+            SYN
+            IF (%gPlc[2].13) THEN
+                ?%LsIso82=1             ;During APA axis cannot go down
+                G61
+                G1 G91 Y-1.5 F40000
+                G4 F0.05
+                POP(1)
+                IF ( !%cn[WHO()].rc[0].21 ) JMPF .retry4
+            ENDIF
+            SYN
+            G90
+            G64
+        ENDIF
+    ENDIF
+        G4 F0.1
+        SYN
+        IF(state == 0) THEN
+            acq_x = QCALC(X)
+            acq_y = GET(Y)
+        ELSE
+            ;acq_x = QCALC(X)
+            ;acq_y = QCALC(Y)
+            acq_x = %LsPlc59/1000
+            acq_y = %LsPlc60/1000
+        ENDIF
+ENDIF
+
+   SYN
+    G153
+    G10 G0 X(QCALC(X)) Y(QCALC(Y))
+    G152
+
+    ;//Se rifaremo la ricerca, la nuova posizione va spostata di rew_dist
+    IF( lef_a == AXIDX(X) ) THEN
+        IF( lef_d > 0 ) THEN
+            ;//X avanti
+            trg_x = acq_x - rew_dist
+            trg_y = acq_y
+        ELSE
+            ;//X indietro
+            trg_x = acq_x + rew_dist
+            trg_y = acq_y
+        ENDIF
+    ENDIF
+    IF( lef_a == AXIDX(Y) ) THEN
+        IF( lef_d > 0 ) THEN
+            ;//Y avanti
+            trg_x = acq_x
+            trg_y = acq_y - rew_dist
+        ELSE
+            ;//Y indietro
+            trg_x = acq_x
+            trg_y = acq_y + rew_dist
+        ENDIF
+    ENDIF
+
+  SYN
+    SWITCH (state)
+    CASE 0
+        IF( !Zdisab ) G840
+        IF( !Zdisab ) G153 G0 Z(acq_safe_z)
+        ?%LsIso82=0            ;During APA axis cannot go down
+        base_acq_x = acq_x
+        base_acq_y = acq_y
+		    SYN
+        state = 4
+
+    CASE 1
+        IF( !Zdisab ) G840
+        IF( !Zdisab ) G153 G0 Z(acq_safe_z)
+        ?%LsIso82=0            ;During APA axis cannot go down
+        IF( (ABS(base_acq_x - acq_x) <= check_dist) && (ABS(base_acq_y - acq_y) <= check_dist) ) THEN
+            Vcur = Vlow
+            state = 3
+        ELSE
+            base_acq_x = acq_x
+            base_acq_y = acq_y
+        ENDIF
+    ENDSWITCH
+
+ENDW
+
+G153
+kine_x = acq_x
+kine_y = acq_y
+?%LsIso82=0            ;During APA axis cannot go down
+
+RET

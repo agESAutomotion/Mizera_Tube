@@ -1,0 +1,105 @@
+*******************************************************************************
+*   usrCnd.plc
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR_IN_OUT
+#include "mem.inc"
+#include "usrIol.inc"
+END_VAR
+#include "usrMem.inc"
+
+FUNCTION COMMAND_TO_MAIN
+
+*CH3
+* Hold V axis
+
+LD   Hold_U_Z1Supp
+OR   Hold_U_Z2Supp
+OR   Hold_U_Z3Supp
+OR   Hold_U_Z4Supp
+OR   Hold_U_Z5Supp
+OR   Hold_U_SupUnHorAx85
+OR   Hold_U_SupUnHorAx86
+OR   Hold_U_SupUnHorAx87
+OR   Hold_U_SupUnHorAx88
+OR   M_HoldAx_V
+ST   CMD_HOLDMOVING_CH3.4            ** M202 Hold moving command axis CH3 (bit0=X, bit1=Y...)
+
+* Hold X-U
+LD   Hold_U_Z1SuppLoad   
+OR   Hold_U_Z2SuppLoad   
+OR   Hold_U_Z3SuppLoad   
+OR   Hold_U_Z4SuppLoad
+OR   HoldO1Ax30_HOR
+OR   HoldO2Ax30_HOR
+OR   HoldO3Ax30_HOR
+OR   HoldO4Ax30_HOR
+OR   %PLCmsg8.5  
+OR   M_HoldAx_U
+ST   CMD_HOLDMOVING_CH3.0            ** M202 Hold moving command axis CH3 (bit0=X, bit1=Y...)
+
+
+* CH8 (Unloader)
+
+LD   HoldZ1Supp
+ST   CMD_HOLDMOVING_CH8.1            ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+
+LD   HoldZ2Supp
+ST   CMD_HOLDMOVING_CH8.2            ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+
+LD   HoldZ3Supp
+ST   CMD_HOLDMOVING_CH8.3            ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+
+LD   HoldZ4Supp
+ST   CMD_HOLDMOVING_CH8.4            ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+
+LD   HoldZ5Supp
+ST   CMD_HOLDMOVING_CH8.5            ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+
+* CH5
+
+* Grant Request
+
+LD   usrReqGrantSupL1
+ST   GRANT5.1
+
+LD   usrReqGrantSupL2
+ST   GRANT5.2
+
+LD   usrReqGrantSupL3
+ST   GRANT5.3
+
+LD   usrReqGrantSupL4
+ST   GRANT5.4
+
+* Hold support axes 
+
+LD   HoldZ1SuppLoad
+ST   CMD_HOLDMOVING_CH5.1
+
+LD   HoldZ2SuppLoad
+ST   CMD_HOLDMOVING_CH5.2
+
+LD   HoldZ3SuppLoad
+ST   CMD_HOLDMOVING_CH5.3
+
+LD   HoldZ4SuppLoad
+ST   CMD_HOLDMOVING_CH5.4
+
+* Hold support Lateral axes 
+
+LD   HoldO1SuppLoad_LAT
+ST   CMD_HOLDMOVING_CH9.1
+
+LD   HoldO2SuppLoad_LAT
+ST   CMD_HOLDMOVING_CH9.2
+
+LD   HoldO3SuppLoad_LAT
+ST   CMD_HOLDMOVING_CH9.3
+
+LD   HoldO4SuppLoad_LAT
+ST   CMD_HOLDMOVING_CH9.4
+
+*
+END_FUNCTION

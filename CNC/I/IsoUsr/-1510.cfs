@@ -1,0 +1,1055 @@
+[A]0 [D]2 [L]0 [M] [V]0 [W]0 [P]: 510
+
+IF( %cn[WHO()].rc[0].21 ) RET                                                     
+
+?%gIso19.1 = 1           ; ENABLE BLEND Always
+?%gIso29.1 = 0           ; ParkUn71Sup_ISO
+?%gIso29.2 = 0           ; ParkUn72Sup_ISO
+?%gIso29.3 = 0           ; ParkUn73Sup_ISO
+?%gIso29.4 = 0           ; ParkUn74Sup_ISO
+?%gIso29.5 = 0           ; ParkUn75Sup_ISO
+
+; Horizontal Unloading Supports Iso Parking
+?%gIso29.23 = 0
+?%gIso29.24 = 0
+?%gIso29.25 = 0
+?%gIso29.26 = 0
+
+IF( %LSRPlcOp0.21 ) RET
+
+; Input macro
+
+DBL scrap = VA0          ; A 
+DBL cut_type = VA3       ; D
+DBL Slave_3_V_Pos = VA21 ; V
+DBL Slave_2_W_Pos = VA22 ; W
+DBL WorkMode = VA12      ; M
+                         ; 1 only master spindle
+                         ; 2 only master and W spindle 
+					     ; 3 all spindle work 
+					     ; 4 only slaves spindle work (V W)					 
+DBL TubePosit = VA11     ; Initial part of the tube Position [mm]
+
+DBL LengthPiece = VA15   ; PIECE LENGTH  
+
+DBL X_Axes_Pos = orig_x + TubePosit ; initialize to a not possible value
+DBL OversizeMove = 0
+DBL MovWBefore = 0
+DBL DeltaPosX = 0
+DBL tubeState = 0
+			
+; Variables	 
+DBL TubeCut 
+DBL DeltaTubeMove 
+DBL bvlMaxW, bvlMinW
+DBL DeltaX1, DeltaV_W, DragBuf, DragTar, DeltaV, DeltaW 
+DBL PosX1, SaveQtaX, NewQtaX, DiffTubeMovement, Delta
+DBL DebugMode_M4 = 0 
+DBL DebugMode_M5 = 0
+ 
+; Drag Related
+DBL TubeInMac
+DBL TubeDiff = 0 ;[mm]
+DBL i_for = 0
+DBL xPushQta, vDragQta, DragTimes
+
+DBL M_3DragMode
+DBL M_3DragModeThre = 1800 ;[mm]
+DBL M_23ModeThre = 1500 ;[mm]
+DBL MinQta_X_2nd = %CostK[15] / 1000 
+DBL Min_W_V = %SPINDLE_SYSTEM.values[25] / 1000
+
+;// Fetch the tail (last piece + tail-waste)
+IF( FetchingTail == 1 ) THEN
+    IF( FetchCnt == 3 ) THEN
+		FetchCnt = IFEXP(FetchCnt == 0,1,0)
+	    RETSKIP(1)
+    ELSE
+        RETSKIPF("G800","G580")
+	ENDIF
+ENDIF
+
+IF( EnSingleSpindle ) JMPF .nochksingle
+; Non existing 2 or 3 mode init with 1st or 2nd clamp open
+IF( (WorkMode == 2) || (WorkMode == 3) ) THEN
+    IF( (!%USR_M20.3) || (!%USR_M21.22) ) THEN
+	    .FAULT_STATE_WORKMODE
+	    SYN 
+	    MSGOUT " Please Close Main and Second Spindle Chucks Before "	  
+        M0		
+	    JMP .FAULT_STATE_WORKMODE	 
+	ENDIF		   
+ENDIF
+.nochksingle
+ 
+; In case of real tube longer than PGM
+IF( (%funz[%IndexORG].origprgX) > (%gIso22) ) THEN
+    TubeDiff = %funz[%IndexORG].origprgX - %gIso22
+	MinQta_X_2nd = %CostK[15] / 1000 + TubeDiff
+ENDIF
+ 
+; Force W always to park safely if collision
+; Gest5Ax AT %gPlc0.0; 
+IF( %gPlc0.0 ) THEN
+    ; In the Plc 5mm redundancy, 10mm emergency
+	IF( %ax33.ra4 >= 0 ) THEN
+        bvlMaxW = MaxQta_W - (SIN(QCALC(AXIDX(3,B))) * %twi1.htwi.oarh.dZ) 
+		bvlMinW = MinQta_W
+	ELSE
+	    bvlMaxW = MaxQta_W
+        bvlMinW = MinQta_W - (SIN(QCALC(AXIDX(3,B))) * %twi1.htwi.oarh.dZ) 
+	ENDIF
+	
+    IF( (Slave_2_W_Pos < (bvlMaxW - 1)) && (Slave_2_W_Pos > (bvlMinW + 1)) ) THEN
+         Slave_2_W_Pos = IFEXP( Slave_2_W_Pos > 0, bvlMaxW, bvlMinW )
+	ENDIF
+ELSE
+    bvlMaxW = MaxQta_W
+    bvlMinW = MinQta_W
+    Slave_2_W_Pos = IFEXP( Slave_2_W_Pos > 0, MaxQta_W, MinQta_W )
+ENDIF
+
+;// Single spindle mode (single short piece mode)
+IF( (EnSingleSpindle) && (LastSpindlMode == 0) ) THEN	
+    IF( LastSpindlMode == 0 ) THEN
+        RPT .SingleSpindle_Start, .SingleSpindle_End, 1
+	ENDIF
+	POP(1)
+	JMPF .exit_cases
+ENDIF
+ 
+; Flap (1 == UP)
+; ---> A==1, SCRAP FLAP DOWN
+IF( scrap == 1 ) ?%LsIso9.3 = 0   
+ 
+; To manage oversize tube case in M3 to M3
+IF( (LastSpindlMode == WorkMode) && (WorkMode == 3) ) THEN
+    IF( (LastXpos != X_Axes_Pos) && (LastVpos == Slave_3_V_Pos) ) THEN
+        OversizeMove = 1
+	ELSE
+        OversizeMove = 0	
+    ENDIF
+ENDIF 
+ 
+; Skip G510 in case of same mode
+IF( (LastSpindlMode == WorkMode) && (LastWpos == Slave_2_W_Pos) && (OversizeMove == 0) && (LastUnloadPiece == 0) ) JMP .exit_cases    
+
+; spindle change mode can be done only after a G840 L0 
+IF( ls_stateping != 0 ) THEN
+    SYN 
+    MSGOUT " Cad-Cam Error, alternating mode not in case of G840 L0 "	  
+	M0
+    ERROR(55)   
+ENDIF
+
+SYN
+; Plc flag G510 is running
+MSGOUT " M_4TubeLen = " M_4TubeLen
+?%gIso29.7 = 1 
+GRP[V] = 1
+
+; O_O_Mobile_Spindle_Slave_Open  AT %USR_M20.0;
+; O_O_Mobile_Spindle_Slave_Close AT %USR_M20.1;
+; O_O_Mobile_Spindle_Open        AT %USR_M20.2;
+; O_O_Mobile_Spindle_Close       AT %USR_M20.3;
+
+; tubeState = 1   ; tube is closed already on three spindle
+; tubeState = 2   ; tube is closed already first two spindles
+; tubeState = 3   ; tube is closed already last two spindles
+; tubeState = 4   ; tube is closed only last spindle (Not used right now)
+
+IF( (%USR_M20.3) && (%USR_M20.1) && (%USR_M21.22) ) tubeState = 1
+IF( (%USR_M20.3) && (!%USR_M20.1) && (%USR_M21.22) ) tubeState = 2
+IF( (!%USR_M20.3) && (%USR_M20.1) && (%USR_M21.22) ) tubeState = 3
+IF( (!%USR_M20.3) && (%USR_M20.1) && (!%USR_M21.22) ) tubeState = 4
+
+G153
+G4005 S(AXIDX(3,X))     
+G4005 S(AXIDX(3,V)) 
+G4005 S(AXIDX(3,W))
+G152	 
+G4099
+
+IF( (tubeState != 1) && (tubeState != 2) && (tubeState != 3) && (WorkMode != 5) ) THEN
+.FAULT_STATE_CHUCK
+    SYN 
+    MSGOUT " Please Open/Close Correctly the Chucks! "	
+    M0	
+JMP .FAULT_STATE_CHUCK
+ENDIF
+
+IF( (WorkMode > 3) && (LastSpindlMode == 0) ) THEN
+    ; Freeze to Update Tube 3D visualization by PLC 
+	; iso_G510_StartDM4  AT %gIso29.10;      
+    ?%gIso29.10 = 1
+ENDIF
+
+RPT .ReplaceToL0_Start, .ReplaceToL0_End, 1
+
+SWITCH (WorkMode):
+
+; ONLY MASTER WORK
+CASE 1
+ERROR(55)  
+  
+; Next status M2
+CASE 2
+
+;// From M3 to M2 //
+IF( tubeState == 1 ) THEN 
+    RPT .Open_V_Start, .Open_V_End, 1
+    RPT .PrkXWV_ToM2_Start, .PrkXWV_ToM2_End, 1
+ENDIF  
+
+;// From M2 to M2 //
+IF( tubeState == 2 ) THEN 
+    RPT .PrkXWV_ToM2_Start, .PrkXWV_ToM2_End, 1  
+ENDIF  
+
+;// From M4 to M2 //
+IF( tubeState == 3 ) THEN    
+    RPT .PrkXWV_ToM2_Start, .PrkXWV_ToM2_End, 1  
+    RPT .Close_X_Start, .Close_X_End, 1
+    RPT .Open_V_Start, .Open_V_End, 1
+ENDIF  
+  
+; Next status M3
+CASE 3
+
+; To move W before if necessary
+RPT .ToMovW_ColiX_Start, .ToMovW_ColiX_End, 1
+
+;// From M3 to M3 //
+IF( tubeState == 1 ) THEN
+    IF( LastSpindlMode == 0 ) THEN
+	    SYN
+		;Relative motion
+		IF( ABS(QCALC(AXIDX(3,V)) - QCALC(AXIDX(3,X))) > ABS(Slave_3_V_Pos - X_Axes_Pos) ) THEN   
+		    MSGOUT "Please Ensure All Spindles Clamping the tube, START to continue"
+			M0
+		ENDIF
+		RPT .PrkXV_ToM3_Start, .PrkXV_ToM3_End, 1
+		MSGOUT ""
+    ENDIF
+	
+	IF( OversizeMove == 1 ) THEN
+	    RPT .Open_V_Start, .Open_V_End, 1
+	ENDIF
+	
+    G153  
+    G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+    IF( OversizeMove == 0 ) G4010 M(AXIDX(X)) S(AXIDX(3,V)) I0
+    G4099
+    G152 
+	
+    G153 G1 X(X_Axes_Pos) F30000
+  
+    IF( OversizeMove == 1 ) THEN
+        JSR "MoveX1_Spindle.cfs" Slave_3_V_Pos 30000
+	    SYN
+        AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+        RPT .Close_V_Start, .Close_V_End, 1
+	    OversizeMove = 0
+    ENDIF	
+
+    SYN
+    IF( ABS(QCALC(AXIDX(3,V)) - Slave_3_V_Pos) > 10 ) THEN
+	    MSGOUT "Wrong V position from Cad-Cam in mode M3"
+	    M0
+	    ERROR(786) 
+	ENDIF	
+ENDIF ; tubeState == 1
+
+;// From M2 to M3 //
+IF( tubeState == 2 ) THEN
+    M_3DragMode = IFEXP( (ABS(Slave_3_V_Pos) > M_3DragModeThre),1,0 ) 
+    IF( (M_3DragMode == 1) && (LastSpindlMode != 0) ) THEN
+    	DeltaTubeMove = ABS( Slave_3_V_Pos + M_3DragModeThre )
+	    JSR "MoveX_Spindle.cfs" (DeltaTubeMove + X_Axes_Pos) 30000  
+		JSR "MoveX1_Spindle.cfs" (0 - M_3DragModeThre) 30000 
+	    SYN
+        AWAIT (!%SPINDLE_SYSTEM.values24.0)   ; X Moving
+        AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+		
+		RPT .Close_V_Start, .Close_V_End, 1
+		RPT .Gear_XV_Prk_Start, .Gear_XV_Prk_End, 1
+	ELSE
+	    RPT .PrkXV_ToM3_Start, .PrkXV_ToM3_End, 1
+        RPT .Close_V_Start, .Close_V_End, 1
+	ENDIF
+ENDIF ; tubeState == 2
+ 
+;// From M4 to M3 // 
+IF( tubeState == 3 ) THEN
+    IF( LastSpindlMode != 0 ) ERROR(55)
+    RPT .PrkXV_ToM3_Start, .PrkXV_ToM3_End, 1
+    RPT .Close_X_Start, .Close_X_End, 1
+ENDIF ; tubeState == 3
+
+IF( MovWBefore == 0 ) THEN
+    JSR "X3_Move.cfs" Slave_2_W_Pos
+ENDIF 
+MovWBefore = 0
+ 
+SYN
+AWAIT (!%SPINDLE_SYSTEM.values24.0)   ; X Moving
+AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+JSR "Connect3Spindles.cfs" X_Axes_Pos
+
+; Next status M4
+CASE 4
+
+RPT .Cn3_VRTCVYZ_Start, .Cn3_VRTCVYZ_End, 1
+
+;// From M3 to M4 //
+;   Hidden condition: No V clamp open/close again different position on tube from M3 to M4
+IF( tubeState == 1 ) THEN 
+
+  RPT .ToMovW_ColiV_Start, .ToMovW_ColiV_End, 1
+
+  ;// New M3 to old M4 mode (2nd spindle at negative) 
+  ;// New M4 mode (2nd spindle at positive) 
+  IF( ((Slave_2_W_Pos < 0) && (QCALC(AXIDX(3,W)) <= 0)) || (Slave_2_W_Pos > 0) ) THEN
+      RPT .Open_X_Start, .Open_X_End, 1
+      JSR "MoveX_Spindle.cfs"  (orig_x) 30000
+	  JSR "MoveX1_Spindle.cfs" Slave_3_V_Pos 30000
+	  SYN
+  	  AWAIT(!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving
+  
+  	  ; In case of W not at the correct position
+	  IF( ABS(QCALC(AXIDX(3,W)) - Slave_2_W_Pos) > 1 ) THEN
+          JSR "X3_Move.cfs" Slave_2_W_Pos
+	  ENDIF
+	  MovWBefore = 0
+  
+      POP(1)
+	  JMP .M3mode_com
+  ENDIF
+  
+  ;// Old M3 to old M4 mode 
+  
+  ;Park YZ
+  RPT .Park_YZ_START, .Park_YZ_END, 1
+  
+  ;// A. Case of current tube X longer than V side //
+  SYN
+  IF( (QCALC(AXIDX(3,X)) - MinQta_X_2nd) >= (QCALC(AXIDX(3,V)) - MinQta_V) ) THEN
+    ;V drag X to V min
+    RPT .V_X_Vmin_Start, .V_X_Vmin_End, 1	   
+
+    ; Drag Times Calculation (Rounded Up)
+    SYN
+	DragTimes = CEIL( (QCALC(AXIDX(3,X)) - MinQta_X_2nd) / ( MaxQta_V - MinQta_V ) ) 
+	
+	SYN
+	IF( DragTimes <= 1 ) THEN
+
+        ;Align XV both at the min position
+        RPT .DragXV_M34_Start, .DragXV_M34_End, 1
+			
+        RPT .Open_V_Start, .Open_V_End, 1 
+		
+	    ;V to (vpos + xmin - X_Axes_Pos), close, wv positioning meanwhile x parking
+ 	    RPT .DragXV_start, .DragXV_end, 1
+		
+	;// DragTimes > 1 //	
+	ELSE
+		
+		i_for = 0
+		FOR i_for = 1 TO DragTimes
+		    SYN
+            IF( i_for != DragTimes ) THEN
+			   
+               RPT .Open_V_Start, .Open_V_End, 1
+			   
+			   ;V move to vmax
+        	   SYN
+			   IF(DebugMode_M4 == 1) M0
+               JSR "MoveX1_Spindle.cfs" (MaxQta_V) 30000
+			   SYN  
+               AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+
+	           RPT .Close_V_Start, .Close_V_End, 1
+			   
+			   ;V drag X to V min
+               RPT .V_X_Vmin_Start, .V_X_Vmin_End, 1				   
+			   
+               RPT .Open_V_Start, .Open_V_End, 1
+			   
+			ELSE
+			   ;// i_for == DragTimes //
+			  
+               ;Align XV both at the min position
+               RPT .DragXV_M34_Start, .DragXV_M34_End, 1
+			   		       
+               RPT .Open_V_Start, .Open_V_End, 1
+			   
+			   ;V to (vpos + xmin - X_Axes_Pos), close, wv positioning meanwhile x parking
+ 	           RPT .DragXV_start, .DragXV_end, 1
+            ENDIF 
+        ENDFOR 
+		
+	ENDIF ;IF( DragTimes <= 1 )
+
+  ELSE
+  ;// Case of current tube X shorter than V side //
+  
+    ;V drag X to X min
+    RPT .V_DragX_Xmin_Start, .V_DragX_Xmin_End, 1
+	RPT .Open_X_Start, .Open_X_End, 1
+    JSR "MoveX_Spindle.cfs" (orig_x) 30000	
+    JSR "MoveX1_Spindle.cfs" Slave_3_V_Pos 30000
+	RPT .Prk_W_Start, .Prk_W_End, 1
+    SYN  
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+
+  ;//(END) A. Case of current tube X longer than V side //
+  ENDIF
+  
+.M3mode_com 
+ 
+  RPT .Prk_Y0_Start, .Prk_Y0_End, 1
+  JSR "Connect3Spindles.cfs" X_Axes_Pos
+ 
+ENDIF ;IF( tubeState == 1 )
+ 
+;// From M2 to M4 //
+IF( tubeState == 2 ) THEN 	 
+	SYN
+	;TubeInMac = %UNLOADER.values0 / 1000             ;From PLC
+	TubeInMac = M_4TubeLen - QCALC(AXIDX(3,X))        ;From Lead-in
+	Slave_3_V_Pos = - M_4TubeLen + (%gIso22 + TubePosit)
+    MSGOUT " Slave_3_V_Pos = " Slave_3_V_Pos
+
+    ;// New M4 mode 
+    IF( Slave_2_W_Pos > 0 ) THEN
+	    JSR "MoveX1_Spindle.cfs" Slave_3_V_Pos 30000
+	    SYN
+    	AWAIT(!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving
+    
+	    RPT .Close_V_Start, .Close_V_End, 1
+	    RPT .Open_X_Start, .Open_X_End, 1
+        JSR "MoveX_Spindle.cfs"  (orig_x) 30000
+		
+    	; In case of W not at the correct position
+	    IF( ABS(QCALC(AXIDX(3,W)) - Slave_2_W_Pos) > 1 ) THEN
+            JSR "X3_Move.cfs" Slave_2_W_Pos
+	    ENDIF
+    
+        POP(1)
+	    JMP .M4mode_com
+    ENDIF
+     					
+	;The Current Tube Length must be Enough, now W is on the left
+	SYN
+	IF( (X_Axes_Pos + LengthPiece)  < (ABS(MinQta_X_2nd) + ABS(MaxQta_V)) ) THEN
+	   .FAULT_STATE_421
+	   SYN 
+	   MSGOUT " CAD-CAM Error, piece shorter than X-V travel "	   
+	   JMP .FAULT_STATE_421	   		   
+    ENDIF
+	
+	;Park YZ
+	RPT .Park_YZ_START, .Park_YZ_END, 1
+			   	
+	;Force tube to reach MaxQta_V
+	IF( TubeInMac < ABS(MaxQta_V) )  THEN  
+	   	SYN
+		IF(DebugMode_M4 == 1) M0
+	    xPushQta = TubeInMac - ABS(MaxQta_V) + QCALC(AXIDX(3,X))
+	    JSR "MoveX_Spindle.cfs" (xPushQta) 30000
+	    SYN
+	    AWAIT(!%SPINDLE_SYSTEM.values24.0)   ; X Moving
+	ENDIF
+		   	   		   		   	   
+    ; Drag Times Calculation (Rounded Up)
+    SYN
+	DragTimes = CEIL( (QCALC(AXIDX(3,X)) - MinQta_X_2nd) / ( MaxQta_V - MinQta_V ) ) 
+	
+	SYN
+	;TubeInMac = %UNLOADER.values0 / 1000             ;From PLC
+	TubeInMac = M_4TubeLen - QCALC(AXIDX(3,X))        ;From Lead-in    
+    MSGOUT " TubeInMac = " TubeInMac
+	
+	IF(DebugMode_M4 == 1) M0
+	JSR "MoveX1_Spindle.cfs" (-TubeInMac) 30000
+	SYN  		
+	AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving	
+	
+	IF( DragTimes <= 1 ) THEN
+   	    RPT .Close_V_Start, .Close_V_End, 1
+   	    ;V drag X to X min
+        RPT .V_DragX_Xmin_Start, .V_DragX_Xmin_End, 1	   
+   	    ;V to (vpos + xmin - X_Axes_Pos), close, wv positioning meanwhile x parking
+    	RPT .DragXV_start, .DragXV_end, 1
+		
+	;// DragTimes > 1 //	
+	ELSE
+		
+		i_for = 0
+		FOR i_for = 1 TO DragTimes
+		    SYN
+            IF( i_for != DragTimes ) THEN
+			   IF( DragTimes == 1 ) THEN
+			       RPT .Close_V_Start, .Close_V_End, 1
+                   RPT .V_DragX_Xmin_Start, .V_DragX_Xmin_End, 1	
+                   RPT .Open_V_Start, .Open_V_End, 1				   
+			   ELSE
+			       RPT .Mul_DragV_Start, .Mul_DragV_End, 1
+			   ENDIF
+			ELSE
+			   ;// i_for == DragTimes //
+			   
+			   ;Align XV both at the min position
+               RPT .DragXV_M34_Start, .DragXV_M34_End, 1
+               RPT .Open_V_Start, .Open_V_End, 1
+               ;V to (vpos + xmin - X_Axes_Pos), close, wv positioning meanwhile x parking
+ 	           RPT .DragXV_start, .DragXV_end, 1
+            ENDIF 
+        ENDFOR 
+		
+	ENDIF
+	
+.M4mode_com 
+	
+    RPT .Prk_Y0_Start, .Prk_Y0_End, 1
+    JSR  "Connect3Spindles.cfs" X_Axes_Pos
+  
+ENDIF ;IF( tubeState == 2 ) 
+
+;// From M4 to M4 //
+IF( tubeState == 3 ) THEN 
+    G153
+    G4010 M(AXIDX(V)) S(AXIDX(3,V)) I1
+    G4099
+    G152
+    
+    JSR "MoveX_Spindle.cfs"  (orig_x) 30000
+    G153 G1 V(Slave_3_V_Pos) F30000
+    JSR "X3_Move.cfs" Slave_2_W_Pos
+  
+    SYN  
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+    JSR  "Connect3Spindles.cfs" X_Axes_Pos
+ENDIF  ;IF( tubeState == 3 ) 
+
+; Tube on Only V Spindle
+; ---> M5 is ensured in case of (LastSpindlMode == M4 / M5, Short piece)
+; ---> Two level safe insurance: Cad-cam; Plc Ra92 
+CASE 5
+
+SYN
+IF( ((LastSpindlMode != 4) && (LastSpindlMode != 5)) && (LastSpindlMode != 0) ) ERROR(800) 
+IF ((!%USR_M20.3) && (%USR_M20.1) && (%USR_M21.22)) tubeState = 3
+IF ((!%USR_M20.3) && (%USR_M20.1) && (!%USR_M21.22)) tubeState = 4
+
+IF ((tubeState == 3) || (tubeState == 4)) THEN 
+	SYN	
+	IF(DebugMode_M5 == 1) M0	
+	JSR "MoveX_Spindle.cfs"  (orig_x) 30000
+    
+    RPT .Open_W_Start, .Open_W_End, 1
+	
+	SYN
+	IF(DebugMode_M5 == 1) M0
+    JSR "X3_Move.cfs" Slave_2_W_Pos
+		
+	G153
+    G4010 M(AXIDX(V)) S(AXIDX(3,V)) I1
+    G4099
+    G152
+	
+	G153 G1 V(Slave_3_V_Pos) F30000
+	
+	JSR  "Connect3Spindles.cfs" X_Axes_Pos      	     
+ELSE
+	ERROR(800) 
+ENDIF
+
+ENDSWITCH
+ 
+SYN 
+RPT .Update3D_TubeVis_Start, .Update3D_TubeVis_End, 1
+?%gIso29.7 = 0
+GRP[V] = 0
+
+.exit_cases
+
+IF( (%UNLOADER.values1.1) && (!Follower_ok) ) THEN
+    ?%gIso19.1=1     ; ENABLE BLEND
+    Follower_ok = 1
+ENDIF
+
+; Safe condition to force second spindle free
+IF( WorkMode >= 4 ) THEN
+    G153
+    G4005 S(AXIDX(3,W)) 
+	G152
+    G4099
+ENDIF
+
+LastSpindlMode = WorkMode
+LastWpos = Slave_2_W_Pos
+LastXpos = X_Axes_Pos
+LastVpos = Slave_3_V_Pos
+
+RET 
+
+.PrkXWV_ToM2_Start
+    RPT .PrkXV_ToM3_Start, .PrkXV_ToM3_End, 1
+    JSR "X3_Move.cfs" Slave_2_W_Pos
+    JSR "Connect3Spindles.cfs" X_Axes_Pos 
+.PrkXWV_ToM2_End
+
+.PrkXV_ToM3_Start
+    JSR "MoveX_Spindle.cfs" X_Axes_Pos 30000  
+    JSR "MoveX1_Spindle.cfs" Slave_3_V_Pos 30000
+    SYN
+    AWAIT (!%SPINDLE_SYSTEM.values24.0)   ; X Moving
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+.PrkXV_ToM3_End
+
+.ToMovW_ColiX_Start
+	; Before to move X, collision of W must be checked
+	; Consider only X because of W AT RIGHT always OK M3
+	; X mode to new M3 mode need to move W first
+	SYN
+	IF( ABS(QCALC(AXIDX(3,W)) - X_Axes_Pos) < MinQta_X_2nd ) THEN
+	    JSR "X3_Move.cfs" Slave_2_W_Pos
+		MovWBefore = 1
+	ENDIF
+.ToMovW_ColiX_End
+
+.ToMovW_ColiV_Start
+	; Before to move V, collision of W must be checked
+	; Consider only V because of X parking far mode M4
+	SYN
+	IF( ABS(QCALC(AXIDX(3,W)) - Slave_3_V_Pos) < Min_W_V ) THEN
+	    JSR "X3_Move.cfs" Slave_2_W_Pos
+		MovWBefore = 1
+	ENDIF
+.ToMovW_ColiV_End
+
+.Park_YZ_START
+	G153
+    G4005 S(AXIDX(3,Z))
+    G4005 S(AXIDX(3,Y))   
+	G152
+	G4099
+
+   	;// Necessary to move the W another side before (DO NOT USE X3_MOVE)
+	G153
+	G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+	G152
+	G4099
+	
+	G153 G0 Z(MaxQta_Z)
+	G153 G1 Y(MinQta_Y) F30000
+	
+	G153
+	G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Z))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,W))     
+    G4005 S(AXIDX(3,V))    
+	G152
+	G4099
+.Park_YZ_END
+
+.DragXV_start
+	G153
+	G4005 S(AXIDX(3,V)) 
+	G152
+    G4099
+
+	;V to Vpos on tube (Vpos + MinQta_X_2nd)
+    G153
+	G4010 M(AXIDX(V)) S(AXIDX(3,V)) I1
+	G152
+	G4099
+
+	DragTar = Slave_3_V_Pos - X_Axes_Pos + MinQta_X_2nd  ; IMPORTANT CALCULATION
+	SYN
+	MSGOUT "DragTar = " DragTar
+	IF(DebugMode_M4 == 1) M0
+	;Pay attention: V target on tube must consider Xv
+	G153 G1 V( DragTar ) F30000   
+	
+	G153
+	G4005 S(AXIDX(3,V)) 
+	G152
+    G4099
+	
+    RPT .Close_V_Start, .Close_V_End, 1
+	
+    RPT .Open_X_Start, .Open_X_End, 1
+
+    ; X Parking Far, V to Vpos, W (They must park with same speed)
+    JSR "MoveX_Spindle.cfs" (orig_x) 30000
+  
+    ; Position Synchronization WV
+	SYN
+	DeltaV = ABS( QCALC(AXIDX(3,V)) - Slave_3_V_Pos ) 
+	DeltaW = ABS( QCALC(AXIDX(3,W)) - Slave_2_W_Pos ) 	
+	MSGOUT "DeltaV = " DeltaV  "DeltaW = " DeltaW 
+	SYN
+	IF(DebugMode_M4 == 1) M0
+	
+	IF( Slave_3_V_Pos < (QCALC(AXIDX(3,V))) ) THEN
+    	IF( DeltaV > DeltaW ) THEN
+    	    RPT .Gear_VWV_Prk_Start, .Gear_VWV_Prk_End, 1
+    	    JSR "MoveX1_Spindle.cfs" Slave_3_V_Pos 30000
+    	ELSE
+    	    RPT .Gear_VVW_Prk_Start, .Gear_VVW_Prk_End, 1
+    		RPT .Prk_W_Start, .Prk_W_End, 1
+    	ENDIF
+	ELSE
+        ; If final target V > QCALC(AXIDX(3,V)), separate movement
+        ; V and W relative 		
+		IF( ABS(Slave_2_W_Pos - Slave_3_V_Pos) < Min_W_V ) THEN
+			.FAULT_STATE_VTAR
+	        SYN 
+	        MSGOUT " CAD-CAM Error, W-V collision "	   
+	        JMP .FAULT_STATE_VTAR	  
+		ENDIF
+		JSR "MoveX1_Spindle.cfs" Slave_3_V_Pos 30000
+		RPT .Prk_W_Start, .Prk_W_End, 1
+	ENDIF
+  
+    SYN  
+    ;AWAIT (!%SPINDLE_SYSTEM.values24.0)   ; X Moving
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+	 
+.DragXV_end
+
+.DragXV_M34_Start
+
+    RPT .Open_V_Start, .Open_V_End, 1
+	
+	;V move to close chuck position
+	SYN
+	vDragQta = QCALC(AXIDX(3,V)) + ( QCALC(AXIDX(3,X)) - MinQta_X_2nd)
+	MSGOUT "vDragQta = " vDragQta
+	
+	IF(DebugMode_M4 == 1) M0
+    JSR "MoveX1_Spindle.cfs" (vDragQta) 30000
+	SYN  
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+	
+    RPT .Close_V_Start, .Close_V_End, 1
+
+    ;V drag X to V min (X at Xmin currently)
+    RPT .V_X_Vmin_Start, .V_X_Vmin_End, 1	
+.DragXV_M34_End
+
+.Mul_DragV_Start
+    ; V to Vmax
+    SYN
+	IF(DebugMode_M4 == 1) M0
+    JSR "MoveX1_Spindle.cfs" MaxQta_V 30000
+	SYN  
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+	
+    RPT .Close_V_Start, .Close_V_End, 1
+	
+    ;V drag X to V min
+    RPT .V_X_Vmin_Start, .V_X_Vmin_End, 1	
+
+    RPT .Open_V_Start, .Open_V_End, 1
+
+.Mul_DragV_End
+
+.V_DragX_Xmin_Start
+
+    G153
+	G4005 S(AXIDX(3,X)) 
+	G4005 S(AXIDX(3,V)) 
+	G152
+    G4099	
+
+	;V drag X to X min
+	G153
+	G4010 M(AXIDX(V)) S(AXIDX(3,V)) I1
+	G4010 M(AXIDX(V)) S(AXIDX(3,X)) I0
+	G152
+	G4099 
+	
+	SYN
+    vDragQta = QCALC(AXIDX(3,V)) - ( QCALC(AXIDX(3,X)) - MinQta_X_2nd )
+	SYN
+	MSGOUT " vDragQta = " vDragQta
+	
+	IF(DebugMode_M4 == 1) M0 
+	G153 G1 V( vDragQta ) F30000   
+	 
+    G153
+	G4005 S(AXIDX(3,X)) 
+	G4005 S(AXIDX(3,V)) 
+	G152
+    G4099	
+.V_DragX_Xmin_End
+
+.V_X_Vmin_Start
+
+    G153
+	G4005 S(AXIDX(3,X)) 
+	G4005 S(AXIDX(3,V)) 
+	G152
+    G4099	
+
+	;V drag X to V min
+	G153
+	G4010 M(AXIDX(V)) S(AXIDX(3,V)) I1
+	G4010 M(AXIDX(V)) S(AXIDX(3,X)) I0
+	G152
+	G4099 
+	
+	SYN
+	IF(DebugMode_M4 == 1) M0
+	G153 G1 V( MinQta_V ) F30000   
+	    
+    G153
+	G4005 S(AXIDX(3,X)) 
+	G4005 S(AXIDX(3,V)) 
+	G152
+    G4099	
+.V_X_Vmin_End
+
+.Prk_Y0_Start
+    G153
+    G4005 S(AXIDX(3,Y))
+	G152
+    G4099
+    
+    G153
+    G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+    G152
+    
+    G153 G1 Y0 F30000
+    
+    G152 
+    G4005 S(AXIDX(3,Y))
+    G153
+    G4099
+.Prk_Y0_End
+
+.Prk_W_Start
+    G153
+    G4005 S(AXIDX(3,W))
+    G152	
+    G4099
+	
+    G153
+	G4010 M(AXIDX(V)) S(AXIDX(3,W)) I1
+	G152
+	G4099
+
+    ; W Movement
+	SYN
+	IF(DebugMode_M4 == 1) M0
+    G153 G1 V(Slave_2_W_Pos) F30000
+	
+    G153
+    G4005 S(AXIDX(3,W))
+    G152	
+    G4099
+.Prk_W_End
+
+.Gear_VWV_Prk_Start
+    G153
+    G4005 S(AXIDX(3,W))
+	G4005 S(AXIDX(3,V))
+    G152	
+    G4099
+
+    G153
+	G4010 M(AXIDX(V)) S(AXIDX(3,W)) I1
+	G4010 M(AXIDX(V)) S(AXIDX(3,V)) I0
+	G152
+	G4099
+
+    ; When V moves longer than W
+	SYN
+	IF(DebugMode_M4 == 1) M0
+    G153 G1 V(Slave_2_W_Pos) F30000 
+
+    G153
+    G4005 S(AXIDX(3,W))
+	G4005 S(AXIDX(3,V))
+    G152	
+    G4099
+.Gear_VWV_Prk_End
+
+.Gear_VVW_Prk_Start
+    G153
+    G4005 S(AXIDX(3,W))
+	G4005 S(AXIDX(3,V))
+    G152	
+    G4099
+
+    G153
+	G4010 M(AXIDX(V)) S(AXIDX(3,V)) I1
+	G4010 M(AXIDX(V)) S(AXIDX(3,W)) I0
+	G152
+	G4099
+
+    ; When W moves longer than V
+	SYN
+	IF(DebugMode_M4 == 1) M0
+    G153 G1 V(Slave_3_V_Pos) F30000 
+
+    G153
+    G4005 S(AXIDX(3,W))
+	G4005 S(AXIDX(3,V))
+    G152	
+    G4099
+.Gear_VVW_Prk_End
+
+.Gear_XV_Prk_Start
+    G153
+    G4005 S(AXIDX(3,X))
+	G4005 S(AXIDX(3,V))
+    G152	
+    G4099
+
+    G153
+	G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+	G4010 M(AXIDX(X)) S(AXIDX(3,V)) I0
+	G152
+	G4099
+
+    G153 G1 X(X_Axes_Pos) F30000 
+
+    G153
+    G4005 S(AXIDX(3,X))
+	G4005 S(AXIDX(3,V))
+    G152	
+    G4099
+.Gear_XV_Prk_End
+
+.Open_V_Start
+	; Open V 
+	; SlaveSpdClosing  AT  %USR_M41.29;
+    SYN
+    WAITBIT("%USR_M41.29",0)
+	IF( %USR_M20.1 ) THEN	
+	    M722     
+        G4 F(ChuckOpenCloseTime)
+	ENDIF
+.Open_V_End
+
+.Close_V_Start
+	; Close V
+	; SlaveSpdOpening  AT  %USR_M41.30;
+	SYN
+	WAITBIT("%USR_M41.30",0)
+	IF( !%USR_M20.1 ) THEN
+	    M723   		    
+        G4 F(ChuckOpenCloseTime)
+	ENDIF
+.Close_V_End
+
+.Open_X_Start
+    ; Open Main Spindle
+	SYN
+    M720     
+    G4 F(ChuckOpenCloseTimeMain)
+.Open_X_End
+
+.Close_X_Start
+    ; Close Main Spindle
+	SYN
+    M721    
+    G4 F(ChuckOpenCloseTimeMain)
+.Close_X_End
+
+.Open_W_Start
+    ; Open Second Spindle
+	; MidSpdClosing  AT  %USR_M41.27;
+	SYN
+	WAITBIT("%USR_M41.27",0)
+	IF( %USR_M21.22 ) THEN
+	    M981 ; open second spindle
+        G4 F(ChuckOpenCloseTime)	
+	ENDIF	
+.Open_W_End
+
+.Close_W_Start
+    ; Close Second Spindle
+	; MidSpdOpening  AT  %USR_M41.28;
+	SYN
+	WAITBIT("%USR_M41.28",0)
+	IF( !%USR_M21.22 ) THEN
+	    M982 ; close second spindle
+        G4 F(ChuckOpenCloseTime)	
+	ENDIF
+.Close_W_End
+
+.ReplaceToL0_Start
+    IF( ls_stateping >= 3 ) THEN
+       JSR "laser_stop.cfs"  
+       M831
+       ?%C18.1 = 0                                 
+       G153 G0 Z(trav_safe_z)
+       ls_stateping = 0           
+    ENDIF
+.ReplaceToL0_End
+
+.Cn3_VRTCVYZ_Start
+    ;CN3_REQ_VYZ_ISO AT %LsIso35.5;
+	?%LsIso35.5 = 1
+	G4 F0.1
+    SYN
+    AWAIT( %LsIso35.5 == 0 )
+.Cn3_VRTCVYZ_End
+
+.Update3D_TubeVis_Start
+    IF( (WorkMode > 3) && (LastSpindlMode == 0) ) THEN
+        ; OFFSETM4 AT %USR_M37;
+	    ?%USR_M37 = (ABS(%gIso22) + TubePosit + ABS(Slave_3_V_Pos)) * 1000
+    ENDIF
+	?%gIso29.10 = 0
+.Update3D_TubeVis_End
+
+.SingleSpindle_Start
+
+	RPT .Open_V_Start, .Open_V_End, 1
+	IF( ABS(QCALC(AXIDX(3,W)) - MinQta_W) > 10 ) THEN
+    RPT .Park_YZ_START, .Park_YZ_END, 1	
+	ENDIF
+
+	;IF( start_track == 0 ) THEN
+	;    SYN
+	;    MSGOUT "Aligning Tube With Second Spindle Rotation"
+	;    RPT .Close_W_Start, .Close_W_End, 1
+	;    JSR "Connect3Spindles.cfs" X_Axes_Pos
+	;    G153 G1 C180 F20000
+	;    G153 G1 C0 F20000
+	;    RPT .Open_W_Start, .Open_W_End, 1 
+	;    sJSR "X3_Move.cfs" MinQta_W
+	;    G153
+    ;    G4010 M(AXIDX(X)) S(AXIDX(3,X)) I0    
+    ;    G152
+	;    G4099
+	;    G153 G1 X(MinQta_X +50) F30000
+	;    JSR "HeadMes.cfu"  
+	;    G153
+	;    G4005 S(AXIDX(3,X))
+    ;    G4005 S(AXIDX(3,Z))
+    ;    G4005 S(AXIDX(3,Y))
+    ;    G4005 S(AXIDX(3,W))     
+    ;    G4005 S(AXIDX(3,V))    
+	;    G152
+	;    G4099
+	;ENDIF
+	
+	RPT .Open_W_Start, .Open_W_End, 1
+	JSR "MoveX_Spindle.cfs" X_Axes_Pos 30000  
+    JSR "MoveX1_Spindle.cfs" Slave_3_V_Pos 30000
+	SYN
+    AWAIT (!%SPINDLE_SYSTEM.values24.0)   ; X Moving
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+	JSR "X3_Move.cfs" MinQta_W
+	JSR "Connect3Spindles.cfs" X_Axes_Pos
+.SingleSpindle_End

@@ -1,0 +1,75 @@
+: setup_aids_poly
+;//laser tube dynamic machining aids setup
+;//uses data from G22xx polygonal setup (gmaPolygons[] and polygonIndex)
+
+;// C for lifter tracking
+;// See pcmLifterMeasure
+;// INPUT:
+DBL pcCurrentC
+;// OUTPUT:
+DBL pcLifterY
+
+;// C Offset from Polygon reference system to user Physical reference system
+;// See pcuPolygonToPhysical
+DBL pcPolyToPhy
+
+;// ilfter orientation: 0°=bottom, 90°=left, 180°=top, 270°=right
+DBL skew = 0
+;// 1 if C is CW positive
+DBL invertC = 0
+;// 1 if Z is negative towards spindle center
+DBL invertY = 1
+
+DBL c
+DBL y
+
+JSR "pcuPolygonToPhysical.cfs"
+
+skew = skew - pcPolyToPhy
+
+;//$APPLICAZIONE
+IF (%cn[WHO()].rc[0].21) RET
+
+;altri (es.: loadPart) possono aver agganciato la Z. Per la C e' per sicurezza
+G153
+G4005 S(AXIDX(3,Z))
+G4005 S(AXIDX(3,C))
+G152
+G4099
+
+;l'asse virtuale non e' ancora agganciato e potrebbe non rispecchiare la quota di 3,C
+G153
+G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1
+G152
+G4099
+;lo molliamo perche' la Sel_Y3... attualmente assume che non sia agganciato (non lo sgancia all'inizio)
+G153
+G4005 S(AXIDX(3,C))
+G152
+G4099
+
+;//$APPLICAZIONE
+
+;// bring the lifter kinematics in contact with the tube
+LSYN
+c = QPREF(C)
+IF (invertC) c = -c
+pcCurrentC = c + skew
+JSR "pcmLifterMeasure.cfs"
+y = pcLifterY
+IF (invertY) y = -y
+
+_taraim(0x01,AXIDX(5,X),y)
+
+;// engage the lifter following mode and rotate the tube
+;// E = polygon table index
+;// F = aid skew (i.e.: 0°=bottom, 90°=left, 180°=top, 270°=right)
+;// G = rotation invert flag
+;// H = direction invert flag (0=positive towards center)
+
+G4011 T34 M(AXIDX(C)) S(AXIDX(5,X)) E(tubePI) F(skew) G(invertC) H(invertY)
+G4099
+
+SetupAidsDone = 1
+
+RET 

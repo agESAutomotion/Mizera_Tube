@@ -1,0 +1,288 @@
+*******************************************************************************
+*   DynMng.plc
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "Iol.inc"
+
+VAR
+END_VAR
+
+*******************************************************************************
+*   
+*******************************************************************************
+FUNCTION_BLOCK PERC_CALC
+
+VAR_INPUT
+xAct:         DWORD;          * actual value  
+xSet:         DWORD;          * programmed value
+END_VAR
+
+VAR_OUTPUT
+yPercSpeed:   DWORD;          * percentual value
+END_VAR
+
+VAR
+END_VAR
+
+LD   xAct                          ** actual value  
+MUL  200
+ADD  1000
+DIV  2 
+DIV  ( 
+LD   xSet                          ** programmed value
+MUL  1000
+DIV  60                       * [mm/s]
+)
+MUL  1000
+ST   yPercSpeed                    ** percentual value
+
+END_FUNCTION_BLOCK
+
+FUNCTION_BLOCK POINTS_INT_CALC 
+
+VAR_INPUT  
+xPercSpeed:   DWORD;          * Speed percentual value
+xCutLineInd:  DWORD;          * cut line index (initial value 1 to 10)
+xCodTec:      DWORD;          * Tecnology 0=duty 1=power 2=frequency
+END_VAR
+
+VAR_OUTPUT
+yResult:      DWORD;          * Result  
+yOk:          DWORD;          * error code
+END_VAR
+
+VAR
+Index:        DWORD;          * index of the technology table (xCutLineInd-1)*4 + xCodTec 
+InsNum:       DWORD;          * Istance number 
+PolResut:     DWORD;          * Polynomial result
+Segment:      DWORD;          * Segment of the curve              
+segment_numb: DWORD;          * Segment number
+END_VAR
+
+LD   xCutLineInd                   ** cut line index (initial value 1 to 10)
+SUB  1
+MUL  4
+ADD  xCodTec                       ** Tecnology 0=duty 1=power 2=frequency
+ST   Index                         ** index of the technology table (xCutLineInd-1)*4 + xCodTec 
+
+LD   xCutLineInd
+GT   11
+JMPCN OUTOFTEN
+     LD   Index
+	 ADD  60
+     ST   Index                  
+OUTOFTEN:
+
+LD   0
+ST   Segment                       ** Segment of the curve              
+
+loop:
+      
+PATH %pd_splines[Index]            ** index of the technology table (xCutLineInd-1)*4 + xCodTec 
+      
+LD   nSpan
+SUB  1
+ST   segment_numb                  ** Segment number
+
+LD   Segment                       ** Segment of the curve              
+GT   segment_numb                  ** Segment number
+OR  (
+LD   Segment                       ** Segment of the curve              
+GT   20
+)
+JMPC check_last
+
+PATH %pd_splines[Index]            ** index of the technology table (xCutLineInd-1)*4 + xCodTec 
+PATH %pd_spans[Segment]            ** Segment of the curve              
+  
+LD   xPercSpeed                    ** Speed percentual value
+LE   XSTART
+JMPCN next_check
+
+LD   YSTART                 * firts curve point
+ST   yResult                       ** Result  
+JMP  exitfunc
+next_check:
+
+LD   xPercSpeed                    ** Speed percentual value
+GT   XSTART
+AND  (
+LD   xPercSpeed                    ** Speed percentual value
+LT   XEND
+)
+JMPC FindData
+
+LD   xPercSpeed                    ** Speed percentual value
+EQ   XSTART
+JMPCN next_check1
+
+LD   YEND                 
+ST   yResult                       ** Result  
+JMP  exitfunc
+next_check1:
+
+LD   Segment                       ** Segment of the curve              
+ADD  1
+ST   Segment                       ** Segment of the curve              
+JMP  loop
+
+check_last:
+
+LD   xPercSpeed                    ** Speed percentual value
+GE   XEND
+JMPCN gest_error
+LD   YEND                 * firts curve point
+ST   yResult                       ** Result  
+JMP  exitfunc
+
+FindData:
+
+LD   0                                   
+POLY_INIT (INS=1, XS=XSTART, XE=XEND, YS=YSTART, YE=YEND, A2=COEFICIENT_2, A3=COEFICIENT_3, A4=COEFICIENT_4, A5=COEFICIENT_5, PS=SPAN_NUM)                                 
+ST   PolResut                      ** Polynomial result
+                                  
+LD   PolResut                      ** Polynomial result
+NE   0          
+JMPC gest_error
+
+LD   0                      * N/C
+POLY_EVAL_Y0 (INS=1, X0=xPercSpeed) ** Speed percentual value
+ST   yResult                       ** Result  
+
+LD   yResult                       ** Result  
+EQ   2147483647
+JMPCN exitfunc
+
+gest_error:
+
+LD  -1
+ST  yOk                            ** error code
+JMP exit 
+exitfunc:
+
+LD   1
+ST   yOk                           ** error code
+
+exit:
+
+END_FUNCTION_BLOCK
+
+
+*******************************************************************************
+* Generic linearization
+*******************************************************************************
+FUNCTION_BLOCK LINEAR_CALC 
+
+VAR_INPUT  
+xInput:         DWORD;          * Input value
+xIndex:         DWORD;          * Spline index
+END_VAR
+
+VAR_OUTPUT
+yResult:        DWORD;          * Result  
+yOk:            DWORD;          * error code
+END_VAR
+
+VAR
+InsNum:         DWORD;          * Istance number 
+PolResut:       DWORD;          * Polynomial result
+Segment:        DWORD;          * Segment of the curve              
+segment_numb:   DWORD;          * Segment number
+END_VAR
+*******************************************************************************
+LD   0
+ST   Segment                       ** Segment of the curve              
+
+LD   1
+ST   yOk                           ** error code
+
+LCloop:
+PATH %pd_splines[xIndex]           ** Spline index
+      
+LD   nSpan
+SUB  1
+ST   segment_numb                  ** Segment number
+
+LD   Segment                       ** Segment of the curve              
+GT   segment_numb                  ** Segment number
+OR  (
+LD   Segment                       ** Segment of the curve              
+GT   20
+)
+JMPC LCcheck_last
+
+PATH %pd_splines[xIndex]           ** Spline index
+PATH %pd_spans[Segment]            ** Segment of the curve              
+  
+LD   xInput                        ** Input value
+LE   XSTART
+JMPCN LCnext_check
+
+LD   YSTART                 * firts curve point
+ST   yResult                       ** Result  
+JMP  LCexit
+
+LCnext_check:
+LD   xInput                        ** Input value
+GT   XSTART
+AND  (
+LD   xInput                        ** Input value
+LT   XEND
+)
+JMPC LCFindData
+
+LD   xInput                        ** Input value
+EQ   XSTART
+JMPCN LCnext_check1
+
+LD   YEND                 
+ST   yResult                       ** Result  
+JMP  LCexit
+
+LCnext_check1:
+LD   Segment                       ** Segment of the curve              
+ADD  1
+ST   Segment                       ** Segment of the curve              
+JMP  LCloop
+
+LCcheck_last:
+LD   xInput                        ** Input value
+GE   XEND
+JMPCN LCgest_error
+
+LD   YEND                 * firts curve point
+ST   yResult                       ** Result  
+JMP  LCexit
+
+LCFindData:
+LD   0                                   
+POLY_INIT(INS=5, XS=XSTART, XE=XEND, YS=YSTART, YE=YEND, A2=COEFICIENT_2, A3=COEFICIENT_3, A4=COEFICIENT_4, A5=COEFICIENT_5, PS=SPAN_NUM)                                
+ST   PolResut                      ** Polynomial result
+                                  
+LD   PolResut                      ** Polynomial result
+NE   0          
+JMPC LCgest_error
+
+LD   0                      * N/C
+POLY_EVAL_Y0(INS=5, X0=xInput)     ** Input value
+ST   yResult                       ** Result  
+
+LD   yResult                       ** Result  
+EQ   2147483647
+JMPCN LCexit
+
+LCgest_error:
+LD  -1
+ST  yOk                            ** error code
+
+LCexit:
+END_FUNCTION_BLOCK

@@ -1,0 +1,147 @@
+FUNZIONALIT¨¤ G4011 T36 (motion blending):
+    Commutazione tra i moti di due assi senza soluzione di continuit¨¤, anche
+    con gli assi in movimento ed anche mentre una precedente operazione di
+    commutazione ¨¨ in corso.
+
+    Sintassi:
+    G4011 T36 A<filterT1> B<filterT2> C<filterT3>
+              D(initialAddValueM)
+              E(initialAddValue) _1 F(initialBlendSwitch) _1
+              [G<initialAddValueVelM> H<accTimeM> I<jerkTimeM>] _3
+              [J<initialAddValueVel> K<accTime> L<jerkTime>] _3
+              M<master1> [N<master2>]
+              [O<master3>] _2 [P<master4>] _2
+              S<slave>
+    ...ove filterT1..3 sono le costanti di tempo in secondi usate per la
+    commutazione.  initialAddValueM (D) ¨¨ descritto in seguito.
+    Sono inoltre usati i seguenti registri:
+
+        %ax[slave].rgau0    G4011 T36: blendSwitch      input  [0|1]
+        %ax[slave].rgau1    G4011 T36: addValue         input  [um]
+        %ax[slave].rgau2    G4011 T36: blendState       output [0..1]
+        %ax[slave].rgau3    G4011 T36: addValueM        input  [um]
+        %ax[slave].rgau4    G4011 T36: actualAddValue   output [um] _3
+        %ax[slave].rgau5    G4011 T36: actualAddValueM  output [um] _3
+
+        %ax[slave].rgdau0   G4011 T36: filterT1Rate     input [1/min]  _3
+        %ax[slave].rgdau1   G4011 T36: addValueVel      input [mm/min] _3
+        %ax[slave].rgdau2   G4011 T36: addValueVelM     input [mm/min] _3
+
+    NOTE:
+    _1 versione v1.0.29.4 (12.09.22) o superiore
+    _2 versione v1.0.29.3 (30.08.22) o superiore
+    _3 versione v1.0.29.6 (04.06.24) o superiore
+
+    La commutazione da master1 a master2 avviene tramite blendSwitch.
+    addValueM ¨¨ sommato a master1.  addValueM ¨¨ letto ad ogni ciclo di
+    interpolazione.
+    addValue ¨¨ sommato a master2.  addValue ¨¨ letto ad ogni ciclo di
+    interpolazione.
+    Se master1 non ¨¨ specificato od impostato a -1, la quota raggiunta quando
+    blendSwitch NON ¨¨ attivo ¨¨ esclusivamente costituita da addValueM.
+    Se master2 non ¨¨ specificato od impostato a -1, la quota raggiunta quando
+    blendSwitch ¨¨ attivo ¨¨ esclusivamente costituita da addValue.
+    blendSwitch e addValue sono azzerati all'esecuzione di G4011 T36 e possono
+    essere successivamente scritti da PLC (usando VAR_IN_OUT).
+    addValueM ¨¨ impostato a 0 od al valore del parametro G4011 D (x1000)
+    all'esecuzione di G4011 T36 e pu¨° essere successivamente scritto da PLC
+    (usando VAR_IN_OUT).
+    VERSIONE V1.0.29.4 (12.09.22) O SUPERIORE:
+    E' possibile specificare l'avvio con blendSwitch = 1 tramite G4011 F ed
+    anche l'eventuale valore iniziale di addValue con G4011 E (x1000).
+
+    Lo stato della commutazione ¨¨ consultabile in blendState in unit¨¤ [0.001],
+    dove 0.0 indica master 1 e 1.0 indica master 2.  Questo pu¨° essere usato
+    per attivare delle camme software, ad esempio.
+
+    ATTENZIONE:
+    Non cambiare mai il valore di addValue  se blendState non ¨¨ 0.0.
+    Non cambiare mai il valore di addValueM se blendState non ¨¨ 1.0.
+    (vedere, a proposito, la nota sulla versione 1.0.29.6 di seguito).
+
+    VERSIONE V1.0.29.3 (30.08.22) O SUPERIORE:
+    E' possibile specificare due ulteriori assi master, 3 e 4 (G4011 O e P).
+    Se diverso da -1, il valore di master3 viene sommato a master 1.
+    Se diverso da -1, il valore di master4 viene sommato a master 2.
+    E' cos¨¬ possibile, ad esempio, modificare gli offset al volo tramite assi
+    virtuali anche se blendState non ¨¨ 0.0 od 1.0.
+
+    VERSIONE V1.0.29.6 (04.06.24) O SUPERIORE:
+    ---
+    E' possibile acquisire il cambiamento degli offset addValue ed addValueM
+    applicando una semplice legge oraria (velocit¨¤ massima, tempo di
+    accelerazione e tempo di jerk).  Questo consente in qualche semplice caso
+    di evitare assi virtuali (ed una maggior complessit¨¤ nel PLC) al fine di
+    generare una traiettoria smooth tramite i master 3 e 4.
+    actualAddValue ed actualAddValueM servono per determinare quando la
+    generazione del profilo di moto sovraimposto ¨¨ completa.  E' possibile
+    modificare il target durante il movimento:  in tal caso, come per
+    blendSstate, per verificare il completamento ¨¨ necessario anche controllare
+    che i valori non cambino nel tempo.
+
+    Vedere il diagramma <G4011 T36 MotionGenerator.png> che mostra le nuove
+    connessioni tra i blocchi funzionali interni. (in fondo alla release note)
+
+    Un valore negativo di FilterT1 fa si che il primo filtro sia sostituito
+    da un generatore di profilo lineare.  Questo fa si che eventuali inversioni
+    di moto od HOLD non richiedano di attendere per intero il tempo FilterT1.
+    In particolar modo, il tempo di HOLD sar¨¤ cos¨¬ limitato alla somma dei soli
+    FilterT2 e FilterT3.  Il valore negativo deve essere espresso in [1/min],
+    non in [s].  Per convertire un valore dalla modalit¨¤ precedente alla nuova
+    (per ottenere un risultato compatibile in caso di transizioni complete
+    0->1 od 1->0), impostare filterT1[1/min] = -60/filterT1[s].
+
+    I nuovi registri addValueVel e addValueVelM consentono di modificare gli
+    omonimi parametri.
+    All'esecuzione di G4011 T36, addValueVelM ¨¨ impostato al valore del
+    parametro G4011 G, ed addValueVel ¨¨ impostato al valore del parametro
+    G4011 J.  I registri possono essere successivamente modificato da PLC
+    (usando VAR_IN_OUT).
+    VALORE NEGATIVO in G4011 A:
+       -il nuovo registro filterT1Rate ¨¨ impostato al valore del parametro
+        G4011 A privato, per¨°, del segno.  Il registro pu¨° essere
+        successivamente modificato da PLC (usando VAR_IN_OUT).
+    VALORE POSITIVO in G4011 A:
+       -il nuovo registro filterT1Rate ¨¨ ignorato ed il profilo non pu¨° essere
+        modificato da PLC.
+    IMPORTANTE:
+        Questi registri sono floating point, e le scritture da PLC vanno
+        eseguite in millesimi di unit¨¤.  Ad esempio:
+        LD [0.001/min] ST %rgdau0
+        LD [um/min]    ST %rgdau1
+
+    Per eseguire una funzione equivalente all'HOLD, forzare semplicemente a 0
+    i tre registri.  Per verificare che l'hold sia completo, si suggerisce di
+    controllare anche che blendState, actualAddValue ed actualAddValueM non
+    cambino nel tempo.
+    ---
+
+    E' compito dell'applicazione determinare le massime velocit¨¤/accelerazioni
+    e le costanti di tempo per evitare di superare le caratteristiche dinamiche
+    degli assi.
+
+    Vedere il programma di esempio MotionBlending.pgm.  Il programma contiene
+    una prima sezione con un esempio di predisposizione delle costanti di
+    tempo in base ai vincoli dinamici, quindi l'attivazione della funzione di
+    motion blending ed un generatore di funzioni che rimane in funzione mentre
+    ¨¨ possibile interagire con la pulsantiera MOTION_BLEND.SHA .
+    L'output ¨¨ visualizzabile con MOTION_BLEND_TKSSCOPE.INI .
+    Sono incluse con l'esempio le seguenti figure:
+
+       -switching_between_armonic_and_addValue_as_constant.PNG
+        disimpegno e successivo ingaggio di un target oscillatorio.
+        Il disimpegno avviene a quota costante (addValue).
+        G4011 T36 ¨¨ stata qui invocata con N(-1) (senza master2)
+
+       -switching_between_armonics.PNG
+        passaggio tra due target oscillatori.
+        Sono presenti 2 master.
+
+       -switching_between_armonics_with_addValue_as_offset.PNG
+        passaggio tra due target oscillatori, in cui a master2 ¨¨ stato aggiunto
+        un offset costante (addValue)
+
+       -switching_aborted.PNG
+        passaggio da un target oscillatorio ad un altro, e ritorno al primo
+        prima di averlo raggiunto.
+

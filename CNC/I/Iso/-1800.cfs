@@ -1,0 +1,1071 @@
+ [K]0 [D]0 [S]0 X Y [Z] [C] [F] [T] [R] [P]1 [U] [V] [W] [J] [L] [Q]5 [H] [G]: G800
+
+;// Inizia una sezione di taglio plasma 3D con eventuale correzione del kerf.
+;//
+;// G800 [K<gKerfType>] D<gKerfDescr> [S<gKerfSvr>]
+;//      X<tcp_x> Y<tcp_y> Z<tcp_z> [F<feed>]
+;//      [T<probe_mode>] [P<piercing_mode>] [R<regulator_mode>]
+;//      [U<surfvec_x> V<surfvec_y> W<surfvec_z>]
+;//      [I<tp_lead>] [J<tp_tilt>]
+
+IF( VA16 != 0 ) THEN
+RPT .tail_fetch_s, .tail_fetch_e, 1
+RPT .regear_calib_s, .regear_calib_e, 1
+RPT .assign_capvec_s, .assign_capvec_e, 1
+ENDIF
+
+DBL pd_spline_calc
+;//CAD con surface normal, usalo
+DBL afmVectorSelect = 2
+
+;//1 = tool, 2 = surface, 6 = Z
+DBL vectorSelect = %config_machine32
+IF( (vectorSelect != 2) && (vectorSelect != 6 ) && (vectorSelect != 1 ) ) ERROR(55)
+
+DBL touch_enable = VA19
+
+DBL tx, ty, tz
+DBL ti, tj, tk
+
+
+;//Coordinate relative alla matrice del Tool Center Point
+DBL tr_x = CTOMM(VA23)
+DBL tr_y = CTOMM(VA24)
+DBL tr_z = CTOMM(VA25)
+DBL tr_f = CTOMM(VA5)
+DBL tr_u = VA7
+DBL tr_c = VA2
+DBL piercing_mode = VA15
+DBL compress = VA16
+;//Coordinate assolute
+DBL a_x, a_y, a_z
+DBL a_x2, a_y2, a_z2
+;//Lavorazioni in tangenza
+DBL tp_lead=0, tp_tilt=0
+DBL hix
+DBL cc
+DBL ind8
+DBL fFlyCutMode
+DBL fUseJerkFlyCutMode
+DBL fSolderingJointFind = 0
+DBL TaioEn       = %cg3.23      ;// TAIO flyCut enabled
+DBL TaioAssistEn = %cg3.24      ;// TAIO Hardware assisted flyCut enabled
+DBL Xcomp,Ycomp,distance        ; Used for jump algorithm
+DBL Ccomp,Zcomp
+DBL RangePercentage
+DBL state_gas_off = 0
+DBL EnabVal = 0
+DBL fax, fay, fac, tax, tay,tac
+DBL Distance
+DBL Thresh_Jump = 25
+DBL errorJmp = 1
+
+DBL pivotZ, velX, velZ, velB
+DBL curvature_modulation, fdc_C, fdc_B
+
+ind8 = VL22
+
+SPC 30000,0     ;Preprocessor Disable
+
+%R74= 20000
+
+ACCTRJ = %cn[WHO()].pc6
+DECTRJ = %cn[WHO()].pc7
+JRKTRJ = %cn[WHO()].pc16
+
+?%LsIso9.1 = 0       ; Sincronismo per la gestione della quota di tubo in macchina
+HeadingExecuted = 0
+
+; To Check How Many Tracks to be one cut off
+IF( %cn[WHO()].pc[14].25 ) THEN
+   IF( !HeadRecSelfLock ) THEN
+       HeadingTrackNum = HeadingTrackNum + 1
+   ENDIF 
+
+   IF( (VA6 == 10) || (VA6 == 11) ) THEN
+	   ; Cad-cam heading at final track (before treated as normal cutting)
+	   IF(HeadingTrackNum == 0) HeadingTrackNum = 1	 
+	   HeadRecSelfLock = 1 
+   ENDIF		 
+ENDIF
+
+; Memory of bevel cutting identifer
+IF( (VA6 == 11) || (VA6 == 13) ) THEN
+    lstisbeveltrack = 1
+	?%C18.18 = 1
+ELSE
+    lstisbeveltrack = 0
+	?%C18.18 = 0
+ENDIF
+
+; Piercing table group offset
+pbase = 1
+IF (piercing_mode == 10) pbase = 7
+IF (piercing_mode == 11) pbase = 13
+?%LsIso39 = pbase
+
+DBL sav_G70=XGET("@G70")
+G271
+
+?%C18.1=0    ; Restore the variable to freeze the regulator
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;SYN
+
+; Jump between two side of pipe not allowed
+IF (((ls_stateping != 0) && (ls_stateping != 3)) && (ABS(tr_c - XGET("@C")) > 1) && (roundFlag == 0)) THEN
+	$Jump is too big for C axis
+	ERROR (800)
+ENDIF 
+
+IF( gTechType == 3 ) THEN
+    hix=0 ;laser per ora sempre su testa 0
+    fFlyCutMode = 0
+    fUseJerkFlyCutMode = 0
+    fSolderingJointFind = 0
+
+    IF ((%UnitWork.uxh[hix].uxh_Flags & 0x0010) == 0x0010) fFlyCutMode = 1
+    IF ((%UnitWork.uxh[hix].uxh_Flags & 0x0008) == 0x0008) fUseJerkFlyCutMode = 1
+    IF ((%UnitWork.uxh[hix].uxh_Flags & 0x0200) == 0x0200) THEN
+        fFlyCutMode = 1
+        fUseJerkFlyCutMode = 1    
+        fSolderingJointFind = 1
+    ENDIF
+ENDIF
+
+IF ((piercing_mode != 0) && (%TabLsr[pbase+0].L_PierceTime != 0) && (ls_stateping != 15) && (!fFlyCutMode)) ?%LsIso[31] = 1    ; adivise for gas.plc use 
+IF ((piercing_mode == 0) || (%TabLsr[pbase+0].L_PierceHeight == 0 ) || (%TabLsr[pbase+0].L_PierceTime == 0)) ?%LsIso[31] = 0    ; adivise for gas.plc use 
+
+; Se laser e simulazione programma senza Z
+IF( (gTechType == 3) && (%LSRPlcOp[0].8 ) && ( %cn[WHO()].pc[14].25 == 0 )) THEN
+    EI(VA20) EJ(VA21) EK(VA22)
+    F(tr_f)
+    G0 X(tr_x) Y(tr_y) U(tr_u) C(tr_c)  
+	G4005 S(AXIDX(3,Z))
+    G4099	
+    ?%TabLsr[0].L_UserInt3 = %TabLsr[ind8].L_UserInt3   ; Dynamic (0-100%)
+               gL_UserInt3 = %TabLsr[ind8].L_UserInt3 
+    IF ((%ax29.ra4) <= (%LSRCostK[48])) G0 Z(MaxQta_Z)
+	IF (%PlcOp0.2) THEN
+	  IF (%rLsGui29.2) M497
+	    feed1 = (%LSRCostK[53])
+      F(feed1)
+  ENDIF
+
+    gPiercingMode = piercing_mode
+    IF ((!%C125.0) && (gPiercingMode != 2)) M7000               ;Retrace enable
+    IF ((%C125.0) && (gPiercingMode != 2)) M8000                ;Retrace DISable
+
+    POP(1)
+    JMPF .spline
+ENDIF
+
+IF ((%LsGui26.0) || (%rLsGui29.5) || (%rLsGui29.6)) THEN        ; IF film burning OR no piercing OR no lead-in
+ piercing_mode = 0;
+ENDIF
+
+IF (%rLsGui29.7) piercing_mode = 2
+IF (((piercing_mode == 2)) && ((%TabLsr[pbase+0].L_PierceTime == 0) || (%TabLsr[pbase+0].L_PierceHeight == 0 ))) piercing_mode = 0  ; protection for pre-piercing option with no piercing selection 
+
+;//$GRAPH
+IF( %cn[WHO()].pc[14].25 != 0 ) THEN
+;//$GRAPH
+
+    ;//Marker per ricerca blocco (con canale in test aggancia 'G0 X(tr_x) ...'
+    ;//e punta a questo stesso ciclo)
+    GRAPH 10000
+
+;//$GRAPH
+    FDCDLE=0
+    EI(VA20) EJ(VA21) EK(VA22)
+    F(tr_f)
+    IF( (!ISQNAN(QCALCQ(Z))) && (gTechType != 2) ) THEN
+        G0 X(tr_x) Y(tr_y) Z(tr_z) U(tr_u)
+    ELSE
+        G0 X(tr_x) Y(tr_y) U(tr_u)
+    ENDIF
+    
+    ; questo dev'essere eseguito anche con spline disattive
+    SPC 30030,4     ;includi asse U nella spline o fine interpolation  
+    
+    G(200+sav_G70)
+ENDIF
+IF( %cn[WHO()].pc[14].25 != 0 ) RET
+
+;//$GRAPH
+
+IF( (!ISQNAN(QCALCQ(Z))) && (gTechType != 2) ) THEN
+    IF( ISQNAN(tr_z) ) ERROR(23)
+ELSE
+    IF( !ISQNAN(tr_z) ) ERROR(23)
+    tr_z = 0
+ENDIF
+
+IF( XGET("@G90") != 90 ) ERROR(3)   ;//Funzione non valida
+IF( XGET("@G94") != 94 ) ERROR(3)   ;//Funzione non valida
+
+IF( rtcp_on == 0 ) ERROR(63)        ;//Descrittore utensile errato
+
+gTouchMode = VA19       ;Abilitazione tastatura inizio lavorazione
+gRegolMode = VA17       ;Abilitazione regolaz. continua/tastatura intermittente
+
+; Option to Disable Regulation in case of bevel heading
+IF( ((%PlcOp0.15) || (%PlcOp0.29)) && (VA6 == 11) )  gRegolMode = 0
+
+?%C99.8 = VA19          ;info for lasergest.plc
+?%C99.9 = VA17
+
+; Program counter control
+IF ((%R69.0==1) && (%R70 == 0)) THEN 
+    ?%LsIso10.8 = 1
+    SYN 
+    AWAIT (!%LsIso10.8)
+ENDIF 
+
+Xcomp = tr_x + tr_u - (XGET("@X") + XGET("@U"))
+Ycomp = tr_y - XGET("@Y")
+Zcomp = tr_z - XGET("@Z")
+fac = (XGET("@C") + pl_orig_c); * 1000
+tac = (IFEXP(VALID(VA2),VA2,XGET("@C")) + pl_orig_c); * 1000   
+Ccomp = tac - fac
+
+Distance = SQRT(Xcomp * Xcomp + Ycomp * Ycomp + Zcomp * Zcomp + Ccomp * Ccomp) 
+
+; L5 to L10 management
+IF( (%LSRPlcOp[1].19) && (ls_stateping == 5) ) THEN
+    IF( Distance <= (%LSRCostK59/1000) )   ls_stateping = 10
+ENDIF
+
+; Auto-Close gas valve management
+IF( (%LSRPlcOp[1].20) && (g650executed == 1) && (g840executed == 1) && (g1000executed == 0) ) THEN
+    IF (Distance >= (%LSRCostK52/1000)) THEN
+        M496                   ; close gas
+        state_gas_off=1
+    ENDIF
+ENDIF
+
+ 
+;*******************************************************************************
+; Jumping Test Algorithm
+; ** Test of regulation on fly
+
+IF ( (ls_stateping == 5) || (ls_stateping == 10) || (ls_stateping == 3) ) THEN
+    ;//supply all TCP coordinates to G180 so that no LSYN is generated
+    ; Absolute position of initial point
+    ;G180 P1 X(XGET("@X")) Y(XGET("@Y")) Z0
+    G180 P1 X(XGET("@X") + XGET("@U") + pl_add1_u) Y(XGET("@Y")) Z(XGET("@Z")) C(XGET("@C"))
+
+    ?%LsIso[41] = kine_x * 1000
+    ?%LsIso[42] = kine_y * 1000
+    ?%LsIso[48] = (XGET("@C") + pl_orig_c) * 1000 
+	?%LsIso[49] = kine_z * 1000	
+	
+    fax = kine_x 
+    fay = kine_y 
+    fac = (XGET("@C") + pl_orig_c); * 1000
+
+    ;//supply all TCP coordinates to G180 so that no LSYN is generated
+    ; Next position of final point
+    ;G180 P1 X(tr_x) Y(tr_y) Z0
+    G180 P1 X(tr_x + tr_u + pl_add1_u) Y(tr_y) Z(tr_z) C(VA2)
+  
+    ?%LsIso[43] = kine_x * 1000
+    ?%LsIso[44] = kine_y * 1000
+    ?%LsIso[51] = (IFEXP(VALID(VA2),VA2,XGET("@C")) + pl_orig_c) * 1000
+    ?%LsIso[56] = kine_z * 1000
+    tax = kine_x                                 
+    tay = kine_y       
+    tac = (IFEXP(VALID(VA2),VA2,XGET("@C")) + pl_orig_c); * 1000   
+    
+    IF (ls_stateping == 5) JSR "SplineJump.cfs"  
+
+ENDIF
+
+;*******************************************************************************
+
+?%TstP[15].10 = 0   ; Zoom flag reset
+
+IF ((gTechType == 3) && (ls_stateping == 15)) THEN
+    ;//laser fastCut
+    IF( ISQNAN(gRegolMode) ) gRegolMode = 1
+    IF( ISQNAN(gTouchMode) ) gTouchMode = 1
+    gKerfType = VA10
+    gKerfDescr = VA3
+    gKerfSvr = VA18
+    EI(VA20) EJ(VA21) EK(VA22)
+    F(tr_f)
+    G0 X(tr_x) Y(tr_y) Z(tr_z) U(tr_u)               ;//also: VRTC: upload surface normal vector
+
+    ind8 = VL22
+    feed1 = %TabLsr[ind8].L_FeedA
+
+    IF( fFlyCutMode ) THEN
+
+        IF( !fUseJerkFlyCutMode )   JRKTRJ = 0
+
+        ?%C125.0 = 1                ;// application turn flyCut mode ON
+        IF (TaioEn && TaioAssistEn) THEN
+            WAITBIT("%QW911.12",1)  ;// Laser I/F board PWM_CFG register (RD): S_EF
+        ELSE
+            WAITBIT("%C126.0",1)    ;// application flyCut mode is ON
+        ENDIF
+    ELSE
+        ?%TstP[15].3 = 1           ; (LASER_ON)
+    ENDIF
+
+    IF((!%PlcOp0.2) && (!fFlyCutMode)) _wait_bit( 0," %LsPlc1.25",1) ;attendi laser acceso
+    ?%TstP[15] = 0          ;AZZERO
+    gMachining=1
+    IF( (compress == 0) || (gOptim == 1) || (gTravI == 3) || (gTravI == 4) ) THEN
+        SPC 30000,0         ;//Preprocessing Enable
+        gLastCompress=0
+    ELSE
+        SPC 30000,1         ;//Preprocessing Enable
+        gLastCompress=1
+    ENDIF
+    G64
+    SVR(gKerfSvr)
+    G(40+gKerfType)
+
+    IF (!%C125.0) M7000               ;Retrace enable
+ENDIF
+IF ((gTechType == 3) && (ls_stateping == 15)) JMP .return
+
+IF( gTechType == 3 ) THEN
+
+    ;//Laser
+    ; If not APA and not capacitive test
+    IF( (!%C18.7) && (!%C18.17) ) THEN
+        ;//;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;// selezione gas anticipata
+        ;//;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;//Se si modifica cerca 'selezione gas anticipata' in LsrOn
+        ; Nel caso di ciclo di ricerca origine non attivo i gas
+
+        IF(!state_gas_off) ?%TstP[15].1 = 1           ; Abilita Commutazione Valvole
+
+        ?%TabLsr[0].L_UserInt3 = %TabLsr[ind8].L_UserInt3   ; Dynamic (0-100%)
+                   gL_UserInt3 = %TabLsr[ind8].L_UserInt3   
+
+        IF( ls_stateping == 15) THEN
+            ;//fastCut mode, la LsrOn non commuta la tabella
+            ind8 = VL22
+            ?%TabLsr[0].L_FeedA          = %TabLsr[ind8].L_FeedA
+            ?%TabLsr[0].L_CutPower       = %TabLsr[ind8].L_CutPower
+            ?%TabLsr[0].L_CutPressure    = %TabLsr[ind8].L_CutPressure
+            ?%TabLsr[0].L_CutFocal       = %TabLsr[ind8].L_CutFocal
+            ?%TabLsr[0].L_CutDistance    = %TabLsr[ind8].L_CutDistance
+                       gL_CutDistance    = %TabLsr[ind8].L_CutDistance
+            ?%TabLsr[0].L_CutDuty        = %TabLsr[ind8].L_CutDuty
+            ?%TabLsr[0].L_CutFreq        = %TabLsr[ind8].L_CutFreq
+            ?%TabLsr[0].L_UserInt1       = 1
+            ?%TabLsr[0].L_UserInt4       = %TabLsr[ind8].L_UserInt4   ; PO(%)
+            ?%TabLsr[0].L_UserInt5       = %TabLsr[ind8].L_UserInt5   ; V0(mm/min)
+            ?%TabLsr[0].L_UserInt6       = %TabLsr[ind8].L_UserInt6   ; V1(mm/min)
+         ;;;   ?%TabLsr[0].L_UserInt9       = %TabLsr[ind8].L_UserInt9   ; Kp Gain [NOT USED]
+
+        ELSE
+            ind8 = VL22
+		
+            IF ((piercing_mode != 0) &&  (%TabLsr[pbase+0].L_PierceTime != 0)) THEN
+                ?%TabLsr[0].L_CutPressure    = %TabLsr[pbase+0].L_PiercePressure              
+                ?%TabLsr[0].L_CutFocal       = %TabLsr[pbase+0].L_PierceFocal             
+                ?%TabLsr[0].L_PierceTime     = %TabLsr[pbase+0].L_PierceTime
+                ?%TabLsr[0].L_CutPower       = %TabLsr[pbase+0].L_PiercePower   
+                ?%TabLsr[0].L_CutDuty        = %TabLsr[pbase+0].L_PierceDuty
+                ?%TabLsr[0].L_CutFreq        = %TabLsr[pbase+0].L_PierceFreq
+                ?%TabLsr[0].L_UserInt1       = %TabLsr[pbase+0].L_UserInt1        ; CrossJet
+                ;;;?%TabLsr[0].L_UserInt9       = %TabLsr[ind8].L_UserInt9   ; Kp Gain [NOT USED]                      
+                ;; M300
+             ENDIF
+
+            IF ((piercing_mode == 0) || (%TabLsr[pbase+0].L_PierceTime == 0) || (%TabLsr[pbase+0].L_PierceHeight == 0)) THEN
+                ?%TabLsr[0].L_CutPressure = %TabLsr[ind8].L_CutPressure
+			    ?%TabLsr[0].L_CutFocal    = %TabLsr[ind8].L_CutFocal
+                ;;M300           
+            ENDIF
+
+            IF( gTouchMode || gRegolMode ) THEN
+                IF( (ls_stateping >= 10) || (ls_stateping < 3) && (piercing_mode != 0)  ) THEN
+                    ?%TabLsr[0].L_CutDistance    = %TabLsr[pbase+0].L_PierceHeight
+                               gL_CutDistance    = %TabLsr[pbase+0].L_PierceHeight
+                ENDIF
+            ENDIF
+        ENDIF
+        ;;;;  M300                      ; Abilita Attuazione Valori Uscite
+        laserChg0 = !laserChg0
+        laserChg1 = !laserChg1	    
+        IF (laserChg0) EnabVal=EnabVal|0x4000       ; Bit 14
+        IF (laserChg1) EnabVal=EnabVal|0x8000       ; Bit 15
+        ?%TstP[14] = EnabVal        
+    ENDIF
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    IF( ISQNAN(gRegolMode) ) gRegolMode = 1
+    IF( ISQNAN(gTouchMode) ) gTouchMode = 1
+ENDIF
+
+;//Precauzione nel caso non siano gestite nei casi sopra.
+IF( ISQNAN(gRegolMode) ) gRegolMode = 0
+IF( ISQNAN(gTouchMode) ) gTouchMode = 0
+
+;//XXX touch iniziale e/o intermittente su tubo non permesso
+;//XXX IF( (gTechType == 4) && (gTravE != 0) && ((gTouchMode != 0) || (gRegolMode != 0)) ) ERROR(61)  ;//Valore troppo elevato
+
+gKerfType = VA10
+gKerfDescr = VA3
+gKerfSvr = VA18
+
+;//Eventuali commutazioni tecnologia e teste.  Vedi COMMUTAZ.TXT
+;//Controlla che la tecnologia sia compatibile con la testa selezionata
+;//Nota: se ho teste con ossitaglio e plasma in alternativa, con una
+;//selezione hardware per ogni singola testa, la selezione hardware non puo'
+;//essere controllata in G650.
+;//XXX attualmente la G650 non scrive in shared in grafica.
+IF( !%cn[WHO()].rc[0].21 ) THEN          ;Canale in test
+    IF( gTravTech != gTechType ) ERROR(63)
+ENDIF
+
+ind8 = VL22
+
+IF( gKerfDescr == 0 ) THEN
+    gKerfType = 0
+    gKerfSvr = 0
+ENDIF
+
+;//Funzione non disponibile
+IF( (gKerfType != 0) && (gKerfType != 1) && (gKerfType != 2) ) ERROR(8)
+
+IF( gTravT == 0 ) ERROR(63)     ;//Descrittore utensile errato
+IF( gKerfDescr == 0 ) ERROR(63) ;//Descrittore utensile errato
+
+;//XXX Multiutensile non disponibile con grafica (manca istanza grafica)
+IF( %cn[WHO()].pc[14].25 == 0 ) THEN
+;//!Grafica (automatico || verify)
+ENDIF
+
+    IF (((ls_stateping != 5) || (gTravE != 0)) && (ls_stateping != 3) ) THEN
+        G172 T(gTravT) H(gTravH) D(gKerfDescr) E(gTravE) I(gTravI)
+    ENDIF
+;; 30 ms
+
+;//$APP
+;//Grafica run-time
+?%ChanMon[WHO()].CmGraphCmd = 0x0;           Attivazione Ut in Graph
+?%ChanMon[WHO()].CmGraphRefCed = gKerfDescr
+?%ChanMon[WHO()].CmGraphRefSvl = 0.0        ; standoff variabile non disponibile in grafica
+;// $APP redund X-U rt graphics
+?%ChanMon[WHO()].CmGraphCmd = 0x101 ;//CMGC_UBIND_PLUS|CMGC_KINE_SET
+
+IF (%UnitWork.gTravE == 0) THEN
+  G180 P1 X(tr_x) Y(tr_y) Z(tr_z)
+ELSE 
+  G180 P1 X(tr_x) Y(tr_y) Z(tr_z) C(VA2)
+ENDIF 
+
+a_x = kine_x
+a_y = kine_y
+a_z = kine_z
+
+EI(VA20) EJ(VA21) EK(VA22)
+F(tr_f)
+
+IF( (%cn[WHO()].rc[0].21) || ((%cn[0].rc[8].8) && (!(%cn[0].rc[8].15))) ) THEN
+    ;//Canale in test o Ricerca blocco in corso
+    IF( (!ISQNAN(QCALCQ(Z))) && (gTechType != 2) ) THEN
+        G0 X(tr_x) Y(tr_y) Z(tr_z) U(tr_u)
+    ELSE
+        G0 X(tr_x) Y(tr_y) U(tr_u)
+    ENDIF
+    POP(1)
+    JMPF .graph
+ENDIF
+
+
+IF( (gTechType == 3) && (ls_stateping >= 5) && (ls_stateping < 10) ) THEN
+
+     IF ((distance < (%rLsPlc60/1000)))THEN 
+      ?%LsIso53 = %rLsPlc62                   ; distance before enable regulation     
+     ENDIF      
+     IF ((distance >= (%rLsPlc60/1000)) && (distance < (%rLsPlc61/1000))) THEN 
+      ?%LsIso53 = %rLsPlc64                   ; distance before enable regulation
+     ENDIF   
+     IF ((distance >= (%rLsPlc61/1000))) THEN
+      ?%LsIso53 = %rLsPlc66                   ; distance before enable regulation
+     ENDIF 
+
+    IF (gTouchMode || gRegolMode && ((piercing_mode != 0) && (%TabLsr[pbase+0].L_PierceTime != 0))) THEN
+    
+      IF (%TabLsr[pbase+0].L_PierceHeight > ((%LSRCostK31/1000) * PercentOutRng)) THEN          
+       gL_CutDistance = (%LSRCostK31/1000) * PercentOutRng
+       ?%LsIso50 = gL_CutDistance * 1000
+      ELSE
+       
+       gL_CutDistance = %TabLsr[pbase+0].L_PierceHeight
+       ?%LsIso50 = gL_CutDistance * 1000
+      ENDIF
+    ENDIF 
+
+    IF(gTouchMode || gRegolMode && ((piercing_mode == 0) || (%TabLsr1.L_PierceHeight == 0 ) || (%TabLsr1.L_PierceTime == 0))) THEN
+
+      IF (%TabLsr[ind8].L_CutDistance > ((%LSRCostK31/1000) * PercentOutRng)) THEN   
+
+       IF ((distance < (%rLsPlc60/1000))) RangePercentage = %rLsPlc63 /1000       ; 
+       
+       IF ((distance >= (%rLsPlc60/1000)) && (distance < (%rLsPlc61/1000))) RangePercentage = %rLsPlc65 /1000
+       
+       IF ((distance >= (%rLsPlc61/1000))) RangePercentage = %rLsPlc67 /1000
+
+       gL_CutDistance = (%LSRCostK31/1000) * RangePercentage
+       ?%LsIso50 = gL_CutDistance * 1000
+
+      ELSE
+
+       gL_CutDistance = %TabLsr[ind8].L_CutDistance
+       ?%LsIso50 = gL_CutDistance * 1000  
+      ENDIF
+    ENDIF
+
+    IF( touch_enable ) THEN
+    ; Jump command
+    ?%uvHeads[hix].uvhCommand[0].4 = 1             
+    ; Execute command   
+    ?%uvHeads[hix].uvhCommand[0].2 = 1          
+    WAITBIT("%uvHeads[hix].uvhStatus[0].2", 1)  ;  wait for state machine to loc
+    ENDIF
+    
+    ?%TabLsr[0].L_CutDistance = gL_CutDistance     ; synchronize setpoint after run the jump mode 
+
+    ;//also: VRTC: upload surface normal vector
+    IF (%UnitWork.gTravE == 0) THEN 
+     	G0 X(tr_x) Y(tr_y) U(tr_u) Z(tr_z)             
+    ELSE
+    	G180 P1 X(tr_x) Y(tr_y) Z(tr_z) C(VA2)
+    	G1000 G0 X(kine_x) Y(kine_y) U(tr_u) Z(kine_z) C(kine_c)    
+    ENDIF                                   
+                              
+    ?%uvHeads[hix].uvhCommand[0].2 = 0 
+    ; Jump end
+    M831
+
+    ?%uvHeads[hix].uvhCommand[0].4 = 0
+    WAITBIT("%uvHeads[hix].uvhStatus[0].2", 0)  ;  wait for state machine to lock
+ 
+    ;;IF((%LSRPlcOp[1].20) && (ls_stateping == 5) && (state_gas_off) ) THEN
+    ;;    ?%TstP[15].1 = 1           ; Abilita Commutazione Valvole
+    ;;    G4 F(%LSRCostK[58]/1000)   ; gas stabilization after jump
+    ;;ENDIF    
+     
+ELSEIF( (gTechType == 3) && (ls_stateping == 10) ) THEN
+   
+    IF(gTouchMode || gRegolMode && ((piercing_mode != 0) && (%TabLsr[pbase+0].L_PierceTime != 0))) THEN
+        ?%TabLsr[0].L_CutDistance = %TabLsr[pbase+0].L_PierceHeight   ; Fa una tastatura e va sempre al 70% del campo del tastatore
+        gL_CutDistance = %TabLsr[pbase+0].L_PierceHeight
+    ENDIF 
+   
+    IF(gTouchMode || gRegolMode && ((piercing_mode == 0) || (%TabLsr[pbase+0].L_PierceHeight == 0 ) || (%TabLsr[pbase+0].L_PierceTime == 0) || (%TabLsr[pbase+0].L_PierceHeight > ((%LSRCostK31/1000)-3))) ) THEN
+        ?%TabLsr[0].L_CutDistance = %LSRCostK31 / 1000 * PercentOutRng   ; Fa una tastatura e va sempre al 70% del campo del tastatore
+        gL_CutDistance = %LSRCostK31 / 1000 * PercentOutRng
+    ENDIF 
+    
+    ; L10 command
+    ?%uvHeads[hix].uvhCommand[0].5 = 1             
+    ; Execute command   
+    ?%uvHeads[hix].uvhCommand[0].2 = 1          
+    WAITBIT("%uvHeads[hix].uvhStatus[0].2", 1)  ;  wait for state machine to lock
+    
+    ?%TabLsr[0].L_CutDistance = gL_CutDistance     ; synchronize setpoint after run the jump mode 
+        
+    ;//also: VRTC: upload surface normal vector   
+    IF (%UnitWork.gTravE == 0) THEN 
+    	G0 X(tr_x) Y(tr_y) Z(tr_z)            
+    ELSE
+    	G180 P1 X(tr_x) Y(tr_y) Z(tr_z) C(VA2)
+    	G1000 G0 X(kine_x) Y(kine_y) U(tr_u) Z(kine_z) C(kine_c)        
+    ENDIF   
+
+    ?%uvHeads[hix].uvhCommand[0].2 = 0 
+    ; Jump end
+    ?%uvHeads[hix].uvhCommand[0].5 = 0
+    WAITBIT("%uvHeads[hix].uvhStatus[0].2", 0)  ;  wait for state machine to lock  
+
+ELSEIF( (gTechType == 3) && (ls_stateping == 15) ) THEN
+     ;//also: VRTC: upload surface normal vector
+    IF (%UnitWork.gTravE == 0) THEN 
+        G0 X(tr_x) Y(tr_y) Z(tr_z)            
+    ELSE
+        G180 P1 X(tr_x) Y(tr_y) Z(tr_z) C(VA2)
+        G1000 G0 X(kine_x) Y(kine_y) U(tr_u) Z(kine_z) C(kine_c)       
+    ENDIF   
+	
+ELSEIF((gTechType == 3) && (ls_stateping == 3)) THEN	
+
+    IF(((gTouchMode || gRegolMode)) && ((piercing_mode != 0) && (%TabLsr[pbase+0].L_PierceTime != 0))) THEN
+    
+      IF (%TabLsr[pbase+0].L_PierceHeight > ((%LSRCostK31/1000) * PercentOutRng)) THEN          
+       gL_CutDistance = (%LSRCostK31/1000) * PercentOutRng
+       ?%LsIso50 = gL_CutDistance * 1000
+      ELSE
+       
+       gL_CutDistance = %TabLsr[pbase+0].L_PierceHeight
+       ?%LsIso50 = gL_CutDistance * 1000
+      ENDIF
+    ENDIF 
+
+    IF(((gTouchMode || gRegolMode)) && ((piercing_mode == 0) || (%TabLsr1.L_PierceHeight == 0 ) || (%TabLsr1.L_PierceTime == 0))) THEN
+
+      IF ((%TabLsr[ind8].L_CutDistance) > ((%LSRCostK31/1000) * PercentOutRng)) THEN   
+
+       gL_CutDistance = (%LSRCostK31/1000) * RangePercentage
+       ?%LsIso50 = gL_CutDistance * 1000
+
+      ELSE
+
+       gL_CutDistance = %TabLsr[ind8].L_CutDistance
+       ?%LsIso50 = gL_CutDistance * 1000  
+      ENDIF
+    ENDIF
+
+
+ ; Jump command
+ ?%uvHeads[hix].uvhCommand[0].6 = 1             
+ ; Execute command   
+ ?%uvHeads[hix].uvhCommand[0].2 = 1          
+ WAITBIT("%uvHeads[hix].uvhStatus[0].2", 1)  ;  wait for state machine to loc
+ 
+%R74=60000
+
+?%R75 = 3
+ParkUnloadTotal = 0
+
+G1010 X(tr_x) Y(tr_y) Z(tr_z) U(tr_u) C(VA2) I(VA20) J(VA21) K(VA22)  ; 0
+
+?%R75 = 4
+
+  WAITBIT("%M189.1", 1)  ;  wait for state machine to lock
+
+  ?%TabLsr[0].L_CutDistance = gL_CutDistance     ; synchronize setpoint after run the jump mode 
+  
+ ?%uvHeads[hix].uvhCommand[0].6 = 0
+  ?%uvHeads[hix].uvhCommand[0].2 = 0
+ WAITBIT("%uvHeads[hix].uvhStatus[0].2", 0)  ;  wait for state machine to lock
+
+; M0
+
+  M831
+; M0
+ 
+?%R75 = 5
+ELSE
+    ;//VRTC: upload surface normal vector
+    IF (%UnitWork.gTravE == 0) THEN 
+     	G0 X(tr_x) Y(tr_y)              
+    ELSE
+    	G180 P1 X(tr_x) Y(tr_y) Z(tr_z) C(VA2)
+    	G1000 G0 X(kine_x) Y(kine_y) U(tr_u) C(kine_c)  ;//non muovere la Z!!!     
+    ENDIF
+ENDIF
+
+?%C165.0 = 1        ;finestra di controllo angolo di bevel (=0, considera angolo=0)
+
+; after nozzle cleaning has been setted low speed for safety
+IF ( cleanexecuted == 1) THEN 
+    VEL[X]=%ax[AXIDX(X)].pa[9]
+    VEL[Y]=%ax[AXIDX(Y)].pa[9]
+    cleanexecuted = 0
+ENDIF
+
+;;; *********************************************
+?%UnitWork.gKerfDescr = gKerfDescr
+?%UnitWork.gKerfSvr = gKerfSvr
+FOR hix = 0 TO 0
+    ?%UnitWork.uxh[hix].a_x = a_x
+    ?%UnitWork.uxh[hix].a_y = a_y
+    ?%UnitWork.uxh[hix].a_z = a_z + %UnitWork.uxh[hix].uxh_Thickness
+    ?%UnitWork.uxh[hix].touch_mode = gTouchMode
+    ?%UnitWork.uxh[hix].regol_mode = gRegolMode
+    ?%UnitWork.uxh[hix].piercing_mode = piercing_mode
+ENDFOR
+;;; *********************************************
+
+;//No separate threads for Laser in fast ping mode
+IF( (gTechType == 3) && (ls_stateping >= 3) ) JMP .noSep
+
+;/////////////////////////////////////////////////////////////////////
+; L0 Probing Management
+
+; Relative Coordinates 
+tx = tr_x
+ty = tr_y
+tz = tr_z 
+
+; Surface vector
+ti = VA20
+tj = VA21
+tk = VA22
+
+
+JSR "laser_start.cfs"
+
+;/////////////////////////////////////////////////////////////////////
+
+.noSep
+.graph
+
+;//Laser
+IF( gTechType == 3 ) THEN
+
+    ;// Ricerca blocco NON in corso e NON verify|grafica
+    IF ( ((!(%cn[0].rc[8].8)) || (%cn[0].rc[8].15)) && !%cn[WHO()].rc[0].21 ) THEN
+
+        ; If not APA and not capacitive test
+        IF( (!%C18.7) && (!%C18.17) ) THEN
+            ; Nel caso di ciclo di ricerca origine non attivo il laser
+            ?%C123=0                                              ; Safety for regulation active without reach the setpoint
+            JSR "LsrOn.cfs"
+        ENDIF  
+
+        IF( gRegolMode == 0 ) THEN
+            G4 F0.1
+            M821
+        ENDIF
+    ENDIF
+ENDIF
+
+hix = 0 ;$BUG
+
+gMachining=1
+
+; Lead-in speed reduction by CNC
+IF( ((gL_SourceInt16x0) || (gL_SourceInt16x5)) && (!%PlcOp[0].2)) ?%LsIso10.2 = 1      ; send to plc lead in low speed signal
+
+gPiercingMode = piercing_mode
+IF ((!%C125.0) && (gPiercingMode != 2)) M7000               ;Retrace enable
+IF ((%C125.0) && (gPiercingMode != 2)) M8000                ;Retrace DISable
+
+.spline
+
+; Se G=10 o G=11 (intestatura)
+IF( (VA6 == 10) || (VA6 == 11) ) THEN
+    HeadingExecuted = 1 ; IN G840 Sincronismo per la gestione della quota di tubo in macchina
+    TubeLengthInMach = %UNLOADER.values0 / 1000
+	IF( (!%gPlc0.29) && (VA16 != 0) && (TubeLengthInMach >= MinPieceUnload) ) THEN
+	     IF( !EnSingleSpindle ) ?%LsIso9.3 = 1  ; SCRAP Flap down (1 == UP)
+	ENDIF
+ENDIF
+
+;not always enabled!
+; If not APA and not capacitive test
+IF( %C18.7 ) THEN
+    SPC 30000,0
+    gLastCompress=0
+ELSE	
+    SPC 30000,1
+    gLastCompress=1
+ENDIF    
+	
+;//Laser
+IF( gTechType == 3 ) THEN
+    ; Piano
+    IF (gTravE == 0 )  ERROR(55)                  ;//PLANE is not implemented !
+ 
+    ; Tubo
+    IF (gTravE == 1 )  THEN    
+	
+	    ACCTRJ = %cn[WHO()].pc6			
+        DECTRJ = %cn[WHO()].pc7
+        JRKTRJ = %cn[WHO()].pc16	
+		
+        FDCTCA = %cn[0].fdc.tca                   ;//VIMO
+        FDCTCB = %cn[0].fdc.tcb                   
+        FDCTCC = %cn[0].fdc.tcc                   
+        FDCTCD = %cn[0].fdc.tcd                   
+	
+        ; Limitation speed for B axis
+        IF (%twi[TWIIDX(0)].yKine == 3) THEN
+            pivotZ = ABS(%twi[TWIIDX(0)].htwi.oarh.dZZ)
+            IF (pivotZ > 10) THEN
+                velX = %ax[AXIDX(X)].pa[9]
+                velZ = %ax[AXIDX(Z)].pa[9]
+                ;//assume B [-45,+45] for Z limitation
+                velB = MIN(velX,(velZ*SQRT(2))) / pivotZ * 180 / PI()
+                IF(AEXISTS(3,B)) VEL[B] = velB
+            ENDIF
+        ENDIF
+		
+        SPC 30001,0                               ;//PreProcessG0
+        SPC 30002,2                               ;//PreProcessingType
+		SPC 30010,3                               ;//Max compression depth
+		
+        SPC 30050,0.6                             ;//DiscretizationInterval 1
+		SPC 30054,20                              ;//LimitAngle
+        SPC 30055,0.6                             ;//MaxInputSegmentSize
+		
+		IF( (gTechLastIndex == 2) || (gTechLastIndex == 3) ) THEN	
+		     SPC 30056,0.1                        ;//OutputSegmentSize 1
+		ELSE
+		     SPC 30056,0.4                        ;//OutputSegmentSize 1
+		ENDIF
+		
+        SPC 30057,35                              ;//KnotsWindow
+        SPC 30058,0                               ;//AverageInputSegmentSize <== DEVE ESSERE A 0 per SPC 30064
+        SPC 30059,3                               ;//Interpolation Type (1..3) 3->NUBS
+        SPC 30060,5                               ;//Degree 5
+		SPC 30061,5                               ;//MinRadius [mm]
+		SPC 30062,0                               ;//LIMIT FEED
+
+	    FDCWEI[C] = 1
+		IF(AEXISTS(3,B))  FDCWEI[B] = 1
+		
+		;****************************************  		  
+        ; Parametro "G"
+		;****************************************
+        SWITCH(VA6)
+        CASE 0
+		; Jerk 0 Solution
+		    SPC 30050,%EBK18                      ;//DiscretizationInterval
+			SPC 30054,%EBK16                      ;//LimitAngle
+            SPC 30055,%EBK19                      ;//MaxInputSegmentSize
+			SPC 30056,%EBK14                      ;//OutputSegmentSize 1
+			SPC 30060,%EBK17                      ;//Degree
+			SPC 30061,%EBK20                      ;//MinRadius [mm]
+            SPC 30064,%EBK15                      ;//CurvatureModulation
+			
+			ACCTRJ=%EBK12
+            DECTRJ=%EBK13
+            JRKTRJ=0
+
+            FDCWEI[C]=%EBK10
+            IF(AEXISTS(3,B))  FDCWEI[B]=%EBK11
+				
+        CASE 1                                    
+        ; Non-Jerk 0 Solution		
+            SPC 30050,%EBK18                      ;//DiscretizationInterval
+			SPC 30054,%EBK16                      ;//LimitAngle
+            SPC 30055,%EBK19                      ;//MaxInputSegmentSize
+			SPC 30056,%EBK14                      ;//OutputSegmentSize 1
+			SPC 30060,%EBK17                      ;//Degree
+			SPC 30061,%EBK20                      ;//MinRadius [mm]
+            SPC 30064,%EBK15                      ;//CurvatureModulation
+			
+			FDCWEI[C]=%EBK10
+            IF(AEXISTS(3,B))  FDCWEI[B]=%EBK11
+
+		;****************************************
+        ; G10 = Normal heading
+        ;****************************************	
+        CASE 10 
+		    ;//Max compression depth
+		    SPC 30010,64                              
+		    
+		    IF( (gL_UserInt3<=0) || (gL_UserInt3>100) )  gL_UserInt3 = 100
+		    JRKTRJ=(%cn[WHO()].pc16 * gL_UserInt3) / 100  
+		    curvature_modulation = (5000 *gL_UserInt3)/100
+		    SPC 30064,curvature_modulation
+			
+		    IF(AEXISTS(3,B)) FDCWEI[B] = 1
+	        FDCWEI[C] = 1
+		
+		    ; Auto interpolation speed profile limiter
+		    Cir_circle = SQRT( %gIso23 * %gIso23 + %gIso24 * %gIso24 )
+		    IF( (%LSRPlcOp[1].31) && (!%PlcOp0.2) ) THEN		
+                IF( feed1 > (Cir_circle * 200) ) feed1 = Cir_circle * 200
+			    F(feed1)
+            ENDIF
+			
+			; (Reduce C dynamic for follower)
+			IF( %LSRPlcOp1.29 == 1 ) THEN 
+                IF( (AEXISTS(5,X)) && (ABS(%gIso23 - %gIso24) > 70) ) VEL[C] = %EBK21
+		    ENDIF 
+
+        ;****************************************
+        ; G11 = Bevel heading
+        ;****************************************
+        CASE 11  
+		
+            IF( (gL_UserInt3<=0) || (gL_UserInt3>100) )  gL_UserInt3 = 100
+            ACCTRJ=(500 * gL_UserInt3)/100
+            DECTRJ=((500 * gL_UserInt3)/100) * 2
+            JRKTRJ=0
+			
+            IF( roundFlag == 1 ) THEN
+                fdc_C = 10
+                fdc_B = 10
+                FDCWEI[C]=3 + fdc_C - (gL_UserInt3*fdc_C)/100
+                IF(AEXISTS(3,B))  FDCWEI[B]=3 + fdc_B - (gL_UserInt3*fdc_B)/100
+			ELSE
+			    FDCWEI[C] = (gL_UserInt3)/100
+                FDCWEI[B] = (gL_UserInt3)/100
+			ENDIF
+
+            FDCTCA=75                            ;//VIMO
+            FDCTCB=75
+            FDCTCC=75
+            FDCTCD=75
+
+            curvature_modulation = (5000 *gL_UserInt3)/100
+            SPC 30064,curvature_modulation
+
+            SPC 30054,30                          ;//LimitAngle
+            SPC 30062,0                           ;//LIMIT FEED
+								                  
+            SPC 30059,3                           ;//Interpolation Type (1..3)
+            SPC 30060,7                           ;//Degree
+			
+        ;****************************************
+        ; G12 = Normal cutting
+        ;****************************************
+        CASE 12           		
+		    ;//Max compression depth
+		    SPC 30010,64                              
+		    
+		    IF( (gL_UserInt3<=0) || (gL_UserInt3>100) )  gL_UserInt3 = 100
+		    JRKTRJ=(%cn[WHO()].pc16 * gL_UserInt3) / 100  
+		    curvature_modulation = (5000 *gL_UserInt3)/100
+		    SPC 30064,curvature_modulation
+			
+		    IF(AEXISTS(3,B)) FDCWEI[B] = 1
+	        FDCWEI[C] = 1
+            
+        ;****************************************
+        ; G13 = Bevel cutting
+        ;****************************************
+        CASE 13   
+		
+            IF( (gL_UserInt3<=0) || (gL_UserInt3>100) )  gL_UserInt3 = 100
+            ACCTRJ=(300 * gL_UserInt3)/100
+            DECTRJ=((300 * gL_UserInt3)/100) * 2
+            JRKTRJ=0
+
+            fdc_C = 10
+            fdc_B = 10
+            FDCWEI[C]=3 + fdc_C - (gL_UserInt3*fdc_C)/100
+            IF(AEXISTS(3,B))  FDCWEI[B]=3 + fdc_B - (gL_UserInt3*fdc_B)/100
+
+            FDCTCA=75                            ;//VIMO
+            FDCTCB=75 
+            FDCTCC=75
+            FDCTCD=75
+
+            curvature_modulation = (5000 *gL_UserInt3)/100
+            SPC 30064,curvature_modulation
+            SPC 30054,40                          ;//LimitAngle
+            SPC 30062,0                           ;//LIMIT FEED
+
+            SPC 30059,3                           ;//Interpolation Type (1..3)
+            SPC 30060,7                           ;//Degree
+
+        OTHERWISE
+            ERROR(55)                             ;//BAD G Switch
+        ENDSWITCH
+
+        ;// questo dev'essere eseguito anche con spline disattive
+		;// includi asse U nella spline o fine interpolation
+        SPC 30030,4     
+        ;// activate companion mode for redundant axes
+        SPC 30036,1                               ;//U axis companion is X   
+		SPC 30079,0                               ;//fNubsCompatibilityMode
+    ENDIF
+    
+	IF( (%LSRPlcOp0.3==0) || (%TabLsr[ind8].L_SourceInt16.9 == 0) || ((ind8 > 3) && (ind8 < 11) || (ind8 > 13)) || (lstisbeveltrack == 0) ) THEN
+        SPC 32301,0                               ;//DISABLE !
+		IF( (ind8 > 3) && (ind8 < 11) || (ind8 > 13) ) %TabLsr[ind8].L_SourceInt16.9 = 0
+    ELSE 
+        ; Modulazione velocit?nell'interprete in base a bevel
+		; 150=pd_spline potenza linea 1, 151=pd_spline velocit?linea1, 7=offset tra le linee
+        IF( ind8 <= 3 ) pd_spline_calc = 151 + ((ind8-1)*7)     
+        IF( (ind8 >= 11) && (ind8 <= 13) ) pd_spline_calc = 181 + ((ind8-1)*7)     
+       
+        SPC 32301,afmVectorSelect                 ;//afmVectorSelect (usa sempre la normale/Z+ anche se la regolzione ?in tool)
+        SPC 32302,1                               ;//afmIsMultiplier
+        SPC 32303,100.0                           ;//afmCommonDivider
+        SPC 32304,1.0                             ;//afmCommonBias
+        SPC 32307,pd_spline_calc                  ;//afmSplineIndex
+        ;;;SPC 32309,1                            ;//afmIsDebugDump
+    ENDIF
+	
+ENDIF
+
+IF ((%rLsGui29.7) && (!%rLsGui29.6))THEN          ;%rLsGui29.7 = pre piercing option  %rLsGui29.6 = no leand in
+    RETSKIPF ("G840")
+ENDIF
+
+IF ((%rLsGui29.6) && (!%rLsGui29.7)) THEN         ;No lead-in execution
+    SPC 32100,1         ;//fetchOnlyMode
+ENDIF
+
+; Variable set for microjoint 
+
+IF ((!%rLsGui29.6) && (!%rLsGui29.7) && (%rLsGui29.4)) ?%LsIso65 = 1     ; IF not activ skip lead in AND pre-piercing all
+
+IF( optimized_lift == 0 ) optimized_lift = trav_safe_z   ;safety
+trav_safe_z = optimized_lift
+
+; In order to avoid spline alarm in case of both XU with C origin angle
+IF( (!AEXISTS(3,B)) && (AEXISTS(3,X)) && (AEXISTS(3,U)) ) GRPQ[B] = 1
+
+G64
+SVR(gKerfSvr)
+G(40+gKerfType)
+
+.return
+G(200+sav_G70)
+
+;GRPQ[V]=0
+RET
+
+.tail_fetch_s
+
+IF( (FetchingTail == 1) && (!%cn[WHO()].rc[0].21) && (!%gPlc0.29) && (VA16 != 0) && (!%LSRPlcOp0.21) ) THEN
+    IF( (VA6 == 10) || (VA6 == 11) ) THEN
+        TailLen[FetchCnt] = (VA23)
+	    FetchCnt = IFEXP(FetchCnt == 0,1,0)	
+	    LstIsHead = 1
+	    RETSKIPF("G800","G580")
+	ELSE
+	    LstIsHead = 0
+    	RETSKIPF("G800","G580")
+	ENDIF
+ENDIF
+
+.tail_fetch_e
+
+.regear_calib_s
+
+; Synchronization tube calibration and parking
+DBL tubeStateSelY3Z3
+IF( TubeCaliM4On == 1 ) THEN
+    ; tubeStateSelY3Z3 = 1   ; tube is closed already on three spindle
+    ; tubeStateSelY3Z3 = 2   ; tube is closed already first two spindles
+    ; tubeStateSelY3Z3 = 3   ; tube is closed already last two spindles
+    IF ((%USR_M20.3) && (%USR_M20.1) && (%USR_M21.22)) tubeStateSelY3Z3 = 1
+    IF ((%USR_M20.3) && (!%USR_M20.1) && (%USR_M21.22)) tubeStateSelY3Z3 = 2
+    IF ((!%USR_M20.3) && (%USR_M20.1) && (%USR_M21.22)) tubeStateSelY3Z3 = 3
+    IF ((!%USR_M20.3) && (%USR_M20.1) && (!%USR_M21.22)) tubeStateSelY3Z3 = 4
+	
+    IF ((tubeStateSelY3Z3 == 1) || (tubeStateSelY3Z3 == 2)) G4010 M(AXIDX(X)) S(AXIDX(3,X)) I0
+
+    IF (tubeStateSelY3Z3 == 1) THEN
+	    IF (AEXISTS(3,V)) G4010 M(AXIDX(X)) S(AXIDX(3,V)) I0
+    ENDIF
+
+    IF (tubeStateSelY3Z3 >= 3) THEN
+	    IF (AEXISTS(3,V)) G4010 M(AXIDX(X)) S(AXIDX(3,V)) I0
+    ENDIF
+
+    TubeCaliM4On = 0
+ENDIF
+
+.regear_calib_e
+
+.assign_capvec_s
+    ; Necessary to assign capvec before the movement
+	; gG800GStatus AT %LsIso18;
+	; Gest5Ax AT %gPlc0.0;
+	IF( %gPlc0.0 ) THEN
+	    IF( (VA6 == 10) || (VA6 == 12) ) ?%LsIso18 = 0
+	    IF( (VA6 == 11) || (VA6 == 13) ) ?%LsIso18 = 1
+        IF( !((VA6 == 10) || (VA6 == 11) || (VA6 == 12) || (VA6 == 13)) ) ?%LsIso18 = 0
+	ELSE
+	    ?%LsIso18 = 0
+	ENDIF
+.assign_capvec_e
+

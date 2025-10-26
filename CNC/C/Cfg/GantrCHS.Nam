@@ -1,0 +1,16 @@
+[PROMPT]
+KEY_GANTRY =龙门轴配置
+
+GDAT0 = 全系统数
+KEY_REGOLATORE =
+GDAT1 = 警告偏差
+GDAT2 = 允许偏差
+GDAT3 = 回参允许偏差
+GDAT4 = 交叉耦合增益
+GDAT5 = 截止频率
+GDAT6 = 龙门类型
+GDAT7 = 回参允许偏差初始值
+
+[HELP]
+GDAT6 = 0 standard 1 only one homing limit switch
+

@@ -1,0 +1,55 @@
+
+[KEYS]
+TITLE=Test ingressi
+TXT0=IW0-IW1
+TXT1=IW4-IW5
+TXT2=IW510-IW500
+TXT4=QW2-QW3
+TXT5=QW6-QW7
+TXT6=QW410
+TXT12=Help IO
+TXT14=Forza ingressi
+MSG14=Vuoi forzare gli ingressi ?
+TXT15=Ripristina ingressi
+
+[PROMPT]
+KEY_NODE=
+INPUTS02=Leaf
+lb0=510.0 Pallet 1 sbloccato
+lb1=510.1 Pallet 1 bloccato
+lb2=510.2 Pallet 2 sbloccato
+lb3=510.3 Pallet 2 bloccato
+lb4=510.4
+lb5=510.5 Pallet 1 in posizione
+lb6=510.6 Pallet 1 extracorsa
+lb7=510.7
+lb8=510.8 Pallet 2 in posizione
+lb9=510.9 Pallet 2 extracorsa
+lb10=510.10 Carico alto
+lb11=510.11 Carico basso
+lb12=510.12
+lb13=510.13
+lb14=510.14 Porta chiusa
+lb15=510.15 Porta aperta
+lbInp1=Ingressi digitali (IW510-IW500)
+lbForcedInp1=Ingressi forzati
+lb16=500.0 Comando X +
+lb17=500.1 Comando X -
+lb18=500.2 Comando Y +
+lb19=500.3 Comando Y -
+lb20=500.4 E-STOP zona di carico/scarico
+lb21=500.5 E-STOP zona pulpito
+lb22=500.6 E-STOP zona porta posteriore
+lb23=500.7 E-STOP IPG
+lb24=500.8 Selettore pallet: MANUALE
+lb25=500.9 Selettore pallet: AUTO
+lb26=500.10 Selettore pallet: CARICO
+lb27=500.11 Barriere carico/scarico interrotte
+lb28=500.12 porta posteriore aperta
+lb29=500.13 porta anteriore aperta
+lb30=500.14
+lb31=500.15
+
+[STATUS]
+
+[HELP]

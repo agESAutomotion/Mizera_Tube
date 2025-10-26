@@ -1,0 +1,772 @@
+*******************************************************************************
+*******************************************************************************
+*   @@@ CH9: Lateral /Loader horizontal axes support  
+*******************************************************************************
+*******************************************************************************
+#funcdec "assi.plc"
+#funcdec "cnc.plc"
+
+#include "usrMem.inc"
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+VAR
+#include "cnc.inc"
+
+GESTCH9:            GESTCH;
+CH9END:             GESTCHEND;
+GESTAX80:           GESTAX;    * virtual axes for following                      
+GESTAX81:           GESTAX;                          
+GESTAX82:           GESTAX;
+GESTAX83:           GESTAX;
+GESTAX84:           GESTAX;
+
+AXLSREF81:          AX_LS_REF;
+AXLSREF82:          AX_LS_REF;
+AXLSREF83:          AX_LS_REF;
+AXLSREF84:          AX_LS_REF;
+AXLSREF85:          AX_LS_REF;
+
+RTRIG_AX_SEL81:     R_TRIG;
+RTRIG_AX_SEL82:     R_TRIG;
+RTRIG_AX_SEL83:     R_TRIG;
+RTRIG_AX_SEL84:     R_TRIG;
+RTRIG_AX_SEL85:     R_TRIG;
+
+UnSupp_81_GoUp:    BOOL;
+UnSupp_82_GoUp:    BOOL;
+UnSupp_83_GoUp:    BOOL;
+UnSupp_84_GoUp:    BOOL;
+UnSupp_85_GoUp:    BOOL;
+
+END_VAR
+
+#include "iol.inc"
+
+VAR_IN_OUT
+#include "usrIol.inc"
+ActualQtaAbsRef     AT %pa18;                       * Absolute homing quota         
+QtaRefAbsSet        AT %LsPlc50;                    * Absolute homing quota setting 
+
+END_VAR
+
+FUNCTION CH9 
+
+PATH %cn9
+
+LD   ALWAYS_ONE                                     ** PLCFLAGS.1  Flag sempre stato on
+ST   GESTCH9.xCmdFromInput
+
+LD   ALWAYS_ONE                                     ** PLCFLAGS.1  Flag sempre stato on
+ST   GESTCH9.xEscOpCmd
+
+LD   %PLCFLAGS.0
+ST   GESTCH9.xSelFromInput                          * Disabilita selezioni standard macchina
+
+LD   Ch0_Ref_Gen
+ST   GESTCH9.xSelREF
+
+LD   Ch0_Ref_Sin
+ST   GESTCH9.xSingleRef
+
+LD   Ch0_Jog
+ST   GESTCH9.xSelJOG
+
+LD   Ch0_Inc
+ST   GESTCH9.xSelINC
+
+LD   Ch0_Auto
+ST   GESTCH9.xSelAUT
+
+LD   %PLCFLAGS.0                                    ** Condizioni richiesta hold canale 0
+ST   GESTCH9.xStart                                 * comando START al canale (esterno)
+
+LD   ResetChannels                
+ST   GESTCH9.xReset                                 * comando RESET al canale (esterno)
+
+LD   %PLCFLAGS.0                                    ** Condizioni richiesta hold canale 0
+OR(                                                 
+LD   Pul_Stop_Req                                   
+AND  BCI_MDI                                        ** rc0.11  Selettore modi operativi su MDI (semiautom)
+)                                                   
+ST   GESTCH9.xHold                                  * comando Hold al canale (esterno)
+								                    
+LD   Ch0Alarm                                       
+ST   GESTCH9.xEmer                                  * comando Emergenza al canale (esterno)
+								                    
+LD   99999                                           
+ST   GESTCH9.xPPNumber                              * numero part program da eseguire
+								                    
+LD   %PLCFLAGS.0                                    
+ST   GESTCH9.xBlkSearch                             
+ST   GESTCH9.xIntBlkSrc                             * Forzam. esec. ricerca blocco interna
+ST   GESTCH9.xOverstore                             * Ab. overstore dopo ricerca blocco (provv.)
+								                    
+LD   MainChFeedrate                                 ** feedrate for channel
+ST   GESTCH9.xOverride                              
+								                    
+CAL  GESTCH9                                        
+								                    
+LD   GESTCH9.yProgramRun                            * Programma in corso
+ST   PRGRUN_CN9                                      
+
+LD   BCO_STB_GET                                    ** rc8.17 Strobe per GET resources
+AND  AxStopSincGRPMacc                              ** (gPlc13.11)Assi Fermi per sincronismo GRP[ax]
+ST   BCI_ACK_GET                                    ** rc0.29  ACK per GET resource
+
+********************************************************************************
+* Unload axes
+********************************************************************************
+* Virtual Axis(70)
+
+LD  %cc1.0                                          * Maschera assi associata al canale 8
+JMPCN noAx80  
+
+PATH %ax80
+
+LD   ALWAYS_ZERO
+ST   GESTAX80.xJogPlus
+
+LD   ALWAYS_ZERO
+ST   GESTAX80.xJogMinus
+
+LD   ALWAYS_ONE
+ST   GESTAX80.xZeroForced                           * Forzamento asse tarato
+
+LD   ALWAYS_ZERO
+ST   GESTAX80.xHoldMoving                           * Richiesta blocco avanzamento
+
+LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
+ST   GESTAX80.xUnlock                                                                  
+
+LDN  ch9_in_ref                                     ** channel 3 in ref
+ST   GESTAX80.xEnFIR                                * Abilita filtri FIR     
+ST   GESTAX80.xEnFrComp                             ** Abilita friction compensation
+								                    
+LD   ALWAYS_ZERO                                    ** PLCFLAGS.0  Flag sempre stato off
+ST   GESTAX80.xDisLimiter
+
+LD   GESTAX50_xCloseLoop
+ST   GESTAX80.xCloseLoop
+
+LD   %cn0.rc8.3                                     * ch0 in alarm 
+OR   %cn3.rc8.3                                     * ch3 in alarm 
+**OR   EmerINC                                      
+ST   GESTAX80.xSetAlarm                             ** Forzamento allarme asse 
+
+CAL  GESTAX80
+
+noAx80:
+
+********************************************************************************
+* Unload Support for Saw Cutting (81) 2
+********************************************************************************
+PATH %ax81
+PATH %ax_lsref81
+
+***************************************
+*   POWER ON (PON)
+***************************************
+LD   %pa3.31                                        * Simulato
+ORN  %cc1.1                                         * Maschera assi associata al canale
+OR(                                                 
+LD   %nvel11                                        ** 3,4=CANopen, Ecat
+EQ   3                                              
+)                                                   
+OR(                                                 
+LD   %nvel11                                        ** 3,4=CANopen, Ecat
+EQ   4                                              
+)                                                   
+ST   Pon_UnSupp_81                                  ** PON unload support axis
+***************************************
+
+LDN  %ra3.2                                         * ra3.2  Direzione moto asse avanti
+OR   %ra0.9                                         * ra0.9 Comando indietro
+AND  %ra3.13                                        * ra3.13  Ordine di moto
+ST   UnSupp_81_GoUp
+
+LD  %cc1.1                                          * Maschera assi associata al canale 8
+JMPCN NOAX81
+  
+***                                                                
+*   LIMIT SWITCH & REFERENCE SWITCH                                               
+                                                            
+LD   %lsrefmode
+ST   AXLSREF81.x_REF_mode                           * 0=use ref switch...                    
+                                                                                           
+LD   %lsreflevel                                     
+ST   AXLSREF81.x_TYPE_LS                            * (1=NC, 0=NO)                        
+                                                                                           
+LD   I_I_FC_O1_NEG                              
+ST   AXLSREF81.x_MIN_LS                             * Min Limit switch                       
+                                                                                           
+LD   I_I_FC_O1_POS                                   
+ST   AXLSREF81.x_MAX_LS                             * Max Limit switch
+                                                             
+LD   ALWAYS_ZERO                
+ST   AXLSREF81.x_REF_S                              * Reference switch                       
+                                                                                           
+CAL  AXLSREF81                                                                             
+                                                                                           
+LD   AXLSREF81.y_MIN_LS                             * Min Limit switch                       
+ST   GESTAX81.xMinusLS                              * Negative limit switch                           
+                                                                                           
+LD   AXLSREF81.y_MAX_LS                             * Max Limit switch                       
+ST   GESTAX81.xPlusLS                               * Positive limit switch                             
+                                                                                           
+LD   AXLSREF81.y_REF_S                              * Reference switch                       
+ST   GESTAX81.xRefLS                                * Reference                              
+***                                           
+
+LD   MainAxesPowerAllowed
+AND  MainAxesPower                                  * PON
+ST   GESTAX81.xCloseLoop
+
+LD   Sel_Y_Ch9
+ST   GESTAX81.xSelected
+
+***************************************
+* Change REF quota for ABS reference 
+***************************************
+CAL  RTRIG_AX_SEL81(CLK:=GESTAX81.xSelected)
+
+LD   RTRIG_AX_SEL81.Q
+JMPCN NoSel81
+LD   ActualQtaAbsRef                                ** Absolute homing quota
+ST   QtaRefAbsSet                                   ** Absolute homing quota setting
+NoSel81:                                            
+								                    
+LD   GESTAX81.xSelected                             
+AND  %nvel14.0                                      * Se Vale 1 ?gestito "Encoder Assoluto" (Da Configura Asse)
+AND (                                               
+LD   ActualQtaAbsRef                                ** Absolute homing quota
+NE   QtaRefAbsSet                                   ** Absolute homing quota setting
+)                                                   
+JMPCN NoEq81                                        
+								                    
+LD   QtaRefAbsSet                                   ** Absolute homing quota setting
+ST   ActualQtaAbsRef                                ** Absolute homing quota
+NoEq81:
+***************************************
+
+LD   Pul_Jogp                                       ** (gPlc0.4)jog+ pushbutton
+AND  GESTAX81.xSelected
+ANDN PlcEmerGen                                     ** M0.10 Emergenza generale
+AND  GESTAX81.xCloseLoop
+ST   GESTAX81.xJogPlus
+
+LD   Pul_Jogm                                       ** (gPlc0.5)jog- pushbutton
+AND  GESTAX81.xSelected
+ANDN PlcEmerGen                                     ** M0.10 Emergenza generale
+AND  GESTAX81.xCloseLoop
+*ANDN CMD_HOLDMOVING_CH9.1 
+ST   GESTAX81.xJogMinus
+
+LD   %nvel14.0                                      * Se Vale 1 ?gestito "Encoder Assoluto" (Da Configura Asse)
+ST   GESTAX81.xZeroForced                           * Forzamento asse tarato
+
+LD   GESTAX2_xHoldMoving                            * Richiesta blocco avanzamento
+OR(
+LD   CMD_HOLDMOVING_CH9.1                           ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+*AND  UnSupp_81_GoUp 
+)
+ST   GESTAX81.xHoldMoving                           * Richiesta blocco avanzamento
+
+LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
+ST   GESTAX81.xUnlock                                                                  
+
+LDN  ch9_in_ref                                     ** channel 3 in ref
+ST   GESTAX81.xEnFIR                                * Abilita filtri FIR     
+ST   GESTAX81.xEnFrComp                             ** Abilita friction compensation
+
+LD   ALWAYS_ZERO                                    ** PLCFLAGS.0  Flag sempre stato off
+ST   GESTAX81.xDisLimiter
+
+LD   %cn0.rc8.3                                     * ch0 in alarm 
+OR   %cn3.rc8.3                                     * ch3 in alarm 
+**OR   EmerINC
+ST   GESTAX81.xSetAlarm                             ** Forzamento allarme asse 
+
+LD   usrReqGrantSupLat1
+ST   GESTAX81.xFromPlc
+
+CAL  GESTAX81
+
+LD   GESTAX81.yDriveNotEn
+S    %PLCerr3.24                                
+
+LD   BSG_INC                                        ** rg1.2 Selezione modo INC (inc.fissi)
+JMPCN SVIX81
+
+LD   %pa59                                          * Velocit?di Repos
+MUL  1000
+DIV  60
+MUL  MainChFeedrate                                 ** (gPlc16) feed degli assi (%)
+DIV  100
+ST   %ra50                                          * Limitazione velocita' massima interpolazione
+
+SVIX81:
+NOAX81:
+
+********************************************************************************
+* Unload Support 1 (ax71)
+********************************************************************************
+PATH %ax82
+PATH %ax_lsref82
+
+***************************************
+*   POWER ON (PON)
+***************************************
+LD   %pa3.31            * Simulato
+ORN  %cc1.2             * Maschera assi associata al canale
+OR(
+LD   %nvel11            ** 3,4=CANopen, Ecat
+EQ   3
+)
+OR(
+LD   %nvel11            ** 3,4=CANopen, Ecat
+EQ   4
+)
+ST   Pon_UnSupp_82      ** PON unload support axis
+***************************************
+
+LDN  %ra3.2                                         * ra3.2  Direzione moto asse avanti
+OR   %ra0.9                                         * ra0.9 Comando indietro
+AND  %ra3.13                                        * ra3.13  Ordine di moto
+ST   UnSupp_82_GoUp
+
+LD  %cc1.2           * Maschera assi associata al canale 8
+JMPCN NOAX82
+  
+***                                                                
+*   LIMIT SWITCH & REFERENCE SWITCH                                               
+                                                            
+LD   %lsrefmode
+ST   AXLSREF82.x_REF_mode        * 0=use ref switch...                    
+                                                                        
+LD   %lsreflevel                  
+ST   AXLSREF82.x_TYPE_LS         * (1=NC, 0=NO)                        
+ 
+LD   I_I_FC_O2_NEG
+ST   AXLSREF82.x_MIN_LS          * Min Limit switch                       
+                                                                        
+LD   I_I_FC_O2_POS                   
+ST   AXLSREF82.x_MAX_LS          * Max Limit switch                       
+                                                                        
+LD   ALWAYS_ZERO                
+ST   AXLSREF82.x_REF_S           * Reference switch                       
+                                                                        
+CAL  AXLSREF82                                                          
+                                                                        
+LD   AXLSREF82.y_MIN_LS          * Min Limit switch                       
+ST   GESTAX82.xMinusLS           * Negative limit switch                           
+                                                                        
+LD   AXLSREF82.y_MAX_LS          * Max Limit switch                       
+ST   GESTAX82.xPlusLS            * Positive limit switch                             
+                                                                        
+LD   AXLSREF82.y_REF_S           * Reference switch                       
+ST   GESTAX82.xRefLS             * Reference                              
+***                                           
+
+LD   MainAxesPowerAllowed
+AND  MainAxesPower               * PON
+ST   GESTAX82.xCloseLoop
+
+LD   Sel_Z_Ch9
+ST   GESTAX82.xSelected
+
+***************************************
+* Change REF quota for ABS reference 
+***************************************
+CAL  RTRIG_AX_SEL82(CLK:=GESTAX82.xSelected)
+
+LD   RTRIG_AX_SEL82.Q
+JMPCN NoSel72
+LD   ActualQtaAbsRef               ** Absolute homing quota
+ST   QtaRefAbsSet                  ** Absolute homing quota setting
+NoSel72:
+
+LD   GESTAX82.xSelected
+AND  %nvel14.0                     * Se Vale 1 � gestito "Encoder Assoluto" (Da Configura Asse)
+AND (
+LD   ActualQtaAbsRef               ** Absolute homing quota
+NE   QtaRefAbsSet                  ** Absolute homing quota setting
+)
+JMPCN NoEq82
+
+LD   QtaRefAbsSet                  ** Absolute homing quota setting
+ST   ActualQtaAbsRef               ** Absolute homing quota
+NoEq82:
+***************************************
+
+LD   Pul_Jogp                      ** (gPlc0.4)jog+ pushbutton
+AND  GESTAX82.xSelected
+ANDN PlcEmerGen                      ** M0.10 Emergenza generale
+AND  GESTAX82.xCloseLoop
+ST   GESTAX82.xJogPlus
+
+LD   Pul_Jogm                      ** (gPlc0.5)jog- pushbutton
+AND  GESTAX82.xSelected
+ANDN PlcEmerGen                      ** M0.10 Emergenza generale
+AND  GESTAX82.xCloseLoop
+*ANDN CMD_HOLDMOVING_CH9.2 
+ST   GESTAX82.xJogMinus
+
+LD   %nvel14.0                     * Se Vale 1 � gestito "Encoder Assoluto" (Da Configura Asse)
+ST   GESTAX82.xZeroForced          * Forzamento asse tarato
+
+LD   GESTAX2_xHoldMoving           * Richiesta blocco avanzamento
+OR(
+LD   CMD_HOLDMOVING_CH9.2          ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+*AND  UnSupp_82_GoUp 
+)
+ST   GESTAX82.xHoldMoving          * Richiesta blocco avanzamento
+
+LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
+ST   GESTAX82.xUnlock                                                                  
+
+LDN  ch9_in_ref                    ** channel 3 in ref
+ST   GESTAX82.xEnFIR               * Abilita filtri FIR     
+ST   GESTAX82.xEnFrComp            ** Abilita friction compensation
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   GESTAX82.xDisLimiter
+
+LD   %cn0.rc8.3                    * ch0 in alarm 
+OR   %cn3.rc8.3                    * ch3 in alarm 
+**OR   EmerINC
+ST   GESTAX82.xSetAlarm            ** Forzamento allarme asse 
+
+LD   usrReqGrantSupLat2
+ST   GESTAX82.xFromPlc
+
+CAL  GESTAX82
+
+LD   GESTAX82.yDriveNotEn
+S    %PLCerr3.25                  
+
+LD   BSG_INC                       ** rg1.2 Selezione modo INC (inc.fissi)
+JMPCN SVIX82
+
+LD   %pa59                         * Velocit� di Repos
+MUL  1000
+DIV  60
+MUL  MainChFeedrate                ** (gPlc16) feed degli assi (%)
+DIV  100
+ST   %ra50                         * Limitazione velocita' massima interpolazione
+
+SVIX82:
+NOAX82:
+
+********************************************************************************
+* Unload Support 2 (ax73)
+********************************************************************************
+PATH %ax83
+PATH %ax_lsref83
+
+***************************************
+*   POWER ON (PON)
+***************************************
+LD   %pa3.31                                        * Simulato
+ORN  %cc1.3                                         * Maschera assi associata al canale
+OR(                                                 
+LD   %nvel11                                        ** 3,4=CANopen, Ecat
+EQ   3                                              
+)                                                   
+OR(                                                 
+LD   %nvel11                                        ** 3,4=CANopen, Ecat
+EQ   4                                              
+)                                                   
+ST   Pon_UnSupp_83                                  ** PON unload support axis
+***************************************
+
+LDN  %ra3.2                                         * ra3.2  Direzione moto asse avanti
+OR   %ra0.9                                         * ra0.9 Comando indietro
+AND  %ra3.13                                        * ra3.13  Ordine di moto
+ST   UnSupp_83_GoUp
+
+LD  %cc1.3                                          * Maschera assi associata al canale 8
+JMPCN NOAX83
+  
+***                                                                
+*   LIMIT SWITCH & REFERENCE SWITCH                                               
+                                                            
+LD   %lsrefmode
+ST   AXLSREF83.x_REF_mode                           * 0=use ref switch...                    
+                                                                                           
+LD   %lsreflevel                                     
+ST   AXLSREF83.x_TYPE_LS                            * (1=NC, 0=NO)                        
+                                                                                           
+LD   I_I_FC_O3_NEG                              
+ST   AXLSREF83.x_MIN_LS                             * Min Limit switch                       
+                                                                                           
+LD   I_I_FC_O3_POS                                   
+ST   AXLSREF83.x_MAX_LS                             * Max Limit switch
+                                                             
+LD   ALWAYS_ZERO                
+ST   AXLSREF83.x_REF_S                              * Reference switch                       
+                                                                                           
+CAL  AXLSREF83                                                                             
+                                                                                           
+LD   AXLSREF83.y_MIN_LS                             * Min Limit switch                       
+ST   GESTAX83.xMinusLS                              * Negative limit switch                           
+                                                                                           
+LD   AXLSREF83.y_MAX_LS                             * Max Limit switch                       
+ST   GESTAX83.xPlusLS                               * Positive limit switch                             
+                                                                                           
+LD   AXLSREF83.y_REF_S                              * Reference switch                       
+ST   GESTAX83.xRefLS                                * Reference                              
+***                                           
+
+LD   MainAxesPowerAllowed
+AND  MainAxesPower                                  * PON
+ST   GESTAX83.xCloseLoop
+
+LD   Sel_U_Ch9
+ST   GESTAX83.xSelected
+
+***************************************
+* Change REF quota for ABS reference 
+***************************************
+CAL  RTRIG_AX_SEL83(CLK:=GESTAX83.xSelected)
+
+LD   RTRIG_AX_SEL83.Q
+JMPCN NoSel83
+LD   ActualQtaAbsRef                                ** Absolute homing quota
+ST   QtaRefAbsSet                                   ** Absolute homing quota setting
+NoSel83:                                            
+								                    
+LD   GESTAX83.xSelected                             
+AND  %nvel14.0                                      * Se Vale 1 ?gestito "Encoder Assoluto" (Da Configura Asse)
+AND (                                               
+LD   ActualQtaAbsRef                                ** Absolute homing quota
+NE   QtaRefAbsSet                                   ** Absolute homing quota setting
+)                                                   
+JMPCN NoEq83                                        
+								                    
+LD   QtaRefAbsSet                                   ** Absolute homing quota setting
+ST   ActualQtaAbsRef                                ** Absolute homing quota
+NoEq83:
+***************************************
+
+LD   Pul_Jogp                                       ** (gPlc0.4)jog+ pushbutton
+AND  GESTAX83.xSelected
+ANDN PlcEmerGen                                     ** M0.10 Emergenza generale
+AND  GESTAX83.xCloseLoop
+ST   GESTAX83.xJogPlus
+
+LD   Pul_Jogm                                       ** (gPlc0.5)jog- pushbutton
+AND  GESTAX83.xSelected
+ANDN PlcEmerGen                                     ** M0.10 Emergenza generale
+AND  GESTAX83.xCloseLoop
+*ANDN CMD_HOLDMOVING_CH9.3
+ST   GESTAX83.xJogMinus
+
+LD   %nvel14.0                                      * Se Vale 1 ?gestito "Encoder Assoluto" (Da Configura Asse)
+ST   GESTAX83.xZeroForced                           * Forzamento asse tarato
+
+LD   GESTAX2_xHoldMoving                            * Richiesta blocco avanzamento
+OR(
+LD   CMD_HOLDMOVING_CH9.3                           ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+*AND  UnSupp_83_GoUp 
+)
+ST   GESTAX83.xHoldMoving                           * Richiesta blocco avanzamento
+
+LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
+ST   GESTAX83.xUnlock                                                                  
+
+LDN  ch9_in_ref                                     ** channel 3 in ref
+ST   GESTAX83.xEnFIR                                * Abilita filtri FIR     
+ST   GESTAX83.xEnFrComp                             ** Abilita friction compensation
+
+LD   ALWAYS_ZERO                                    ** PLCFLAGS.0  Flag sempre stato off
+ST   GESTAX83.xDisLimiter
+
+LD   %cn0.rc8.3                                     * ch0 in alarm 
+OR   %cn3.rc8.3                                     * ch3 in alarm 
+**OR   EmerINC
+ST   GESTAX83.xSetAlarm                             ** Forzamento allarme asse 
+
+LD   usrReqGrantSupLat3
+ST   GESTAX83.xFromPlc
+
+CAL  GESTAX83
+
+LD   GESTAX83.yDriveNotEn
+S    %PLCerr3.26                                  
+
+LD   BSG_INC                                        ** rg1.2 Selezione modo INC (inc.fissi)
+JMPCN SVIX83
+
+LD   %pa59                                          * Velocit?di Repos
+MUL  1000
+DIV  60
+MUL  MainChFeedrate                                 ** (gPlc16) feed degli assi (%)
+DIV  100
+ST   %ra50                                          * Limitazione velocita' massima interpolazione
+
+SVIX83:
+NOAX83:
+
+********************************************************************************
+* Unload Support 3 (ax74)
+********************************************************************************
+PATH %ax84
+PATH %ax_lsref84
+
+***************************************
+*   POWER ON (PON)
+***************************************
+LD   %pa3.31                                        * Simulato
+ORN  %cc1.4                                         * Maschera assi associata al canale
+OR(                                                 
+LD   %nvel11                                        ** 3,4=CANopen, Ecat
+EQ   3                                              
+)                                                   
+OR(                                                 
+LD   %nvel11                                        ** 3,4=CANopen, Ecat
+EQ   4                                              
+)                                                   
+ST   Pon_UnSupp_84                                  ** PON unload support axis
+***************************************
+
+LDN  %ra3.2                                         * ra3.2  Direzione moto asse avanti
+OR   %ra0.9                                         * ra0.9 Comando indietro
+AND  %ra3.13                                        * ra3.13  Ordine di moto
+ST   UnSupp_84_GoUp
+
+LD  %cc1.4                                          * Maschera assi associata al canale 8
+JMPCN NOAX84
+  
+***                                                                
+*   LIMIT SWITCH & REFERENCE SWITCH                                               
+                                                            
+LD   %lsrefmode
+ST   AXLSREF84.x_REF_mode                           * 0=use ref switch...                    
+                                                                                           
+LD   %lsreflevel                                     
+ST   AXLSREF84.x_TYPE_LS                            * (1=NC, 0=NO)                        
+                                                                                           
+LD   I_I_FC_O4_NEG                              
+ST   AXLSREF84.x_MIN_LS                             * Min Limit switch                       
+                                                                                           
+LD   I_I_FC_O4_POS                                   
+ST   AXLSREF84.x_MAX_LS                             * Max Limit switch
+                                                             
+LD   ALWAYS_ZERO                
+ST   AXLSREF84.x_REF_S                              * Reference switch                       
+                                                                                           
+CAL  AXLSREF84                                                                             
+                                                                                           
+LD   AXLSREF84.y_MIN_LS                             * Min Limit switch                       
+ST   GESTAX84.xMinusLS                              * Negative limit switch                           
+                                                                                           
+LD   AXLSREF84.y_MAX_LS                             * Max Limit switch                       
+ST   GESTAX84.xPlusLS                               * Positive limit switch                             
+                                                                                           
+LD   AXLSREF84.y_REF_S                              * Reference switch                       
+ST   GESTAX84.xRefLS                                * Reference                              
+***                                           
+
+LD   MainAxesPowerAllowed
+AND  MainAxesPower                                  * PON
+ST   GESTAX84.xCloseLoop
+
+LD   Sel_V_Ch9
+ST   GESTAX84.xSelected
+
+***************************************
+* Change REF quota for ABS reference 
+***************************************
+CAL  RTRIG_AX_SEL84(CLK:=GESTAX84.xSelected)
+
+LD   RTRIG_AX_SEL84.Q
+JMPCN NoSel84
+LD   ActualQtaAbsRef                                ** Absolute homing quota
+ST   QtaRefAbsSet                                   ** Absolute homing quota setting
+NoSel84:                                            
+								                    
+LD   GESTAX84.xSelected                             
+AND  %nvel14.0                                      * Se Vale 1 ?gestito "Encoder Assoluto" (Da Configura Asse)
+AND (                                               
+LD   ActualQtaAbsRef                                ** Absolute homing quota
+NE   QtaRefAbsSet                                   ** Absolute homing quota setting
+)                                                   
+JMPCN NoEq84                                        
+								                    
+LD   QtaRefAbsSet                                   ** Absolute homing quota setting
+ST   ActualQtaAbsRef                                ** Absolute homing quota
+NoEq84:
+***************************************
+
+LD   Pul_Jogp                                       ** (gPlc0.4)jog+ pushbutton
+AND  GESTAX84.xSelected
+ANDN PlcEmerGen                                     ** M0.10 Emergenza generale
+AND  GESTAX84.xCloseLoop
+ST   GESTAX84.xJogPlus
+
+LD   Pul_Jogm                                       ** (gPlc0.5)jog- pushbutton
+AND  GESTAX84.xSelected
+ANDN PlcEmerGen                                     ** M0.10 Emergenza generale
+AND  GESTAX84.xCloseLoop
+*ANDN CMD_HOLDMOVING_CH9.4 
+ST   GESTAX84.xJogMinus
+
+LD   %nvel14.0                                      * Se Vale 1 ?gestito "Encoder Assoluto" (Da Configura Asse)
+ST   GESTAX84.xZeroForced                           * Forzamento asse tarato
+
+LD   GESTAX2_xHoldMoving                            * Richiesta blocco avanzamento
+OR(
+LD   CMD_HOLDMOVING_CH9.4                           ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
+*AND  UnSupp_84_GoUp 
+)
+ST   GESTAX84.xHoldMoving                           * Richiesta blocco avanzamento
+
+LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
+ST   GESTAX84.xUnlock                                                                  
+
+LDN  ch9_in_ref                                     ** channel 3 in ref
+ST   GESTAX84.xEnFIR                                * Abilita filtri FIR     
+ST   GESTAX84.xEnFrComp                             ** Abilita friction compensation
+
+LD   ALWAYS_ZERO                                    ** PLCFLAGS.0  Flag sempre stato off
+ST   GESTAX84.xDisLimiter
+
+LD   %cn0.rc8.3                                     * ch0 in alarm 
+OR   %cn3.rc8.3                                     * ch3 in alarm 
+**OR   EmerINC
+ST   GESTAX84.xSetAlarm                             ** Forzamento allarme asse 
+
+LD   usrReqGrantSupLat4
+ST   GESTAX84.xFromPlc
+
+CAL  GESTAX84
+
+LD   GESTAX84.yDriveNotEn
+S    %PLCerr3.27                         
+
+LD   BSG_INC                                        ** rg1.2 Selezione modo INC (inc.fissi)
+JMPCN SVIX84
+
+LD   %pa59                                          * Velocit?di Repos
+MUL  1000
+DIV  60
+MUL  MainChFeedrate                                 ** (gPlc16) feed degli assi (%)
+DIV  100
+ST   %ra50                                          * Limitazione velocita' massima interpolazione
+
+SVIX84:
+NOAX84:
+
+**************************
+* Acknowledg funzioni "M"
+**************************
+*
+LD   %PLCFLAGS.0
+ST   CH9END.xWaitMFun
+
+CAL  CH9END
+
+END_FUNCTION

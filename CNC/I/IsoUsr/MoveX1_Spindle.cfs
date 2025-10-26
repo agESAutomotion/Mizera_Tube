@@ -1,0 +1,16 @@
+:
+SYN
+DBL SendPos = VA0
+DBL FeedPosPlc = VA1
+
+IF( (SendPos > (MaxQta_V)) || (SendPos < (MinQta_V)) ) THEN
+    MSGOUT "X1 Axis PLC Parking Out of SW Limits" 
+    M0
+	ERROR(55)
+ENDIF
+
+?%SPINDLE_SYSTEM.values19 = SendPos * 1000 
+?%SPINDLE_SYSTEM.values22 = FeedPosPlc 
+M441   
+
+RET 

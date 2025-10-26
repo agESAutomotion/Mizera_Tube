@@ -1,0 +1,787 @@
+
+#include "iol.inc"
+#include "usrMem.inc"
+
+VAR
+#include "Iof.inc"
+#include "usrIof.inc"
+
+Appoggio:                   BOOL;
+Ton_PrgRun:                 TON;
+TON_SpindleFix_Close_C1:    TON; *YANG230905
+TON_SpindleFix_Open_C1:     TON;
+TON_Spindle_Slave_Open_C2:  TON;
+TON_Spindle_Slave_Close_C2: TON;
+FTRIG_EMER:                 F_TRIG;
+END_VAR
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"              
+END_VAR
+
+*******************************************************
+* USER INPUT CONFIGURATION
+*******************************************************
+
+FUNCTION USR_INP_CONFIG
+
+LDN  I_TubeMobile_Spindle
+ST   I_I_TubeMobile_Spindle                  
+
+LDN  I_TubeFix_Spindle    
+ST   I_I_TubeFix_Spindle     
+
+LD   I_Pul_Mobile_Spindle_Close     
+ST   I_I_Pul_Mobile_Spindle_Close 
+ST   %PLCmsg8.7  
+   
+LD   I_Pul_Mobile_Spindle_Open                    
+ST   I_I_Pul_Mobile_Spindle_Open 
+ST   %PLCmsg8.6                    
+
+*LD   I_Mobile_Spindle_Open
+LD   O_Mobile_Spindle_Open
+ST   I_I_Mobile_Spindle_Open                  
+
+*LD   I_Mobile_Spindle_Close
+LD   O_Mobile_Spindle_Close
+ST   I_I_Mobile_Spindle_Close                  
+
+*LD   I_Mobile_Spindle_Slave_Open 
+LD   O_Mobile_Spindle_Slave_Open
+ST   I_I_Mobile_Spindle_Slave_Open                     
+
+*LD   I_Mobile_Spindle_Slave_Close
+LD   O_Mobile_Spindle_Slave_Close    
+ST   I_I_Mobile_Spindle_Slave_Close    
+
+*LD   I_FixedSpindle_Open                     ** yang no sensor in GWK 230907
+LD   O_O_SpindleFix_Open 
+ST   I_I_FixedSpindle_Open  
+  
+*LD   I_FixedSpindle_Close                    ** yang no sensor in GWK 230907
+LD   O_O_SpindleFix_Close  
+ST   I_I_FixedSpindle_Close  
+  
+LD   I_Butt_Open_Mobile
+ST   I_I_Butt_Open_Mobile         
+
+LD   I_Butt_Close_Mobile
+ST   I_I_Butt_Close_Mobile        
+
+LD   I_Butt_Open_Fix
+ST   I_I_Butt_Open_Fix            
+
+LD   I_Butt_Close_Fix
+ST   I_I_Butt_Close_Fix           
+
+
+LD    I_Support_1_Dwn
+ST   I_I_Support_1_Dwn
+
+LD    I_Support_2_Dwn         
+ST   I_I_Support_2_Dwn
+
+LD    I_Support_3_Dwn
+ST   I_I_Support_3_Dwn
+
+LD    I_Support_4_Dwn
+ST   I_I_Support_4_Dwn
+
+LDN   I_Support_5_Dwn
+ST   I_I_Support_5_Dwn
+
+LDN   I_Support_6_Dwn
+ST   I_I_Support_6_Dwn
+
+LDN   I_Support_7_Dwn
+ST   I_I_Support_7_Dwn
+
+LD   I_Support_1_Dwn_Un
+ST   I_I_Support_1_Dwn_Un
+
+LD   I_Support_2_Dwn_Un         
+ST   I_I_Support_2_Dwn_Un
+
+LD   I_Support_3_Dwn_Un
+ST   I_I_Support_3_Dwn_Un
+
+LD   I_Support_4_Dwn_Un
+ST   I_I_Support_4_Dwn_Un
+
+LD   I_Support_5_Dwn_Un
+ST   I_I_Support_5_Dwn_Un
+
+LD   I_Support_6_Dwn_Un
+ST   I_I_Support_6_Dwn_Un
+
+LD   I_Support_7_Dwn_Un
+ST   I_I_Support_7_Dwn_Un
+
+LDN   I_Support_1_Up
+ST   I_I_Support_1_Up
+
+LDN   I_Support_2_Up         
+ST   I_I_Support_2_Up
+
+LDN   I_Support_3_Up
+ST   I_I_Support_3_Up
+
+LDN   I_Support_4_Up
+ST   I_I_Support_4_Up
+
+LDN   I_Support_5_Up
+ST   I_I_Support_5_Up
+
+LDN   I_Support_6_Up
+ST   I_I_Support_6_Up
+
+LDN   I_Support_7_Up
+ST   I_I_Support_7_Up
+
+LD   I_Support_1_Up_Un
+AND  I_Support_1_Up_Un_aux    *AT %IW4.7;
+ST   I_I_Support_1_Up_Un
+
+LD   I_Support_2_Up_Un         
+ST   I_I_Support_2_Up_Un
+
+LD   I_Support_3_Up_Un
+ST   I_I_Support_3_Up_Un
+
+LD   I_Support_4_Up_Un
+ST   I_I_Support_4_Up_Un
+
+LD   I_Support_5_Up_Un
+ST   I_I_Support_5_Up_Un
+
+LD   I_Support_6_Up_Un
+ST   I_I_Support_6_Up_Un
+
+LD   I_Support_7_Up_Un
+ST   I_I_Support_7_Up_Un
+
+*LD   I_MobileSpind_An         
+*ST   I_I_MobileSpind_An
+
+*LD   I_FixedSpind_An         
+*ST   I_I_FixedSpind_An
+
+LD   I_DistSens_Y
+ST   I_I_DistSens_Y
+
+LD   I_DistSens_Z
+ST   I_I_DistSens_Z
+
+LD   I_MobSpind_Y                              * Mobile spindle potentiometer sensor Y
+ST   I_I_MobSpind_Y                            * Mobile spindle potentiometer sensor Y
+
+LD   I_MobSpind_Z                              * Mobile spindle potentiometer sensor Z
+ST   I_I_MobSpind_Z                            * Mobile spindle potentiometer sensor Z
+
+LD   I_FixSpind_Y                              * Fixed spindle potentiometer sensor Y
+ST   I_I_FixSpind_Y                            * Fixed spindle potentiometer sensor Y
+
+LD   I_FixSpind_Z                              * Fixed spindle potentiometer sensor Z
+ST   I_I_FixSpind_Z                            * Fixed spindle potentiometer sensor Z
+
+LD   I_Pressure_Mobile      
+ST   I_I_Pressure_Mobile
+
+LD   I_Pressure_Fix          
+ST   I_I_Pressure_Fix         
+
+LD   I_Loader_Reach_Pos         
+ST   I_I_Loader_Reach_Pos         
+
+LD   I_Loader_Back_Pos          
+ST   I_I_Loader_Back_Pos          
+
+LD   I_Loader_Alarm
+ST   I_I_Loader_Alarm
+
+LD   I_Mobile_Spindle_Slave_Open2 
+ST   I_I_Mobile_Spindle_Slave_Open2 
+    
+LD   I_Flap_Home 
+ST   I_I_Flap_Home
+
+*LD   I_Flap_Inclined  
+LD   O_O_Flap_Incline                 
+ST   I_I_Flap_Inclined         
+
+LD   I_FlapL2_Home           
+ST   I_I_FlapL2_Home  
+
+*LD   I_FlapL2_Inclined  
+LD   O_O_FlapL2_Incline            
+ST   I_I_FlapL2_Inclined 
+
+LD   I_FlapL3_Home                        
+ST   I_I_FlapL3_Home           
+
+*LD   I_FlapL3_Inclined             
+LD   O_O_FlapL3_Incline   
+ST   I_I_FlapL3_Inclined      
+
+*LD   I_FlapL4_Home               
+LD   O_O_FlapL4_Home       
+ST   I_I_FlapL4_Home           
+
+*LD   I_FlapL4_Inclined                
+LD   O_O_FlapL4_Incline    
+ST   I_I_FlapL4_Inclined   
+
+*LD   I_FlapL5_Home                 
+LD   O_O_FlapL5_Home        
+ST   I_I_FlapL5_Home           
+
+*LD   I_FlapL5_Inclined                
+LD   O_O_FlapL5_Incline    
+ST   I_I_FlapL5_Inclined  
+
+
+LDN  I_M1_M2_M3_CLOSE  
+ST   I_I_M1_M2_M3_CLOSE
+
+LDN  I_M1_M2_M3_OPEN   
+ST   I_I_M1_M2_M3_OPEN
+
+LD   I_M1_M2_M3_ALARM  
+ST   I_I_M1_M2_M3_ALARM
+
+LD   I_B1_B2_OPEN    
+ST   I_I_B1_B2_OPEN
+      
+LD   I_B1_B2_CLOSE 
+ST   I_I_B1_B2_CLOSE
+        
+LD   I_B1_B2_ALARM 
+ST   I_I_B1_B2_ALARM
+
+LD   I_L1_Down
+ST   I_I_L1_Down
+
+*LD   I_Centering_Open 
+*LD   I_CenterZ1_Open
+*AND  I_CenterZ2_Open
+*AND  I_CenterZ3_Open
+*AND  I_CenterZ4_Open
+*ST   I_I_Centering_Open
+     
+* LD   I_Centering_Close     
+* ST   I_I_Centering_Close
+
+LD   I_CenterZ1_Open
+ST   I_I_Centering_Open_1
+
+LD   I_CenterZ2_Open
+ST   I_I_Centering_Open_2
+
+LD   I_CenterZ3_Open
+ST   I_I_Centering_Open_3
+
+LD   I_CenterZ4_Open
+ST   I_I_Centering_Open_4
+
+LD   I_Detec_Weld  
+ST   I_I_Detec_Weld  
+
+LD   I_Pic_Weld
+ST   I_I_Pic_Weld
+
+LD   I_HomeChain_E
+ST   I_I_HomeChain_E
+
+LD   I_TubeOnChain_D_1
+OR   I_TubeOnChain_D_2
+OR   I_TubeOnChain_D_3
+ST   I_I_TubeOnChain_D
+
+LD   I_CylinderForw_F_1
+AND  I_CylinderForw_F_2
+AND  I_CylinderForw_F_3
+ST   I_I_CylinderForw_F
+
+LD   I_CylinderBack_F_1    
+AND  I_CylinderBack_F_2    
+AND  I_CylinderBack_F_3    
+ST   I_I_CylinderBack_F 
+
+LD   I_CylinderUp_G_1
+AND  I_CylinderUp_G_2
+AND  I_CylinderUp_G_3
+ST   I_I_CylinderUp_G
+
+LD   I_CylinderDwn_G_1
+AND  I_CylinderDwn_G_2
+AND  I_CylinderDwn_G_3
+ST   I_I_CylinderDwn_G
+
+LD   I_TubeOnSup_C_1
+OR   I_TubeOnSup_C_2
+ST   I_I_TubeOnSup_C
+
+LDN  I_Loader_Slow
+ST   I_I_Loader_Slow
+
+LD   I_Bin_DoorUp
+ST   I_I_Bin_DoorUp
+
+*LD   I_Bin_DoorDwn
+LD   O_O_Bin_Door
+ST   I_I_Bin_DoorDwn
+
+LDN  I_Photocell_Unload
+AND  %cn0.rc8.0
+S    %PLCmsg6.0
+
+LDN  I_Photocell_Load
+AND  %cn0.rc8.0
+S    %PLCmsg6.1
+
+*LD   I_Photocell_Reset
+LD   Pul_Reset
+OR   RESET_ALLARMI
+R    %PLCmsg6.0
+R    %PLCmsg6.1 
+
+LD   %PLCmsg6.0
+OR   %PLCmsg6.1
+ST   I_I_PHOTO_CELL
+ST   PhotocellsOn
+
+* LD   I_I_PHOTO_CELL
+* AND  %PLCFLAGS.10
+* ST   O_Luci_Photocell
+
+LD   %LSRPlcOp1.28
+JMPCN BYPASSPHCELL
+      LD   0 
+      ST   PhotocellsOn
+BYPASSPHCELL:
+
+LD  I_SUPPORT_71_Dwn 
+ST  I_I_SUPPORT_71_Dwn 
+ 
+LD  I_SUPPORT_71_Up  
+ST  I_I_SUPPORT_71_Up  
+
+LD  I_SUPPORT_72_Dwn  
+ST  I_I_SUPPORT_72_Dwn  
+
+LD  I_SUPPORT_72_Up   
+ST  I_I_SUPPORT_72_Up   
+
+LD  I_SUPPORT_73_Dwn  
+ST  I_I_SUPPORT_73_Dwn  
+
+LD  I_SUPPORT_73_Up   
+ST  I_I_SUPPORT_73_Up   
+
+LD  I_SUPPORT_74_Dwn  
+ST  I_I_SUPPORT_74_Dwn  
+
+LD  I_SUPPORT_74_Up   
+ST  I_I_SUPPORT_74_Up   
+
+LD  I_SUPPORT_75_Dwn  
+ST  I_I_SUPPORT_75_Dwn  
+
+LD  I_SUPPORT_75_Up   
+ST  I_I_SUPPORT_75_Up   
+
+END_FUNCTION
+
+FUNCTION  SHARED_MEMORY
+
+LD   Pul_Reset                     ** (gPlc0.3)Reset pushbutton
+ST   Reset                         ** Reset Command       
+
+LD   Pul_Start                     ** (gPlc0.1)Start pushbutton
+ST   Start_Ch0                     ** Start Request to Ch0
+
+LD   Pul_Stop
+ST   Pul_Stop_Req
+
+LD   PRGRUN_CN0
+ST   ProgRunCh0                     * program in run ch0
+
+*LD   ch7_in_jog
+*ST   Ch7_Load_Jog
+
+LD   I_I_EMERGENZA
+ST   EmergButton
+
+LD   EMER_GEN
+ST   PlcEmerGen
+
+LD   ch0_in_aut
+ST   Ch0_Auto   
+
+LD   ch0_in_jog
+ST   Ch0_Jog
+
+LD   ch0_in_inc
+ST   Ch0_Inc
+
+LD   ch0_in_ref
+ST   Ch0_Ref_Gen
+
+LD   I_I_SEL_SINGLEREF
+ST   Ch0_Ref_Sin
+
+LD   Res_Ch0
+ST   ResetChannels
+
+LD   ChannelFeedrate
+ST   MainChFeedrate
+
+LD   Ch0InAlarm
+ST   Ch0Alarm
+
+LD   AxStopSincGRP
+ST   AxStopSincGRPMacc
+
+LD   Pon
+ST   MainAxesPower 
+
+LD   GeneralCloseLoop
+ST   MainAxesPowerAllowed
+
+LD   Sel_Z_Ch8
+ST   GstMaccSelZCh8
+
+LD   Sel_Y_Ch8
+ST   GstMaccSelYCh8
+
+LD   Sel_U_Ch8
+ST   GstMaccSelUCh8
+
+LD   Sel_V_Ch8
+ST   GstMaccSelVCh8
+
+LD   Sel_W_Ch8
+ST   GstMaccSelWCh8
+
+LD   GrantPlcMoveX
+ST   UsrGrantPlcMoveX
+
+LD   GrantPlcMoveX1
+ST   UsrGrantPlcMoveX1
+
+END_FUNCTION
+
+*******************************************************
+* USER OUTPUT CONFIGURATION
+*******************************************************
+
+FUNCTION USR_OUT_CONFIG
+
+* In case of emergency will cut off output of CNC by safety PLC
+CAL  FTRIG_EMER(CLK=EMER_GEN)
+
+LD   O_O_Mobile_Spindle_Slave_Open
+ANDN FTRIG_EMER.Q
+ST   Appoggio
+CAL  TON_Spindle_Slave_Open_C2(IN=Appoggio,PT=4000)
+LDN  TON_Spindle_Slave_Open_C2.Q  
+AND  O_O_Mobile_Spindle_Slave_Open  
+ST   SlaveSpdOpening      
+ST   O_Mobile_Spindle_Slave_Open
+
+LD   O_O_Mobile_Spindle_Slave_Close
+ANDN FTRIG_EMER.Q
+ST   Appoggio
+CAL  TON_Spindle_Slave_Close_C2(IN=Appoggio,PT=4000)
+LDN  TON_Spindle_Slave_Close_C2.Q  
+AND  O_O_Mobile_Spindle_Slave_Close   
+ST   SlaveSpdClosing     
+ST   O_Mobile_Spindle_Slave_Close  
+
+LD   O_O_Mobile_Spindle_Open         
+ST   O_Mobile_Spindle_Open
+
+LD   Invert_Mob_Spin_Open    
+ST   %PLCmsg8.8  
+JMPC Invert_Open
+     LD   O_O_Mobile_Spindle_Close     
+     ST   O_Mobile_Spindle_Close
+     
+     LD   O_O_Mobile_Spindle_Open         
+     ST   O_Mobile_Spindle_Open
+JMP  NO_Invert
+Invert_Open:
+     LD   O_O_Mobile_Spindle_Open     
+     ST   O_Mobile_Spindle_Close
+     
+     LD   O_O_Mobile_Spindle_Close         
+     ST   O_Mobile_Spindle_Open
+NO_Invert:
+
+LD   O_O_Mobile_Spindle_Slave_Brake
+ST   O_Mobile_Spindle_Slave_Brake
+
+LD   O_O_Ev_Support1_Up
+ST   O_Ev_Support1_Up
+
+LD   O_O_Ev_Support1_Dwn
+ST   O_Ev_Support1_Dwn
+
+LD   O_O_Ev_Support2_Up
+ST   O_Ev_Support2_Up
+
+LD   O_O_Ev_Support2_Dwn
+ST   O_Ev_Support2_Dwn
+
+LD   O_O_Ev_Support3_Up
+ST   O_Ev_Support3_Up
+
+LD   O_O_Ev_Support3_Dwn
+ST   O_Ev_Support3_Dwn
+
+LD   O_O_Ev_Support4_Up
+ST   O_Ev_Support4_Up
+
+LD   O_O_Ev_Support4_Dwn
+ST   O_Ev_Support4_Dwn
+
+LD   O_O_Ev_Support5_Up
+ST   O_Ev_Support5_Up
+
+LD   O_O_Ev_Support5_Dwn
+ST   O_Ev_Support5_Dwn
+
+LD   O_O_Ev_Support6_Up
+ST   O_Ev_Support6_Up
+
+LD   O_O_Ev_Support6_Dwn
+ST   O_Ev_Support6_Dwn
+
+LD   O_O_Ev_Support7_Up
+ST   O_Ev_Support7_Up
+
+LD   O_O_Ev_Support7_Dwn
+ST   O_Ev_Support7_Dwn
+
+
+LD   O_O_Ev_Support1_Up_Un
+ST   O_Ev_Support1_Up_Un
+
+LD   O_O_Ev_Support1_Dwn_Un
+ST   O_Ev_Support1_Dwn_Un
+
+LD   O_O_Ev_Support2_Up_Un
+ST   O_Ev_Support2_Up_Un
+
+LD   O_O_Ev_Support2_Dwn_Un
+ST   O_Ev_Support2_Dwn_Un
+
+LD   O_O_Ev_Support3_Up_Un
+ST   O_Ev_Support3_Up_Un
+
+LD   O_O_Ev_Support3_Dwn_Un
+ST   O_Ev_Support3_Dwn_Un
+
+LD   O_O_Ev_Support4_Up_Un
+ST   O_Ev_Support4_Up_Un
+
+LD   O_O_Ev_Support4_Dwn_Un
+ST   O_Ev_Support4_Dwn_Un
+
+LD   O_O_Ev_Support5_Up_Un
+ST   O_Ev_Support5_Up_Un
+
+LD   O_O_Ev_Support5_Dwn_Un
+ST   O_Ev_Support5_Dwn_Un
+
+LD   O_O_Ev_Support6_Up_Un
+ST   O_Ev_Support6_Up_Un
+
+LD   O_O_Ev_Support6_Dwn_Un
+ST   O_Ev_Support6_Dwn_Un
+
+LD   O_O_Ev_Support7_Up_Un
+ST   O_Ev_Support7_Up_Un
+
+LD   O_O_Ev_Support7_Dwn_Un
+ST   O_Ev_Support7_Dwn_Un
+
+LD   O_O_Pressure_Mobile
+ST   O_Pressure_Mobile
+
+LD   O_O_Pressure_MobileS
+ST   O_Pressure_MobileS    
+
+LD   O_O_Loader_Back           
+ST   O_Loader_Back           
+
+LD   O_O_Bin_Door
+ST   O_Bin_Door
+STN  O_Bin_Door_Dwn
+
+LD   O_O_FlapL2_Incline  
+ST   O_FlapL2_Incline
+        
+LD   O_O_FlapL2_Home
+ST   O_FlapL2_Home    
+
+LD   I_Loader_Alarm
+ST   %PLCerr21.18            ** Loader System Alarm    
+
+LD   O_O_Flap_Home
+ST   O_Flap_Home
+
+LD   O_O_Flap_Incline
+ST   O_Flap_Incline            
+
+LD   O_O_SpindleFix_Open
+ANDN FTRIG_EMER.Q
+ST   Appoggio
+CAL  TON_SpindleFix_Open_C1(IN=Appoggio,PT=4000)
+LDN  TON_SpindleFix_Open_C1.Q
+AND  O_O_SpindleFix_Open
+ST   MidSpdOpening
+ST   O_SpindleFix_Open     
+      
+LD   O_O_SpindleFix_Close	  
+ANDN FTRIG_EMER.Q
+ST   Appoggio	  
+CAL  TON_SpindleFix_Close_C1(IN=Appoggio,PT=4000)     
+LDN  TON_SpindleFix_Close_C1.Q
+AND  O_O_SpindleFix_Close
+ST   MidSpdClosing
+ST   O_SpindleFix_Close
+
+LD   O_O_FlapL3_Home
+ST   O_FlapL3_Home
+
+LD   O_O_FlapL3_Incline	  
+ST   O_FlapL3_Incline	  
+
+LD   O_O_FlapL4_Home
+ST   O_FlapL4_Home
+
+LD   O_O_FlapL4_Incline	  
+ST   O_FlapL4_Incline	 
+    
+LD   O_O_FlapL5_Home
+ST   O_FlapL5_Home
+
+LD   O_O_FlapL5_Incline	  
+ST   O_FlapL5_Incline	 
+
+LD   O_O_M1_M2_M3_Open
+ST   O_M1_M2_M3_Open  
+
+LD   O_O_M1_M2_M3_Close
+ST   O_M1_M2_M3_Close
+
+LD   O_O_Chain_Forw_D
+ST   O_Chain_Forw_D
+
+LD   O_O_Chain_Back_D
+ST   O_Chain_Back_D
+
+LD   O_O_Centering_Open_1
+ST   O_Centering_Open_1 
+
+LD   O_O_Centering_Close_1
+ST   O_Centering_Close_1  
+
+LD   O_O_Centering_Open_2
+ST   O_Centering_Open_2 
+
+LD   O_O_Centering_Close_2
+ST   O_Centering_Close_2
+
+LD   O_O_Centering_Open_3
+ST   O_Centering_Open_3 
+
+LD   O_O_Centering_Close_3
+ST   O_Centering_Close_3
+
+LD   O_O_Centering_Open_4
+ST   O_Centering_Open_4 
+
+LD   O_O_Centering_Close_4
+ST   O_Centering_Close_4      
+
+LD   O_O_B1_B2_Open
+ST   O_B1_B2_Open    
+
+LD   O_O_B1_B2_Close
+ST   O_B1_B2_Close   
+      
+*************************************************
+*  LOADER SUPPORTs
+*************************************************
+LD   O_O_CylinderUp_G            
+ST   O_CylinderUp_G
+
+LD   O_O_CylinderDwn_G 
+ST   O_CylinderDwn_G
+
+LD   O_O_CylinderForw_F
+ST   O_CylinderForw_F
+
+LD   O_O_CylinderBack_F
+ST   O_CylinderBack_F
+
+LD   O_O_Arm_Slow
+ST   O_Arm_Slow
+
+LD   O_O_Arm_Fast 
+ST   O_Arm_Fast 
+
+LD   O_O_Rst_InverterAlm
+ST   O_Rst_InverterAlm
+
+*************************************************
+*  Weldseam Detection
+*************************************************
+LD   O_O_Detec_Weld_Piston
+ST   O_Detec_Weld_Piston
+
+LD   O_O_Detec_Weld
+ST   O_Detec_Weld
+
+LD   O_O_WeldDetec_En
+OR   Btn_Weld_En               * Pulses
+ST   O_WeldDetec_En
+
+*************************************************
+*  UNLOADER CYLINDERs
+*************************************************
+LD   O_O_Ev_Support72_Up     
+ST   O_Ev_Support72_Up     
+
+LD   O_O_Ev_Support72_Dwn    
+ST   O_Ev_Support72_Dwn    
+
+LD   O_O_Ev_Support71_Up     
+ST   O_Ev_Support71_Up     
+
+LD   O_O_Ev_Support71_Dwn    
+ST   O_Ev_Support71_Dwn    
+
+LD   O_O_Ev_Support73_Up     
+ST   O_Ev_Support73_Up     
+
+LD   O_O_Ev_Support73_Dwn    
+ST   O_Ev_Support73_Dwn    
+
+LD   O_O_Ev_Support74_Up     
+ST   O_Ev_Support74_Up     
+
+LD   O_O_Ev_Support74_Dwn    
+ST   O_Ev_Support74_Dwn    
+
+LD   O_O_Ev_Support75_Up     
+ST   O_Ev_Support75_Up     
+
+LD   O_O_Ev_Support75_Dwn    
+ST   O_Ev_Support75_Dwn    
+
+END_FUNCTION

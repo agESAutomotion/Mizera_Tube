@@ -1,0 +1,15 @@
+[KEYS]
+TITLE = Vasche di aspirazione
+
+[PROMPT]
+KEY_SETVASCHE      = Vasche di aspirazione
+KEY_BOCCHE         = Mappatura zone
+KEY_BOCCHE_A       = Parametri generali
+BC_START_X         = Quota X0 start [mm]  (QStart)
+BC_END_X           = Quota X1 end [mm]  (QEnd)
+BC_START_Y         = Quota Y0 Start [mm]  (QStartY)
+BC_END_Y           = Quota Y1 End [mm]  (QEndY)
+BC_SVR             = Sovrapposizione zone [mm](CostK56)
+delay_spegn_vasche = Ritardo spegnimento vasca attiva [msec](CostK57)
+
+[HELP]

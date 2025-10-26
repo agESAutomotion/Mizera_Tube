@@ -1,0 +1,66 @@
+:
+
+; Safeties to not start the program when the axes are in pipe
+; side
+; W axis present in channel 3
+DBL xe= %gIso[20]/1000
+DBL ye= %gIso[21]/1000
+ IF (%cn[3].cc[1].5) THEN  
+ 
+  IF (%CalPipe[0].General[0].4) THEN                    ; IF pipe along X axis
+   
+    IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dY) < 0) && (QMEAS(Y)< (((%ax28.pa21+%LSRCostK9)/1000)))) THEN  
+
+       MSGOUT "Start program on plane side"
+       M0
+       MSGOUT ""
+       doM30 = 1 
+    ENDIF
+    
+    IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dY) > 0) && (QMEAS(Y) >= (((%ax28.pa22-%LSRCostK9)/1000)))) THEN 
+  
+       MSGOUT "Start program on plane side"
+       M0
+       MSGOUT ""
+       doM30 = 1
+    ENDIF 
+	
+   IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dY) > 0) && ((kine_y+ye) >= ((%ax28.pa22-%LSRCostK9)/1000))) THEN 
+   
+      MSGOUT "Dimension out of plane area"
+      M0
+      MSGOUT ""
+      doM30 = 1
+    ENDIF 
+ ENDIF 
+  
+ IF (%CalPipe[0].General[0].5) THEN                ; IF pipe along Y axis 
+  
+   IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dX) < 0) && (QMEAS(X)< (((%ax27.pa21+%LSRCostK9)/1000)))) THEN  
+     
+      MSGOUT "Start program on plane side"
+      M0
+      MSGOUT ""
+      doM30 = 1
+   ENDIF
+  
+   IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dX) > 0) && (QMEAS(X) >= (((%ax27.pa22-%LSRCostK9)/1000)))) THEN 
+    
+      MSGOUT "Start program on plane side"
+      M0
+      MSGOUT ""
+      doM30 = 1
+   ENDIF   
+  
+     IF ((%UnitWork.gTravE == 0) && ((%tab1.t_ttab.t_oart.t_dX) > 0) && ((xe+kine_x) >= (((%ax27.pa22-%LSRCostK9)/1000)))) THEN 
+     
+      MSGOUT "Dimension out of plane area"
+      M0
+;      MSGOUT ""
+      doM30 = 1
+     ENDIF  
+ ENDIF   
+ENDIF
+
+
+RET

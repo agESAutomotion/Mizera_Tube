@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=Proportioinal Value Adjustment
+
+[PROMPT]
+KEY_NODE=Node
+GASLIN2=GAS lin2
+Plot=Gas Curve
+L_TYPE_INTERP1=Points
+L_Voltage=REAL [Bar]
+L_Pressure=SET [Bar]
+LIST0=Linear,Segment,Smoothing
+L_TYPE_INTERP2=Pattern
+
+[STATUS]
+Plot=Real(Bar),Set(Bar)
+
+[HELP]

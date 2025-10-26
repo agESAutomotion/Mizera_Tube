@@ -1,0 +1,46 @@
+[PROMPT]
+
+SKD_VXOBJ8  = Current peack 
+SKD_VXOBJ9  = Motor resolution
+SKD_VXOBJ10 = Standby time
+SKD_VXOBJ11 = Output function
+SKD_VXOBJ12 = Ebabled valid level
+SKD_VXOBJ13 = Disabled mode
+SKD_VXOBJ14 = Out state setting
+SKD_VXOBJ15 = Filter enable
+SKD_VXOBJ16 = Filter time
+SKD_VXOBJ17 = Autotune enable
+SKD_VXOBJ18 = Current loop Kp
+SKD_VXOBJ19 = Current loop Ki
+SKD_VXOBJ20 = Current loop Kc
+SKD_VXOBJ21 = Motor resistence
+SKD_VXOBJ22 = Motor inductance
+SKD_VXOBJ23 = Motor running direction
+SKD_VXOBJ24 = Output mode of target reached
+SKD_VXOBJ25 = Fault detect set
+SKD_VXOBJ26 = Clear fault enable
+SKD_VXOBJ27 = Soft start time
+SKD_VXOBJ28 = Amplitude of first antivibration
+SKD_VXOBJ29 = Phase A of first antivibration
+SKD_VXOBJ30 = Phase B of first antivibration
+SKD_VXOBJ31 = Amplitude of second antivibration
+SKD_VXOBJ32 = Phase A of second antivibration
+SKD_VXOBJ33 = Phase B of second antivibration
+SKD_VXOBJ34 = Amplitude of third antivibration
+SKD_VXOBJ35 = Phase A of third antivibration
+SKD_VXOBJ36 = Phase B of third antivibration
+SKD_VXOBJ37 = Amplitude of fourth antivibration
+SKD_VXOBJ38 = Phase A of fourth antivibration
+SKD_VXOBJ39 = Phase B of fourth antivibration
+SKD_VXOBJ40 = Phase of Z shaft antivibration
+SKD_VXOBJ41 = Input 1 function set
+SKD_VXOBJ42 = Input 2 function set
+SKD_VXOBJ43 = Input 3 function set
+SKD_VXOBJ44 = Input 1 filter time
+SKD_VXOBJ45 = Input 2 filter time 
+SKD_VXOBJ46 = Input 3 filter time
+
+
+[HELP]
+
+

@@ -1,0 +1,71 @@
+ [S]0 [X]0 [Y]0 [Z]0 R [I] [J] [K] [A]-90.0 [B]+90.0 : G2294
+;//Spherical part/subpart
+DBL subpart = VA18
+DBL pi = IFEXP((subpart == 0), tubePI, tubePI+1)
+DBL xs = CTOMM(VA23), ys = CTOMM(VA24), zs = CTOMM(VA25)
+DBL r = CTOMM(VA17)
+DBL xv = CTOMM(VA8),  yv = CTOMM(VA9),  zv = CTOMM(VA10)
+DBL as = VA0, ae = VA1
+DBL color
+DBL shx = 0, shy = 0, shz = 0
+DBL sav_G70 = XGET("@G70")
+G71
+
+IF (VALID(xv) && VALID(yv)) ERROR(55)
+IF (VALID(yv) && VALID(zv)) ERROR(55)
+IF (VALID(zv) && VALID(xv)) ERROR(55)
+IF ((!VALID(xv)) && (!VALID(yv)) && (!VALID(zv))) zv = 1
+
+IF (subpart == 0) THEN
+    ;//SHP currently required for ranging
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+    ;//GUI: SHP data is in CN_MMINCI unit, not in current unit
+    IF (%cg[8] != 0) THEN
+        SHP(CTOIN(shx+xs-r),CTOIN(shy+ys-r),CTOIN(shz+zs-r),CTOIN(shx+xs+r),CTOIN(shy+ys+r),CTOIN(shz+zs+r))
+    ELSE
+        SHP(shx+xs-r,shy+ys-r,shz+zs-r,shx+xs+r,shy+ys+r,shz+zs+r)
+    ENDIF
+ENDIF
+
+;//  0   Black   8   Dark gray
+;//  1   Blue    9   Light blue
+;//  2   Green   10  Light green
+;//  3   Cyan    11  Light cyan
+;//  4   Red     12  Light red
+;//  5   Magenta 13  Light magenta
+;//  6   Brown   14  Yellow
+;//  7   White   15  Bright white
+
+IF (subpart == 0)  color = 12  ;//(Light red)
+IF (subpart == 1)  color = 13  ;//(Light magenta)
+IF (subpart == 2)  color = 9   ;//(Light blue)
+IF (subpart == 3)  color = 11  ;//(Light cyan)
+IF (subpart == 4)  color = 10  ;//(Light green)
+IF (subpart == 5)  color = 5   ;//(Magenta)
+IF (subpart == 6)  color = 1   ;//(Blue)
+IF (subpart == 7)  color = 3   ;//(Cyan)
+IF (subpart == 8)  color = 2   ;//(Green)
+IF (subpart >= 9)  color = 7   ;//(White)
+
+SYN
+%gmaPolygons[pi].gmanVertices = 0
+
+IF (VALID(zv)) THEN
+    G2804 C(color) X(xs) Y(ys) Z(zs) R(r) A(as) B(ae)
+ELSEIF (VALID(xv)) THEN
+    G168
+    G160  I0 J1 K0  P0 Q0 R1  U1 V0 W0
+    G2804 C(color) X(ys) Y(zs) Z(xs) R(r) A(as) B(ae)
+    G169
+ELSE
+    G168
+    G160  I0 J0 K1  P1 Q0 R0  U0 V1 W0
+    G2804 C(color) X(zs) Y(xs) Z(ys) R(r) A(as) B(ae)
+    G169
+ENDIF
+
+tubeClass = 0
+G(sav_G70)
+RET

@@ -1,0 +1,16 @@
+[PROMPT]
+KEY_SSISTAT  =Statistica SSI
+
+SSI_TPB_BENABLE =Abilita correzione degli errori
+SSI_TPB_LIST    =0-Off,1-On
+SSI_TIM_X_ALARM = Tempo massimo di err. consecutivi [s]
+SSI_SPACE_MAXERR = Spazio massimo errori consecutivi [mm]
+SSI_ABSENCOFFS  =Offset encoder assoluto [mm]
+HDR_STATISTIC    = Statistica errori
+SSI_NUM_ERRTOT = Numero totale errori
+SSI_TIM_ERRTOT = Tempo per numero totale errori [s]
+SSI_NUM_ERRSEQ = Sequenza massima di errori
+SSI_TIM_ERRSEQ = Durata sequenza massima di errori [s]
+SSI_QTA_ERRSEQ = Quota di inizio sequenza massima [mm]
+
+[HELP]

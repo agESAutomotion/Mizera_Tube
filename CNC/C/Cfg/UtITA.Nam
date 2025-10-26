@@ -1,0 +1,84 @@
+[PROMPT]
+KEY_UT        =Dati Utensili (ver. 1.5)
+
+UT_TYPE    =Tipo utensile
+DU_DESC    =Descrizione
+
+PT_LUNGZ   =Lunghezza Z Utensile[mm]
+PT_USLUNGZ =Usura Lunghezza Z[mm]
+PT_PRES    =Preset Utensile
+PT_VITA    =Vita Utensile
+PT_THDLUNGZ =THD Lunghezza Z Utensile[mm]
+
+FC_LUNGZ   =Lunghezza Z Utensile[mm]
+FC_RAD     =Raggio Utensile[mm]
+FC_PRES    =Preset Utensile
+FC_VITA    =Vita Utensile
+FC_USLUNGZ =Usura Lunghezza Z[mm]
+FC_USRAD   =Usura Raggio[mm]
+FC_THDLUNGZ   =THD Lunghezza Z Utensile[mm]
+
+FA_LUNGZ   =Lunghezza Z Utensile[mm]
+FA_LUNGX   =Lunghezza X Utensile[mm]
+FA_RAD     =Raggio Utensile[mm]
+FA_PRES    =Preset Utensile
+FA_VITA    =Vita Utensile
+FA_USLUNGZ =Usura Lunghezza Z[mm]
+FA_USLUNGX =Usura Lunghezza X[mm]
+FA_USRAD   =Usura Raggio[mm]
+FA_THDLUNGZ   =THD Lunghezza Z Utensile[mm]
+FA_THDLUNGX   =THD Lunghezza X Utensile[mm]
+
+TN_LUNGZ   =Lunghezza Z Utensile[mm]
+TN_LUNGX   =Lunghezza X Utensile[mm]
+TN_RAD     =Raggio Utensile[mm]
+TN_ANG_A   =Angolo di spoglia A
+TN_ANG_B   =Angolo di spoglia B
+TN_PRES    =Preset Utensile
+TN_VITA    =Vita Utensile
+TN_USLUNGZ =Usura Lunghezza Z[mm]
+TN_USLUNGX =Usura Lunghezza X[mm]
+TN_USRAD   =Usura Raggio[mm]
+TN_THDLUNGZ   =THD Lunghezza Z Utensile[mm]
+TN_THDLUNGX   =THD Lunghezza X Utensile[mm]
+TN_THDLUNGY   =THD Lunghezza Y Utensile[mm]
+
+VITA_PREAL = Vita preallarme
+
+[HELP]
+UT_TYPE       =Tipo Utensile: 1-Fresa a Candela  2-Fresa a Testa angolare  3-Tornio 4-Punta a Forare
+
+PT_LUNGZ   =Lunghezza Z Utensile: Lunghezza dell'utensile nella direzione ortogonale al piano selezionato
+PT_USLUNGZ =Usura Lunghezza Z
+PT_PRES    =Preset Utensile
+PT_VITA    =Vita Utensile
+
+FC_LUNGZ   =Lunghezza Z Utensile: Lunghezza dell'utensile nella direzione ortogonale al piano selezionato
+FC_RAD     =Raggio Utensile: Raggio dell'utensile consente  di tenere in considerazione l'ingombro reale dell'utensile in fase di lavorazione
+FC_PRES    =Preset Utensile
+FC_VITA    =Vita Utensile
+FC_USLUNGZ =Usura Lunghezza Z
+FC_USRAD   =Usura Raggio
+
+FA_LUNGZ   =Lunghezza Z Utensile: Lunghezza dell'utensile nella direzione ortogonale al piano selezionato
+FA_LUNGX   =Lunghezza X Utensile: Offset dell'utensile sul piano di lavorazione
+FA_RAD     =Raggio Utensile:Raggio dell'utensile consente di tenere in considerazione l'ingombro reale dell'utensile in fase di lavorazione
+FA_PRES    =Preset Utensile
+FA_VITA    =Vita Utensile
+FA_USLUNGZ =Usura Lunghezza Z
+FA_USLUNGX =Usura Lunghezza X
+FA_USRAD   =Usura Raggio
+
+TN_LUNGZ   =Lunghezza Z Utensile: Lunghezza dell'utensile nella direzione ortogonale al piano selezionato
+TN_LUNGX   =Lunghezza X Utensile: Offset dell'utensile sul piano di lavorazione
+TN_RAD     =Raggio Utensile: Raggio dell'utensile consente di tenere in considerazione l'ingombro reale dell'utensile in fase di lavorazione
+TN_ANG_A   =Angolo di spoglia A
+TN_ANG_B   =Angolo di spoglia B
+TN_PRES    =Preset
+TN_VITA    =Vita Utensile
+TN_USLUNGZ =Usura Lunghezza Z
+TN_USLUNGX =Usura Lunghezza X
+TN_USRAD   =Usura Raggio
+
+VITA_PREAL = Vita preallarme
+

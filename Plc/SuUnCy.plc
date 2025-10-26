@@ -1,0 +1,336 @@
+*******************************************************
+*  Motor-cylinder Composite Support (Cylinder Part)   *
+*  Supports Up/Dwn Conditions Based On Motor Part     *
+*******************************************************
+#funcdec "FBSuppor.plc"
+#funcdec "assi.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+#funcdec "SupForce.plc"
+#funcdec "suppFB.plc"
+
+#include "Iol.inc"
+#include "usrMem.inc"
+
+VAR
+#include "iof.inc"
+#include "usrIof.inc"
+#include "cnc.inc"
+
+SUPPORT_71:     TUBE_SUPPORT;
+SUPPORT_72:     TUBE_SUPPORT;
+SUPPORT_73:     TUBE_SUPPORT;
+SUPPORT_74:     TUBE_SUPPORT;
+SUPPORT_75:     TUBE_SUPPORT;
+END_VAR
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"              
+END_VAR
+
+FUNCTION UN_CYLINDER_SUPPORTS
+*******************************************************
+*    UNLOAD CYLINDER SUPPORTS MANAGEMENT              *
+*******************************************************
+LD   UNSUPPORTS_JogPlus
+ST   UNSUPPORTS_JogPlusLed
+
+LD   UNSUPPORTS_JogMinus
+ST   UNSUPPORTS_JogMinusLed
+
+LD   SupervisePos_X1  
+ST   SUPPORT_71.xPosU      
+ST   SUPPORT_72.xPosU      
+ST   SUPPORT_73.xPosU      
+ST   SUPPORT_74.xPosU      
+ST   SUPPORT_75.xPosU 
+
+LDN  I_I_EMERGENZA            
+ST   SUPPORT_71.xEmerg
+ST   SUPPORT_72.xEmerg
+ST   SUPPORT_73.xEmerg
+ST   SUPPORT_74.xEmerg
+ST   SUPPORT_75.xEmerg
+
+LD   ch0_in_aut                  
+ST   SUPPORT_71.xAuto	
+ST   SUPPORT_72.xAuto	
+ST   SUPPORT_73.xAuto	
+ST   SUPPORT_74.xAuto	
+ST   SUPPORT_75.xAuto	
+
+LD   I_I_PRESSIONE_ARIA_IMPIANTO            
+ST   SUPPORT_71.xAirPressure  
+ST   SUPPORT_72.xAirPressure  
+ST   SUPPORT_73.xAirPressure  
+ST   SUPPORT_74.xAirPressure  
+ST   SUPPORT_75.xAirPressure  
+
+LD   Reset                          
+OR   Start_Ch0                    
+ST   SUPPORT_71.xReset  
+ST   SUPPORT_72.xReset  
+ST   SUPPORT_73.xReset  
+ST   SUPPORT_74.xReset  
+ST   SUPPORT_75.xReset  
+
+LD   TimeOutPistonDown
+ST   SUPPORT_71.xTimeOut  
+ST   SUPPORT_72.xTimeOut  
+ST   SUPPORT_73.xTimeOut  
+ST   SUPPORT_74.xTimeOut  
+ST   SUPPORT_75.xTimeOut  
+
+*******************************************************
+* Support On Ax71
+*******************************************************
+LD   I_I_SUPPORT_71_Dwn           
+ST   SUPPORT_71.xSensorDwn 
+
+LD   I_I_SUPPORT_71_Up
+ST   SUPPORT_71.xSensorOpen
+
+LD   SUPPORTS_S71_Selected
+AND  UNSUPPORTS_JogPlus
+ST   SUPPORT_71.xManualUp	
+
+LD   SUPPORTS_S71_Selected
+AND  UNSUPPORTS_JogMinus
+ST   SUPPORT_71.xManualDwn	
+
+LDN  Hold_U_Z1Supp
+ANDN SUP71_xParkCmd   
+ANDN yActivatedCyCom_71
+ST   SUPPORT_71.xAutoUp  
+
+LD   Hold_U_Z1Supp
+OR   SUP71_xParkCmd
+OR   yActivatedCyCom_71
+ST   SUPPORT_71.xAutoDwn 
+
+LD   SUPPORT_71_AutoEnable
+ST   SUPPORT_71.xEnable
+
+LD   OffsetUnSuppDwn_71
+ST   SUPPORT_71.xSuperviseOft
+
+LD   U_Posit_Z1_Down        
+ST   SUPPORT_71.xLimitQuota
+
+CAL  SUPPORT_71
+
+LD   SUPPORT_71.yEvUp
+ST   O_O_Ev_Support71_Up         
+
+LD   SUPPORT_71.yEvDwn
+ST   O_O_Ev_Support71_Dwn
+
+LD   SUPPORT_71.yAlarmDwn      
+ST   %PLCerr20.4   
+
+*******************************************************
+* Support On Ax72
+*******************************************************
+LD   I_I_SUPPORT_72_Dwn            
+ST   SUPPORT_72.xSensorDwn 
+
+LD   I_I_SUPPORT_72_Up
+ST   SUPPORT_72.xSensorOpen
+
+LD   SUPPORTS_S72_Selected
+AND  UNSUPPORTS_JogPlus
+ST   SUPPORT_72.xManualUp	
+
+LD   SUPPORTS_S72_Selected
+AND  UNSUPPORTS_JogMinus
+ST   SUPPORT_72.xManualDwn	
+
+LDN  Hold_U_Z2Supp
+ANDN SUP72_xParkCmd   
+ANDN yActivatedCyCom_72
+ST   SUPPORT_72.xAutoUp  
+
+LD   Hold_U_Z2Supp
+OR   SUP72_xParkCmd
+OR   yActivatedCyCom_72
+ST   SUPPORT_72.xAutoDwn 
+
+LD   SUPPORT_72_AutoEnable
+ST   SUPPORT_72.xEnable
+
+LD   OffsetUnSuppDwn_72
+ST   SUPPORT_72.xSuperviseOft
+
+LD   U_Posit_Z2_Down        
+ST   SUPPORT_72.xLimitQuota
+
+CAL  SUPPORT_72
+
+LD   SUPPORT_72.yEvUp
+ST   O_O_Ev_Support72_Up         
+
+LD   SUPPORT_72.yEvDwn
+ST   O_O_Ev_Support72_Dwn
+
+LD   SUPPORT_72.yAlarmDwn       
+ST   %PLCerr20.5    
+
+*******************************************************
+* Support On Ax73
+*******************************************************
+LD   I_I_SUPPORT_73_Dwn           
+ST   SUPPORT_73.xSensorDwn 
+
+LD   I_I_SUPPORT_73_Up
+ST   SUPPORT_73.xSensorOpen
+
+LD   SUPPORTS_S73_Selected
+AND  UNSUPPORTS_JogPlus
+ST   SUPPORT_73.xManualUp	
+
+LD   SUPPORTS_S73_Selected
+AND  UNSUPPORTS_JogMinus
+ST   SUPPORT_73.xManualDwn	
+
+LDN  Hold_U_Z3Supp
+ANDN SUP73_xParkCmd   
+ANDN yActivatedCyCom_73
+ST   SUPPORT_73.xAutoUp  
+
+LD   Hold_U_Z3Supp
+OR   SUP73_xParkCmd
+OR   yActivatedCyCom_73
+ST   SUPPORT_73.xAutoDwn 
+
+LD   SUPPORT_73_AutoEnable
+ST   SUPPORT_73.xEnable
+
+LD   OffsetUnSuppDwn_73
+ST   SUPPORT_73.xSuperviseOft
+
+LD   U_Posit_Z3_Down        
+ST   SUPPORT_73.xLimitQuota
+
+CAL  SUPPORT_73
+
+LD   SUPPORT_73.yEvUp
+ST   O_O_Ev_Support73_Up         
+
+LD   SUPPORT_73.yEvDwn
+ST   O_O_Ev_Support73_Dwn
+
+LD   SUPPORT_73.yAlarmDwn      
+ST   %PLCerr20.6  
+
+*******************************************************
+* Support On Ax74
+*******************************************************
+LD   I_I_SUPPORT_74_Dwn            
+ST   SUPPORT_74.xSensorDwn 
+
+LD   I_I_SUPPORT_74_Up
+ST   SUPPORT_74.xSensorOpen
+
+LD   SUPPORTS_S74_Selected
+AND  UNSUPPORTS_JogPlus
+ST   SUPPORT_74.xManualUp	
+
+LD   SUPPORTS_S74_Selected
+AND  UNSUPPORTS_JogMinus
+ST   SUPPORT_74.xManualDwn	
+
+LDN  Hold_U_Z4Supp
+ANDN SUP74_xParkCmd   
+ANDN yActivatedCyCom_74
+ST   SUPPORT_74.xAutoUp  
+
+LD   Hold_U_Z4Supp
+OR   SUP74_xParkCmd
+OR   yActivatedCyCom_74
+ST   SUPPORT_74.xAutoDwn 
+
+LD   SUPPORT_74_AutoEnable
+ST   SUPPORT_74.xEnable
+
+LD   OffsetUnSuppDwn_74
+ST   SUPPORT_74.xSuperviseOft
+
+LD   U_Posit_Z4_Down        
+ST   SUPPORT_74.xLimitQuota
+
+CAL  SUPPORT_74
+
+LD   SUPPORT_74.yEvUp
+ST   O_O_Ev_Support74_Up         
+
+LD   SUPPORT_74.yEvDwn
+ST   O_O_Ev_Support74_Dwn
+
+LD   SUPPORT_74.yAlarmDwn     
+ST   %PLCerr20.7     
+
+*******************************************************
+* Support On Ax75
+*******************************************************
+LD   I_I_SUPPORT_75_Dwn           
+ST   SUPPORT_75.xSensorDwn 
+
+LD   I_I_SUPPORT_75_Up
+ST   SUPPORT_75.xSensorOpen
+
+LD   SUPPORTS_S75_Selected
+AND  UNSUPPORTS_JogPlus
+ST   SUPPORT_75.xManualUp	
+
+LD   SUPPORTS_S75_Selected
+AND  UNSUPPORTS_JogMinus
+ST   SUPPORT_75.xManualDwn	
+
+LDN  Hold_U_Z5Supp
+ANDN SUP75_xParkCmd   
+ANDN yActivatedCyCom_75
+ST   SUPPORT_75.xAutoUp  
+
+LD   Hold_U_Z5Supp
+OR   SUP75_xParkCmd
+OR   yActivatedCyCom_75
+ST   SUPPORT_75.xAutoDwn 
+
+LD   SUPPORT_75_AutoEnable
+ST   SUPPORT_75.xEnable
+
+LD   OffsetUnSuppDwn_75
+ST   SUPPORT_75.xSuperviseOft
+
+LD   U_Posit_Z5_Down        
+ST   SUPPORT_75.xLimitQuota
+
+CAL  SUPPORT_75
+
+LD   SUPPORT_75.yEvUp
+ST   O_O_Ev_Support75_Up         
+
+LD   SUPPORT_75.yEvDwn
+ST   O_O_Ev_Support75_Dwn
+
+LD   SUPPORT_75.yAlarmDwn        
+ST   %PLCerr20.8     
+
+*******************************************************
+*                    HOLD CONDITION                   *
+*******************************************************
+LD   %PLCerr20.4  
+OR   %PLCerr20.5  
+OR   %PLCerr20.6  
+OR   %PLCerr20.7  
+OR   %PLCerr20.8  
+OR   SUPPORT_71.yHoldMovSuperv
+OR   SUPPORT_72.yHoldMovSuperv
+OR   SUPPORT_73.yHoldMovSuperv
+OR   SUPPORT_74.yHoldMovSuperv
+OR   SUPPORT_75.yHoldMovSuperv
+ST   M_HoldAx_V
+
+END_FUNCTION
+

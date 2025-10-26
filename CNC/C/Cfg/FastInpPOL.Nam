@@ -1,0 +1,22 @@
+[PROMPT]
+
+KEY_FASTINP         =Szybkie wejscia
+FI_CONF             =Konfiguracja szybkich wejsc
+FI_NUMBER           =Liczba szybkich wejsc [0-36]
+FI_DATA             =Dane szybkich wejsc
+FI_EDGE             =Aktywny element [0-3]
+FI_AXIS             =Osie zwiazane
+FI_INPNUM           =internal drive input number
+FI_NOVER            =Bez nadpisywania [0/1/2]
+FI_DELAY            =Opóznienie [µs]
+
+[HELP]
+FI_CONF             =Konfiguracja szybkich wejsc
+FI_NUMBER           =Liczba szybkich wejsc [0-36]
+FI_DATA             =Dane szybkich wejsc
+FI_EDGE             =Aktywny element: 0-niedostepne,1-wzrost,2-spadek,3-oba
+FI_AXIS             =Osie zwiazane (w calym systemie)
+FI_INPNUM           =on digital drives, internal drive input number (0-disab,1-3)
+FI_NOVER            =Wybór 0-nadpisywanie 1-bez nadpisywania polozenia 2-queued
+FI_DELAY            =Opóznienie przesylu wejscia [µs]
+

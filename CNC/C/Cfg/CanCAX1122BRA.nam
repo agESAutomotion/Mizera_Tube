@@ -1,0 +1,23 @@
+[PROMPT]
+
+CAX1122_NUMOBJS =Boot Options
+
+CAX1122_NUMOBJSLIST =DISABLED, UPLOAD, DOWNLOAD
+
+PAR_MOTOR=Motor
+PAR_INPUTFUN=Input Functions
+
+CAX1122_VXOBJ8  = Kp Position gain GAIN
+CAX1122_VXOBJ9  = Feed forward (0%-100%) RFFW
+CAX1122_VXOBJ10 = Feed forward delay (max 10) TFFW
+CAX1122_VXOBJ11 = Scale factor for analog output (count/8V) VEL8
+CAX1122_VXOBJ12 = Velocity offset (count) OFFS
+CAX1122_VXOBJ13 = Encoder pulse/rev IMPE
+CAX1122_VXOBJ14 = Following error dinamic correction (0%-100%) RDIN
+CAX1122_VXOBJ15 = Max following error (count) EMAX
+CAX1122_VXOBJ16 = Positioning tolerance (count) EPOS
+CAX1122_VXOBJ17 = Tolerance time TPOS
+
+
+[HELP]
+

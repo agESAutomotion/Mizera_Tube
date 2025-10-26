@@ -1,0 +1,105 @@
+//file persoanlizzazione exprot ESA CAM
+//tutte le righe che iniziano con // sono commenti
+//sono presenti diverse sezioni, distinte da nome compreso tra []
+//fare riferimento ai commenti delle singole sezioni
+
+//Impostazioni visualizzazione
+[VIEW]
+WorkDir=1
+ProfileOrder=1
+AxisGrid=1
+LineSmooth=1
+BackGroundBlack=0
+
+//impostazioni conversioni
+[CONVERSION]
+UseG2-G3=1
+NumDivArc=-1
+MaxChordErr=0.3
+JointTol=0.005
+Export2D=1
+
+//impostazioni colori modalità sfondo nero
+[COLORS_BACK_BLACK]
+Background=0,0,64
+Grid=128,128,128
+Quote=255,255,255
+TrackNormal=255,128,255
+TrackClosedInt=0,255,0
+TrackClosedExt=0,255,255
+TrackOpenSx=255,0,255
+TrackOpenDx=128,0,128
+TrackNotExp=128,128,128
+TrackLeadIn=255,128,0
+TrackLeadOut=255,128,0
+TrackSelected=255,255,0
+
+//impostazioni colori modalità sfondo bianco
+[COLORS_BACK_WHITE]
+Background=200,255,200
+Grid=128,128,128
+Quote=0,0,0
+TrackNormal=0,0,255
+TrackClosedInt=0,255,0
+TrackClosedExt=0,255,255
+TrackOpenSx=255,0,255
+TrackOpenDx=128,0,128
+TrackNotExp=128,128,128
+TrackLeadIn=255,128,0
+TrackLeadOut=255,128,0
+TrackSelected=128,128,0
+
+
+
+
+//Sezione prologo, aggiunta in testa al programma
+//riconosce voci %MinX %MinY %MinZ  sostituite con valori minimi di x y e z del disegno
+//%MaxX %MaxY %MaxZ  sostituite con valori massimi di x y e z del disegno
+[Prologue]
+
+SHP(%MinX, %MinY, 0, %MaxX, %MaxY, 5)
+
+DBL lead_in_speed = 50
+DBL lead_out_speed = 50
+DBL cut_speed = 100
+;//--START--
+G64
+G90
+G94
+
+JMP (VL100)
+N0
+
+//personalizzazione start profilo
+//vengono riconosciute le voci %X %Y %Z  che sono sostituite con il corrispondente
+// valore di inizio profilo (se presente viene utilizzato inizio attacco
+// le voci %Corr40 e %Corr0 vengono sostituite con il valore impostato di correzione 40-41-42 e 0-1-2
+[StartProf]
+?VL100 = VL100+1
+D1
+M71
+G0 X%X Y%Y
+M70
+F(lead_in_speed)
+G%Corr40
+
+//personalizzazione fine attacco inizio lavorazione
+[EndLeadIn]
+F(cut_speed)
+
+
+//personalizzazione inizio leadout
+[LeadOut]
+F(lead_out_speed)
+
+
+//personalizzazione fine tratto
+[EndProf]
+M71
+
+//personalizzazione fine programma
+[Epilogue]
+?VL100 = 0
+
+M30
+

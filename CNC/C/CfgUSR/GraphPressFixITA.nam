@@ -1,0 +1,19 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+GRAPHPRESSFIX=Graph Thick - Press Fix
+GroupBox2=Thickness - Pressure Fixed Spindle
+Plot1=Thickness - Pressure
+L_TYPE_INTERP81=Pattern
+LIST0=Linear,Segment,Smoothing
+L_TYPE_INTERP82=Points
+L_SPEED81=Thickness [mm]
+L_POWER82=Pressure [Bar]
+
+[STATUS]
+Plot1=Pressure [Bar], Thickness [mm]
+
+[HELP]

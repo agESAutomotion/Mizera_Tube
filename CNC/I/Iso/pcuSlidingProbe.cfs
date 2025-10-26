@@ -1,0 +1,322 @@
+ : pcuSlidingProbe
+;// pipe calibration cycles:
+;// rotates the tube at given C coordinates, then probes the face facing
+;// upwards perpendicularily at given coordinates, then searching for an edge
+;// horizontarily to another given coordinates.  Outputs the FINAL acquired
+;// end point, that also contains the correction along the face normal.
+;//
+;// IMPORTANT! Coordinate arrays are arranged so that [2] is along the tube,
+;// and [0] and [1] form a right-handed system with [2].  It's up to this
+;// routine to determine how to map the axes (and C rotation) for proper
+;// operation.
+;// It's up to the caller to leave the touch site after the last touch
+;// operation, either by a G0 to (lift) or a jump to the machining.
+;//
+;// INPUT:
+;//     pcC,
+;//     pcV[3], pcH[3]
+;//     pcW
+;// OUTPUT:
+;//     pcAcquired[3]
+DBL fGraph = %cn[WHO()].pc[14].25
+DBL saveF = XGET("@F")
+
+;DBL lift = 200      ;//TODO: use proper value
+DBL touchEpsilonV
+DBL touchEpsilonH
+
+DBL touch_enable = 1
+DBL tx, ty, tz
+DBL ti, tj, tk
+DBL DistFromPiece,touch_epsilon
+DBL SaveX 
+DBL SaveY 
+DBL pbase = 1
+DBL piercing_mode = 1
+
+DBL vx, vy, vz
+DBL hx, hy, hz
+DBL d
+DBL c
+DBL nx, ny, nz
+DBL u = QNAN(), v = QNAN(), w = QNAN()
+
+IF( gG806FlyCutMode == 1 ) THEN
+    G806 T3 N1 H1 D1 E1 A11 F(0x0010)
+ELSE
+    G806 T3 N1 H1 D1 E1 A11
+ENDIF
+
+IF (twist_table_no == 0) ERROR(55)
+
+;//      T
+;// n = R * [0 1]
+SWITCH (tubeAxis)
+CASE 0
+    vx = pcV[2]
+    vy = pcV[0]
+    vz = pcV[1]
+    u = pcW
+    nx = 0
+    ny = SIN(pcC)
+    nz = COS(pcC)
+CASE 1
+    vx = pcV[1]
+    vy = pcV[2]
+    vz = pcV[0]
+    v = pcW
+    nx = COS(pcC)
+    ny = 0
+    nz = SIN(pcC)
+CASE 2
+    vx = pcV[0]
+    vy = pcV[1]
+    vz = pcV[2]
+    w = pcW
+    nx = SIN(pcC)
+    ny = COS(pcC)
+    nz = 0
+OTHERWISE
+    ERROR(55) ;bad tube axis
+ENDSWITCH
+
+IF (fGraph) JMPF .skipGraph1
+
+c = pcC + pcPolyToPhy
+
+G153 G0 Z(optimized_lift)
+
+G180 X(vx) Y(vy) Z(vz) C(c)
+G153 G0 X(kine_x) Y(kine_y) C(HDC(C, kine_c)) U(u) V(v) W(w)
+
+;// V-ACQUIRE
+
+?%CalPipe[0].General[3] = 2         ; index to communicate in laser touch the setpoint for the calibration
+          DistFromPiece = 1
+		  
+G180 P1 X(vx) Y(vy) Z(vz) C(c)
+
+?%UnitWork.uxh[0].a_x = kine_x 
+?%UnitWork.uxh[0].a_y = kine_y 
+?%UnitWork.uxh[0].a_z = kine_z + %UnitWork.uxh[0].uxh_Thickness + DistFromPiece;
+?%UnitWork.uxh[0].touch_mode = 1
+?%UnitWork.uxh[0].regol_mode = 1		
+	
+SYN
+; Relative Coordinates 
+
+tx = vx
+ty = vy
+tz = vz 
+
+ti = 0
+tj = SIN(c)
+tk = COS(c)    
+
+EI(ti) EJ(tj) EK(tk)
+G152
+
+IF (!fGraph) JSR "laser_start.cfs"
+
+SYN    
+touchEpsilonV = (%vrtc1.VrMon_Q_Flt_Q / 1000) 
+ 
+?%CalPipe[0].General[3] = 0                ; index to communicate in laser touch the setpoint for the calibration
+    
+IF (!fGraph) JSR "laser_stop.cfs" 
+
+;Pipe calibration with touching 
+IF( %LSRPlcOp0.10 == 1 ) THEN
+ 
+ G153
+ 
+ ;Disab filter
+ ?%LsIso15.2 = 1 ;
+ ?%LsIso16.2 = 1 ;
+ G4 F0.1         ;
+ 
+ ;Disable tip touch        
+ ?%LsIso17.0 = 1
+ 
+ DECTRJ=4000     ;
+ JRKTRJ=0        ;
+ 
+ ;//Parametri per _singolo e _singfc
+ ; 0x10              ;vmax presente
+ ; 0x04              ;forza vout  = 0
+ ; 0x08              ;forza vout != 0
+ ; 0x01              ;quota assoluta
+ ; 2                 ;indietro
+ ; 1                 ;avanti
+ _singfc( ( 0x10 | 0x08 ), Z, 2, 200, 0, "%LsPlc11.8", 1 )
+ 
+ ;Enab filter
+ ?%LsIso15.2 = 0 ;
+ ?%LsIso16.2 = 0 ;
+ G4 F0.1         ;
+ 
+ DECTRJ=%cn[WHO()].pc7
+ JRKTRJ=%cn[WHO()].pc16
+ 
+ _singfc( ( 0x10 | 0x04 ), Z, 1, 200, 0, "%LsPlc11.8", 0 )
+ G4 F0.2
+ 
+ SYN
+ z_abs = GET(Z)
+ touchEpsilonV = z_abs - %UnitWork.uxh[0].a_z + DistFromPiece    ;;;;; Controllare 
+ G10 G0 Z(QCALC(Z))
+ 
+ G180 P1 X(vx) Y(vy) Z(vz)
+ 
+ ; Move Z 1 mm plus from the piece in order to scan surface in the next step
+ G153 G0 Z(kine_z + touchEpsilonV + DistFromPiece)
+ 
+ ;Enable tip touch        
+ ?%LsIso17.0 = 0
+ 
+ G152
+ 
+ENDIF
+
+G180 P1 X(vx) Y(vy) Z(vz)
+G180 D1 P1 Z(kine_z + touchEpsilonV)
+
+vx = kine_x
+vy = kine_y
+vz = kine_z
+
+.skipGraph1
+; probe_done
+
+IF (fGraph) G2805 C12 X(vx) Y(vy) Z(vz)
+
+SWITCH (tubeAxis)
+CASE 0
+    hx = pcH[2]
+    hy = pcH[0]
+    hz = pcH[1]
+CASE 1
+    hx = pcH[1]
+    hy = pcH[2]
+    hz = pcH[0]
+CASE 2
+    hx = pcH[0]
+    hy = pcH[1]
+    hz = pcH[2]
+OTHERWISE
+    ERROR(55) ;bad tube axis
+ENDSWITCH
+
+
+IF (fGraph) JMPF .skipGraph2
+
+;// H-ACQUIRE
+
+; Direction for _singfc
+;// approach position
+G180 X(vx) Y(vy) Z(vz) C(c)
+
+SaveX = kine_x
+SaveY = kine_y
+
+;// end point
+G180 X(hx) Y(hy) Z(hz) C(c)
+
+IF (tubeAxis == 0) THEN
+
+      IF (fGraph) G153 G0 Y(kine_y)
+      ?%CalPipe[0].General[1] = kine_y
+	
+	  IF (!fGraph) THEN
+          IF ( SaveY > kine_y) THEN
+           G153
+           _singfc( ( vmax | vout0 ),Y,2, 1000, 0,"%gPlc2.13", 0 )      ; Z goes to touch the plate
+           G4 F0.02
+           SYN
+           G10 G0 X(QCALC(X)) Y(QCALC(Y))
+           touchEpsilonH = GET(Y) - kine_y
+           G152
+          ENDIF
+          IF ( SaveY < kine_y) THEN
+           G153
+           _singfc( ( vmax | vout0 ),Y,1, 1000, 0,"%gPlc2.13", 0 )      ; Z goes to touch the plate
+           G4 F0.02
+           SYN
+           G10 G0 X(QCALC(X)) Y(QCALC(Y))
+           touchEpsilonH = GET(Y) - kine_y
+           G152
+          ENDIF
+      ENDIF
+ELSE
+	
+     IF ( fGraph) G153 G0 X(kine_x)
+     ?%CalPipe[0].General[1] = kine_x
+       
+	 IF (!fGraph) THEN	
+         IF ( SaveX > kine_x) THEN
+           G153
+           _singfc( ( vmax | vout0 ),X,2, 1000, 0,"%gPlc2.13", 0 )      ; Z goes to touch the plate
+           G4 F0.02
+           SYN
+           G10 G0 X(QCALC(X)) Y(QCALC(Y))
+           touchEpsilonH = GET(X) - kine_x
+           G152
+         ENDIF
+         IF ( SaveX < kine_x) THEN
+           G153
+           _singfc( ( vmax | vout0 ),X,1, 1000, 0,"%gPlc2.13", 0 )      ; Z goes to touch the plate
+           G4 F0.02
+           SYN
+           G10 G0 X(QCALC(X)) Y(QCALC(Y))
+           touchEpsilonH = GET(X) - kine_x
+           G152
+         ENDIF
+     ENDIF
+ENDIF
+	
+G180 P1 X(hx) Y(hy) Z(hz) C(c)
+
+IF (tubeAxis == 1) THEN
+    G180 D1 P1 Y(kine_y + touchEpsilonH)
+ELSE
+    G180 D1 P1 X(kine_x + touchEpsilonH)
+ENDIF
+
+hx = kine_x
+hy = kine_y
+hz = kine_z
+
+;// leave
+G153 G0 Z(optimized_lift)	
+
+.skipGraph2
+
+;// NOTE: the sliding end-point MUST contain also the face normal correction!
+;// h' = h + n * (n * (v - h))
+d = nx * (vx - hx) + ny * (vy - hy) + nz * (vz - hz)
+hx = hx + nx * d
+hy = hy + ny * d
+hz = hz + nz * d
+	
+IF (fGraph) G2806 C12 X(vx) Y(vy) Z(vz) U(hx) V(hy) W(hz)
+IF (fGraph) G2805 C11 X(hx) Y(hy) Z(hz)
+
+SWITCH (tubeAxis)
+CASE 0
+    pcAcquired[0] = hy
+    pcAcquired[1] = hz
+    pcAcquired[2] = hx
+CASE 1
+    pcAcquired[0] = hz
+    pcAcquired[1] = hx
+    pcAcquired[2] = hy
+CASE 2
+    pcAcquired[0] = hx
+    pcAcquired[1] = hy
+    pcAcquired[2] = hz
+OTHERWISE
+    ERROR(55) ;bad tube axis
+ENDSWITCH
+
+F(saveF)
+RET

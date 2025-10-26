@@ -1,0 +1,29 @@
+ Z X K I : G11032
+
+;// Calcola la cinematica diretta (lifter kinematics con tabella n-polinomiale)
+;// e ritorna il risultato in lifter_z e lifter_x (definire esternamente).
+;// Utilizzare prima delle G4011 T35 per impostare le quote dei master Z ed X.
+;// Z,X = selezione tabelle fz ed fx del sistema z'=fz(z) e x'=fx(z)+x
+;// K,I = slave z' ed x'
+;// ove:
+;//     z' = scorrimento z' del cuneo/rotazione della biella
+;//     x' = slitta x' su cui scorrono il cuneo/l'attacco della biella
+
+DBL tableZ = VA25
+DBL tableX = VA23
+SYN
+DBL jointZ = QCALC(VA10)
+DBL jointX = QCALC(VA8)
+DBL table_x, table_y    ;//G11035 output
+
+;//   -1
+;//z=fz(z')
+G11035 D0 T(tableZ) Y(jointZ)
+lifter_z = table_x
+
+;//x=x'-fx(z)
+;//(uses lifter_z from previous equation!)
+G11035 D1 T(tableX) X(lifter_z)
+lifter_x = jointX - table_y
+
+RET

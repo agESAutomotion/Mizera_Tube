@@ -1,0 +1,42 @@
+ :G168
+;//
+;// G168
+;//
+;//introduce un nuovo sistema di riferimento relativo a
+;//quello attivo e passa a quello nuovo.  Il nuovo sistema
+;//di riferimento e' inizializzato come identico.
+;//Scrive sui coefficienti mx_...
+
+ml_curr = ADD(ml_curr,1)
+
+IF(ml_curr >= ml_max) ERROR(61)  ;//Valore troppo elevato
+
+ml_peak = ml_curr
+
+ml_to1[ml_curr]=0
+ml_to2[ml_curr]=0
+ml_to3[ml_curr]=0
+
+ml_a11[ml_curr]=1
+ml_a21[ml_curr]=0
+ml_a31[ml_curr]=0
+ml_a12[ml_curr]=0
+ml_a22[ml_curr]=1
+ml_a32[ml_curr]=0
+ml_a13[ml_curr]=0
+ml_a23[ml_curr]=0
+ml_a33[ml_curr]=1
+ml_ro1[ml_curr]=0
+ml_ro2[ml_curr]=0
+ml_ro3[ml_curr]=0
+
+ml_mf1[ml_curr]=0
+ml_mf2[ml_curr]=0
+ml_mf3[ml_curr]=0
+ml_mo1[ml_curr]=0
+ml_mo2[ml_curr]=0
+ml_mo3[ml_curr]=0
+
+G1152
+G152
+RET

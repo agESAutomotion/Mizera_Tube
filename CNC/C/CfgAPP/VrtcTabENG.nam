@@ -1,0 +1,33 @@
+
+[KEYS]
+TITLE=VRTC TABLES
+TXT0=Data
+
+[PROMPT]
+KEY_NODE=Node
+VRTCTAB=VrtcTab
+LabelTab1=PROBE [0]
+LabelTab2=JUMP [1]
+LabelTab3=FAR [2]
+LabelTab4=NEAR [3]
+LabelTab5=CUT [4]
+LabelTabHold1=PIPE CUT [5]
+LBL_VELOCITA2=Cut Height [mm]
+LBL_jumplimit2=Height Jump Limit [mm] (Pipe Machine)
+LBL_upVel2=Z axis quota for speed change [NOT USED] [mm]
+LBL_jumplimit1=Z Dist. disable Probe state during jump[mm]
+LBL_jumplimit3=First Filter regulator (Z axis)  [ms]
+LBL_jumplimit4=Second Filter Regulator (Z axis) [ms]
+LBL_jumplimit5=Delay (Z axis) [ms]
+LBL_jumplimit6=Interpolated Speed Fir [ms]
+LBL_VELOCITA1=System Model Processing Surface
+LIST0=OFF,ON
+LBL_VELOCITA3=Sliding Mode Delay Surface [ms]
+LBL_VELOCITA4=System Model Process Fir 1 (Surface) [ms]
+LBL_VELOCITA5=System Model Process Fir 2 (Surface)  [ms]
+LBL_VELOCITA6=System Model Process Delay (Surface)  [ms]
+LBL_upVel1=Z axis quota for speed change [from PGM] [mm]
+
+[STATUS]
+
+[HELP]

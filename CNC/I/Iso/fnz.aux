@@ -1,0 +1,29 @@
+//
+//  File configurazione Funzioni Ausiliarie
+//
+
+Funzione    Flag    Filename        ; Commento
+M10          1       fnzm10.srt     ; Sospendi ciclo
+M82          1       fnzm82.srt     ; Off regolatore
+M83          1       fnzm83.srt     ; On regolatore
+M84          1       fnzm84.srt     ; Spegnimento anticipato
+M85          1       fnzm85.srt     ; Turn on laser
+M821         1       fnzm821.srt    ; Disabling regulation 
+M822         1       fnzm822.srt    ; Disabling regulation (with parameter LSRPlcOp)
+M831         1       fnzm831.srt    ; Enabling regulation
+M841         1       fnzm841.srt    ; Spegnimento Laser Fly_Cut
+M851         1       fnzm851.srt    ; Accensione Laser Fly_Cut
+M1000        1       fnzm1000.srt   ; Load parameters
+M2108        1       fnzm2108.srt   ; Corner funct turn off laser AND delay
+M30          1       fnzm30.srt     ; Fine programma
+M123         1       fnzm123.srt    ; Calibrazione Rtcp (INTERNO)
+M440         1       fnzm440.srt    ; move by plc X axis
+M441         1       fnzm441.srt    ; move by plc X1 axis
+M442         1       fnzm442.srt    ; move by plc X3 axis
+M700         1       fnzm700.srt    ; Park follower
+M701         1       fnzm701.srt    ; Enable follower AND following on
+M702         1       fnzm702.srt    ; Disabilita bandswitch follower
+M703         1       fnzm703.srt    ; Enable blandswitch
+M704         1       fnzm704.srt    ; Enable following
+
+T1  1 TexeTc.cfm                    ; Abilito Utensile (1-18) (D21 D39) (C.Ut a Rastrelliera)

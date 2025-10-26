@@ -1,0 +1,20 @@
+
+[KEYS]
+TITLE=Bevel 45°
+
+[PROMPT]
+KEY_NODE=Node
+BEVEL45=Leaf
+Plot1.4=Bevel 45
+L_TYPE_INTERP1=Points
+L_Height4=Height[mm]
+L_Voltage4=Voltage[DAC]
+L_TYPE_INTERP2=Pattern
+LIST0=Linear,Segment,Smoothing
+Button1=<
+Button2=>
+
+[STATUS]
+Plot1.4=Height(mm),Voltage(DAC)
+
+[HELP]

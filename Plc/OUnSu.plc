@@ -1,0 +1,325 @@
+#funcdec "assi.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBAux.plc"
+#funcdec "SupForce.plc"
+#funcdec "OSuppFB.plc"
+
+VAR
+#include "iof.inc"
+#include "usrIof.inc"
+#include "cnc.inc"
+
+* Axis support management
+* CN7 -> YUVW ( 85,86,87,88 ) Horizontal Supports 
+* CN8 -> YUVW ( 72,73,74,75 ) Correspoding Vertical Supports
+
+SUP85:        HOR_SUPPORT;
+SUP86:        HOR_SUPPORT;
+SUP87:        HOR_SUPPORT;
+SUP88:        HOR_SUPPORT;
+
+F_TRIG_RES_FOLL:   F_TRIG;
+END_VAR
+
+VAR_IN_OUT
+#include "usrIol.inc"
+#include "mem.inc"              
+END_VAR
+
+#include "Iol.inc"
+#include "usrMem.inc"
+
+FUNCTION HORIZ_SUPP
+
+PATH %cn7
+
+*******************************************************
+*     HORIZONTAL FOLLOWIING SUPPORTS MANAGEMENT       *
+*******************************************************
+CAL  F_TRIG_RES_FOLL (CLK:=PRGRUN_CN0)
+LD   F_TRIG_RES_FOLL.Q
+OR   Pul_Reset
+R    EnWriteBlendSwitch_Hor    
+R    CmdBlendSwitch_Hor 
+
+LDN  PRGRUN_CN0
+JMPCN RSTBLEND
+     LD   %PLCFLAGS.0
+     ST   EnWriteBlendSwitch_Hor  
+     ST   CmdBlendSwitch_Hor 
+	 ST   iso_VshapeSecFollow
+     ST   Iso_G520HorUnload_Ax85
+     ST   Iso_G520HorUnload_Ax86
+     ST   Iso_G520HorUnload_Ax87
+     ST   Iso_G520HorUnload_Ax88
+RSTBLEND:
+
+LD   Reset
+OR   EMER_GEN
+ST   SUP85.xReset 
+ST   SUP86.xReset   
+ST   SUP87.xReset   
+ST   SUP88.xReset 
+
+LD   ISO_SupHor_Init
+ST   SUP85.xHoldExem
+ST   SUP86.xHoldExem
+ST   SUP87.xHoldExem
+ST   SUP88.xHoldExem
+
+LDN  OptJogNoAutoHorPrk  
+ST   SUP85.xEnJogPrk
+ST   SUP86.xEnJogPrk
+ST   SUP87.xEnJogPrk
+ST   SUP88.xEnJogPrk
+
+LD   EnWriteBlendSwitch_Hor  
+AND  CmdBlendSwitch_Hor 
+ST   SUP85.xBlendSwitchEn
+ST   SUP86.xBlendSwitchEn
+ST   SUP87.xBlendSwitchEn
+ST   SUP88.xBlendSwitchEn
+
+LD   OptEnabAutoPark
+ST   SUP85.xEnabAutoDwn
+ST   SUP86.xEnabAutoDwn
+ST   SUP87.xEnabAutoDwn
+ST   SUP88.xEnabAutoDwn
+ST   SUP85.xEnabAutoUp
+ST   SUP86.xEnabAutoUp
+ST   SUP87.xEnabAutoUp
+ST   SUP88.xEnabAutoUp
+
+LD   %ax85.pa22
+ST   SUP85.xParkingPos 
+ST   SUP86.xParkingPos 
+ST   SUP87.xParkingPos 
+ST   SUP88.xParkingPos
+
+LD   UnSupHorSafeZone
+ST   SUP85.xColiQta
+ST   SUP86.xColiQta
+ST   SUP87.xColiQta
+ST   SUP88.xColiQta
+
+* For Vshape unloading only
+
+LD   iso_VshapeSecFollow
+ST   SUP85.xEnSecFollow
+ST   SUP86.xEnSecFollow
+ST   SUP87.xEnSecFollow
+ST   SUP88.xEnSecFollow
+
+LD   VShapeHorOffest
+ST   SUP85.xAddFollPos
+ST   SUP86.xAddFollPos
+ST   SUP87.xAddFollPos
+ST   SUP88.xAddFollPos
+
+* [lv, lat, ulv, uhor]=[0,1,2,3]
+LD   3
+ST   SUP85.xBlendId
+ST   SUP86.xBlendId
+ST   SUP87.xBlendId
+ST   SUP88.xBlendId
+
+LD   iso_G520_Running
+ST   SUP85.xEnBldFeed
+ST   SUP86.xEnBldFeed
+ST   SUP87.xEnBldFeed
+ST   SUP88.xEnBldFeed
+
+LD   100
+ST   SUP85.xBldFeed
+ST   SUP86.xBldFeed
+ST   SUP87.xBldFeed
+ST   SUP88.xBldFeed
+
+* Horizontal Unloading Speed Control
+LD   HorUnloadingFeed 
+GT   0
+AND(
+LD   HorUnloadingFeed 
+LE   100
+)
+JMPCN _HORFEEDCONTROL
+     LD   HorUnloadingFeed
+     ST   SUP85.xBldFeed
+     ST   SUP86.xBldFeed
+     ST   SUP87.xBldFeed
+     ST   SUP88.xBldFeed
+_HORFEEDCONTROL:
+
+*******************************************************
+* Support 1 
+*******************************************************
+LD   %cn7.cc1.2
+JMPCN no_support_85
+
+PATH %ax85
+
+LD   Z2Supp_72InParkPos
+ST   SUP85.xVerParked
+
+LD   Hold_U_Z2Supp
+ST   SUP85.xHoldSuperviAxis
+
+LD   HoldZ2Supp
+ST   SUP85.xHoldSuppAxis
+
+LD   SUP72_xParkCmd 
+ANDN iso_G520_Running
+OR   Iso_G520HorUnload_Ax85
+AND  %cn0.rc8.0
+ST   SUP85.xParkCmd
+
+CAL  SUP85
+
+LD   SUP85.yReqGrant
+ANDN ch7_in_ref
+ST   usrReqGrantSupHorAx85 
+
+LD   SUP85.yHoldMovSupp
+ANDN ch7_in_ref
+ST   HoldSuppUn_HorAx85
+
+LD   SUP85.yHoldMovSuperv
+ANDN ch7_in_ref
+ST   Hold_U_SupUnHorAx85
+
+LD   SUP85.yVerForceDwn
+ANDN ch7_in_ref
+ST   Hor_Ax72_yVerForceDwn
+
+no_support_85:
+
+*******************************************************
+* Support 2
+******************************************************* 
+LD   %cn7.cc1.3
+JMPCN no_support_86
+
+PATH  %ax86
+
+LD   Z3Supp_73InParkPos
+ST   SUP86.xVerParked
+
+LD   Hold_U_Z3Supp
+ST   SUP86.xHoldSuperviAxis
+
+LD   HoldZ3Supp
+ST   SUP86.xHoldSuppAxis
+
+LD   SUP73_xParkCmd 
+ANDN iso_G520_Running
+OR   Iso_G520HorUnload_Ax86
+AND  %cn0.rc8.0
+ST   SUP86.xParkCmd
+
+CAL  SUP86
+
+LD   SUP86.yReqGrant
+ANDN ch7_in_ref
+ST   usrReqGrantSupHorAx86 
+
+LD   SUP86.yHoldMovSupp
+ANDN ch7_in_ref
+ST   HoldSuppUn_HorAx86
+
+LD   SUP86.yHoldMovSuperv
+ANDN ch7_in_ref
+ST   Hold_U_SupUnHorAx86
+
+LD   SUP86.yVerForceDwn
+ANDN ch7_in_ref
+ST   Hor_Ax73_yVerForceDwn
+
+no_support_86:
+
+*******************************************************
+* Support 3
+******************************************************* 
+LD   %cn7.cc1.4
+JMPCN no_support_87
+
+PATH  %ax87
+
+LD   Z4Supp_74InParkPos
+ST   SUP87.xVerParked
+
+LD   Hold_U_Z4Supp
+ST   SUP87.xHoldSuperviAxis
+
+LD   HoldZ4Supp
+ST   SUP87.xHoldSuppAxis
+
+LD   SUP74_xParkCmd 
+ANDN iso_G520_Running
+OR   Iso_G520HorUnload_Ax87
+AND  %cn0.rc8.0
+ST   SUP87.xParkCmd
+
+CAL  SUP87
+
+LD   SUP87.yReqGrant
+ANDN ch7_in_ref
+ST   usrReqGrantSupHorAx87 
+
+LD   SUP87.yHoldMovSupp
+ANDN ch7_in_ref
+ST   HoldSuppUn_HorAx87
+
+LD   SUP87.yHoldMovSuperv
+ANDN ch7_in_ref
+ST   Hold_U_SupUnHorAx87
+
+LD   SUP87.yVerForceDwn
+ANDN ch7_in_ref
+ST   Hor_Ax74_yVerForceDwn
+
+no_support_87:
+
+*******************************************************
+* Support 4 
+*******************************************************
+LD   %cn7.cc1.5
+JMPCN no_support_88
+
+PATH  %ax88  
+
+LD   Z5Supp_75InParkPos
+ST   SUP88.xVerParked
+
+LD   Hold_U_Z5Supp
+ST   SUP88.xHoldSuperviAxis
+
+LD   HoldZ5Supp
+ST   SUP88.xHoldSuppAxis
+
+LD   SUP75_xParkCmd 
+ANDN iso_G520_Running
+OR   Iso_G520HorUnload_Ax88
+AND  %cn0.rc8.0
+ST   SUP88.xParkCmd
+
+CAL  SUP88
+
+LD   SUP88.yReqGrant
+ANDN ch7_in_ref
+ST   usrReqGrantSupHorAx88 
+
+LD   SUP88.yHoldMovSupp
+ANDN ch7_in_ref
+ST   HoldSuppUn_HorAx88
+
+LD   SUP88.yHoldMovSuperv
+ANDN ch7_in_ref
+ST   Hold_U_SupUnHorAx88
+
+LD   SUP88.yVerForceDwn
+ANDN ch7_in_ref
+ST   Hor_Ax75_yVerForceDwn
+
+no_support_88:
+
+END_FUNCTION

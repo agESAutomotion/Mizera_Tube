@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEYWORD=
+KEY_BUSCONFIG=
+LBL_NO_AXNAM=Axis name
+LBL_BD_COBID1=Node address
+LBL_BD_DEVNAME1=Device name
+LBL_BD_HWVER1=HW Version
+LBL_BD_SWVER1=SW Version
+LBL_BD_SERNUM1=Serial Number
+LBL_BC_CONFIGFILEXML=Drive Configuration File (xml)
+
+[STATUS]
+
+[HELP]

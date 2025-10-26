@@ -1,0 +1,82 @@
+
+[KEYS]
+TITLE=LASER IPG
+TXT6=Linearizzazione
+TXT7=Parametri
+TXT8=Sparo ON
+TXT9=Sparo OFF
+TXT15=Laser Net
+
+[PROMPT]
+KEY_NODE=
+LASERPAGE=Leaf
+GroupBoxDiag=Diagnostica
+GroupBoxLout=Feedback
+GroupBoxLin=Uscite CNC
+GroupBoxlTest=Laser TEST
+ButtonA1=A1
+Label=Laser Request
+Label1=A1
+Label2=C1
+Label3=Laser Switch On
+ButtonC1=C1
+Label4=A4
+Label5=Laser Reset
+ButtonA4=A4
+Label8=A6
+Label9=Analog Control
+ButtonA6=A6
+Label10=A5
+Label11=Guide Laser
+ButtonA5=A5
+Label12=A2
+Label13=PROGRAM RUN
+Label14=B7. Laser Assigned
+Label15=B8. Laser Switch On
+Label17=B6. Analog Control
+Label18=B5. Guide Laser
+Label19=B1. Laser Ready
+Label20=B2. Emission On
+Label21=B13. Laser Warning
+Label22=B4. Laser Error
+LBL_POTENZA1=Potenza (W)
+LIST0=O2,N2,AIR,NO GAS
+LBL_DUTY1=Duty (%)
+LBL_FREQUENZA1=Frequenza(HZ)
+LBL_PIERCING1=Tempo (s)
+LabelGasSel=Gas
+LabelPressure=Pres. (BAR)
+LabelAitOff1=Aria
+LabelN2Off1=N2
+LabelO2Off1=O2
+LabelAit1=Aria
+LabelN1=N2
+LabelO1=O2
+lbDiagPar1=POTENZA attuale [w]
+lbDiagPar2=DUTY attuale [%]
+lbDiagPar3=FREQUENZA attuale [Hz]
+LabelAutoRun=AUTO SWITCH ON
+lbDiagPresSetted=Pressione GAS calcolata[BAR]
+lbDiagPresReaded=Pressione GAS letta [BAR]
+LabelRotateOrig1=Rotate Origin
+LabelPauseGeometry1=Hold End Geomet
+LabelPausePiece1=Hold End Piece
+LabelZhigh1=Force Z Up
+LabelInForced1=Inputs Forced
+LabelOutForced1=Outputs Forced
+LabelZhigh2=Auto. Acq. Origin
+LabelDryRun1=Dry Run
+LabelSIM2=No Z Movement
+Resume Re1=Resume Ready
+LabelPlcSIM2=PLC SIMULATED
+LabelPallInMan2=Save Gas Active
+LabelSIM3=LASER SIMULATED
+LabelSIM4=CAPACITIVE SIM.
+LabelEnabAutorestart1=Autorestart
+LabelRegON1=REGOL. ON
+LabelJogRTCP1=JOG RTCP
+LabelPressure1=Focale -mm-
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,608 @@
+[A]0 [B] [C]0 [M]1 : 520
+
+IF( %cn[WHO()].rc[0].21 ) RET             ; Canale in test
+
+; Piece END
+
+DBL  PieceEnd = VA0                       ; 0 piece not END
+                                          ; 1 piece end 
+
+DBL  Mode = VA12                          ; 0 no Unload
+                                          ; 1 unload 
+					 
+DBL  PosB3_Buffer
+DBL  PosB3 = 5000000                      ; OUT OF LIMITS if not read the position it wil give alarm
+DBL  tubeStateSelY3Z3U	
+					 
+DBL  IncForUnloadB3 = OffSetSClamp
+DBL  MaxUnloadLen = ABS(MinQta_V) - IncForUnloadB3 
+DBL  MinUnloadLen = MinPieceUnload        ; 400mm
+DBL  NearParkOffset = 180000              ; 180mm
+DBL  UnloadSupPrkQta = %UNLOADER.values18
+
+DBL  Debug_G520 = 0
+DBL  SupLongCase = 0
+DBL  UnIndex = 1 
+DBL  temUnloadQta, extraDis, coddeven, intang, addsgn
+DBL  wNearQta = %SPINDLE_SYSTEM.values28 / 1000 + 10
+DBL  AX_71_UP, AX_72_UP, AX_73_UP, AX_74_UP, AX_75_UP
+
+; Close Gas
+M498		
+?%gIso19.1 = 1           ; ENABLE BLEND Always
+?%gIso29.1 = 0           ; ParkUn71Sup_ISO
+?%gIso29.2 = 0           ; ParkUn72Sup_ISO
+?%gIso29.3 = 0           ; ParkUn73Sup_ISO
+?%gIso29.4 = 0           ; ParkUn74Sup_ISO
+?%gIso29.5 = 0           ; ParkUn75Sup_ISO
+LastUnloadPiece = 0
+
+; Scrap / Short Piece(<400mm) Unloading 
+IF( (HeadingExecuted == 1) && (PieceEnd < MinUnloadLen) ) THEN
+	; Scrap Down	
+    ?%LsIso9.3 = 0
+ENDIF
+
+; User Defined Maximum Tube Length to Unload
+IF( MaxTubeLenghtDisc < MaxUnloadLen ) THEN
+    MaxUnloadLen = MaxTubeLenghtDisc
+ENDIF
+        	
+IF( EnSingleSpindle ) JMPF .ENDUNLOAD
+IF( (PieceEnd < MinUnloadLen) || (Mode == 0) || (!%UNLOADER.values1.1) ) THEN
+    IF (HeadingExecuted == 1) ?%LsIso9.1 = 1 
+    POP(1)
+    JMPF .ENDUNLOAD
+ENDIF
+
+;iso_G520_Running 
+SYN
+?%LsIso9.4 = 1  
+GRP[V] = 1
+
+IF (HeadingExecuted == 1) ?%LsIso9.1 = 1       
+
+G153
+IF( AEXISTS(3,V) ) G4005 S(AXIDX(3,V))	
+G152			
+G4099
+	
+PosB3 = QCALC(AXIDX(3,V))
+
+; USR_M20.3 mobile spindle close
+; USR_M20.1 Second mobile spindle 
+; USR_M21.22 middle spindle close
+
+; tubeStateSelY3Z3U = 1   ; tube is closed already on three spindle
+; tubeStateSelY3Z3U = 2   ; tube is closed already first two spindles
+; tubeStateSelY3Z3U = 3   ; tube is closed already last two spindles
+; tubeStateSelY3Z3U = 4   ; tube is closed only with last spindle
+
+IF( (%USR_M20.3) && (%USR_M20.1) && (%USR_M21.22) ) tubeStateSelY3Z3U = 1
+IF( (%USR_M20.3) && (!%USR_M20.1) && (%USR_M21.22) ) tubeStateSelY3Z3U = 2
+IF( (!%USR_M20.3) && (%USR_M20.1) && (%USR_M21.22) ) tubeStateSelY3Z3U = 3
+IF( (!%USR_M20.3) && (%USR_M20.1) && (!%USR_M21.22) ) tubeStateSelY3Z3U = 4
+
+MSGOUT "tubeStateSelY3Z3U " tubeStateSelY3Z3U	
+
+; To ensure unloading tube with proper gesture (M3/M4)
+IF( (tubeStateSelY3Z3U == 1) || (tubeStateSelY3Z3U == 3) ) THEN
+    IF( ABS(%gIso[23] - %gIso[24]) < 20 ) THEN
+	    POP(2)
+	    JMPF .skpungest
+	ENDIF
+    intang = FLOOR((QCALC(AXIDX(3,C)) + %funz[19].rotEA) / 90)
+	addsgn = IFEXP(intang>0,90,-90)
+	; Width > Height
+    IF( (%gIso[23]) > (%gIso[24]) ) THEN
+	    coddeven = IFEXP(MOD(intang,2),ABS(intang+1)*addsgn, ABS(intang)*addsgn)
+    ELSE
+	    coddeven = IFEXP(MOD(intang,2),ABS(intang)*addsgn, ABS(intang+1)*addsgn)
+	ENDIF
+	MSGOUT "Unloading Angle C = " coddeven
+	G153 G1 C(coddeven) F8000
+ENDIF	
+
+.skpungest
+
+; Maximum tube length to unload		
+IF( (PieceEnd >= MaxUnloadLen) && (Mode >= 1) ) SupLongCase = 1
+	
+; Scrap Up	
+IF( tubeStateSelY3Z3U != 3 ) ?%LsIso9.3 = 1
+
+; OffsetUnSuppDwn_71 AT %UNLOADER.values11;
+; OffsetUnSuppDwn_72 AT %UNLOADER.values12;
+; OffsetUnSuppDwn_73 AT %UNLOADER.values15;
+; OffsetUnSuppDwn_74 AT %UNLOADER.values16;
+; OffsetUnSuppDwn_75 AT %UNLOADER.values17;
+
+?%UNLOADER.values11 = NearParkOffset
+?%UNLOADER.values12 = NearParkOffset	
+?%UNLOADER.values15 = NearParkOffset	
+?%UNLOADER.values16 = NearParkOffset	
+?%UNLOADER.values17 = NearParkOffset	
+
+SYN
+IF( %gIso29.9 ) JMPF .scrapunload
+IF( ((PieceEnd - 50) > ABS(PosB3)) && (tubeStateSelY3Z3U == 2) ) THEN
+.FAULT_STATE_5201
+    SYN 
+    MSGOUT "CAD-CAM Error, wrong piece length M2 to unload"	
+    M0	
+    JMP .FAULT_STATE_5201
+ENDIF
+
+IF( ((tubeStateSelY3Z3U == 1) && (QCALC(AXIDX(3,W)) < 0)) || ((tubeStateSelY3Z3U == 3) && (QCALC(AXIDX(3,W)) > 0)) ) THEN 
+.FAULT_STATE_5202
+	SYN
+	MSGOUT "CAD-CAM Error, 2nd spindle right side laser head to unload"
+	M0
+    JMP .FAULT_STATE_5202
+ENDIF
+.scrapunload
+
+;M3
+IF( tubeStateSelY3Z3U == 1 ) THEN 
+	RPT .CalUn_Index_Start, .CalUn_Index_End, 1
+	RPT .Unload_M3_Start, .Unload_M3_End, 1			
+ENDIF ;M3 END
+
+;M2
+IF( tubeStateSelY3Z3U == 2 ) THEN
+	; Supper long tube case
+    IF( SupLongCase == 1 ) THEN
+        SYN
+        MSGOUT "Tube >= " (MaxUnloadLen) "mm, Press START to continue"
+        M0
+    ELSE
+        ; Cad-Cam should park v depends on piece lenght before 
+        RPT .Flaps_Mov_Start, .Flaps_Mov_End, 1	
+	ENDIF
+ENDIF
+
+;M4
+; ---> Now always combined piece minimum 1500mm
+
+IF (tubeStateSelY3Z3U == 3) THEN 	
+
+    ;In case of last scarp also with mirco-joints
+    IF( LstIsHead == 0 ) PieceEnd = M_4TubeLen
+	
+	;To ensure both W and V clamping on tube
+	extraDis = IFEXP( wNearQta > -50, 50+wNearQta, 0 )
+
+    ; SCRAP Flap down (1 == UP)
+    IF( %LsIso9.3 ) THEN
+        ?%LsIso9.3 = 0  
+	    G4 F1
+    ENDIF
+	
+	; Push forward the piece in order to hold with W
+	; - operation only for piece longer enough
+	SYN
+	IF( ABS(uldPos[1] - 100) <= (PieceEnd - extraDis) ) THEN
+        IF( (QCALC(AXIDX(3,V)) + extraDis) <= MaxQta_V ) THEN	
+            JSR "MoveX1_Spindle.cfs" ( QCALC(AXIDX(3,V)) + extraDis ) 30000
+		ENDIF
+    ENDIF
+
+    RPT .Prk_WNear_Start, .Prk_WNear_End, 1
+	
+	;Position to allow first flap goes up
+	;To Ensure: At least first support to be up
+	SYN
+	IF( ABS(uldPos[1] - 100) >= PieceEnd ) THEN
+		SYN
+		MSGOUT "Piece too short M4(cad-cam error), press START to continue"
+		M0
+		SYN
+		MSGOUT "Unload piece without support? press START to continue"
+		M0
+        RPT .Open_W_Start, .Open_W_End, 1
+	ENDIF
+	
+	IF( (QCALC(AXIDX(3,V))) > (uldPos[1] - 100) ) THEN
+	    JSR "MoveX1_Spindle.cfs" ( uldPos[1] - 100 ) 30000
+	ENDIF
+	
+	?%gIso29.2 = 0           ; ParkUn72Sup_ISO
+	
+	SYN
+	;Wait support to reach position
+	AWAIT( ABS( %ax72.ra4 - %ax50.ra4 ) < 1000 )
+	AWAIT(!%SPINDLE_SYSTEM.values24.1)   
+				
+	;V to open clamp position
+	IF( PieceEnd > ABS(uldPos[1] - 100) ) THEN
+        RPT .Open_W_Start, .Open_W_End, 1
+	    RPT .CalUn_Index_Start, .CalUn_Index_End, 1
+	    JSR "MoveX1_Spindle.cfs" ( temUnloadQta - 100 ) 30000			
+	ENDIF
+	
+	SYN
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+	
+	RPT .All_Sups_Still_Start, .All_Sups_Still_End, 1
+	
+	; Supper long tube case
+    IF( SupLongCase == 1 ) THEN
+        SYN
+        MSGOUT "Tube >= " (MaxUnloadLen) "mm, Press START to Open the C2 Chuck"
+        M0
+    ENDIF
+	
+    RPT .Open_V_Start, .Open_V_End, 1
+	
+	;V to unload position
+	SYN
+	JSR "MoveX1_Spindle.cfs" ( QCALC(AXIDX(3,V)) - IncForUnloadB3 ) 30000
+	SYN
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+	
+	RPT .Prk_WMax_Start, .Prk_WMax_End, 1
+	
+	; Supper long tube case
+    IF( SupLongCase == 1 ) THEN
+        SYN
+        MSGOUT "Press START When Finishing Manually Unloading"
+        M0
+    ELSE
+        RPT .Flaps_Mov_Start, .Flaps_Mov_End, 1	
+    ENDIF				
+ENDIF		
+
+;M5
+IF( tubeStateSelY3Z3U == 4)  THEN  
+    ;(Not used, no unloading)
+ENDIF
+
+SYN
+Follower_ok = 0
+?%gIso19.1 = 1
+?%gIso29.8 = 0
+
+?%UNLOADER.values11 = 0
+?%UNLOADER.values12 = 0
+?%UNLOADER.values15 = 0	
+?%UNLOADER.values16 = 0	
+?%UNLOADER.values17 = 0
+
+?%LOADER.values20 = 0
+
+;iso_G520_Running 
+SYN
+?%LsIso9.4 = 0
+
+;ParkAllCmd AT %UNLOADER.boolean.6;
+SYN
+?%UNLOADER.boolean.6 = 0
+GRP[V] = 0
+?%LsIso9.3 = 0  ; SCRAP Flap down (1 == UP)
+LastUnloadPiece = 1
+
+.ENDUNLOAD
+
+RET 
+
+.Prk_WMax_Start
+	G153
+    G4005 S(AXIDX(3,Z))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,W))       
+	G152
+	G4099
+
+	G153
+	G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+	G4010 M(AXIDX(V)) S(AXIDX(3,W)) I1
+	G152
+	G4099
+	
+	G153 G0 Z(MaxQta_Z)
+	G153 G1 Y(MinQta_Y) F30000
+	G153 G1 V(MaxQta_W) F30000
+	
+	G153
+	G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Z))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,W))     
+    G4005 S(AXIDX(3,V))    
+	G152
+	G4099
+.Prk_WMax_End
+
+.Prk_WNear_Start
+	G153
+    G4005 S(AXIDX(3,Z))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,W))       
+	G152
+	G4099
+
+	G153
+	G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+	G4010 M(AXIDX(V)) S(AXIDX(3,W)) I1
+	G152
+	G4099
+	
+	G153 G0 Z(MaxQta_Z)
+	G153 G1 Y(MinQta_Y) F30000
+	G153 G1 V(wNearQta) F30000
+	
+	G153
+	G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Z))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,W))     
+    G4005 S(AXIDX(3,V))    
+	G152
+	G4099
+.Prk_WNear_End
+
+.CalUn_Index_Start
+    ; Enter here only M3 and M4 mode 
+    ; -99999999 to manage case of axes non exsisting
+	; For Safety, in case of piece length from Cam error
+	SYN
+	IF( ABS(PosB3) > PieceEnd ) PieceEnd = ABS(PosB3)
+	
+    IF( PieceEnd <= ABS(uldPos[1]) ) THEN 
+	    UnIndex = 1
+		temUnloadQta = uldPos[1]
+
+    ELSEIF ( (PieceEnd > ABS(uldPos[1])) && (PieceEnd <= ABS(uldPos[2])) ) THEN 
+	    UnIndex = 2
+		IF( PieceEnd > ABS(Mid_L1_L2) ) THEN
+		    temUnloadQta = uldPos[2]
+		ELSE	
+			temUnloadQta = -PieceEnd
+		ENDIF
+	
+    ELSEIF ( (PieceEnd > ABS(uldPos[2])) && (PieceEnd <= ABS(uldPos[3])) ) THEN 
+	    UnIndex = 3
+		IF( PieceEnd > ABS(Mid_L2_L3)  ) THEN
+		    temUnloadQta = uldPos[3]
+		ELSE	
+			temUnloadQta = -PieceEnd
+		ENDIF	
+		
+	ELSEIF ( (PieceEnd > ABS(uldPos[3])) && (PieceEnd <= ABS(uldPos[4])) ) THEN 
+	    UnIndex = 4
+		IF( PieceEnd > ABS(Mid_L3_L4)  ) THEN
+		    temUnloadQta = uldPos[4]
+		ELSE	
+			temUnloadQta = -PieceEnd
+		ENDIF
+
+	ELSEIF ( (PieceEnd > ABS(uldPos[4])) && (PieceEnd <= ABS(uldPos[5])) ) THEN 
+	    UnIndex = 5
+		IF( PieceEnd > ABS(Mid_L4_L5)  ) THEN
+		    temUnloadQta = uldPos[5]
+		ELSE	
+			temUnloadQta = -PieceEnd
+		ENDIF
+		
+	ELSE	
+	    UnIndex = 6
+		temUnloadQta = -PieceEnd
+		
+	ENDIF	
+	
+    IF( PosB3 < temUnloadQta ) temUnloadQta = PosB3
+.CalUn_Index_End
+
+.Unload_M3_Start
+	SYN
+	IF( (temUnloadQta - IncForUnloadB3) < (MinQta_V) ) THEN
+		.FAULT_STATE_M30
+	    SYN 
+	    MSGOUT " CAD-CAM Error, piece too long to unload "	(temUnloadQta)   
+	    M0
+		JMP .FAULT_STATE_M30
+	ENDIF
+
+	;V to open clamp position
+	JSR "MoveX1_Spindle.cfs"  ( temUnloadQta - 50 ) 30000
+	SYN
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+		
+	RPT .All_Sups_Still_Start, .All_Sups_Still_End, 1
+	
+	; Supper long tube case
+    IF( SupLongCase == 1 ) THEN
+        SYN
+        MSGOUT "Tube >= " (MaxUnloadLen) "mm, Press START to Open the C2 Chuck"
+        M0
+    ENDIF
+		
+    RPT .Open_V_Start, .Open_V_End, 1
+
+	;V to unload position
+	JSR "MoveX1_Spindle.cfs"  ( temUnloadQta - IncForUnloadB3 ) 30000
+	SYN
+    AWAIT (!%SPINDLE_SYSTEM.values24.1)   ; X1 Moving 
+	
+	; Supper long tube case
+    IF( SupLongCase == 1 ) THEN
+        SYN
+        MSGOUT "Press START When Finishing Manually Unloading"
+        M0
+    ELSE
+	    RPT .Flaps_Mov_Start, .Flaps_Mov_End, 1
+	ENDIF	
+.Unload_M3_End
+
+.Flaps_Mov_Start
+
+	RPT .All_Sups_Still_Start, .All_Sups_Still_End, 1
+
+    SYN
+    IF( AEXISTS(8,Y) ) AX_71_UP = IFEXP( %ax[AXIDX(8,Y)].rgau2 == 1000, 1, 0 ) 
+    IF( AEXISTS(8,Z) ) AX_72_UP = IFEXP( %ax[AXIDX(8,Z)].rgau2 == 1000, 1, 0 ) 
+    IF( AEXISTS(8,U) ) AX_73_UP = IFEXP( %ax[AXIDX(8,U)].rgau2 == 1000, 1, 0 ) 
+    IF( AEXISTS(8,V) ) AX_74_UP = IFEXP( %ax[AXIDX(8,V)].rgau2 == 1000, 1, 0 ) 
+    IF( AEXISTS(8,W) ) AX_75_UP = IFEXP( %ax[AXIDX(8,W)].rgau2 == 1000, 1, 0 ) 
+	
+    ; Horizontal Supports to be parking (Based on vertical supports current status)
+	SYN
+	; Iso_G520HorUnload_Ax85 AT %gIso29.23;
+    ; Iso_G520HorUnload_Ax86 AT %gIso29.24;
+    ; Iso_G520HorUnload_Ax87 AT %gIso29.25;
+    ; Iso_G520HorUnload_Ax88 AT %gIso29.26;
+	IF( AEXISTS(7,Z) && (AX_72_UP == 1) ) ?%gIso29.23 = 1
+	IF( AEXISTS(7,U) && (AX_73_UP == 1) ) ?%gIso29.24 = 1
+	IF( AEXISTS(7,V) && (AX_74_UP == 1) ) ?%gIso29.25 = 1
+	IF( AEXISTS(7,W) && (AX_75_UP == 1) ) ?%gIso29.26 = 1
+	SYN
+	IF( AEXISTS(7,Z) && (AX_72_UP == 1) ) AWAIT(%ax[AXIDX(7,Z)].rgau2 < 100)
+	IF( AEXISTS(7,U) && (AX_73_UP == 1) ) AWAIT(%ax[AXIDX(7,U)].rgau2 < 100)
+	IF( AEXISTS(7,V) && (AX_74_UP == 1) ) AWAIT(%ax[AXIDX(7,V)].rgau2 < 100)
+	IF( AEXISTS(7,W) && (AX_75_UP == 1) ) AWAIT(%ax[AXIDX(7,W)].rgau2 < 100)
+	
+	; Set quote to unload (Change Parking Quota to unloading)
+	
+	; iso_G520_71_Unload AT %gIso29.17;
+    ; iso_G520_72_Unload AT %gIso29.18;
+    ; iso_G520_73_Unload AT %gIso29.19;
+    ; iso_G520_74_Unload AT %gIso29.20;
+	; iso_G520_75_Unload AT %gIso29.21;
+	
+	SYN
+	IF( AEXISTS(8,Y) && (AX_71_UP == 1) ) ?%gIso29.17 = 1
+	IF( AEXISTS(8,Z) && (AX_72_UP == 1) ) ?%gIso29.18 = 1
+	IF( AEXISTS(8,U) && (AX_73_UP == 1) ) ?%gIso29.19 = 1
+	IF( AEXISTS(8,V) && (AX_74_UP == 1) ) ?%gIso29.20 = 1
+	IF( AEXISTS(8,W) && (AX_75_UP == 1) ) ?%gIso29.21 = 1
+
+	;ParkAllCmd AT %UNLOADER.boolean.6;	
+	;It will be reset at the end of G520
+	SYN
+    ?%UNLOADER.boolean.6 = 1
+	
+	SYN
+	IF( AEXISTS(8,Y) && (AX_71_UP == 1) ) AWAIT( ABS((UnloadSupPrkQta / 1000) - (%ax[AXIDX(8,Y)].ra4 / 1000)) < 0.1 )
+	IF( AEXISTS(8,Z) && (AX_72_UP == 1) ) AWAIT( ABS((UnloadSupPrkQta / 1000) - (%ax[AXIDX(8,Z)].ra4 / 1000)) < 0.1 )
+	IF( AEXISTS(8,U) && (AX_73_UP == 1) ) AWAIT( ABS((UnloadSupPrkQta / 1000) - (%ax[AXIDX(8,U)].ra4 / 1000)) < 0.1 )
+	IF( AEXISTS(8,V) && (AX_74_UP == 1) ) AWAIT( ABS((UnloadSupPrkQta / 1000) - (%ax[AXIDX(8,V)].ra4 / 1000)) < 0.1 )
+	IF( AEXISTS(8,W) && (AX_75_UP == 1) ) AWAIT( ABS((UnloadSupPrkQta / 1000) - (%ax[AXIDX(8,W)].ra4 / 1000)) < 0.1 )
+	    
+    ;Flaps Incline
+
+    ;InclineFlapL1_ISO AT %UNLOADER.boolean.7;
+    ;InclineFlapL2_ISO AT %UNLOADER.boolean.8;
+    ;InclineFlapL3_ISO AT %UNLOADER.boolean.9;
+    ;InclineFlapL4_ISO AT %UNLOADER.boolean.10;
+    ;InclineFlapL5_ISO AT %UNLOADER.boolean.11;
+
+    SYN
+	;OptSemiUnload AT %UNLOADER.boolean.12;
+	IF( %UNLOADER.boolean.12 ) THEN
+	    MSGOUT "Semi Unload, press START to continue"
+		M0
+	ENDIF
+	
+    IF( AEXISTS(8,Y) && (AX_71_UP == 1) ) ?%UNLOADER.boolean.8 = 1
+    IF( AEXISTS(8,Z) && (AX_72_UP == 1) ) ?%UNLOADER.boolean.7 = 1
+    IF( AEXISTS(8,U) && (AX_73_UP == 1) ) ?%UNLOADER.boolean.9 = 1
+    IF( AEXISTS(8,V) && (AX_74_UP == 1) ) ?%UNLOADER.boolean.10 = 1
+    IF( AEXISTS(8,W) && (AX_75_UP == 1) ) ?%UNLOADER.boolean.11 = 1
+
+    SYN
+    G4 F(UnLoadFlapOnOffTime)
+	;I_I_Flap_Inclined AT %USR_M12.8;
+    ;I_I_FlapL2_Inclined AT %USR_M1.30; 
+	;I_I_FlapL3_Inclined AT %USR_M12.28;
+	;I_I_FlapL4_Inclined AT %USR_M12.30;
+    ;I_I_FlapL5_Inclined AT %USR_M13.0;
+  	SYN
+	;IF( %UNLOADER.boolean.8 ) WAITBIT("%USR_M12.8",1)
+	;IF( %UNLOADER.boolean.7 ) WAITBIT("%USR_M1.30",1)
+	;IF( %UNLOADER.boolean.9 ) WAITBIT("%USR_M12.28",1)
+	;IF( %UNLOADER.boolean.10 ) WAITBIT("%USR_M12.30",1)
+	;IF( %UNLOADER.boolean.11 ) WAITBIT("%USR_M13.0",1)
+	
+	SYN
+    ?%UNLOADER.boolean.8 = 0   
+    ?%UNLOADER.boolean.7 = 0
+    ?%UNLOADER.boolean.9 = 0
+    ?%UNLOADER.boolean.10 = 0
+    ?%UNLOADER.boolean.11 = 0
+	
+    ;AllFlapsHome AT %UNLOADER.boolean.21;
+	?%UNLOADER.boolean.21 = 1
+	G4 F(UnLoadFlapOnOffTime)
+	
+	;I_I_Flap_Home   AT %USR_M12.9;
+	;I_I_FlapL2_Home AT %USR_M1.29; 
+	;I_I_FlapL3_Home AT %USR_M12.27;
+	;I_I_FlapL4_Home AT %USR_M12.29;
+	;I_I_FlapL5_Home AT %USR_M12.31;
+	SYN
+	IF( AEXISTS(8,Y) ) WAITBIT("%USR_M12.9",1)
+	IF( AEXISTS(8,Z) ) WAITBIT("%USR_M1.29",1)
+	IF( AEXISTS(8,U) ) WAITBIT("%USR_M12.27",1)
+	IF( AEXISTS(8,V) ) WAITBIT("%USR_M12.29",1)
+	IF( AEXISTS(8,W) ) WAITBIT("%USR_M12.31",1)
+	
+    ?%UNLOADER.boolean.21 = 0
+	
+	SYN
+	?%gIso29.17 = 0
+	?%gIso29.18 = 0
+	?%gIso29.19 = 0
+	?%gIso29.20 = 0
+	?%gIso29.21 = 0
+	
+	; To Reset in G510 ?%gIso29.23 = 0
+	; To Reset in G510 ?%gIso29.24 = 0
+	; To Reset in G510 ?%gIso29.25 = 0
+	; To Reset in G510 ?%gIso29.26 = 0
+	
+	SYN
+    IF (AEXISTS(8,Z)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,Z)].ra4 / 1000)) < 0.1)
+    IF (AEXISTS(8,Y)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,Y)].ra4 / 1000)) < 0.1)
+    IF (AEXISTS(8,U)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,U)].ra4 / 1000)) < 0.1)
+    IF (AEXISTS(8,V)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,V)].ra4 / 1000)) < 0.1)
+    IF (AEXISTS(8,W)) AWAIT(ABS((%UNLOADER.values5 / 1000) - (%ax[AXIDX(8,W)].ra4 / 1000)) < 0.1)		
+.Flaps_Mov_End
+
+.All_Sups_Still_Start
+    SYN
+    IF( AEXISTS(8,Y) ) AWAIT( %ax[AXIDX(8,Y)].ra3.0 )
+    IF( AEXISTS(8,Z) ) AWAIT( %ax[AXIDX(8,Z)].ra3.0 )
+    IF( AEXISTS(8,U) ) AWAIT( %ax[AXIDX(8,U)].ra3.0 )
+    IF( AEXISTS(8,V) ) AWAIT( %ax[AXIDX(8,V)].ra3.0 )
+    IF( AEXISTS(8,W) ) AWAIT( %ax[AXIDX(8,W)].ra3.0 )
+	
+	IF( AEXISTS(7,Z) ) AWAIT( %ax[AXIDX(7,Z)].ra3.0 )
+    IF( AEXISTS(7,U) ) AWAIT( %ax[AXIDX(7,U)].ra3.0 )
+    IF( AEXISTS(7,V) ) AWAIT( %ax[AXIDX(7,V)].ra3.0 )
+    IF( AEXISTS(7,W) ) AWAIT( %ax[AXIDX(7,W)].ra3.0 )
+.All_Sups_Still_End
+
+.Open_V_Start
+	;Open V 
+	SYN
+	; SlaveSpdClosing  AT  %USR_M41.29;
+    WAITBIT("%USR_M41.29",0)
+	
+	IF( %USR_M20.1 ) THEN	
+	    M722     
+        G4 F(ChuckOpenCloseTime)
+	ENDIF
+.Open_V_End
+
+.Open_W_Start
+    ; Open Second Spindle
+	; MidSpdClosing  AT  %USR_M41.27;
+	SYN
+	WAITBIT("%USR_M41.27",0)
+	IF( %USR_M21.22 ) THEN
+	    M981 ; open second spindle
+        G4 F(ChuckOpenCloseTime)	
+	ENDIF	
+.Open_W_End

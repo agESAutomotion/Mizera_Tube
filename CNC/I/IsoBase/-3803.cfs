@@ -1,0 +1,41 @@
+ [C]12 [X]0 [Y]0 [Z]0 [W]0 [R]0 : G2803
+;//Cylinder (or disc) graphics
+DBL color = VA2
+DBL xa = CTOMM(VA23), ya = CTOMM(VA24), zs = CTOMM(VA25)
+DBL ze = CTOMM(VA22)
+DBL r = CTOMM(VA17)
+DBL shx = 0, shy = 0, shz = 0
+DBL a
+DBL chord, asteps
+DBL sav_G70=XGET("@G70")
+G71
+
+IF(f_ortho) THEN
+    shx = mx_o1+ori_x+add1_x+add2_x
+    shy = mx_o2+ori_y+add1_y+add2_y
+    shz = mx_o3+ori_z+add1_z+add2_z
+ENDIF
+
+IF (r < 0.001) THEN
+    asteps = 1
+ELSE
+    chord = 0.05 / r    ;//chord error
+    asteps = CEIL(360.0 / (2*ACOS(1.0-MIN(1.0,chord)))) ;//span
+    asteps = MIN(MAX(asteps, 1), 48)    ;//max tiles
+ENDIF
+
+MOVE(    15,color,   xa+r+shx,ya+shy,zs+shz)
+ARCTOCCW(15,color,17,xa+r+shx,ya+shy,zs+shz,xa+shx,ya+shy,zs+shz)
+
+IF (ze != zs) THEN
+    MOVE(    15,color,   xa+r+shx,ya+shy,ze+shz)
+    ARCTOCCW(15,color,17,xa+r+shx,ya+shy,ze+shz,xa+shx,ya+shy,ze+shz)
+
+    FOR a = 0 TO 359.999 BY 360/asteps
+        MOVE(  15,color,xa+r*COS(a)+shx,ya+r*SIN(a)+shy,zs+shz)
+        LINETO(15,color,xa+r*COS(a)+shx,ya+r*SIN(a)+shy,ze+shz)
+    ENDFOR
+ENDIF
+
+G(sav_G70)
+RET

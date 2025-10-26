@@ -1,0 +1,234 @@
+: $_START
+
+; Clear bistate
+M499
+
+IF( WHO() != 0 ) RET
+
+; Clear M Fun Record
+?%gIso38 = 0
+?%LsIso18 = 0
+?%vpbSelectors0 = 0 
+%STORE.boolean.0 = 0
+%SUPPORTS_SYSTEM.boolean.30 = 0
+%SUPPORTS_SYSTEM.boolean.31 = 0
+%LOADER.boolean.30 = 0
+%LOADER.boolean.31 = 0
+?%LsIso9.5 = 0
+?%LsIso35.4 = 0
+?%LsIso35.5 = 0
+%STORE.boolean.1 = 0
+
+INCLUDE "vax_inc.cfs"
+INCLUDE "vars_inc.cfs"
+INCLUDE "generic_inc.cfs"
+
+DBL cs_a
+
+GRPQ[X,Y,Z,B,C]=1
+GRPQ[U]=1
+GRPQ[V]=1
+GRPQ[W]=0
+GRPQ[A]=0
+GRPQ[B]=0
+IF(AEXISTS(3,B)) GRPQ[B] = 1
+
+?%C165.0 = 0        ;finestra di controllo angolo di bevel (=0, considera angolo=0)
+?%gIso29 = 0
+
+; Raster print variable
+;;;COPYRTOV(^%RasterParam0); 
+;;;COPYRTOV(^%RasterParam1); 
+;;;COPYRTOV(^%RasterParam2); 
+;;;COPYRTOV(^%RasterParam3); 
+;;;COPYRTOV(^%RasterParam4); 
+;;;COPYRTOV(^%RasterParam5); 
+;;;COPYRTOV(^%RasterParam6); 
+;;;COPYRTOV(^%RasterParam7); 
+;;;COPYRTOV(^%RasterParam8); 
+;;;COPYRTOV(^%RasterParam9); 
+;;;COPYRTOV(^%RasterParam10);
+;;;COPYRTOV(^%RasterParam11);
+
+; @@@APPLYCA per utilizzare MDI
+IF( %cn[WHO()].rc[0].11 ) RET
+
+IF( %LSRPlcOp0.21 ) %CompData[0] = 5
+
+IF( !ISQNAN(QCALCQ(Z)) ) VECRTC=1
+
+;//Ripristina variabili supermodali
+IF( !%cn[WHO()].rc[0].21 ) THEN ;//Canale NON in test
+    ;//XXX Con abilita output grafico non entra e da SPC codice non riconosciuto
+    SPC 33010,1                 ;//abilita il controllo dei finecorsa ad inizio blocco
+ENDIF
+
+%LsIso2.0 = 0       ; WELDING: end seraching...
+%LsIso2.4 = 0       ; O_O_VISCAMERA_PISTON
+%LsIso2.5 = 0       ; IsoCameraToDetec
+%LsIso9 = 0         ; M30 complete
+?%LsIso30 = 1       ; timer
+
+ACCTRJ=%cn[WHO()].pc[6]
+DECTRJ=%cn[WHO()].pc[7]
+JRKTRJ=%cn[WHO()].pc[16]
+VELTRJ=%cn[WHO()].pc[8]
+VEL[X]=%ax[AXIDX(X)].pa[9]
+VEL[Y]=%ax[AXIDX(Y)].pa[9]
+VEL[U]=%ax[AXIDX(U)].pa[9]
+
+IF( !ISQNAN(QCALCQ(Z)) ) VEL[Z]=%ax29.pa[9];    %ax[AXIDX(Z)].pa[9]
+
+IF(AEXISTS(3,B)) FDCWEI[B] = 22     ; Riduzione velocità assi XY in funzione del movimento di B
+FDCWEI[C] = 8
+
+; (Reduce C dynamic for follower)
+IF( (%LSRPlcOp1.29 == 1) && (AEXISTS(5,X)) && (ABS(%gIso23 - %gIso24) > 70) ) THEN
+	VEL[C] = %EBK21
+	%ax[AXIDX(C)].pa[58] = %EBK21	
+ELSE
+    VEL[C] = %ax[AXIDX(C)].pa[9]
+	%ax[AXIDX(C)].pa[58] = 0	
+ENDIF
+
+;Reset system variables
+IF( %cn[WHO()].rc[0].21 == 0 ) THEN
+    %LsPlc70 = 0                ; Inizio FASE di peiercing (x disab. tip-touch)
+    %C18 = 0                    ; 
+    %C19 = 0                    ; Tabella di lavoro selezionata
+ENDIF
+
+G64
+M9999  ;Abilita Start a canali Ausiliari
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Safety for plane AND pipe selection, at the end
+; of pipe program these variables keep value 1, need to reset 
+; this conditions.
+%UnitWork.uxh0.uxh_gTravE = 0
+%UnitWork.gTravE = 0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+ 
+INCLUDE "plasma_inc.cfs"
+INCLUDE "pipe_inc.cfs"
+
+; Reset offset support down DONT REMOVE
+?%LOADER.values8 = 0    ; All Supports Loader side
+
+DBL ParkUnloadTotal = 0
+
+DBL sav_G70_1000=XGET("@G70")
+G271
+
+
+; Confirm Spindle Gearing Active
+SYN
+IF (%M201) THEN
+ MSGOUT " C-C1 gearing not enable "
+ M0
+ENDIF
+
+; Confirm in case of saw cutting, the last piece length + renament must be longer than X offset
+;;IF( (%R30 > 0) && ( %PIECE_INFO.last_piu_rena <  %twi[10].htwi.oarh.dX) ) THEN
+;;  MSGOUT " Tube Last Heading less than offset between laser and saw "
+;;  M0
+;;ENDIF
+;;
+; Check if there is too short tube (Depends on the type of Clamp)
+;;IF( (%R30 > 0) && ( %PIECE_INFO.min_piece < (%R24 / 2.0)) ) THEN
+;;  MSGOUT " Minimum Tube Piece in Saw Cutting less than 0.5 Support "
+;;  ERROR(55)
+;;  M0
+;;ENDIF
+
+IF( HeadingRequest ) JSR "Sel_Y3Z3.cfs"
+
+IF( %ServiceMillePGM.0 ) JMP .ExitCstStart
+IF( %ServiceMillePGM.1 ) JMP .ExitCstStart
+IF( %ServiceMillePGM.2 ) JMP .ExitCstStart
+IF(%gPlc13.1) JMP .ExitCstStart
+
+; if not calibration
+IF( !%LsPlc11.0 ) JSR "park_all.cfs" 
+
+; Worklist enabled
+;IF( %LSRPlcOp0.5 ) G2292 S0 X(CFRMM(%ax27.pa21/1000)) Y(CFRMM(MinQta_Y)) Z0 U(CFRMM(%ax27.pa22/1000)) V(CFRMM(%ax28.pa22/1000)) W10
+
+gOptim=1
+
+; Se gestione PEZZO e GEOMETRIA
+IF( (%PlcOp0.31) && (!%cn[WHO()].rc[0].21) ) THEN
+    start_track =  (%PEZZO * 1000) + (%GEOMETRIA)
+ENDIF
+
+; Canale NON in test e AUT selezionato e gestione liste abilitata e no ExeAuxMode
+IF( (!%cn[WHO()].rc[0].21) && (%cn[WHO()].rc[0].12) && (%LSRPlcOp0.5) && (!%gPlc0.29) ) THEN
+
+    ;*********** STB=0 ****************
+    ?%WlistMngt.wl_cmd0.0 = 0
+
+    ;*********** WAIT ACK=0 ****************
+    FOR cs_a =0 TO 100
+        SYN
+        IF( %WlistMngt.wl_answer.0 == 0 ) THEN
+            POP(2)
+            JMP .Check1
+        ENDIF
+        G4 F0.1
+    ENDFOR
+    ERROR(798)
+
+.Check1
+
+    ;*********** STB=1 ****************
+    ?%WlistMngt.wl_cmd0.0 = 1
+
+
+    ;*********** WAIT ACK=1 ****************
+    FOR cs_a = 0 TO 100
+        SYN
+        IF( %WlistMngt.wl_answer.0 == 1 ) THEN
+            POP(2)
+            JMP .Check2
+        ENDIF
+        G4 F0.1
+    ENDFOR
+    ERROR(798)
+
+.Check2
+    ;*********** STB=0 ****************
+    ?%WlistMngt.wl_cmd0.0 = 0
+
+    ;*********** WAIT ACK=0 ****************
+    FOR cs_a = 0 TO 100
+        SYN
+        IF( %WlistMngt.wl_answer.0 == 0 ) THEN
+            POP(2)
+            JMP .Check3
+        ENDIF
+        G4 F0.1
+    ENDFOR
+    ERROR(798)
+
+.Check3
+
+ENDIF
+
+; Se verify da OPERATORE setta una velocit� fissa per evitare problema FEED NULL
+IF( %cn[WHO()].rc[0].21 ) THEN
+    feed1 = 1000
+    F(feed1)
+ENDIF
+
+; MDI
+IF( %cn[WHO()].rc[0].11 ) THEN
+    G172 T1 H1 D1       ; (Abilita RTCP)
+    JSR "Sel_Y3Z3.cfs"  ; Acquisisce anche LE quote Y dell'asse Vero (Funziona solo per 1 punto)
+ENDIF
+
+iso_enab_m1000 = 1
+
+.ExitCstStart
+G(200+sav_G70_1000)
+
+RET

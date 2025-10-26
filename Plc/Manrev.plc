@@ -1,0 +1,1335 @@
+* File MANREV.PLC: FB gestione mandrini e revolver
+
+#funcdec "assi.plc"
+#funcdec "mand.plc"
+
+VAR
+#include "cnc.inc"
+END_VAR
+
+
+* FB GESTIONE MANDRINO SENZA ENCODER
+
+FUNCTION_BLOCK GESTSP
+
+VAR_INPUT
+xJogPlus: BOOL; * Comando manuale avanti
+xJogMinus: BOOL; * Comando manuale indietro
+xSelected: BOOL; * Mandrino selezionato
+xRotatEnab: BOOL; * Rotazione mandrino abilitata
+xM3Force: BOOL; * Funzione M3 forzata
+xM5Force: BOOL; * Funzione M5 forzata
+xSelFromInput: BOOL; * Disabilita selezioni standard macchina
+xOverride: DWORD; * override mandrino
+END_VAR
+
+VAR_OUTPUT
+yOkRpm: BOOL; * Mandrino a regime
+yStopped: BOOL; * Mandrino fermo
+yInAlarm: BOOL; * Mandrino in allarme
+yWaitMFun: BOOL; * Ritarda ACK funzioni M
+END_VAR
+
+VAR
+SelGamma2: BOOL; * Memoria richiesta selezione gamma 2
+SelGamma3: BOOL; * Memoria richiesta selezione gamma 3
+SelGamma4: BOOL; * Memoria richiesta selezione gamma 4
+RotazOraria: BOOL; * Memoria richiesta rotazione oraria con M3
+RotazAntior: BOOL; * Memoria richiesta rotazione antioraria con M4
+CommandToSpindle: BOOL; * Funzione M-S indirizzata al mandrino corrente
+END_VAR
+
+* Gestione comandi mandrino per multimandrino
+
+LDN  CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+ANDN CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+ANDN CO_MASKSP_S2                  ** rc39.10 Funzioni M-S a mandrino S2
+ANDN CO_MASKSP_S3                  ** rc39.11 Funzioni M-S a mandrino S3
+OR   (
+LD   CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+AND  CO_MASKSP_S2                  ** rc39.10 Funzioni M-S a mandrino S2
+)
+OR   (
+LD   CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+AND  CO_MASKSP_S3                  ** rc39.11 Funzioni M-S a mandrino S3
+)
+ST   CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+
+* Gestione gamma mandrino
+
+LD   FUN_M42                       ** rgc2.10 Funzione M42 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    SelGamma2                     ** Memoria richiesta selezione gamma 2
+R    SelGamma3                     ** Memoria richiesta selezione gamma 3
+R    SelGamma4                     ** Memoria richiesta selezione gamma 4
+
+LD   FUN_M43                       ** rgc2.11 Funzione M43 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    SelGamma3                     ** Memoria richiesta selezione gamma 3
+R    SelGamma2                     ** Memoria richiesta selezione gamma 2
+R    SelGamma4                     ** Memoria richiesta selezione gamma 4
+
+LD   FUN_M44                       ** rgc2.12 Funzione M44 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    SelGamma4                     ** Memoria richiesta selezione gamma 4
+R    SelGamma2                     ** Memoria richiesta selezione gamma 2
+R    SelGamma3                     ** Memoria richiesta selezione gamma 3
+
+LD   FUN_M41                       ** rgc2.9  Funzione M41 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    SelGamma2                     ** Memoria richiesta selezione gamma 2
+R    SelGamma3                     ** Memoria richiesta selezione gamma 3
+R    SelGamma4                     ** Memoria richiesta selezione gamma 4
+
+LDN  SelGamma2                     ** Memoria richiesta selezione gamma 2
+ANDN SelGamma3                     ** Memoria richiesta selezione gamma 3
+ANDN SelGamma4                     ** Memoria richiesta selezione gamma 4
+AND  BCO_CANREADY                  ** rc8.2  Canale Ready
+ST   BAI_GAMMA1                    ** ra0.3 Gamma 1 selezionata
+
+LD   SelGamma2                     ** Memoria richiesta selezione gamma 2
+ST   BAI_GAMMA2                    ** ra0.4 Gamma 2 selezionata
+
+LD   SelGamma3                     ** Memoria richiesta selezione gamma 3
+ST   BAI_GAMMA3                    ** ra0.5 Gamma 3 selezionata
+
+LD   SelGamma4                     ** Memoria richiesta selezione gamma 4
+ST   BAI_GAMMA4                    ** ra0.6 Gamma 4 selezionata
+
+* Gestione rotazione mandrino
+
+LD   FUN_M3                        ** rgc1.3  Funzione M3 attiva
+OR   xM3Force                      ** Funzione M3 forzata
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    RotazOraria                   ** Memoria richiesta rotazione oraria con M3
+R    RotazAntior                   ** Memoria richiesta rotazione antioraria con M4
+
+LD   FUN_M4                        ** rgc1.4  Funzione M4 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    RotazAntior                   ** Memoria richiesta rotazione antioraria con M4
+R    RotazOraria                   ** Memoria richiesta rotazione oraria con M3
+
+LD   FUN_M5                        ** rgc1.5  Funzione M5 attiva
+OR   xM5Force                      ** Funzione M5 forzata
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+OR   CMD_EMER_MAND                 ** rgc0.20 Arresto mandrini canale con emergenza
+R    RotazAntior                   ** Memoria richiesta rotazione antioraria con M4
+R    RotazOraria                   ** Memoria richiesta rotazione oraria con M3
+
+* Comando bit blocco avanz., grant al PLC
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   BAI_BLAV                      ** ra0.1 Blocco Avanzamento
+
+LD   BCO_CANREADY                  ** rc8.2  Canale Ready
+ANDN CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+AND  BAO_SYNCUPDATE                ** ra13.2 Update dati asse effettuato
+ST   BAI_PLCREQ                    ** ra0.28 Richiesta gestione asse da PLC
+
+* Comando bit rotazione + e -
+
+LD   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+AND  xSelected                     ** Mandrino selezionato
+AND  BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+OR   (
+LD   RotazOraria                   ** Memoria richiesta rotazione oraria con M3
+AND  xRotatEnab                    ** Rotazione mandrino abilitata
+)
+ST   BAI_AV                        ** ra0.8 Comando avanti
+
+LD   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+AND  xSelected                     ** Mandrino selezionato
+AND  BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+OR   (
+LD   RotazAntior                   ** Memoria richiesta rotazione antioraria con M4
+AND  xRotatEnab                    ** Rotazione mandrino abilitata
+)
+ST   BAI_IND                       ** ra0.9 Comando indietro
+
+* Reset mandrino in allarme
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ST   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+
+* Override mandrino
+
+LD   xSelFromInput                 ** Disabilita selezioni standard macchina
+JMPC IMMDATA
+
+LD   SG_OVRDSP                     ** rg3 Override mandrini
+ST   AI_OVRD                       ** ra1  Override asse/mandrino
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xOverride                     ** override mandrino
+ST   AI_OVRD                       ** ra1  Override asse/mandrino
+
+END_DATA:
+
+* Blocco ack funzioni M
+
+LD   FUN_M3                        ** rgc1.3  Funzione M3 attiva
+OR   FUN_M4                        ** rgc1.4  Funzione M4 attiva
+ANDN BAO_MARG                      ** ra3.9  Mandrino a regime
+OR   (
+LD   FUN_M5                        ** rgc1.5  Funzione M5 attiva
+ANDN BAO_AFET                      ** ra3.0  Asse fermo teorico
+)
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+ST   yWaitMFun                     ** Ritarda ACK funzioni M
+
+* Funzione standard impostazione velocità mandrino
+
+SP_SELSPEED
+
+* Parallelo del segnale di allarme assi attivo
+
+LD   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAO_ISO_ALARM                 ** ra19.4 Stato ALLARME all'interno del canale
+S    CH_IN_ALARM                   ** rgc0.6 Asse in allarme nel canale
+
+* Abilitazione avanzamento unità
+
+LD   xRotatEnab                    ** Rotazione mandrino abilitata
+AND  BAO_MARG                      ** ra3.9  Mandrino a regime
+ST   yOkRpm                        ** Mandrino a regime
+
+* Mandrino fermo
+
+LD   BAO_AFET                      ** ra3.0  Asse fermo teorico
+ST   yStopped                      ** Mandrino fermo
+
+* Mandrino in allarme
+
+LD   BAO_ALLM                      ** ra3.15  Asse in Allarme
+ST   yInAlarm                      ** Mandrino in allarme
+
+* Passa bit mandrino corrente sul successivo
+
+LD   CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+ST   CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+
+LDN  CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+ST   CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+
+* Registro asse selezionato per vis. cursore
+
+LD   xSelected                     ** Mandrino selezionato
+JMPCN ENDAXSEL
+
+LD   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+ST   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+
+ENDAXSEL:
+
+LD   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+ADD  1
+ST   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+
+END_FUNCTION_BLOCK
+
+
+
+* FB GESTIONE MANDRINO CON ENCODER
+
+FUNCTION_BLOCK GESTSPE
+
+VAR_INPUT
+xJogPlus: BOOL; * Comando manuale avanti
+xJogMinus: BOOL; * Comando manuale indietro
+xSelected: BOOL; * Mandrino selezionato
+xRotatEnab: BOOL; * Rotazione mandrino abilitata
+xM3Force: BOOL; * Funzione M3 forzata
+xM5Force: BOOL; * Funzione M5 forzata
+xSelFromInput: BOOL; * Disabilita selezioni standard macchina
+xOverride: DWORD; * override mandrino
+xRefLS: BOOL; * Finecorsa di taratura
+xZeroForced: BOOL; * Forzamento asse tarato
+END_VAR
+
+VAR_OUTPUT
+yOkRpm: BOOL; * Mandrino a regime
+yStopped: BOOL; * Mandrino fermo
+yZeroed: BOOL; * Mandrino tarato
+yInAlarm: BOOL; * Mandrino in allarme
+yErrOrienta: BOOL; * Errore durante l'orientamento mandrino
+yWaitMFun: BOOL; * Ritarda ACK funzioni M
+END_VAR
+
+VAR
+SelGamma2: BOOL; * Memoria richiesta selezione gamma 2
+SelGamma3: BOOL; * Memoria richiesta selezione gamma 3
+SelGamma4: BOOL; * Memoria richiesta selezione gamma 4
+RotazOraria: BOOL; * Memoria richiesta rotazione oraria con M3
+RotazAntior: BOOL; * Memoria richiesta rotazione antioraria con M4
+IntRotatEnab: BOOL; * Rotazione mandrino abilitata + sic. revolver
+RichCloseLoop: BOOL; * Memoria richiesta messa in coppia mandrino
+M19attiva: BOOL; * Memoria funzione M19 attiva
+MemTaraInCorso: BOOL; * Memoria ciclo di taratura mandrino in corso
+CommandToSpindle: BOOL; * Funzione M-S indirizzata al mandrino corrente
+ORIMAND: SP_POSIZ;
+R_TRIG1: R_TRIG;
+R_TRIG2: R_TRIG;
+END_VAR
+
+* Gestione comandi mandrino per multimandrino
+
+LDN  CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+ANDN CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+ANDN CO_MASKSP_S2                  ** rc39.10 Funzioni M-S a mandrino S2
+ANDN CO_MASKSP_S3                  ** rc39.11 Funzioni M-S a mandrino S3
+OR   (
+LD   CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+AND  CO_MASKSP_S2                  ** rc39.10 Funzioni M-S a mandrino S2
+)
+OR   (
+LD   CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+AND  CO_MASKSP_S3                  ** rc39.11 Funzioni M-S a mandrino S3
+)
+ST   CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+
+* Gestione gamma mandrino
+
+LD   xRotatEnab                    ** Rotazione mandrino abilitata
+AND  SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+ST   IntRotatEnab                  ** Rotazione mandrino abilitata + sic. revolver
+
+LD   FUN_M42                       ** rgc2.10 Funzione M42 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    SelGamma2                     ** Memoria richiesta selezione gamma 2
+R    SelGamma3                     ** Memoria richiesta selezione gamma 3
+R    SelGamma4                     ** Memoria richiesta selezione gamma 4
+
+LD   FUN_M43                       ** rgc2.11 Funzione M43 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    SelGamma3                     ** Memoria richiesta selezione gamma 3
+R    SelGamma2                     ** Memoria richiesta selezione gamma 2
+R    SelGamma4                     ** Memoria richiesta selezione gamma 4
+
+LD   FUN_M44                       ** rgc2.12 Funzione M44 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    SelGamma4                     ** Memoria richiesta selezione gamma 4
+R    SelGamma2                     ** Memoria richiesta selezione gamma 2
+R    SelGamma3                     ** Memoria richiesta selezione gamma 3
+
+LD   FUN_M41                       ** rgc2.9  Funzione M41 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    SelGamma2                     ** Memoria richiesta selezione gamma 2
+R    SelGamma3                     ** Memoria richiesta selezione gamma 3
+R    SelGamma4                     ** Memoria richiesta selezione gamma 4
+
+LDN  SelGamma2                     ** Memoria richiesta selezione gamma 2
+ANDN SelGamma3                     ** Memoria richiesta selezione gamma 3
+ANDN SelGamma4                     ** Memoria richiesta selezione gamma 4
+AND  BCO_CANREADY                  ** rc8.2  Canale Ready
+ST   BAI_GAMMA1                    ** ra0.3 Gamma 1 selezionata
+
+LD   SelGamma2                     ** Memoria richiesta selezione gamma 2
+ST   BAI_GAMMA2                    ** ra0.4 Gamma 2 selezionata
+
+LD   SelGamma3                     ** Memoria richiesta selezione gamma 3
+ST   BAI_GAMMA3                    ** ra0.5 Gamma 3 selezionata
+
+LD   SelGamma4                     ** Memoria richiesta selezione gamma 4
+ST   BAI_GAMMA4                    ** ra0.6 Gamma 4 selezionata
+
+* Gestione rotazione mandrino
+
+LD   FUN_M19                       ** rgc1.19 Funzione M19 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    M19attiva                     ** Memoria funzione M19 attiva
+
+LD   ORIMAND.yax_ENDOK
+ORN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+R    M19attiva                     ** Memoria funzione M19 attiva
+
+LD   FUN_M3                        ** rgc1.3  Funzione M3 attiva
+OR   xM3Force                      ** Funzione M3 forzata
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    RotazOraria                   ** Memoria richiesta rotazione oraria con M3
+R    RotazAntior                   ** Memoria richiesta rotazione antioraria con M4
+
+LD   FUN_M4                        ** rgc1.4  Funzione M4 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+S    RotazAntior                   ** Memoria richiesta rotazione antioraria con M4
+R    RotazOraria                   ** Memoria richiesta rotazione oraria con M3
+
+LD   M19attiva                     ** Memoria funzione M19 attiva
+AND  ORIMAND.yax_RUNNING
+OR   ORIREV_ON                     ** rgc0.11 Orientamento mandrino per innesto revolver attivo
+AND  BAO_PEXEC                     ** ra3.29 Exec procedura attivo da slave
+OR   (
+LD   FUN_M5                        ** rgc1.5  Funzione M5 attiva
+OR   xM5Force                      ** Funzione M5 forzata
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+)
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+OR   CMD_EMER_MAND                 ** rgc0.20 Arresto mandrini canale con emergenza
+R    RotazAntior                   ** Memoria richiesta rotazione antioraria con M4
+R    RotazOraria                   ** Memoria richiesta rotazione oraria con M3
+
+*** Blocco funzionale orientamento mandrino
+
+LD   BCO_PRGRUN                    ** rc8.0  Programma in corso
+AND  SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+ANDN CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+ST   ORIMAND.xax_ENABLE
+
+LD   M19attiva                     ** Memoria funzione M19 attiva
+AND  ORIMAND.yax_READY
+ANDN ORIMAND.yax_ENDERR
+ST   ORIMAND.xax_START
+
+LDN  M19attiva                     ** Memoria funzione M19 attiva
+ST   ORIMAND.xax_CLEAR
+
+LD   CURPOSRCN                     ** rgc5 Posizione da quota equivalente revolver
+ST   ORIMAND.xax_TOOL
+
+
+LD   ALWAYS_ZERO         ** PLCFLAGS.0  Flag sempre stato off
+ST   ORIMAND.xax_INCMODE
+
+CAL  ORIMAND
+
+LD   ORIMAND.yax_ENDERR
+ST   yErrOrienta                   ** Errore durante l'orientamento mandrino
+
+*** Gestione messa in coppia *******
+
+LD   BAO_CNREQ                     ** ra3.30 Asse/mandrino richiesto dal canale
+OR   M19attiva                     ** Memoria funzione M19 attiva
+S    RichCloseLoop                 ** Memoria richiesta messa in coppia mandrino
+
+LD   FUN_M3                        ** rgc1.3  Funzione M3 attiva
+OR   FUN_M4                        ** rgc1.4  Funzione M4 attiva
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+ORN  SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+ORN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+OR   BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+OR   BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+R    RichCloseLoop                 ** Memoria richiesta messa in coppia mandrino
+
+LD   RichCloseLoop                 ** Memoria richiesta messa in coppia mandrino
+OR   COPPIA_REV                    ** rgc0.12 Richiesta messa in coppia mandrino da revolver
+AND  SICCOPPIAMA                   ** rgc0.14 Sic. da revolver per messa in coppia mandrino
+ST   BAI_CHAN                      ** ra0.0 Chiusura anello di posizione
+
+* Comando bit blocco avanz., grant al PLC
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   BAI_BLAV                      ** ra0.1 Blocco Avanzamento
+
+LD   M19attiva                     ** Memoria funzione M19 attiva
+ANDN ORIMAND.yax_ENDOK
+OR   REQASSE_REV                   ** rgc0.15 Richiesta grant mandrino da revolver
+ORN  BAO_CNREQ                     ** ra3.30 Asse/mandrino richiesto dal canale
+ORN  RichCloseLoop                 ** Memoria richiesta messa in coppia mandrino
+AND  BCO_CANREADY                  ** rc8.2  Canale Ready
+ANDN CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+AND  BAO_SYNCUPDATE                ** ra13.2 Update dati asse effettuato
+ANDN BCO_CUSTOM_START    ** rc8.19 Ciclo $START in corso
+ANDN BCO_CUSTOM_RESET    ** rc8.20 Ciclo $RESET in corso
+ST   BAI_PLCREQ                    ** ra0.28 Richiesta gestione asse da PLC
+
+* Comando bit rotazione + e -
+
+LD   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+OR   xJogPlus            ** Comando manuale avanti
+AND  xSelected                     ** Mandrino selezionato
+AND  BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+AND  SICROTJOG                     ** rgc0.13 Sic. da revolver per rotazione mandrino in JOG
+OR   (
+LD   RotazOraria                   ** Memoria richiesta rotazione oraria con M3
+AND  IntRotatEnab                  ** Rotazione mandrino abilitata + sic. revolver
+)
+ST   BAI_AV                        ** ra0.8 Comando avanti
+
+LD   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+OR   xJogMinus           ** Comando manuale indietro
+AND  xSelected                     ** Mandrino selezionato
+AND  BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+AND  SICROTJOG                     ** rgc0.13 Sic. da revolver per rotazione mandrino in JOG
+OR   (
+LD   RotazAntior                   ** Memoria richiesta rotazione antioraria con M4
+AND  IntRotatEnab                  ** Rotazione mandrino abilitata + sic. revolver
+)
+ST   BAI_IND                       ** ra0.9 Comando indietro
+
+* Start taratura mandrino e FC taratura
+
+CAL  R_TRIG1(CLK=CMD_START_AXIS)   ** rgc0.5 Comando start assi canale
+
+LDN  BSC_SINGREF                   ** rgc0.18 Selezione modo REF singolo nel canale
+ANDN xZeroForced                   ** Forzamento asse tarato
+OR   xSelected                     ** Mandrino selezionato
+AND  R_TRIG1.Q
+S    MemTaraInCorso                ** Memoria ciclo di taratura mandrino in corso
+
+CAL  R_TRIG2(CLK=BAO_TARA)         ** ra3.14  Asse tarato
+
+LD   R_TRIG2.Q
+ORN  BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+ORN  SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+OR   CMD_EMER_MAND                 ** rgc0.20 Arresto mandrini canale con emergenza
+R    MemTaraInCorso                ** Memoria ciclo di taratura mandrino in corso
+
+LD   MemTaraInCorso                ** Memoria ciclo di taratura mandrino in corso
+ST   BAI_STARTAR                   ** ra0.12 Start taratura mandrino
+
+LD   xRefLS                        ** Finecorsa di taratura
+ST   BAI_FCRALL                    ** ra0.13 Finecorsa Taratura
+
+* Reset mandrino in allarme
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ST   BAI_RESALARM                  ** ra0.15 Ripristino allarme asse
+
+* Override mandrino
+
+LD   xSelFromInput                 ** Disabilita selezioni standard macchina
+JMPC IMMDATA
+
+LD   SG_OVRDSP                     ** rg3 Override mandrini
+ST   AI_OVRD                       ** ra1  Override asse/mandrino
+
+JMP  END_DATA
+
+IMMDATA:
+
+LD   xOverride                     ** override mandrino
+ST   AI_OVRD                       ** ra1  Override asse/mandrino
+
+END_DATA:
+
+* Blocco ack funzioni M
+
+LD   FUN_M3                        ** rgc1.3  Funzione M3 attiva
+OR   FUN_M4                        ** rgc1.4  Funzione M4 attiva
+ANDN BAO_MARG                      ** ra3.9  Mandrino a regime
+OR   (
+LD   FUN_M5                        ** rgc1.5  Funzione M5 attiva
+ANDN BAO_AFET                      ** ra3.0  Asse fermo teorico
+)
+OR   (
+LD   FUN_M19                       ** rgc1.19 Funzione M19 attiva
+ANDN ORIMAND.yax_ENDOK
+)
+AND  CommandToSpindle              ** Funzione M-S indirizzata al mandrino corrente
+ST   yWaitMFun                     ** Ritarda ACK funzioni M
+
+* Funzione standard impostazione velocità mandrino
+
+SP_SELSPEED
+
+* Parallelo del segnale di allarme assi attivo
+
+LD   BAO_ALLM                      ** ra3.15  Asse in Allarme
+OR   BAO_ISO_ALARM                 ** ra19.4 Stato ALLARME all'interno del canale
+S    CH_IN_ALARM                   ** rgc0.6 Asse in allarme nel canale
+
+* Serie del segnale di assi tarati
+
+LD   BAO_TARA                      ** ra3.14  Asse tarato
+OR   xZeroForced                   ** Forzamento asse tarato
+AND  CH_ZEROED                     ** rgc0.7 Assi tarati nel canale
+ST   CH_ZEROED                     ** rgc0.7 Assi tarati nel canale
+
+* Abilitazione avanzamento unità
+
+LD   IntRotatEnab                  ** Rotazione mandrino abilitata + sic. revolver
+AND  BAO_MARG                      ** ra3.9  Mandrino a regime
+OR   RichCloseLoop                 ** Memoria richiesta messa in coppia mandrino
+ST   yOkRpm                        ** Mandrino a regime
+
+* Uscite di stato mandrino
+
+LD   BAO_AFET                      ** ra3.0  Asse fermo teorico
+ST   yStopped                      ** Mandrino fermo
+
+LD   BAO_TARA                      ** ra3.14  Asse tarato
+OR   xZeroForced                   ** Forzamento asse tarato
+ST   yZeroed                       ** Mandrino tarato
+
+LD   BAO_ALLM                      ** ra3.15  Asse in Allarme
+ST   yInAlarm                      ** Mandrino in allarme
+
+* Passa bit mandrino corrente sul successivo
+
+LD   CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+ST   CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+
+LDN  CUR_SPIN3                     ** rg0.4 Mandrino corrente = S3
+ST   CUR_SPIN2                     ** rg0.3 Mandrino corrente = S2
+
+* Registro asse selezionato per vis. cursore
+
+LD   xSelected                     ** Mandrino selezionato
+JMPCN ENDAXSEL
+
+LD   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+ST   SG_AXSEL                      ** rg8 Asse selezionato per vis. cursore
+
+ENDAXSEL:
+
+LD   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+ADD  1
+ST   SG_AXNUM                      ** rg7 Numero asse all'interno del canale
+
+END_FUNCTION_BLOCK
+
+
+
+* FB GESTIONE REVOLVER
+
+FUNCTION_BLOCK GESTREV
+
+VAR_INPUT
+xCodeLS0: BOOL; * FC 0 codice riconosc.revolver
+xCodeLS1: BOOL; * FC 1 codice riconosc.revolver
+xCodeLS2: BOOL; * FC 2 codice riconosc.revolver
+xBlRevLS: BOOL; * FC bloccata testa revolver (per rotaz. mandrino)
+xSblRevLS: BOOL; * FC sbloccata testa revolver (per rotaz. revolver)
+xInnManLS: BOOL; * FC innestata rotazione mandrino
+xInnRevLS: BOOL; * FC innestata rotazione revolver
+xValidCode: BOOL; * Abil. lettura finecorsa revolver
+xSelected: BOOL; * Revolver selezionato
+xEnabOp: BOOL; * Sicurezze gruppo mandrino-revolver (ut. bloccato)
+xSelCSingRot: BOOL; * Selezione rotazione ciclo singolo revolver
+xSelManRot: BOOL; * Selezione rotazione manuale revolver
+xSelManSbl: BOOL; * Selezione blocco/sblocco testa revolver
+END_VAR
+
+VAR_OUTPUT
+yInnManEv: BOOL;   * Sol.ritorno cilindro,innesta il mandrino
+yInnRevEv: BOOL;   * Sol.avanti cilindro,innesta il revolver
+yBloRevEv: BOOL;   * Solenoide blocco  testa revolver
+ySblRevEv: BOOL;   * Solenoide sblocco testa revolver
+yAlmOriM6: BOOL;   * Errore esecuzione orientamento per innesto revolver
+yAlmQlfRevo: BOOL; * Errore esecuzione qualifica revolver
+yAlmRotRev: BOOL;  * Errore esecuzione rotazione revolver
+yAlmQlfMand: BOOL; * Errore esecuzione qualifica mandrino
+yAlmFCCod: BOOL;   * All.avaria codice riconoscimento revolver
+yAlmPosRev: BOOL;  * Errore posizione finale revolver
+yAlmFCRevo: BOOL;  * All.blocco fc innesto mandrino o revolver
+yAlmFCInnMa: BOOL; * All.manca risposta fc innesto mandrino
+yAlmFCInnRe: BOOL; * All.manca risposta fc innesto revolver
+yAlmFCBlRe: BOOL;  * All.manca risposta fc blocco testa rev.
+yAlmFCSblRe: BOOL; * All.manca risposta sblocco testa rev.
+yAlmFCTestRev: BOOL; * All.blocco FC blocco/sblocco testa revolver
+yAlmPhasQual: BOOL; * Messaggio qualifica revolver fuori fase
+yWaitMFun: BOOL; * Ritarda ACK funzioni M
+yToolChangeRun: BOOL; * Cambio utensile in corso
+ySicRotMand: BOOL; * Sicurezze da revolver per rotazione mandrino
+yCurrentPosition: DWORD; * Posizione corrente revolver
+END_VAR
+
+VAR
+#defcom TON250.Q fine tempo conferma presenza blocco FC testa revolver
+#defcom TON251.Q fine tempo controllo rispost.F.c.blocco/sblocco revolver
+#defcom TON252.Q fine tempo controllo rispost.F.c.Innesto revolver
+#defcom TON253.Q fine tempo sbloccata testa revolver per rotazione
+#defcom TON254.Q fine tempo lettura codice posizione revolver
+#defcom TON271.Q fine tempo conferma fermo ed orientato mandrino
+#defcom R_TRIG1.Q Fronte per cambio utensile da programma (M6)
+#defcom R_TRIG2.Q Fronte per ciclo continuo singolo revolver
+#defcom R_TRIG263.Q Fronte lettura effettuata codice utensile revolver
+#defcom TRIG269.Q Fronte innesto revolver/mandrino unita'
+#defcom TRIG270.Q Fronte comando sblocco revolver
+
+
+TON250: TON;
+TON251: TON;
+TON252: TON;
+TON253: TON;
+TON254: TON;
+TON271: TON;
+R_TRIG1: R_TRIG;
+R_TRIG2: R_TRIG;
+R_TRIG263: R_TRIG;
+TRIG269: TRIG;
+TRIG270: TRIG;
+
+ORIM6: SP_POSIZ;
+QLFREVO: SP_QUALIFY;
+ROTREV: SP_POSREV;
+QLFMAND: SP_QUALIFY;
+POCK_TOOL: SP_POCKET_TOOL;
+
+SicRotRe:       BOOL; * Sicurezze per consenso rotazione Revolver
+Appoggio:       BOOL; * Appoggio
+CURotRev:       BOOL; * Mem. rotazione revolver per cambio utensile
+SROrienta:      BOOL; * Mem. orientamento mandrino per selezione revolver
+SRInnesta:      BOOL; * Mem. innesto per selezione revolver
+SRSblocca:      BOOL; * Mem. sblocco per selezione revolver
+SREndPuls:      BOOL; * Impulso fine selezione revolver
+SSBlocca:       BOOL; * Mem. blocco revolver per selezione mandrino
+SSInnesta:      BOOL; * Mem. innesto per selezione mandrino
+SSEndPuls:      BOOL; * Impulso fine selezione mandrino
+PwrQlfMan:      BOOL; * Qualifica mandrino all'accensione
+PwrQlfRev:      BOOL; * Qualifica revolver all'accensione
+PwrQlfOk:       BOOL; * Qualifica all'accensione effettuata
+CmdCicSing:     BOOL; * Comando ciclo singolo rotazione revolver attivo
+M6Executed:     BOOL; * Effettuato almeno un cambio utensile nel programma
+EnabAckM6:      BOOL; * Abilita ACK M6
+AppFCCode:      BOOL; * Appoggio lettura codice finecorsa revolver
+MemValidCode:   BOOL; * Mem.lettura effettuata codice utensile revolver
+EsclSicMa:      BOOL; * By_pass alcune sicurezze rotaz.mandrino per fine lavoro
+ManSblRev:      BOOL; * Comando manuale sblocco revolver
+PosFromLS:      DWORD; * Posizione da finecorsa revolver
+ToolSelected:   DWORD; * Utensile revolver selezionato
+ToolFromPP:     DWORD; * Utensile revolver richiesto da part program
+RETAIN MemCmdInnRev: BOOL; * Mem. comando innesto revolver
+RETAIN MemCmdSblRev: BOOL; * Mem. comando sblocco revolver
+END_VAR
+
+*******************************************************
+* SICUREZZE ROTAZIONE MANDRINO E REVOLVER
+*******************************************************
+
+* Controllo blocco finecorsa revolver
+
+LD   xInnRevLS                     ** FC innestata rotazione revolver
+AND  xInnManLS                     ** FC innestata rotazione mandrino
+S    yAlmFCRevo                    ** All.blocco fc innesto mandrino o revolver
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    yAlmFCRevo                    ** All.blocco fc innesto mandrino o revolver
+
+* Sicurezze per consenso rotazione mandrino
+
+LD   xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+AND  xEnabOp                       ** Sicurezze gruppo mandrino-revolver (ut. bloccato)
+ANDN yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+ANDN yAlmFCSblRe                   ** All.manca risposta sblocco testa rev.
+ANDN yAlmFCRevo                    ** All.blocco fc innesto mandrino o revolver
+OR   EsclSicMa                     ** By_pass alcune sicurezze rotaz.mandrino per fine lavoro
+ANDN BAO_REVOL                     ** ra3.31 Selezione mandrino come revolver
+AND  yInnManEv                     ** Sol.ritorno cilindro,innesta il mandrino
+AND  xInnManLS                     ** FC innestata rotazione mandrino
+ST   SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+ST   ySicRotMand                   ** Sicurezze da revolver per rotazione mandrino
+
+* By-pass per fine lavoro mancano alcune sicurezze rotaz.mandrino
+
+LD   SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+OR   EsclSicMa                     ** By_pass alcune sicurezze rotaz.mandrino per fine lavoro
+AND  (
+LD   BAI_AV                        ** ra0.8 Comando avanti
+OR   BAI_IND                       ** ra0.9 Comando indietro
+)
+ANDN BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+ANDN BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+ANDN BAO_AFET                      ** ra3.0  Asse fermo teorico
+ST   EsclSicMa                     ** By_pass alcune sicurezze rotaz.mandrino per fine lavoro
+
+* Sicurezze per consenso rotazione revolver
+
+LD   ySblRevEv                     ** Solenoide sblocco testa revolver
+AND  xSblRevLS                     ** FC sbloccata testa revolver (per rotaz. revolver)
+ANDN yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+ST   Appoggio                      ** Appoggio
+
+CAL  TON253(IN=Appoggio, PT=200)   ** Appoggio
+
+LD   xInnRevLS                     ** FC innestata rotazione revolver
+AND  TON253.Q                      ** fine tempo sbloccata testa revolver per rotazione
+ANDN yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+ANDN yAlmFCSblRe                   ** All.manca risposta sblocco testa rev.
+ANDN yAlmFCRevo                    ** All.blocco fc innesto mandrino o revolver
+AND  BAO_REVOL                     ** ra3.31 Selezione mandrino come revolver
+ST   SicRotRe                      ** Sicurezze per consenso rotazione Revolver
+
+*******************************************************
+* IDENTIFICAZIONE CODICE POSIZIONE REVOLVER
+*******************************************************
+
+LD   xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+OR   AppFCCode                     ** Appoggio lettura codice finecorsa revolver
+AND  yBloRevEv                     ** Solenoide blocco  testa revolver
+AND  PwrQlfOk                      ** Qualifica all'accensione effettuata
+ANDN yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+ANDN yAlmFCSblRe                   ** All.manca risposta sblocco testa rev.
+ST   AppFCCode                     ** Appoggio lettura codice finecorsa revolver
+
+CAL  TON254(IN=AppFCCode,PT=300)   ** Appoggio lettura codice finecorsa revolver
+
+* Mem.lettura codice effettuata
+
+LD   TON254.Q                      ** fine tempo lettura codice posizione revolver
+S    MemValidCode                  ** Mem.lettura effettuata codice utensile revolver
+
+LD   ySblRevEv                     ** Solenoide sblocco testa revolver
+R    MemValidCode                  ** Mem.lettura effettuata codice utensile revolver
+
+CAL  R_TRIG263(CLK=MemValidCode)   ** Mem.lettura effettuata codice utensile revolver
+
+LD   R_TRIG263.Q                   ** Fronte lettura effettuata codice utensile revolver
+JMPCN NOREADFC
+
+LD   xCodeLS0                      ** FC 0 codice riconosc.revolver
+ST   PosFromLS.0
+
+LD   xCodeLS1                      ** FC 1 codice riconosc.revolver
+ST   PosFromLS.1
+
+LD   xCodeLS2                      ** FC 2 codice riconosc.revolver
+ST   PosFromLS.2
+
+NOREADFC:
+
+* Calcola posizione revolver da quota equivalente da CN
+
+LD   AO_RVQUOTA                    ** ra21 Quota equivalente revolver
+ADD  300
+DIV  600
+MOD  6
+ADD  1
+ST   CURPOSRCN                     ** rgc5 Posizione da quota equivalente revolver
+ST   yCurrentPosition              ** Posizione corrente revolver
+
+* Trova Utensile corrispondente al pocket corrente
+
+LD   R_TRIG263.Q                   ** Fronte lettura effettuata codice utensile revolver
+JMPCN ENDFINDTOOL
+
+CAL  POCK_TOOL(xax_POCKET=CURPOSRCN) ** rgc5 Posizione da quota equivalente revolver
+
+* Se l'utensile non è configurato, tool = pocket
+LD   POCK_TOOL.yax_TOOL
+NE   0
+JMPC TOOLFOUND
+
+LD   POCK_TOOL.xax_POCKET
+ST   ToolSelected                  ** Utensile revolver selezionato
+
+JMP  ENDFINDTOOL
+
+TOOLFOUND:
+
+LD   POCK_TOOL.yax_TOOL
+ST   ToolSelected                  ** Utensile revolver selezionato
+
+ENDFINDTOOL:
+
+
+*******************************************************
+* MEMORIE PER CICLO REVOLVER
+*******************************************************
+
+* Condizioni per cambio utensile da programma (M6)
+
+LD   FUN_M6                        ** rgc1.6  Funzione M6 attiva
+AND  MemValidCode                  ** Mem.lettura effettuata codice utensile revolver
+ANDN CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+ST   Appoggio                      ** Appoggio
+
+CAL  R_TRIG1(CLK=Appoggio)         ** Appoggio
+
+LD   R_TRIG1.Q                     ** Fronte per cambio utensile da programma (M6)
+S    EnabAckM6                     ** Abilita ACK M6
+
+LDN  FUN_M6                        ** rgc1.6  Funzione M6 attiva
+R    EnabAckM6                     ** Abilita ACK M6
+
+* Campiona funzione T solo sulla M6
+
+LDN  R_TRIG1.Q                     ** Fronte per cambio utensile da programma (M6)
+JMPC ENDTOOLPP
+
+LD   CO_TFUN                       ** rc11 Registro funzioni T
+ST   ToolFromPP                    ** Utensile revolver richiesto da part program
+
+ENDTOOLPP:
+
+* Condizioni per ciclo continuo singolo revolver
+
+LD   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+OR   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+AND  xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+AND  xSelected                     ** Revolver selezionato
+ANDN yAlmFCSblRe                   ** All.manca risposta sblocco testa rev.
+ANDN yAlmFCRevo                    ** All.blocco fc innesto mandrino o revolver
+ANDN yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+ST   CmdCicSing                    ** Comando ciclo singolo rotazione revolver attivo
+
+CAL  R_TRIG2(CLK=CmdCicSing)       ** Comando ciclo singolo rotazione revolver attivo
+
+LD   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+AND  xSelected                     ** Revolver selezionato
+AND  xSelManSbl                    ** Selezione blocco/sblocco testa revolver
+ANDN SSBlocca                      ** Mem. blocco revolver per selezione mandrino
+ST   ManSblRev                     ** Comando manuale sblocco revolver
+
+* Ciclo cambio utensile: qualifica a revolver
+
+LD   ToolSelected                  ** Utensile revolver selezionato
+NE   ToolFromPP                    ** Utensile revolver richiesto da part program
+AND  R_TRIG1.Q                     ** Fronte per cambio utensile da programma (M6)
+OR   R_TRIG2.Q                     ** Fronte per ciclo continuo singolo revolver
+S    CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+
+LD   CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+ANDN CURotRev                      ** Mem. rotazione revolver per cambio utensile
+OR   ManSblRev                     ** Comando manuale sblocco revolver
+AND  SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+ANDN SSBlocca                      ** Mem. blocco revolver per selezione mandrino
+S    SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+
+CAL  TON271(IN=ORIM6.yax_ENDOK,PT=50)
+
+LD   TON271.Q                      ** fine tempo conferma fermo ed orientato mandrino
+AND  SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+OR   (
+LD   ManSblRev                     ** Comando manuale sblocco revolver
+ANDN SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+)
+AND  xEnabOp                       ** Sicurezze gruppo mandrino-revolver (ut. bloccato)
+AND  BAO_AFET                      ** ra3.0  Asse fermo teorico
+S    SRInnesta                     ** Mem. innesto per selezione revolver
+
+LD   SRInnesta                     ** Mem. innesto per selezione revolver
+OR   ManSblRev                     ** Comando manuale sblocco revolver
+AND  xInnRevLS                     ** FC innestata rotazione revolver
+ANDN yAlmFCRevo                    ** All.blocco fc innesto mandrino o revolver
+S    SRSblocca                     ** Mem. sblocco per selezione revolver
+
+LD   TON253.Q                      ** fine tempo sbloccata testa revolver per rotazione
+AND  QLFREVO.yax_ENDOK
+AND  SRSblocca                     ** Mem. sblocco per selezione revolver
+ST   SREndPuls                     ** Impulso fine selezione revolver
+
+LD   SREndPuls                     ** Impulso fine selezione revolver
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+R    SRInnesta                     ** Mem. innesto per selezione revolver
+R    SRSblocca                     ** Mem. sblocco per selezione revolver
+
+* Ciclo cambio utensile: rotazione revolver
+
+LD   SicRotRe                      ** Sicurezze per consenso rotazione Revolver
+ANDN SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+AND  CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+S    CURotRev                      ** Mem. rotazione revolver per cambio utensile
+
+* Ciclo cambio utensile: qualifica a mandrino
+
+LD   ROTREV.yax_ENDOK
+AND  CURotRev                      ** Mem. rotazione revolver per cambio utensile
+OR   (
+LD   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+AND  xSelected                     ** Revolver selezionato
+AND  xSelManSbl                    ** Selezione blocco/sblocco testa revolver
+)
+AND  BAO_AFET                      ** ra3.0  Asse fermo teorico
+ANDN SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+S    SSBlocca                      ** Mem. blocco revolver per selezione mandrino
+
+LD   xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+AND  SSBlocca                      ** Mem. blocco revolver per selezione mandrino
+ANDN yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+S    SSInnesta                     ** Mem. innesto per selezione mandrino
+
+LD   xInnManLS                     ** FC innestata rotazione mandrino
+AND  QLFMAND.yax_ENDOK
+AND  SSInnesta                     ** Mem. innesto per selezione mandrino
+ST   SSEndPuls                     ** Impulso fine selezione mandrino
+
+LD   SSEndPuls                     ** Impulso fine selezione mandrino
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    SSBlocca                      ** Mem. blocco revolver per selezione mandrino
+R    SSInnesta                     ** Mem. innesto per selezione mandrino
+
+LD   SSEndPuls                     ** Impulso fine selezione mandrino
+AND  CURotRev                      ** Mem. rotazione revolver per cambio utensile
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+OR   BCI_MAN                       ** rc0.9  Selettore modi operativi su JOG (manuale)
+OR   BCI_TAR                       ** rc0.8  Selettore modi operativi su REF (taratura)
+R    CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+R    CURotRev                      ** Mem. rotazione revolver per cambio utensile
+
+LD   CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+ST   yToolChangeRun                ** Cambio utensile in corso
+
+* Qualifica mandrino/revolver all'accensione
+
+LD   QLFMAND.yax_RUNNING
+OR   QLFREVO.yax_RUNNING
+S    PwrQlfOk                      ** Qualifica all'accensione effettuata
+
+LD   xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+AND  QLFMAND.yax_READY
+AND  xValidCode                    ** Abil. lettura finecorsa revolver
+ANDN PwrQlfOk                      ** Qualifica all'accensione effettuata
+ST   PwrQlfMan                     ** Qualifica mandrino all'accensione
+
+LDN  xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+AND  QLFREVO.yax_READY
+AND  xValidCode                    ** Abil. lettura finecorsa revolver
+ANDN PwrQlfOk                      ** Qualifica all'accensione effettuata
+ST   PwrQlfRev                     ** Qualifica revolver all'accensione
+
+*******************************************************
+* COMANDO BLOCCHI FUNZIONALI GESTIONE MANDRINO/REVOLVER
+*******************************************************
+
+LDN  CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ANDN CMD_EMER_MAND                 ** rgc0.20 Arresto mandrini canale con emergenza
+AND  BCO_CANREADY                  ** rc8.2  Canale Ready
+ST   ORIM6.xax_ENABLE
+ST   QLFREVO.xax_ENABLE
+ST   QLFMAND.xax_ENABLE
+
+* Comando per arresto STEP revolver con rilascio pulsante
+
+LDN  CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ANDN CMD_EMER_MAND                 ** rgc0.20 Arresto mandrini canale con emergenza
+AND  BCO_CANREADY                  ** rc8.2  Canale Ready
+AND  (
+LD   CmdCicSing                    ** Comando ciclo singolo rotazione revolver attivo
+ORN  xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+ORN  ROTREV.yax_RUNNING
+)
+ST   ROTREV.xax_ENABLE
+
+LD   SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+ANDN SRInnesta                     ** Mem. innesto per selezione revolver
+AND  ORIM6.yax_READY
+ANDN ORIM6.yax_ENDOK
+ANDN ORIM6.yax_ENDERR
+ST   ORIM6.xax_START
+
+LD   SRSblocca                     ** Mem. sblocco per selezione revolver
+OR   PwrQlfRev                     ** Qualifica revolver all'accensione
+AND  QLFREVO.yax_READY
+ANDN QLFREVO.yax_ENDOK
+ANDN QLFREVO.yax_ENDERR
+ST   QLFREVO.xax_START
+
+LD   CmdCicSing                    ** Comando ciclo singolo rotazione revolver attivo
+ORN  xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+AND  CURotRev                      ** Mem. rotazione revolver per cambio utensile
+AND  ROTREV.yax_READY
+ANDN ROTREV.yax_ENDOK
+ANDN ROTREV.yax_ENDERR
+ST   ROTREV.xax_START
+
+LD   MemValidCode                  ** Mem.lettura effettuata codice utensile revolver
+ORN  BCI_JOGOPEN                   ** rc0.22  Abilita esecuzione JOG a Loop Aperto
+AND  SSInnesta                     ** Mem. innesto per selezione mandrino
+OR   PwrQlfMan                     ** Qualifica mandrino all'accensione
+AND  QLFMAND.yax_READY
+ANDN QLFMAND.yax_ENDOK
+ANDN QLFMAND.yax_ENDERR
+ST   QLFMAND.xax_START
+
+LDN  SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+AND  ORIM6.yax_ENDOK
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ST   ORIM6.xax_CLEAR
+
+LDN  SRSblocca                     ** Mem. sblocco per selezione revolver
+AND  QLFREVO.yax_ENDOK
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ST   QLFREVO.xax_CLEAR
+
+LDN  CURotRev                      ** Mem. rotazione revolver per cambio utensile
+AND  ROTREV.yax_ENDOK
+OR   (
+LD   ROTREV.yax_ERRCODE.1
+AND  xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+)
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ST   ROTREV.xax_CLEAR
+
+LDN  SSInnesta                     ** Mem. innesto per selezione mandrino
+AND  QLFMAND.yax_ENDOK
+OR   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+ST   QLFMAND.xax_CLEAR
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   QLFREVO.xax_REVMODE
+ST   ORIM6.xax_REVMODE
+
+* Abilita preset mandrino
+
+LD   ALWAYS_ZERO                   ** PLCFLAGS.0  Flag sempre stato off
+ST   QLFREVO.xax_PRESET
+ST   QLFMAND.xax_PRESET
+
+LD   xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+ST   ROTREV.xax_SLOW
+
+LD   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+AND  xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+AND  xSelected                     ** Revolver selezionato
+ST   ROTREV.xax_INCFORW
+
+LD   CMD_MINUS_AXIS                ** rgc0.1 Comando - assi canale
+AND  xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+AND  xSelected                     ** Revolver selezionato
+ST   ROTREV.xax_INCBACK
+
+LD   CURPOSRCN                     ** rgc5 Posizione da quota equivalente revolver
+ST   ORIM6.xax_TOOL
+ST   QLFMAND.xax_TOOL
+
+LD   BCI_JOGOPEN                   ** rc0.22  Abilita esecuzione JOG a Loop Aperto
+JMPCN NOQTAMANDFC
+
+LD   PosFromLS                     ** Posizione da finecorsa revolver
+ST   QLFMAND.xax_TOOL
+
+NOQTAMANDFC:
+
+* Utensile target
+
+LD   ToolFromPP                    ** Utensile revolver richiesto da part program
+ST   ROTREV.xax_TARGR
+
+CAL  ORIM6
+
+CAL  QLFREVO
+
+CAL  ROTREV
+
+CAL  QLFMAND
+
+
+LD   ORIM6.yax_ENDERR
+ST   yAlmOriM6                     ** Errore esecuzione orientamento per innesto revolver
+
+LD   QLFREVO.yax_ENDERR
+ST   yAlmQlfRevo                   ** Errore esecuzione qualifica revolver
+
+LDN  ROTREV.yax_ERRCODE.1
+ORN  xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+AND  ROTREV.yax_ENDERR
+ST   yAlmRotRev                    ** Errore esecuzione rotazione revolver
+
+LD   QLFMAND.yax_ENDERR
+ST   yAlmQlfMand                   ** Errore esecuzione qualifica mandrino
+
+* Segnali revolver per comando mandrino
+
+LD   CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+AND  ORIM6.yax_RUNNING
+ST   ORIREV_ON                     ** rgc0.11 Orientamento mandrino per innesto revolver attivo
+
+LD   xSelCSingRot                  ** Selezione rotazione ciclo singolo revolver
+OR   xSelManRot                    ** Selezione rotazione manuale revolver
+AND  SicRotRe                      ** Sicurezze per consenso rotazione Revolver
+AND  xSelected                     ** Revolver selezionato
+OR   SROrienta                     ** Mem. orientamento mandrino per selezione revolver
+OR   CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+ST   COPPIA_REV                    ** rgc0.12 Richiesta messa in coppia mandrino da revolver
+
+LD   CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+ANDN QLFMAND.yax_ENDOK
+ST   REQASSE_REV                   ** rgc0.15 Richiesta grant mandrino da revolver
+
+*******************************************************
+* COMANDO USCITE REVOLVER
+*******************************************************
+
+LD   SRInnesta                     ** Mem. innesto per selezione revolver
+ANDN SRSblocca                     ** Mem. sblocco per selezione revolver
+S    MemCmdInnRev                  ** Mem. comando innesto revolver
+
+LD   SSInnesta                     ** Mem. innesto per selezione mandrino
+R    MemCmdInnRev                  ** Mem. comando innesto revolver
+
+LD   SRSblocca                     ** Mem. sblocco per selezione revolver
+S    MemCmdSblRev                  ** Mem. comando sblocco revolver
+
+LD   SSBlocca                      ** Mem. blocco revolver per selezione mandrino
+ANDN SSInnesta                     ** Mem. innesto per selezione mandrino
+R    MemCmdSblRev                  ** Mem. comando sblocco revolver
+
+LD   MemCmdInnRev                  ** Mem. comando innesto revolver
+ST   yInnRevEv                     ** Sol.avanti cilindro,innesta il revolver
+
+LDN  MemCmdInnRev                  ** Mem. comando innesto revolver
+ST   yInnManEv                     ** Sol.ritorno cilindro,innesta il mandrino
+
+LD   MemCmdSblRev                  ** Mem. comando sblocco revolver
+ST   ySblRevEv                     ** Solenoide sblocco testa revolver
+
+LDN  MemCmdSblRev                  ** Mem. comando sblocco revolver
+ST   yBloRevEv                     ** Solenoide blocco  testa revolver
+
+*****************************************************
+* CONTROLLO RISPOSTE SOLENOIDI/FINECORSA REVOLVER ***
+*****************************************************
+
+CAL  TRIG269(CLK=MemCmdInnRev)     ** Mem. comando innesto revolver
+
+* Tempo controllo innesto
+
+LD   yInnManEv                     ** Sol.ritorno cilindro,innesta il mandrino
+ANDN xInnManLS                     ** FC innestata rotazione mandrino
+OR   (
+LD   yInnRevEv                     ** Sol.avanti cilindro,innesta il revolver
+ANDN xInnRevLS                     ** FC innestata rotazione revolver
+)
+AND  xValidCode                    ** Abil. lettura finecorsa revolver
+ANDN TRIG269.Q                     ** Fronte innesto revolver/mandrino unita'
+ST   Appoggio                      ** Appoggio
+
+CAL  TON252(IN=Appoggio,PT=6000)   ** Appoggio
+
+* Innesto Mandrino
+
+LD   yInnManEv                     ** Sol.ritorno cilindro,innesta il mandrino
+AND  TON252.Q                      ** fine tempo controllo rispost.F.c.Innesto revolver
+ANDN xInnManLS                     ** FC innestata rotazione mandrino
+S    yAlmFCInnMa                   ** All.manca risposta fc innesto mandrino
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    yAlmFCInnMa                   ** All.manca risposta fc innesto mandrino
+
+* Innesto Revolver
+
+LD   yInnRevEv                     ** Sol.avanti cilindro,innesta il revolver
+AND  TON252.Q                      ** fine tempo controllo rispost.F.c.Innesto revolver
+ANDN xInnRevLS                     ** FC innestata rotazione revolver
+S    yAlmFCInnRe                   ** All.manca risposta fc innesto revolver
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    yAlmFCInnRe                   ** All.manca risposta fc innesto revolver
+
+* Testa revolver
+
+CAL  TRIG270(CLK=MemCmdSblRev)     ** Mem. comando sblocco revolver
+
+LD   xValidCode                    ** Abil. lettura finecorsa revolver
+ANDN TRIG270.Q                     ** Fronte comando sblocco revolver
+ST   Appoggio                      ** Appoggio
+
+CAL  TON251(IN=Appoggio,PT=4000)   ** Appoggio
+
+* Controllo blocco fc testa revolver
+
+LD   xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+AND  xSblRevLS                     ** FC sbloccata testa revolver (per rotaz. revolver)
+ST   Appoggio                      ** Appoggio
+
+CAL  TON250(IN=Appoggio,PT=400)    ** Appoggio
+
+LD   TON250.Q                      ** fine tempo conferma presenza blocco FC testa revolver
+S    yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+
+* Blocco Revolver
+
+LD   yBloRevEv                     ** Solenoide blocco  testa revolver
+ANDN xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+AND  TON251.Q                      ** fine tempo controllo rispost.F.c.blocco/sblocco revolver
+S    yAlmFCBlRe                    ** All.manca risposta fc blocco testa rev.
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    yAlmFCBlRe                    ** All.manca risposta fc blocco testa rev.
+
+* Sblocco Revolver
+
+LD   ySblRevEv                     ** Solenoide sblocco testa revolver
+AND  TON251.Q                      ** fine tempo controllo rispost.F.c.blocco/sblocco revolver
+ANDN xSblRevLS                     ** FC sbloccata testa revolver (per rotaz. revolver)
+S    yAlmFCSblRe                   ** All.manca risposta sblocco testa rev.
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    yAlmFCSblRe                   ** All.manca risposta sblocco testa rev.
+
+***********************************************************
+* ALTRI CONSENSI E SICUREZZE
+***********************************************************
+
+* Ritarda ACK M da revolver
+
+LDN  EnabAckM6                     ** Abilita ACK M6
+OR   CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+AND  FUN_M6                        ** rgc1.6  Funzione M6 attiva
+ST   yWaitMFun                     ** Ritarda ACK funzioni M
+
+* Sicurezza rotazione JOG mandrino
+
+LD   SicRotRe                      ** Sicurezze per consenso rotazione Revolver
+OR   SICROTMA                      ** rgc0.10 Sic. da revolver per rotazione mandrino in lavoro
+ANDN xSelManSbl                    ** Selezione blocco/sblocco testa revolver
+AND  xEnabOp                       ** Sicurezze gruppo mandrino-revolver (ut. bloccato)
+ANDN yAlmFCSblRe                   ** All.manca risposta sblocco testa rev.
+ANDN yAlmFCTestRev                 ** All.blocco FC blocco/sblocco testa revolver
+ANDN yAlmFCRevo                    ** All.blocco fc innesto mandrino o revolver
+ST   SICROTJOG                     ** rgc0.13 Sic. da revolver per rotazione mandrino in JOG
+
+LD   xInnManLS                     ** FC innestata rotazione mandrino
+OR   xInnRevLS                     ** FC innestata rotazione revolver
+ST   SICCOPPIAMA                   ** rgc0.14 Sic. da revolver per messa in coppia mandrino
+
+* Mem.avaria codice posizione utensile revolver errato/non valido
+
+LD   PosFromLS                     ** Posizione da finecorsa revolver
+EQ   0
+OR   (
+LD   PosFromLS                     ** Posizione da finecorsa revolver
+EQ   7
+)
+AND  R_TRIG263.Q                   ** Fronte lettura effettuata codice utensile revolver
+S    yAlmFCCod                     ** All.avaria codice riconoscimento revolver
+
+LD   CMD_PLUS_AXIS                 ** rgc0.0 Comando + assi canale
+AND  SSBlocca                      ** Mem. blocco revolver per selezione mandrino
+R    yAlmFCCod                     ** All.avaria codice riconoscimento revolver
+
+* Controllo coerenza posizione revolver
+
+LD   FUN_M6                        ** rgc1.6  Funzione M6 attiva
+S    M6Executed                    ** Effettuato almeno un cambio utensile nel programma
+
+LDN  BCO_PRGRUN                    ** rc8.0  Programma in corso
+R    M6Executed                    ** Effettuato almeno un cambio utensile nel programma
+
+LD   ToolSelected                  ** Utensile revolver selezionato
+NE   ToolFromPP                    ** Utensile revolver richiesto da part program
+AND  M6Executed                    ** Effettuato almeno un cambio utensile nel programma
+OR   (
+LD   PosFromLS                     ** Posizione da finecorsa revolver
+NE   CURPOSRCN                     ** rgc5 Posizione da quota equivalente revolver
+ANDN SSBlocca                      ** Mem. blocco revolver per selezione mandrino
+)
+ANDN CHTOOL_RUN                    ** rgc0.16 Cambio utensile in corso su revolver
+AND  MemValidCode                  ** Mem.lettura effettuata codice utensile revolver
+AND  PwrQlfOk                      ** Qualifica all'accensione effettuata
+S    yAlmPosRev                    ** Errore posizione finale revolver
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    yAlmPosRev                    ** Errore posizione finale revolver
+
+* Messaggio qualifica revolver fuori fase
+
+LD   xInnManLS                     ** FC innestata rotazione mandrino
+AND  xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+AND  BAO_REVOL                     ** ra3.31 Selezione mandrino come revolver
+ANDN SSInnesta                     ** Mem. innesto per selezione mandrino
+OR   (
+LD   xInnRevLS                     ** FC innestata rotazione revolver
+ANDN xBlRevLS                      ** FC bloccata testa revolver (per rotaz. mandrino)
+ANDN BAO_REVOL                     ** ra3.31 Selezione mandrino come revolver
+ANDN SRSblocca                     ** Mem. sblocco per selezione revolver
+)
+ANDN yAlmFCRevo                    ** All.blocco fc innesto mandrino o revolver
+S    yAlmPhasQual                  ** Messaggio qualifica revolver fuori fase
+
+LD   CMD_RESET_AXIS                ** rgc0.4 Comando reset assi canale
+R    yAlmPhasQual                  ** Messaggio qualifica revolver fuori fase
+
+END_FUNCTION_BLOCK
+

@@ -1,0 +1,51 @@
+
+[KEYS]
+TITLE=Controllo calibrazione
+TXT0=Calibrazione bevel
+TXT14=Cancella allarmi
+TXT114=Bevel 0
+TXT115=Bevel 15
+TXT116=Bevel 30
+TXT117=Bevel 45
+
+[PROMPT]
+KEY_NODE=
+CALIB_CHECK=Leaf
+GroupBoxRTCPtest=Controllo RTCP
+GroupBoxTest=Diagnostica
+Label2=Abilita controllo calibrazione
+Label12=ADC
+Label13=Errore
+PlotCalibrationControl=Plot
+Label22=Distanza
+Label=______
+Label23=______
+Label24=Segnale nominale capacitivo
+Label25=Segnale campionato capacitivo
+LabelCalikOK=Calibrazione OK
+Label28=Nessun dato
+Label29=Calibrazione NON OK
+Label14=[mm]
+Label15=[punti]
+Label16=[%]
+LabelErrCalib=ERRORE AMMESSO [%]
+ButtonInitNominal1=SET CURVA nominale
+ButtonStartCheck=START controllo calibrazione
+LabelTest=TCP Z [mm]
+LabelTest1=Cap [ADC]
+LabelTest2=z axis
+LabelTest3=z (touch)
+LabelTest4=rc128
+LabelTest5=rc129
+LabelTest6=C102 lin [ADC]
+ButtonStartRtcpTest=START test RTCP
+AxesLaserCH1=Axes1
+LBL_VELOCITA2=Altezza di taglio [mm]
+LabelPar1=RTCP Y portautensile [mm]
+LabelErrFounded=Max errore trovato [mm]
+LabelCaxisPos=C axis position for CAPACITIVE and RTCP test [°]
+
+[STATUS]
+PlotCalibrationControl=ADC [punti],Distanza [umm]
+
+[HELP]

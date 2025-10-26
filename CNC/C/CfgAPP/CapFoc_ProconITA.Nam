@@ -1,0 +1,63 @@
+
+[KEYS]
+TITLE=PROCON
+TXT5=Controllo capacitivo
+TXT6=Linearizzazione PWM
+TXT7=Parametri
+TXT8=Controllo altezza
+
+[PROMPT]
+KEY_NODE=
+CAPFOC_PROCON=Leaf
+GroupBoxDiag=Diagnostica
+LabelAitOff1=Aria
+LabelN2Off1=N2
+LabelO2Off1=O2
+LabelAit1=Aria
+LabelN1=N2
+LabelO1=O2
+lbDiagPar1=POTENZA attuale [w]
+lbDiagPar2=DUTY attuale [%]
+lbDiagPar3=FREQUENZA attuale [Hz]
+lbDiagPresSetted=Pressione GAS calcolata [BAR]
+lbDiagPresReaded=Pressione GAS letta [BAR]
+GroupBoxCapacitive=Capacitivo
+LabelPrec0=I_FAR_A10
+LabelPrec1=I_TIP_BODY_TOUCH_A11
+LabelPrec2=I_CABLE_CUT_A12
+LabelPrec3=I_READY_A13
+LabelPrec4=I_BODY_TOUCH_A14
+LabelPrec5=I_NOZZLE_LOST_A15
+LabelPrec6=O_CAL_REQUEST_A3
+LabelPrec7=O_STROBE_A7
+LabelPrec8=O_SELCHAR_BIT1_A5
+LabelPrec9=O_SELCHAR_BIT0_A4
+LabelPrec10=O_SELCHAR_BIT2_A6
+LabelPrec11=CAPACITIVO
+ButtonStartCalib1=START CALIBRAZIONE
+GroupBoxFocal=Focale
+LabelPar=Valore minimo [mm]
+LabelPar1=Valore massimo [mm]
+LabelFoc1=FOCALE [mm]
+LabelPar2=PWM calcolato [usec]
+LabelRotateOrig1=Rotazione origine
+LabelPauseGeometry1=Hold End Geomet
+LabelPausePiece1=Hold End Piece
+LabelZhigh1=Force Z Up
+LabelInForced1=Inputs Forced
+LabelOutForced1=Outputs Forced
+LabelZhigh2=Auto. Acq. Origin
+LabelDryRun1=Dry Run
+LabelSIM3=No Z Movement
+Resume Re1=Resume Ready
+LabelPlcSIM2=PLC SIMULATED
+LabelPallInMan2=Save Gas Active
+LabelSIM1=LASER SIMULATED
+LabelSIM4=CAPACITIVE SIM.
+LabelEnabAutorestart1=Autorestart
+LabelRegON1=REGOL. ON
+LabelJogRTCP1=JOG RTCP
+
+[STATUS]
+
+[HELP]

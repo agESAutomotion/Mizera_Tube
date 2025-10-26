@@ -1,0 +1,11 @@
+[PROMPT]
+KEY_GORG      =Global origins data
+
+GORG_X        =X origin
+GORG_Y        =Y origin
+GORG_Z        =Z origin
+
+[HELP]
+GORG_X        =X origin
+GORG_Y        =Y origin
+GORG_Z        =Z origin

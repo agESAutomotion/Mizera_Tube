@@ -1,0 +1,161 @@
+*******************************************************************************
+*   FOCPROCO.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "DynMng.plc"
+
+VAR
+#include "Cnc.inc"
+
+TempFocalValue: DWORD;                      * Temporary value focal
+
+PwmLinearCalc:  LINEAR_CALC;
+
+END_VAR
+
+#include "Iol.inc"
+#include "LsrGest.inc"
+
+VAR_IN_OUT
+
+#include "mem.inc"
+
+Min             AT %pwPar0;         * Minimum value (x.xxx mm)
+Max             AT %pwPar1;         * Maximum value (x.xxx mm)
+DutyCalculated  AT %pwDutyCalcuSec; * Duty calculated (uSec)
+
+Val_Focal_ACT   AT %TabLsr0.L_UserInt2;     * Last focal
+END_VAR
+
+
+*******************************************************************************
+*   GESTIONE FOCALE con PWM
+*******************************************************************************
+FUNCTION_BLOCK FOC_PWM
+VAR_INPUT
+xId:            DWORD;              * 0,1
+xSet:           DWORD;              * Focal setpoint (x.xxx mm)
+xAct:           DWORD;              * Actual Focal value (x.xxx mm)
+END_VAR
+
+VAR_OUTPUT
+yErr:           BOOL;       * Error
+END_VAR
+
+VAR
+X2_X1Temp:      DWORD;
+Y2_Y1Temp:      DWORD;
+X_X1Temp:       DWORD;
+END_VAR
+*******************************************************************************
+
+***PATH %FocalPwm[xId]
+
+LD   xAct                          ** Actual Focal value (x.xxx mm)
+GT   Max                           ** Maximum value (x.xxx mm)
+OR (
+LD   xSet                          ** Focal setpoint (x.xxx mm)
+LT   Min                           ** Minimum value (x.xxx mm)
+)  
+JMPCN NoOutOf 
+
+LD   0                  * Default = 0
+ST   xAct                          ** Actual Focal value (x.xxx mm)
+
+NoOutOf:
+LD   xSet                          ** Focal setpoint (x.xxx mm)
+GT   Max                           ** Maximum value (x.xxx mm)
+OR (
+LD   xSet                          ** Focal setpoint (x.xxx mm)
+LT   Min                           ** Minimum value (x.xxx mm)
+)   
+ST   yErr                          ** Error
+
+LD   yErr                          ** Error
+JMPCN NoOutOf2 
+
+LD   xAct                          ** Actual Focal value (x.xxx mm)
+ST   xSet                          ** Focal setpoint (x.xxx mm)
+
+NoOutOf2:
+LD   838                * Set 50Hz
+ST   HW2_FREQ
+
+LD   16#0fff            * 12 bit of resolution
+ST   HW2_PWM_RES
+
+LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+ST   HW2_PWM_CFG_EN
+
+
+***************************************
+*   PWM calc
+***************************************
+LD   xSet                          ** Focal setpoint (x.xxx mm)
+ST   PwmLinearCalc.xInput
+
+LD   139                            * pd_spline
+ST   PwmLinearCalc.xIndex
+
+CAL  PwmLinearCalc
+
+LD   PwmLinearCalc.yResult
+EQ   2147483647
+JMPCN DatoOk
+
+LD   0
+ST   DutyCalculated                ** Duty calculated (uSec)
+JMP  NoLin
+
+DatoOk:
+LD   PwmLinearCalc.yResult
+DIV  1000
+ST   DutyCalculated                ** Duty calculated (uSec)
+
+NoLin:
+LD   DutyCalculated                ** Duty calculated (uSec)
+MUL  10000
+DIV  48828           * 1 point = 4,8828125uSec
+AND  16#0fff
+ST   HW2_PWM_DUTY
+
+END_FUNCTION_BLOCK
+
+
+***
+VAR
+FOC_PWM_0:   FOC_PWM;                    * focal FB
+END_VAR
+
+*******************************************************************************
+*   GESTIONE FOCALE PROCON
+*******************************************************************************
+FUNCTION PROCON_FOCAL
+
+LD   Val_Focal_ACT                 ** Last focal
+ST   TempFocalValue                ** Temporary value focal
+
+LD   MACCH_IN_MANUALE              ** M100.24 SELEZIONE MACCHINA IN MANUALE
+JMPC man_management
+
+LD   %TabLsr0.L_CutFocal         ** Valore focale passato da tabelle
+ST   TempFocalValue                ** Temporary value focal
+
+man_management:
+
+PATH %FocalPwm[0]
+
+LD   TempFocalValue                ** Temporary value focal
+ST   FOC_PWM_0.xSet
+
+CAL  FOC_PWM_0                     ** focal FB
+
+LD   FOC_PWM_0.yErr
+S    %PLCerr5.31
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+R    %PLCerr5.31
+
+END_FUNCTION
+

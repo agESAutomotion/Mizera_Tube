@@ -1,0 +1,39 @@
+ [X] [C] : G10124
+;
+; Saw Cutting Visulization On Tube [Duo]
+; 
+; [X] X cetner the point of saw cutting on tube (Tube Direction along X)
+; [C] Rotatation of saw
+
+; [X] [Y] [C] inputs empty checking 
+IF( ISQNAN(VA23) || ISQNAN(VA2) ) ERROR(799)
+IF((MOD(VA2,90) == 0) && ((VA2) != 0)) ERROR(799)
+
+IF( %cn[WHO()].pc[14].25 ) THEN	
+    DBL IND_FOR
+    DBL AbsHgt =  ABS(%gIso24) / 2.0
+    DBL AbsWid =  ABS(%gIso23) / 2.0
+	
+	MOVE(15, 0, VA23, 0, AbsHgt)
+	LINETO(15, 0, (VA23)-AbsWid*TAN(VA2), AbsWid, AbsHgt)
+    LINETO(15, 0, (VA23)-AbsWid*TAN(VA2), AbsWid, -AbsHgt)
+    LINETO(15, 0, (VA23)+AbsWid*TAN(VA2), -AbsWid, -AbsHgt)
+    LINETO(15, 0, (VA23)+AbsWid*TAN(VA2), -AbsWid, AbsHgt)
+    LINETO(15, 0, (VA23), 0, AbsHgt)
+
+    FOR IND_FOR=0 TO AbsWid BY (AbsWid/10.0)
+        G2805 C(5) X((VA23)-IND_FOR*TAN(VA2)) Y(IND_FOR) Z(AbsHgt)
+        G2805 C(5) X((VA23)+IND_FOR*TAN(VA2)) Y(-IND_FOR) Z(AbsHgt)
+        G2805 C(5) X((VA23)-IND_FOR*TAN(VA2)) Y(IND_FOR) Z(-AbsHgt)
+        G2805 C(5) X((VA23)+IND_FOR*TAN(VA2)) Y(-IND_FOR) Z(-AbsHgt)
+    ENDFOR    
+    
+    FOR IND_FOR=0 TO AbsHgt BY (AbsHgt/10.0)
+        G2805 C(5) X((VA23)-AbsWid*TAN(VA2)) Y(AbsWid) Z(IND_FOR)
+        G2805 C(5) X((VA23)+AbsWid*TAN(VA2)) Y(-AbsWid) Z(IND_FOR)
+        G2805 C(5) X((VA23)-AbsWid*TAN(VA2)) Y(AbsWid) Z(-IND_FOR)
+        G2805 C(5) X((VA23)+AbsWid*TAN(VA2)) Y(-AbsWid) Z(-IND_FOR)
+    ENDFOR    
+ENDIF
+
+RET

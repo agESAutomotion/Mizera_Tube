@@ -1,0 +1,63 @@
+<NotepadPlus>
+    <Project name="OMP-CPLoader">
+        <Folder name="PLC">
+            <Folder name="INC">
+                <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\Iof.inc" />
+                <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\Var.inc" />
+                <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\MemSTD.inc" />
+                <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\Mem.inc" />
+                <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\Allarmi.inc" />
+            </Folder>
+            <Folder name="FUNC">
+                <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\zCfgCh.plc" />
+                <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\zCfgAx.plc" />
+                <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\zFunzCmd.plc" />
+            </Folder>
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\Main.plc" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\Init.plc" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\O_Panel.plc" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\GUI.plc" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\GestMac.plc" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\LoadCP.plc" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\Fast.plc" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\Plc\Allarmi.plc" />
+        </Folder>
+        <Folder name="CFG" />
+        <Folder name="ISO" />
+        <Folder name="SYS">
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\CNC\C\System\Shared\Defcn.app" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\CNC\C\System\Shared\Defcn.usr" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\CNC\C\System\Shared\Defcn_ModBusTCP.usr" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\CNC\C\System\Shared\DefcnAPP.h" />
+            <File name="D:\Massimo\Progetti\B90667_OMP_BILLO\CPLoader\SoftwareCN\CNC\C\System\Shared\IOREDIR" />
+        </Folder>
+    </Project>
+    <Project name="OMP-TFiber">
+        <Folder name="PLC">
+            <Folder name="TFiber">
+                <Folder name="Inc">
+                    <File name="zIof.inc" />
+                    <File name="zMem.inc" />
+                    <File name="zMemSTD.inc" />
+                    <File name="zGuiMem.inc" />
+                    <File name="zAlarm.inc" />
+                    <File name="zVar.inc" />
+                </Folder>
+                <Folder name="FuncBloc">
+                    <File name="zCfgCh.plc" />
+                    <File name="zCfgAx.plc" />
+                    <File name="zFunzCmd.plc" />
+                </Folder>
+                <File name="IOConfig.plc" />
+                <File name="UsrPLC.plc" />
+                <File name="zGestMac.plc" />
+                <File name="zGuiCfg.plc" />
+                <File name="zGeneric.plc" />
+                <File name="zTubeSup.plc" />
+                <File name="zUnload.plc" />
+                <File name="zJawReg.plc" />
+            </Folder>
+            <Folder name="EsaPlc" />
+        </Folder>
+    </Project>
+</NotepadPlus>

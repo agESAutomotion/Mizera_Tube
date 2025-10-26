@@ -1,0 +1,420 @@
+*******************************************************************************
+*   CAP_PREC.PLC
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+VAR
+#include "Cnc.inc"
+#include "RemContr.inc"
+***BTN_START_CALIB       AT %cButton0.0;     * Calibration START button
+CapacitiveSimulated      AT %cOpt0.0;        * Capacitive simulated
+IncStepQuota:            DWORD;  * Quota di incremento per controllo calibrazione
+END_VAR
+
+VAR_IN_OUT
+
+#include "mem.inc"
+
+BTN_START_CALIB         AT %cButton0.0;     * Calibration START button
+
+CURVE_Y_P0              AT %rPlc10;
+CURVE_Y_P1              AT %rPlc11;
+CURVE_Y_P2              AT %rPlc12;
+CURVE_Y_P3              AT %rPlc13;
+CURVE_Y_P4              AT %rPlc14;
+CURVE_Y_P5              AT %rPlc15;
+CURVE_Y_P6              AT %rPlc16;
+CURVE_Y_P7              AT %rPlc17;
+CURVE_Y_P8              AT %rPlc18;
+CURVE_Y_P9              AT %rPlc19;
+CURVE_Y_P10             AT %rPlc20;
+
+CURVE_X_P0              AT %rPlc21;
+CURVE_X_P1              AT %rPlc22;
+CURVE_X_P2              AT %rPlc23;
+CURVE_X_P3              AT %rPlc24;
+CURVE_X_P4              AT %rPlc25;
+CURVE_X_P5              AT %rPlc26;
+CURVE_X_P6              AT %rPlc27;
+CURVE_X_P7              AT %rPlc28;
+CURVE_X_P8              AT %rPlc29;
+CURVE_X_P9              AT %rPlc30;
+CURVE_X_P10             AT %rPlc31;
+
+END_VAR
+
+#include "Iol.inc"
+#include "Cap_Prec.inc"
+
+*******************************************************************************
+*   CAPACITIVE: PROCON
+*       %Capacitive[] structure used
+*******************************************************************************
+FUNCTION_BLOCK CAP_EMP
+VAR_INPUT
+xEmission:      BOOL;           * Emission command
+xEmp_sensor:    DWORD;          * capacitive value
+END_VAR
+
+VAR_OUTPUT
+yErr:           DWORD;          * error
+yMsg:           DWORD;          * msg
+yExeCalib:      BOOL;           * Calibration requested
+yTipTouch:      BOOL;           * Tip touch signal without filter
+yFar:           BOOL;
+END_VAR
+
+VAR
+TipTouchNoFilered:      BOOL;   * Tip touch signal not filtered
+CalibRequest:           BOOL;   * Calib request
+CALIBRAZIONE_RUN:       BOOL;   * Programma calibrazione in corso
+CALIBRAZIONE_ON:        BOOL;   * Ciclo calibrazione attivo
+TIP_TOUCH:              BOOL;   * Tip touch intervenuto
+BODY_TOUCH:             BOOL;   * Body touch intervenuto
+NOZZLE_LOST:            BOOL;   * Ugello perso intervenuto
+Strobe_Funz_M492:       BOOL;   * Nozzle verify
+Tip_Touch_Status:       BOOL;
+FilterTipTouch:         DWORD;  * Tip touch dynamic filter
+TON_CALIBR:             TON;    * Ritardo verifica durata max calibrazione
+TON_TIPTOUCH:           TON;    * Filtro Tip Touch laser mech
+TON_ECAT:               TON;    * Ecatrun
+R_TRIG492:              R_TRIG;
+F_TRIG_LAS_OFF:         F_TRIG; 
+TP_DIS_TIP_TIPTOUCH:    TP;
+RTRIG_REQUEST:          R_TRIG; 
+FT_PRGRUN:              F_TRIG;
+* Remote Controller
+RTRIG_CALIB:            R_TRIG;
+END_VAR
+*******************************************************************************
+
+***************************************
+*   Calibration request
+***************************************
+CAL  FT_PRGRUN(CLK=PRGRUN_CN0)     ** M0.0 cn0.rc8.0  Programma in corso
+CAL  RTRIG_REQUEST(CLK=BTN_START_CALIB) ** Calibration START button
+CAL  RTRIG_CALIB(CLK:=RemContrCalib) ** Xhc_Puls.12 Execute calibration
+
+LD   RTRIG_REQUEST.Q
+OR   RTRIG_CALIB.Q                 ** Xhc_Puls.12 Execute calibration)
+AND  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   CalibRequest                  ** Calib request
+S    CalibRequest                  ** Calib request
+
+LD   M30_CN0                       ** M0.13 M30:EndProgram CN0
+OR   MACC_ALARM                    ** (gPlc0.10)Macchina in allarme
+OR   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+OR   FT_PRGRUN.Q
+R    CalibRequest                  ** Calib request
+
+LD   CalibRequest                  ** Calib request
+ST   CALIBRAZIONE_RUN              ** Programma calibrazione in corso
+ST   yMsg.0
+ST   yExeCalib                     ** Calibration requested
+
+***************************************
+*   Calibrazione running
+***************************************
+LD   CalibRequest                                                       
+ANDN RESET_MACCHINA                ** M100.2  Reset macchina
+ST   CALIBRAZIONE_ON               ** Ciclo calibrazione attivo
+
+LDN  MACCHINA_OK                   ** M100.1  Macchina OK
+OR   RESET_MACCHINA                ** M100.2  Reset macchina
+R    O_CALIBRA_REQ_A3              ** Calibration request 
+R    O_STROBE_A7                   ** Strobe
+
+***************************************
+*   TIP TOUCH
+***************************************
+LD   xEmp_sensor
+LE   %EmConfig.mincapval
+ST   Tip_Touch_Status
+
+LD   %TsCalib1.targ_b_axis
+SUB  1000
+LT   %ax33.ra4
+AND  CalibRequest
+JMPCN TIPTOUCH15BVL
+     LD   xEmp_sensor
+     LE   %EmConfig.capval1
+     ST   Tip_Touch_Status    
+TIPTOUCH15BVL:
+
+LD   %TsCalib2.targ_b_axis
+SUB  1000
+LT   %ax33.ra4
+AND  CalibRequest
+JMPCN TIPTOUCH30BVL
+     LD   xEmp_sensor
+     LE   %EmConfig.capval2
+     ST   Tip_Touch_Status    
+TIPTOUCH30BVL:
+
+LD   %TsCalib3.targ_b_axis
+SUB  1000
+LT   %ax33.ra4
+AND  CalibRequest
+JMPCN TIPTOUCH45BVL
+     LD   xEmp_sensor
+     LE   %EmConfig.capval3
+     ST   Tip_Touch_Status    
+TIPTOUCH45BVL:
+
+LD   Tip_Touch_Status
+OR (
+LD   %M68.0 * TODO !!!!
+AND (
+LD   PLC_SIMULATED
+EQ   1
+)
+)
+ST   TipTouchNoFilered             ** Tip touch signal not filtered
+ST   yTipTouch
+
+LD   xEmp_sensor
+GT   %EmConfig.FARcapval_Ang
+ST   yFar
+
+LD   TipTouchFilter                ** (rLsGui41) tip touch filter (msec)
+ST   FilterTipTouch                ** Tip touch dynamic filter
+
+LDN  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+OR   ReqCapacitveTest              ** (gPlc13.27) Capacitive test request
+JMPCN no_calc_tip_touch_filt
+LD   0
+ST   FilterTipTouch                ** Tip touch dynamic filter
+no_calc_tip_touch_filt:
+
+CAL  F_TRIG_LAS_OFF(CLK:=xEmission) ** Emission command
+CAL  TP_DIS_TIP_TIPTOUCH(IN:=F_TRIG_LAS_OFF.Q, PT:=300)
+CAL  TON_TIPTOUCH(IN=TipTouchNoFilered,PT=FilterTipTouch) ** Filtro Tip Touch laser mech
+CAL  TON_ECAT(IN=%ecat_ring.ec_status.31,PT=3000) **Ecatrun
+LD   TON_TIPTOUCH.Q
+ANDN InibTipTouchAllarm            ** M100.22 Inibizione allarme Tip Touch per restart ciclo
+ANDN TipTouchDisable               ** (LsPlc71.0) TipTouchDisable (ritardato)
+ANDN CALIBRAZIONE_RUN
+ANDN TP_DIS_TIP_TIPTOUCH.Q
+ANDN DisabTipTouch                  * singfc (G3300 / G3301)
+AND (
+LDN  CALIBRATION_CHECK              * (C26.0) Calibration control in run 
+OR (
+LD   CALIBRATION_CHECK              * (C26.0) Calibration control in run 
+ANDN ISOTipTouchDisable             * (C26.3) Disabilita tip touch da ISO
+)
+)
+AND  TON_ECAT.Q       
+ST   TIP_TOUCH                     ** Tip touch intervenuto
+S    yErr.0
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+OR(
+     LD  ButtClearAlarm                 ** (gGui23.0) Clear alarm interface push-button
+     OR  RemContrCancAlarm			   * Xhc_Puls.31 Clear alarm 
+     AND (
+     LD  PRGSTOP_CN0                    ** (cn0.rc8.1)  Programma interrotto CN0
+     ORN PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+     )
+)	 
+OR(
+LD   Pul_Start                     ** (gPlc0.1)Start pushbutton
+ANDN TIP_TOUCH                     ** Tip touch intervenuto
+)
+OR   InibTipTouchAllarm            ** M100.22 Inibizione allarme Tip Touch per restart ciclo
+R    yErr.0
+
+***************************************
+*   Allarme: Tempo massimo calibrazione sensore capacitivo
+***************************************
+CAL  TON_CALIBR(IN=CALIBRAZIONE_ON,PT=200000) ** Ritardo verifica durata max calibrazione
+LD   TON_CALIBR.Q        ** Trascorso tempo massimo per Calibrazione sensore capacitivo
+S    yErr.3
+
+LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+R    yErr.3
+
+
+***************************************
+*   Allarme: Cavo interrotto da capacitivo
+***************************************
+*LD   xEmp_sensor                  ***cable cut
+*EQ   0
+*AND  TON_ECAT.Q  
+*S    yErr.4
+*
+*LD   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+*R    yErr.4
+
+*****************************************************************************
+* Calibration Control
+*****************************************************************************
+
+LD   %SoftBtn0.20
+JMPCN NoInitCurveCap
+
+LD   0
+ST   CURVE_Y_P0
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+DIV  10000
+ST   CURVE_Y_P1
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  2
+DIV  10000
+ST   CURVE_Y_P2
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  3
+DIV  10000
+ST   CURVE_Y_P3
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  4
+DIV  10000
+ST   CURVE_Y_P4
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  5
+DIV  10000
+ST   CURVE_Y_P5
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  6
+DIV  10000
+ST   CURVE_Y_P6
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  7
+DIV  10000
+ST   CURVE_Y_P7
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  8
+DIV  10000
+ST   CURVE_Y_P8
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  9
+DIV  10000
+ST   CURVE_Y_P9
+
+*LD   409500                           * Capacitive sensor resolution 1mm
+LD   AnalCapFeedback       *Capacitive analog resolution
+MUL  1000
+MUL  10
+DIV  10000
+ST   CURVE_Y_P10
+
+NoInitCurveCap:
+
+LD   1000
+ST   IncStepQuota
+
+LD   %LSRCostK31
+EQ   20000
+JMPCN SetTenMM
+
+LD   2000
+ST   IncStepQuota
+
+SetTenMM:
+
+LD   0
+ST   CURVE_X_P0
+
+LD   CURVE_X_P0
+ADD  IncStepQuota
+ST   CURVE_X_P1
+
+LD   CURVE_X_P1
+ADD  IncStepQuota
+ST   CURVE_X_P2
+
+LD   CURVE_X_P2
+ADD  IncStepQuota
+ST   CURVE_X_P3
+
+LD   CURVE_X_P3
+ADD  IncStepQuota
+ST   CURVE_X_P4
+
+LD   CURVE_X_P4
+ADD  IncStepQuota
+ST   CURVE_X_P5
+
+LD   CURVE_X_P5
+ADD  IncStepQuota
+ST   CURVE_X_P6
+
+LD   CURVE_X_P6
+ADD  IncStepQuota
+ST   CURVE_X_P7
+
+LD   CURVE_X_P7
+ADD  IncStepQuota
+ST   CURVE_X_P8
+
+LD   CURVE_X_P8
+ADD  IncStepQuota
+ST   CURVE_X_P9
+
+LD   CURVE_X_P9
+ADD  IncStepQuota
+ST   CURVE_X_P10
+
+* Questo per evitare di modificare la curva trovata
+
+LD   0
+ST   %rPlc32
+LD   %LsIso90
+ST   %rPlc33
+LD   %LsIso91
+ST   %rPlc34
+LD   %LsIso92
+ST   %rPlc35
+LD   %LsIso93
+ST   %rPlc36
+LD   %LsIso94
+ST   %rPlc37
+LD   %LsIso95
+ST   %rPlc38
+LD   %LsIso96
+ST   %rPlc39
+LD   %LsIso97
+ST   %rPlc40
+LD   %LsIso98
+ST   %rPlc41
+LD   %LsIso99
+ST   %rPlc42
+
+
+*******************************************************************************
+*   HMI
+*******************************************************************************
+
+LD   yTipTouch     
+ST   %cLeds0.1
+
+LD   yErr.4                        ***Cable cut
+ST   %cLeds0.2
+
+END_FUNCTION_BLOCK

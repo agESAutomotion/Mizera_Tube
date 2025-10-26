@@ -1,0 +1,157 @@
+ : aidEngageSupp
+;============================================================================
+; aidEngageSupp - Initialization G4011 T36 with proper supports positions
+;============================================================================
+IF (%cn[WHO()].rc[0].21) RET
+IF (CouplingFollowEnLoad == 1) RET 
+
+; Different Unloader side Support Travel 
+L_COM_PrkPos = %LOADER.values15 / 1000;
+
+; Motor cylinder composite support virtual axis granted
+DBL lifter_A[10], lifter_D[10]
+WAITBIT("%ax60.ra3.28",0) 
+
+DBL velAxisx = %ax[AXIDX(5,X)].pa9
+DBL innerRadius = MIN(ABS( %gIso[24] ), ABS( %gIso[23] )) / 2
+DBL outerRadiusPlusone = optimized_lift - 19
+DBL filterT1Rate = velAxisx / (outerRadiusPlusone - innerRadius) 
+DBL velAddValue = velAxisx 
+									        
+;//Blending filter time constants               
+DBL max_q0 = ABS(L_COM_PrkPos)                  ;//max slave displacement [mm]
+DBL max_q1 = velAddValue/60                     ;//max slave velocity [mm/min]
+DBL max_q2 = 5500                               ;//max slave acceleration [mm/s^2]
+DBL max_q3 = 120000                             ;//max slave jerk [mm/s^3]
+                
+DBL filterT2 = max_q1/max_q2                    ;//TODO: add 2x for direction change
+DBL filterT3 = max_q2/max_q3                    ;//2x added for triangular velocity
+
+DBL EnFollowStatus = 0
+
+; Comanda movimento asse a posizione di INSEGUIMENTO
+G153
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+IF (AEXISTS(3,V)) G4005 S(AXIDX(3,V))    
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+G152
+G4099
+
+_paras(0x00,Z,3, -9999999, 9999999 )
+
+G153 
+IF (AEXISTS(5,Y)) G4010 M(AXIDX(X)) S(AXIDX(5,Y)) I1
+IF (AEXISTS(5,Z)) G4010 M(AXIDX(Y)) S(AXIDX(5,Z)) I1
+IF (AEXISTS(5,U)) G4010 M(AXIDX(Z)) S(AXIDX(5,U)) I1         
+IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1 
+G152   
+G4099 
+
+; Loader Supports Center needs to be open
+M452
+
+;I_I_Centering_Open_1 AT %USR_M13.24;  
+;I_I_Centering_Open_2 AT %USR_M13.25;  
+;I_I_Centering_Open_3 AT %USR_M13.26;  
+;I_I_Centering_Open_4 AT %USR_M13.27; 
+WAITBIT("%USR_M13.24",1)
+WAITBIT("%USR_M13.25",1)
+WAITBIT("%USR_M13.26",1)
+WAITBIT("%USR_M13.27",1)
+
+; BlendSwitch Para Init
+iter=1
+WHILE( iter <= 4 )
+     lifter_A[iter] = QCALC(AXIDX(5,X)) + lifter[iter] / 1000
+     lifter_D[iter] = outerRadiusPlusone + lifter[iter] / 1000
+	 iter = iter + 1
+ENDW
+
+;============================================================================
+;// G4011 T36 (motion blending) 
+;// Following registers are used:
+;//       %ax[slave].rgau0    G4011 T36: blendSwitch      input  [0|1]
+;//       %ax[slave].rgau1    G4011 T36: addValue         input  [um]
+;//       %ax[slave].rgau2    G4011 T36: blendState       output [0..1]
+;//       %ax[slave].rgau3    G4011 T36: addValueM        input  [um]
+;//       %ax[slave].rgau4    G4011 T36: actualAddValue   output [um] _3
+;//       %ax[slave].rgau5    G4011 T36: actualAddValueM  output [um] _3
+;// NOTE: blendSwitch and addValue are reset at G4011 T36 time and should be
+;//       written by the PLC afterwards (using VAR_IN_OUT).
+;// 
+;//       [G<addValueVelM> H<accTimeM> I<jerkTimeM>] _3
+;//       [J<addValueVel> K<accTime> L<jerkTime>] _3
+;// 
+;============================================================================
+
+;//Enable blendSwitch PLC writes
+
+SYN
+?%gIso39.0 = 0  
+
+;// Check Following Condition from PLC
+G153
+IF ((QCALC(AXIDX(3,X)) - 200) > ldPos[4]) THEN 
+   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = lifter_A[3]  POS[V] = lifter_A[4]  FA[X] = 15000 FA[Y] = 15000 FA[Z] = 15000 FA[V] = 15000
+   EnFollowStatus = 4
+ELSEIF (((QCALC(AXIDX(3,X))- 200)  <= (ldPos[4])) && ((QCALC(AXIDX(3,X)) -200) > ldPos[3])) THEN 
+   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = lifter_A[3]  POS[V] = L_COM_PrkPos  FA[X] = 15000 FA[Y] = 15000 FA[Z] = 15000 FA[V] = 15000
+   EnFollowStatus = 3
+ELSEIF (((QCALC(AXIDX(3,X))-200) <= ldPos[3]) && ((QCALC(AXIDX(3,X))- 200) > ldPos[2])) THEN 
+   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = L_COM_PrkPos  POS[V] = L_COM_PrkPos  FA[X] = 15000 FA[Y] = 15000 FA[Z] = 15000 FA[V] = 15000
+   EnFollowStatus = 2
+ELSEIF (((QCALC(AXIDX(3,X))-200) <= ldPos[2]) && ((QCALC(AXIDX(3,X))- 200) > ldPos[1])) THEN  
+   POS[X] = lifter_A[1]  POS[Y] = L_COM_PrkPos POS[Z] = L_COM_PrkPos  POS[V] = L_COM_PrkPos  FA[X] = 15000 FA[Y] = 15000 FA[Z] = 15000 FA[V] = 15000
+   EnFollowStatus = 1
+ENDIF
+
+IF (AEXISTS(5,Z)) G4005 S(AXIDX(5,Z))
+IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))
+IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))
+IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))
+G152
+G4099
+
+;//All Cylinder Supports to be Up
+M724
+
+; I_I_Support_1_Up AT %USR_M1.13; 
+; I_I_Support_2_Up AT %USR_M1.14; 
+; I_I_Support_3_Up AT %USR_M1.15; 
+; I_I_Support_4_Up AT %USR_M1.16; 
+IF( EnFollowStatus >= 1 ) WAITBIT("%USR_M1.13",1)
+IF( EnFollowStatus >= 2 ) WAITBIT("%USR_M1.14",1)
+IF( EnFollowStatus >= 3 ) WAITBIT("%USR_M1.15",1)
+IF( EnFollowStatus >= 4 ) WAITBIT("%USR_M1.16",1)
+
+_paras(0x00,Z,3, %ax[AXIDX(Z)].pa[21] / 1000, %ax[AXIDX(Z)].pa[22] / 1000 )
+
+;//User function to bring follower up (no need real engaged)
+IF( %ServiceMillePGM.12 ) RET
+
+;//All Cylinder To Be Closed During Cutting
+IF( %SUPPORTS_SYSTEM.values13.17 ) M455
+
+SYN
+G153
+IF( AEXISTS(5,Y) && (EnFollowStatus >= 1) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[1]) N(AXIDX(5,X)) P(AXIDX(6,X)) S(AXIDX(5,Y)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
+IF( AEXISTS(5,Z) && (EnFollowStatus >= 2) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[2]) N(AXIDX(5,X)) P(AXIDX(6,X)) S(AXIDX(5,Z)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
+IF( AEXISTS(5,U) && (EnFollowStatus >= 3) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[3]) N(AXIDX(5,X)) P(AXIDX(6,X)) S(AXIDX(5,U)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
+IF( AEXISTS(5,V) && (EnFollowStatus >= 4) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[4]) N(AXIDX(5,X)) P(AXIDX(6,X)) S(AXIDX(5,V)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
+G152	
+G4099
+
+?%BLEND_VEL.filTRate[0] = filterT1Rate * 1000
+?%BLEND_VEL.velAddVal[0] = velAddValue * 1000
+
+;//Enable blendSwitch PLC writes
+?%gIso39.0=1 
+
+CouplingFollowEnLoad = 1
+
+RET

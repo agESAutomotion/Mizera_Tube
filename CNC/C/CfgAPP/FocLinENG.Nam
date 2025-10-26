@@ -1,0 +1,25 @@
+
+[KEYS]
+TITLE=Focal lin.
+
+[PROMPT]
+KEY_NODE=
+FOCLIN=FOCAL linearization
+PlotCapacitive=Function
+L_POW_REAL=NOMINAL
+L_NOMINAL=REAL
+L_TYPE_INTERP2=Mode
+LIST0=Linear,Segment,Blunt
+L_TYPE_INTERP1=Points
+LabelEnLin=Enable linearization
+LabelMin=Min
+LabelMax=Max
+LabelX=X
+LabelY=Y
+LabelCV1=Analog volt for focal control [v]
+Label1=Focal distance -mm-
+
+[STATUS]
+PlotCapacitive=Y-NOMINAL,X-REAL
+
+[HELP]

@@ -1,0 +1,43 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Nodo
+PRECITECCUTBOX=Leaf
+GroupBox4=Ugello
+GroupBox=Informazioni Precitec CutBox
+Button1=Stato Diagnostico CutBox
+GroupBox1=Info Rapide Testina
+LabelPerr1=Tip Touch
+LabelPerr3=Cavo Interrotto
+LabelPerr4=Distanza dal pezzo [mm]
+LabelPerr6=Umidità nella testina di taglio [%]
+LabelPerr7=Pressione attuale del gas di taglio [Bar]
+GroupBox2=Comando
+Button2=Esegui Calibrazione
+Calibration page2=Segui calibrazione
+Calibration page1=Controllo altezza
+ButtonCleanHead2=Impostazioni pulizia
+Label2=Distanza focale [mm]
+LabelPerr5=Fuoco attuale [mm]
+LabelPerr8=Nodo Ecat
+LabelPerr2=Contatto Corpo
+Button12=Impostazioni controllo
+Button13=Leggi impostazioni
+Button14=Funzioni distanza
+Button15=Valori sensore
+Button16=Impostazioni controllo funzione distanza
+Button17=Viaggio di riferimento
+LabelPerr9=Viaggio di riferimento attivo
+LabelPerr10=Lontano
+Calibration page4=Calibrazione ugello mancante
+Label=Usa ugello inclinato (LSRPlcOp1.28)
+Label1=Lunghezza testina impostata [mm]
+Label3=Lunghezza testina [mm]
+ErrorHandler1=Allarmi / Messaggi
+GroupBox3=Allarmi / Messaggi
+
+[STATUS]
+
+[HELP]

@@ -1,0 +1,15 @@
+[KEYS]
+TITLE = Vacum air inlet
+
+[PROMPT]
+KEY_SETVASCHE      = Vacum air inlet
+KEY_BOCCHE         = Zone map
+KEY_BOCCHE_A       = General parameters
+BC_START_X         = Quote X0 start [mm]  (QStart)
+BC_END_X           = Quote X1 end [mm]  (QEnd)
+BC_START_Y         = Quote Y0 Start [mm]  (QStartY)
+BC_END_Y           = Quote Y1 End [mm]  (QEndY)
+BC_SVR             = Zone overlap [mm](CostK56)
+delay_spegn_vasche = Delay on powering off vacuum air inlet [msec](CostK57)
+
+[HELP]

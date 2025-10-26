@@ -1,0 +1,341 @@
+ [A]0 :540
+ 
+
+RET
+;G540 Carico tubo manuale
+;**********************************************************
+;
+;**********************************************************
+
+IF( %M33 ) RET      ; Se simulazione su PC non considerare caricatore/scaricatore !
+
+
+;If graphic channel do RET
+IF (%cn[WHO()].pc[14].25) RET
+
+SYN
+
+
+;Info
+;---------------------------------------
+
+
+;Verifica dati tubo 
+;--------------------------------------
+G580 A0
+
+;Variabili
+;--------------------------------------
+DBL AxZ=63              ;Id asse Z supporti
+DBL AxZ2=64             ;Id asse Z botola
+
+;Inizio ciclo
+;**********************************************************
+;**********************************************************
+SYN
+%Md[150].7=1                 ;Ciclo di carico manuale
+
+
+;Predisponi carico manuale
+;**********************************************************
+;Verifica presenza supporti di carico manuale
+IF (%Rd[13].19==1) JMP .SupManLoad
+
+
+;Verifica presenza tubo
+IF (%Rd[10].8==1) JSR "ErrorIso.cfs" 0 540.1
+;Verifica mandrini chiusi
+IF ((%Rd[10].1==0) || (%Rd[10].5==0)) JSR "ErrorIso.cfs" 0 540.2
+IF ((%Rd[10].3==0) || (%Rd[10].7==0)) JSR "ErrorIso.cfs" 0 540.3
+
+
+SYN
+;Verifica dati tubo e allinea mandrini
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 500.21
+G580 A0
+G580 A1
+;Regolazione JawReg
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 500.22
+G550
+;Regolazione TubeSupp
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 500.23
+G560
+;Regolazione Unload
+;--------------------------------------
+JSR "ErrorIso.cfs" 2 500.24
+G520 B9
+
+;Dati tubo
+;--------------------------------------
+SYN
+DBL TubT=%Rd[100]
+DBL TubH=(%Rd[101]/1000.0)
+DBL TubW=(%Rd[102]/1000.0)
+DBL TubR=(%Rd[103]/1000.0)
+
+DBL TubD=(%Rd[130]/1000.0)
+
+DBL TubV=SQRT(TubH**2 + TubW**2)
+
+
+SYN
+;Svincola X e Z
+;-------------------------------
+VG100=0
+VG101=(%ax[29].pa[22]/1000.0)-1.5
+RPT .STR_POS_Z, .END_POS_Z, 1
+
+
+VG100=0
+VG101=(%ax[27].pa[22]/1000.0)-5
+RPT .STR_POS_X, .END_POS_X, 1
+
+
+;Svincola U e C
+;-------------------------------
+JSR "ErrorIso.cfs" 2 540.21
+G601 C7 M52             ;TubeSupp discesa all
+
+VG100=0
+VG101=((%ax[30].pa[21]+%Rd[182]+%Rd[183]+%Rd[184])/1000.0)
+VG102=45.0  
+RPT .STR_POS_UC, .END_POS_UC, 1 
+ 
+G601 C0 M100            ;Disabilita gear mandrini
+G601 C0 M41             ;Apertura griffe slave (Fisso)
+
+
+
+;Predisponi scarico
+;-----------------------------
+JSR "ErrorIso.cfs" 2 540.22
+;Disabilita movimento automatico rulli con misura tubo
+%Rd[13].15=0 
+
+;Posizione Z e Z2 sotto tubo
+G600 A(AxZ) Q(((TubD/0.002)+%Rd[153])/1000.0)
+G600 A(AxZ2) Q(((TubV/0.002)+%Rd[154]+%Rd[153])/1000.0)
+G601 C8 M41             ;Botola alta
+G601 C8 M60             ;Supporti Alti
+G601 C8 M62             ;Botola avanti
+G600 A(AxZ) Q(((TubD/0.002)+%Rd[153])/1000.0) W1
+G600 A(AxZ2) Q(((TubV/0.002)+%Rd[154]+%Rd[153])/1000.0) W1
+
+
+;Fine
+;-----------------------------
+JSR "ErrorIso.cfs" 0 540.4
+
+SYN
+%Md[150].7=0                 ;Ciclo di carico manuale
+RET
+
+
+
+
+
+.SupManLoad
+;Carico manuale
+;**********************************************************
+;Verifica presenza tubo
+IF (%Rd[10].8==0) JSR "ErrorIso.cfs" 0 540.5
+;Verifica mandrini chiusi
+IF ((%Rd[10].1==0) || (%Rd[10].5==0)) JSR "ErrorIso.cfs" 0 540.6
+IF ((%Rd[10].3==1) || (%Rd[10].7==1)) JSR "ErrorIso.cfs" 0 540.7
+
+
+SYN
+;Prese tubo
+;------------------------------- 
+JSR "ErrorIso.cfs" 2 540.23
+;Spinta U
+VG100=2000
+VG101=((%ax[30].pa[21]+%Rd[182]+%Rd[183])/1000.0)
+RPT .STR_POS_U, .END_POS_U, 1
+
+;Svincola U
+VG100=2000
+VG101=((%ax[30].pa[21]+%Rd[182]+%Rd[183]+%Rd[184])/1000.0)
+RPT .STR_POS_U, .END_POS_U, 1
+
+G601 C0 M40             ;Apertura griffe master (Mobile)
+
+;Inserimento U
+VG100=2000
+VG101=((%ax[30].pa[21]+%Rd[183])/1000.0)+(%Rd[180]/1000.0)
+RPT .STR_POS_U, .END_POS_U, 1
+
+G601 C0 M50             ;Chiusura griffe master (Mobile)
+G601 C0 M51             ;Chiusura griffe slave (Fisso)
+
+G601 C0 M101            ;Abilita gear mandrini
+
+
+G600 A(AxZ2) Q((%ax[64].pa[22])/1000.0) W1
+
+;Zero tubo
+;------------------------------- 
+G570
+
+SYN
+%Md[150].7=0                 ;Ciclo di carico manuale
+RET
+
+
+
+
+
+;Gestione posizionamenti
+;**********************************************************
+;Posizione X
+;--------------------------------------
+.STR_POS_X
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,X))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+  G4099
+  G152
+
+  SYN
+  G153
+  ;Movimento X
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) X(VG101) 
+  ELSE
+    G153 G0 X(VG101)  
+  ENDIF
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,X))
+  G4099
+
+  G64
+  SYN
+.END_POS_X
+
+;Posizione Z
+;--------------------------------------
+.STR_POS_Z
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,Z))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+  G4099
+  G152
+
+  SYN
+  G153
+  ;Movimento Z
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) Z(VG101)
+  ELSE
+    G153 G0 Z(VG101)  
+  ENDIF
+  G152
+  
+  SYN  
+  ; Sgancio assi
+  G4005 S(AXIDX(3,Z))
+  G4099
+
+  G64
+  SYN
+.END_POS_Z
+
+;Posizione U
+;--------------------------------------
+.STR_POS_U
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(U)) S(AXIDX(3,U)) I1
+  G4099
+  G152
+
+  ;Calcella origini
+  G178 U0 
+
+  SYN
+  G153
+  ;Movimento U
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) U(VG101)
+  ELSE
+    G153 G0 U(VG101)  
+  ENDIF
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4099
+
+  G64
+  SYN
+.END_POS_U
+
+;Posizione U e C
+;--------------------------------------
+.STR_POS_UC
+  SYN
+  G61
+
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4005 S(AXIDX(3,C))
+  G4099
+
+  ; Aggancia assi ai virtuali
+  G153
+  G4010 M(AXIDX(U)) S(AXIDX(3,U)) I1
+  G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1
+  G4099
+  G152
+
+  ;Calcella origini
+  G178 U0 
+  G178 C0
+
+  SYN
+  G153
+  ;Movimento U
+  IF (VG100>0) THEN
+    G153 G1 F(VG100) U(VG101) C(VG102)
+  ELSE
+    G153 G0 U(VG101) C(VG102)
+  ENDIF
+  G152
+  
+  SYN    
+  ; Sgancio assi
+  G4005 S(AXIDX(3,U))
+  G4005 S(AXIDX(3,C))
+  G4099
+
+  G64
+  SYN
+.END_POS_UC

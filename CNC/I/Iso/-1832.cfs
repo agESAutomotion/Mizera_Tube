@@ -1,0 +1,101 @@
+ : G832
+
+DBL trg_x;
+DBL trg_y;
+DBL trg_z;
+DBL sav_G40=XGET("@G40")
+DBL provPower
+ 
+
+;// Fine sezione di attacco
+;//
+;// G832
+;//
+
+;Richiesto perche' la spline eredita la velocita' di attacco distacco
+SPC 30099,1  ;Preprocessor sync
+
+; Reduce B Dynamic for Torque Purpose in Position
+; B Speed and Velocity Release Between Tracks
+IF( %LSRPlcOp1.30 == 1 ) THEN 
+    IF( (AEXISTS(3,B)) && (lstisbeveltrack == 1) ) FDCWEI[B] = %EBK22
+ENDIF 
+
+; Microjoin Managment
+IF ((!%rLsGui29.6) && (!%rLsGui29.7) && (%rLsGui29.4)) ?%LsIso65 = 0  
+
+
+IF (%rLsGui29.6) THEN                             ; skip lead in option
+
+   G40
+   
+  trg_x = XGET("@X")
+  trg_y = XGET("@Y")
+  trg_z = XGET("@Z")
+                
+    SPC 32100,0           ;//fetchOnlyMode
+    G152 
+    ;G180 X(trg_x) Y(trg_y) Z(trg_z) 
+    ;G153 G0 X(kine_x) Y(kine_y) Z(kine_z) 
+ 
+    G(sav_G40)
+    G0 X(trg_x) Y(trg_y)
+   
+ENDIF
+
+
+; Lead-in speed reduction stop
+IF(%TabLsr[gLcutId].L_SourceInt16.5) ?%LsIso10.2 = 0              ; send to plc lead in low speed signal, in G650 only for reset its value is used in G800
+
+; Set cutting height
+ 
+IF( (%TabLsr[gLcutId].L_CutDistance) < (%LSRCostK[31]/1000) ) THEN
+     
+    ?%TabLsr[0].L_CutDistance    = %TabLsr[gLcutId].L_CutDistance  
+               gL_CutDistance    = %TabLsr[gLcutId].L_CutDistance 
+ELSE
+   
+    M1209     ; regulation in simulation     
+    ?%TabLsr[0].L_CutDistance    = %TabLsr[gLcutId].L_CutDistance  
+               gL_CutDistance    = %TabLsr[gLcutId].L_CutDistance 
+ENDIF
+
+IF (%rLsGui29.6) THEN                            ; skip lead in option
+
+
+   ?%TstP[15].3 = 1           ; (LASER_ON)
+   IF (!%PlcOp0.2) _wait_bit( 0," %LsPlc1.25",1) ; wait laser on
+   ?%TstP[15] = 0       ; reset word for laser on/off
+     
+ENDIF
+
+; Power reduction AND wainting time after lead in
+IF ((!%rLsGui29.6) && (%TabLsr0.L_UserInt13 != 0)) THEN                           ; skip lead in option
+
+  provPower = %TabLsr[0].L_SourceInt16.3       ; Enable power management    
+  ?%TabLsr[0].L_SourceInt16.3 = 0     
+ 
+  ?%TabLsr0.L_CutPower = %TabLsr[gLcutId].L_UserInt14  ; power end lead-in   
+  M300  
+  G4 F(%TabLsr0.L_UserInt13/1000)              ; time hold end lead in
+      
+  ?%TabLsr[0].L_SourceInt16.3 = provPower      ; Enable power management  
+  ?%TabLsr0.L_CutPower = %TabLsr[gLcutId].L_CutPower   
+  M300
+    
+ENDIF
+
+?%LsPlc37 = 0    ; send to plc piercing in run
+F(feed1)
+
+;//PADLOK=0
+
+;XXX Commentato perche` con un solo Itc e senza tratti
+;di lead-in dava errore'Richiesto blocco dopo G0'
+;SPC 33020, 1
+;PADLOK=0
+;SPC 33020, 256  ;XXX instance #0, suspend look-ahead (begin setup phase)
+;PADLOK=0
+;SPC 33020, 0    ;XXX instance #0, resume look-ahead (end of setup phase)
+
+RET

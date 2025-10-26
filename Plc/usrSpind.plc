@@ -1,0 +1,571 @@
+#funcdec "assi.plc"
+#funcdec "canfb.plc"
+#funcdec "DynMng.plc"
+#funcdec "FBSpindl.plc"
+#funcdec "SPist.plc"
+#funcdec "cnc.plc"
+#funcdec "Antictrl.plc"
+
+#include "usrMem.inc" 
+#include "Iol.inc"
+
+VAR 
+#include "cnc.inc"
+MainSpindle:           SINGLE_PISTON;
+SlaveSpindle:          SPINDLE;
+MidSpindle:            SPINDLE;
+				       
+MobSpZDiam:            LINEAR_CALC;
+MobSpYDiam:            LINEAR_CALC;
+				       
+FixSpZDiam:            LINEAR_CALC;
+FixSpYDiam:            LINEAR_CALC;
+
+TOF_Close_Spindle:     TOF;
+TOF_Open_Spindle:      TOF;
+R_TRIG_INIT:           R_TRIG;
+R_TRIG_POSSIBLE_COL:   R_TRIG;
+
+appoggio:              BOOL;
+OPEN_SPIN_IN_AUTO:     BOOL;
+DistU:                 DWORD;
+DistV:                 DWORD;
+SafeDistAppoggio:      DWORD;
+
+DistX:                 DWORD;
+DistY:                 DWORD;
+
+AncolliXW:             ANTI_AXIS;
+AncolliWV:             ANTI_AXIS;
+POS_AX30:              AX_POSIZ;
+POS_AX31:              AX_POSIZ;
+
+MoveAx30_Jog:           BOOL;
+PosToReachAx30:        DWORD;
+
+MoveAx31_Jog:           BOOL;
+PosToReachAx31:        DWORD;
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"              
+#include "usrIol.inc"
+END_VAR
+
+FUNCTION SPINDLES
+
+**********************************************************************
+* First Mobile Spindle
+**********************************************************************
+LD   PRGRUN_CN0                     ** M0.0 cn0.rc8.0  Programma in corso
+ST   MainSpindle.xAuto
+
+LD   Pul_Reset                      ** (gPlc0.3)Reset pushbutton
+OR   Pul_Start                      ** (gPlc0.1)Start pushbutton
+ST   MainSpindle.xReset	  
+        
+LD   MS_Open_Button
+OR   I_I_Pul_Mobile_Spindle_Open
+ST   MainSpindle.xManualPlus	  
+    
+LD   MS_Close_Button 
+OR   I_I_Pul_Mobile_Spindle_Close  
+ST   MainSpindle.xManualMinus    
+
+LD   Fun_M720_Ch0
+ST   MainSpindle.xAutoPlus
+
+LD   Fun_M721_Ch0
+ST   MainSpindle.xAutoMinus    
+
+LD   I_I_PRESSIONE_ARIA_IMPIANTO    
+ST   MainSpindle.xAirPressure
+
+*LD   I_I_Mobile_Spindle_Open
+LD   O_O_Mobile_Spindle_Open 
+ST   MainSpindle.xSensorPlus 
+
+*LD   I_I_Mobile_Spindle_Close
+LD   O_O_Mobile_Spindle_Close  
+ST   MainSpindle.xSensorMinus           
+
+LD   MainSpdLastOpen
+ST   MainSpindle.xPlusAtInit           
+
+LD   %PLCFLAGS.0                  
+ST   MainSpindle.xSingleEffect
+
+LD   Time_Out_Sp             
+ST   MainSpindle.xTimeOut     
+
+LDN  I_I_EMERGENZA                  ** Machine OK (no EMERG.)
+ST   MainSpindle.xEmerg	          
+
+CAL  MainSpindle
+
+LD   MainSpindle.yPistonPlus 
+ST   O_O_Mobile_Spindle_Open     
+ST   TM32_Mobile_Spindle_Open   
+S    MainSpdLastOpen 
+
+LD   MainSpindle.yPistonMinus 
+ST   O_O_Mobile_Spindle_Close  
+R    MainSpdLastOpen  
+
+********************************************************************************
+* Middle Spindle Management (W)
+********************************************************************************
+*LD   I_I_FixedSpindle_Open       
+LD   O_O_SpindleFix_Open 
+OR(
+LD   %PLCFLAGS.8
+AND  MidSpdLastOpen
+)
+ST   MidSpindle.xSpOpen   
+
+*LD   I_I_FixedSpindle_Close     
+LD   O_O_SpindleFix_Close 
+ST   MidSpindle.xSpClose
+
+LD   I_I_EMERGENZA
+OR   EMER_GEN
+ST   MidSpindle.xEmerg      
+
+LD   ProgRunCh0
+ST   MidSpindle.xProgRun    
+
+LD   Fun_M982_Ch0
+ST   MidSpindle.xAutoClose  
+
+LD   Fun_M981_Ch0
+ST   MidSpindle.xAutoOpen   
+
+LD   FixedSpindleClose_Button 
+ST   MidSpindle.xManualClose
+
+LD   FixedSpindleOpen_Button 
+ST   MidSpindle.xManualOpen              
+
+LD   Time_Out_Sp
+ST   MidSpindle.xTimeout    
+
+LD   %TabLsr1.L_Tickness
+ST   MidSpindle.xThickness
+
+LD   ResAnalogPressure
+ST   MidSpindle.xResOut
+
+LD   120
+ST   MidSpindle.xIndGraphPress
+
+LD   I_I_Pressure_Mobile
+ST   MidSpindle.xFeedbkPress
+
+CAL  MidSpindle
+
+LD   MidSpindle.yOpen       
+ST   O_O_SpindleFix_Open
+ST   TM32_SpindleFix_Open
+S    MidSpdLastOpen    
+
+LD   MidSpindle.yClose       
+ST   O_O_SpindleFix_Close
+R    MidSpdLastOpen  
+
+**********************************************************************
+* Second Mobile Spindle (V)
+**********************************************************************
+LD   I_I_EMERGENZA
+OR   EMER_GEN
+ST   SlaveSpindle.xEmerg      
+
+*LD   I_I_Mobile_Spindle_Slave_Open
+LD   O_O_Mobile_Spindle_Slave_Open
+OR(
+LD   %PLCFLAGS.8
+AND  SlaveSpdLastOpen 
+)
+ST   SlaveSpindle.xSpOpen   
+
+*LD   I_I_Mobile_Spindle_Slave_Close
+LD   O_O_Mobile_Spindle_Slave_Close
+ST   SlaveSpindle.xSpClose
+
+LD   ProgRunCh0
+ST   SlaveSpindle.xProgRun    
+
+LD   Fun_M723_Ch0
+ST   SlaveSpindle.xAutoClose  
+
+LD   Fun_M722_Ch0
+ST   SlaveSpindle.xAutoOpen   
+
+LD   SMobile_Close_Button
+ST   SlaveSpindle.xManualClose
+
+LD   SMobile_Open_Button
+ST   SlaveSpindle.xManualOpen              
+
+LD   Time_Out_Sp
+ST   SlaveSpindle.xTimeout    
+
+LD   %TabLsr1.L_Tickness
+ST   SlaveSpindle.xThickness
+
+LD   ResAnalogPressure
+ST   SlaveSpindle.xResOut
+
+LD   121
+ST   SlaveSpindle.xIndGraphPress
+
+LD   I_I_Pressure_Fix
+ST   SlaveSpindle.xFeedbkPress
+
+CAL  SlaveSpindle
+
+LD   SlaveSpindle.yBrake
+ST   O_O_Mobile_Spindle_Slave_Brake
+
+LD   SlaveSpindle.yOpen
+ORN  %cn3.cc1.4                       *Exsisting V axis
+ST   O_O_Mobile_Spindle_Slave_Open  
+ST   TM32_Mobile_Spindle_Slave_Open  
+S    SlaveSpdLastOpen                    
+
+LD   SlaveSpindle.yClose
+AND  %cn3.cc1.4                       *Exsisting V axis
+ST   O_O_Mobile_Spindle_Slave_Close   
+R    SlaveSpdLastOpen             
+
+LD   SlaveSpindle.yAnOutPress
+ST   O_O_Pressure_MobileS
+
+LD   SlaveSpindle.yOutPressBar
+ST   MobileSClosePressReq
+
+LD   SlaveSpindle.yActualPressFeedbk
+ST   PressMobileSClose
+
+*******************************************************************************
+* C1 and head emer safety
+*******************************************************************************
+LDN  Gest5Ax
+AND  %cn3.cc1.5 
+JMPCN SKIPNON5AX
+
+LD   %ax29.pa22
+SUB  %ax29.ra4
+ABS 
+GT   20000
+OR   (
+LD   %ax28.pa21
+SUB  %ax28.ra4
+ABS 
+GT   20000
+)
+ST   Hold_moving_axW   
+
+LD   %ax29.ra0.9   * Z-
+OR   %ax28.ra0.8   * Y+
+OR   %ax36.ra0.9   * W-
+AND( 
+LD   %ax36.pa22
+SUB  %ax36.ra4 
+GT   5000
+) 
+AND(
+LD   %ax36.ra4
+GE   0
+)
+OR  (
+     LD   %ax29.ra0.9  * Z-
+     OR   %ax28.ra0.8  * Y+
+     OR   %ax36.ra0.8  * W+
+     AND(
+     LD   %ax36.ra4
+     SUB  %ax36.pa21 
+     GT   5000
+     )
+   	 AND(
+     LD   %ax36.ra4
+     LT   0
+     )
+)    
+AND  Hold_moving_axW
+ANDN ch0_in_ref
+ANDN %PlcOp0.22
+S    %PLCerr20.22   
+
+SKIPNON5AX: 
+
+*******************************************************************************
+* WV Emer safety
+******************************************************************************* 
+LD   %ax36.ra4
+SUB  %ax31.ra4
+ABS
+LT   Emer_SafeDis_WV *210000
+OR	 (
+LD   %ax36.ra4
+SUB  %ax30.ra4
+ABS
+LT   Emer_SafeDis_XW *430000
+) 
+ANDN ch0_in_ref
+ST   appoggio
+
+CAL  R_TRIG_POSSIBLE_COL(CLK=appoggio)
+LD   R_TRIG_POSSIBLE_COL.Q
+AND  %cn3.cc1.4 
+AND  %cn3.cc1.5 
+ANDN %PlcOp0.22
+S    %PLCerr20.23
+
+LD   Pul_Reset
+R    %PLCerr20.22
+R    %PLCerr20.23
+
+*******************************************************************************
+* XW Hold Safety
+*******************************************************************************
+LD   ECAT_OK
+OR   MACC_TARATA
+ST   appoggio
+CAL  R_TRIG_INIT(CLK=appoggio)
+	 
+LD   ALWAYS_ONE
+ST   AncolliXW.xAx1_Fst
+
+LD   Reset
+OR   R_TRIG_INIT.Q
+ST   AncolliXW.xReset
+
+LD   36
+ST   AncolliXW.xAx1_Num
+
+LD   30
+ST   AncolliXW.xAx2_Num
+
+LD   SafeDis_XW
+ST   AncolliXW.xDisSafe
+
+CAL  AncolliXW
+
+LD   AncolliXW.yHoldMov
+AND  %cn3.cc1.5 
+ANDN %PlcOp0.22
+ST   AncolliXW_yHoldMov
+ST   %PLCerr20.20
+   
+*******************************************************************************
+* WV Hold Safety
+*******************************************************************************
+LD   ALWAYS_ZERO
+ST   AncolliWV.xAx1_Fst
+
+LD   Reset
+OR   R_TRIG_INIT.Q
+ST   AncolliWV.xReset
+
+LD   36
+ST   AncolliWV.xAx1_Num
+
+LD   31
+ST   AncolliWV.xAx2_Num
+
+LD   SafeDis_WV
+ST   AncolliWV.xDisSafe
+
+CAL  AncolliWV
+
+LD   AncolliWV.yHoldMov
+AND  %cn3.cc1.4 
+AND  %cn3.cc1.5 
+ANDN %PlcOp0.22
+ST   AncolliWV_yHoldMov
+ST   %PLCerr20.21   
+   
+********************************************************************************
+* Auto Spindle Movement 
+
+PATH %ax30
+
+LD   Fun_M440_Ch0
+AND  ProgRunCh0                     * program in run ch0
+S    MoveAx30_Auto
+
+LD   MoveAx30GuiBtn
+AND  Ch0_Jog
+S    MoveAx30_Jog
+
+LD   MoveAx30_Jog
+OR   MoveAx30_Auto
+ST   POS_AX30.xax_ENABLE
+
+LDN  POS_AX30.xax_ENABLE
+ST   POS_AX30.xax_CLEAR
+
+LD   POS_AX30.xax_ENABLE
+AND  POS_AX30.yax_READY
+ANDN POS_AX30.yax_ENDOK
+ANDN POS_AX30.yax_ENDERR
+ST   POS_AX30.xax_START
+
+LD   PosSpindleX
+ST   PosToReachAx30
+
+LD   PosToReachAx30   
+GT   %pa22
+OR   (
+LD   PosToReachAx30   
+LT   %pa21
+)
+AND  Fun_M440_Ch0
+S    %PLCmsg1.18        ** X axis positioning out of range
+
+LD   Reset
+R    %PLCmsg1.18 
+
+LD   PosToReachAx30   
+GT   %pa22
+JMPCN no_pos_lim
+
+LD   %pa22
+ST   PosToReachAx30
+no_pos_lim:
+
+LD   PosToReachAx30   
+LT   %pa21
+JMPCN no_neg_lim
+
+LD   %pa21
+ST   PosToReachAx30
+no_neg_lim:
+       
+LD   PosToReachAx30
+ST   POS_AX30.xax_QUOTA  
+
+LD   MoveAx30_Auto
+JMPCN noVelAuto
+LD   VelPosSpindleX_Auto
+ST   POS_AX30.xax_VEL
+JMP  noVelMan
+noVelAuto:
+
+LD   %pa9
+DIV  3
+ST   POS_AX30.xax_VEL
+noVelMan:
+
+CAL  POS_AX30
+
+LD   POS_AX30.yax_ENDOK
+AND  POS_AX30.xax_ENABLE
+OR   Reset                            ** Reset Command 
+* OR   (
+* LD   %ra4
+* DIV  20
+* EQ (
+* LD   PosSpindleX                     
+* DIV  20
+* )
+* )
+R    MoveAx30_Auto                    ** (LsPlc63.0) Lens positioning finish
+R    MoveAx30_Jog
+
+LD   POS_AX30.xax_ENABLE
+ST   GrantPlcMoveX
+
+*
+
+PATH %ax31
+
+LD   Fun_M441_Ch0
+AND  ProgRunCh0                     * program in run ch0
+S    MoveAx31_Auto
+
+LD   MoveAx31GuiBtn
+AND  Ch0_Jog
+S    MoveAx31_Jog
+
+LD   MoveAx31_Jog
+OR   MoveAx31_Auto
+ST   POS_AX31.xax_ENABLE
+
+LDN  POS_AX31.xax_ENABLE
+ST   POS_AX31.xax_CLEAR
+
+LD   POS_AX31.xax_ENABLE
+AND  POS_AX31.yax_READY
+ANDN POS_AX31.yax_ENDOK
+ANDN POS_AX31.yax_ENDERR
+ST   POS_AX31.xax_START
+
+LD   PosSpindleX1
+ST   PosToReachAx31
+
+LD   PosToReachAx31   
+GT   %pa22
+OR   (
+LD   PosToReachAx31   
+LT   %pa21
+)
+AND  Fun_M441_Ch0
+S    %PLCmsg1.17        ** V axis positioning out of range
+
+LD   Reset
+R    %PLCmsg1.17 
+
+LD   PosToReachAx31   
+GT   %pa22
+JMPCN no_pos_lim1
+
+LD   %pa22
+ST   PosToReachAx31
+no_pos_lim1:
+
+LD   PosToReachAx31   
+LT   %pa21
+JMPCN no_neg_lim1
+
+LD   %pa21
+ST   PosToReachAx31
+no_neg_lim1:
+       
+LD   PosToReachAx31
+ST   POS_AX31.xax_QUOTA  
+
+LD   MoveAx31_Auto
+JMPCN noVelAuto1
+LD   VelPosSpindleX1_Auto
+ST   POS_AX31.xax_VEL
+JMP  noVelMan1
+noVelAuto1:
+
+LD   %pa9
+DIV  3
+ST   POS_AX31.xax_VEL
+noVelMan1:
+
+CAL  POS_AX31
+
+LD   POS_AX31.yax_ENDOK
+AND  POS_AX31.xax_ENABLE
+OR   Reset                            ** Reset Command 
+* OR   (
+* LD   %ra4
+* DIV  20
+* EQ (
+* LD   PosSpindleX1                     
+* DIV  20
+* )
+* )
+R    MoveAx31_Auto                    ** (LsPlc63.0) Lens positioning finish
+R    MoveAx31_Jog
+
+LD   POS_AX31.xax_ENABLE
+ST   GrantPlcMoveX1
+
+********************************************************************************
+
+END_FUNCTION

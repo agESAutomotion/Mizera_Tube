@@ -1,0 +1,6 @@
+[PROMPT]
+KEY_CUSTOM =Custom
+
+#include "custom_inp?.nam"
+#include "custom_out?.nam"
+

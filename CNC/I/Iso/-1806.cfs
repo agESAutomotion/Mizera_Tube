@@ -1,0 +1,373 @@
+ [T] [N]0 [H]0 [D]0 [S]0.0 [E]0 [I]0 [U]0.0 [V] [M]0 [B]0.0 [J] [L] [Q]1 [F]0 [A]3 : @@FAST@@ G806
+;//
+;// G806    [T<head_index>]
+;//         -or-
+;//         [T<technology>] [N<technology_head_index>]
+;//
+;//         [H<tool_holder_no>] [D<cut_edge_no>]
+;//         [S<cut_edge_svl>]
+;//         [E<table_no>] [I<orientation_transformation>]
+;//
+;//         [U<slave_head_vs_master_head_distance_x>]
+;//         [V<slave_head_vs_master_head_distance_y>]
+;//         [M<slave_head_expect_more_flag>]
+;//         [B<fixed_bevel_angle>]
+;//         [J<taper_tilt_angle_override>]
+;//         [L<taper_lead_angle_override>]
+;//
+;//         Seleziona RTCP e tavola
+;//
+
+DBL found_heads
+DBL lun
+DBL ix
+DBL PrevTravTech
+DBL lim_minx = %ax[AXIDX(X)].pa[21] / 1000
+DBL lim_maxx = %ax[AXIDX(X)].pa[22] / 1000
+DBL spin_dim = 0        ;Ingombro Mandrino tubo (mm)
+DBL fFlyCutMode
+DBL dst,src
+
+; Clear Table 1 in case of first G806
+IF( dataCleared == 1 ) THEN
+    G153
+    %tab[1].t_ttab.t_oart.t_dX  = 0
+    %tab[1].t_ttab.t_oart.t_dY  = 0
+    %tab[1].t_ttab.t_oart.t_dZ  = 0
+    %tab[1].t_ttab.t_oart.t_dEC = -90
+    %tab[1].t_ttab.t_oart.t_dXx = 0
+    %tab[1].t_ttab.t_oart.t_dYy = 0
+    G152
+	dataCleared = 0
+ENDIF
+
+%R74 = 10000
+
+fFlyCutMode = 0
+IF( ((VA5 & 0x0010) == 0x0010) || ((VA5 & 0x0200) == 0x0200) ) THEN
+     fFlyCutMode = 1
+     gG806FlyCutMode = 1
+	 MSGOUT "gG806FlyCutMode" gG806FlyCutMode
+ELSE	 
+	 gG806FlyCutMode = 0
+ENDIF 
+
+IF( (gTechType == 3) && (ls_stateping >= 3) ) %UnitWork.uxh[0].uxh_Flags = VA5
+IF( (gTechType == 3) && (ls_stateping >= 3) ) RET
+;//passaggio in >= ping tra flyCut<=>non flyCut. Grafica da verificare, SYN non richiesta.
+
+DBL svl = CTOMM(VA18)
+DBL ileave_x = CTOMM(VA20)
+DBL ileave_y = CTOMM(VA21)
+DBL sav_G70=XGET("@G70")
+G271
+
+;//$APP
+
+IF ((VA0 != 11) && ((VA19) != 10)) ERROR(55) ;bad deco mode (G806)
+
+IF( !ISQNAN(QCALCQ(Z)) ) THEN
+    G17
+    RTCP=1
+    VECRTC=1	;//abilita generazione vettori da canali AUTn
+    IF( !ISQNAN(QCALCQ(W)) ) GRP[W]=0
+ELSE
+    G17
+    RTCP=0
+ENDIF
+
+IF( ISQNAN(VA19) ) THEN
+    VA19 = gTravT
+    VA7  = gTravH
+    VA3  = gTravD
+    svl  = gTravS
+    VA4  = gTravE
+    POP(1)
+    JMPF .transOnly
+ENDIF
+
+;//
+;// GESTIONE Tx Ny (y-esima testa con tecnologia x)
+;//
+IF( VA13 <= 0 ) JMPF .endifNoN  ;//[N]
+    ;//THEN
+    lun = 0
+    found_heads = 0
+    WHILE( (lun < 12) && (found_heads < VA13) ) ;//[N]
+        IF( %UnitLun[lun].UL_gTravTech == VA19 ) found_heads = found_heads + 1 ;//[T]
+        IF( found_heads < VA13 ) lun = lun + 1  ;//[N]
+    ENDW
+    IF( found_heads < VA13 ) ERROR(63)  ;//Descrittore utensile errato
+    VA19 = lun  ;//[T]
+    VA13 = 0    ;//[N]
+;//ENDIF
+.endifNoN
+
+;//Solo testa Y4Z4 selezionata, se T1 forza T2
+;//xxx NON esiste il selettore: IF( (VA19 == 1) && (%WtPlc1.20) && (!%WtPlc1.19) ) VA19=2
+
+PrevTravTech = gTravTech
+gTravTech=%UnitLun[VA19].UL_gTravTech
+
+; Dinamic changing in base of technology selected
+
+IF(%LSRPlcOp[1].21) JSR "DynSet.cfs"
+
+;//XXX Gestione consumabile alternativo (bevel vs taglio verticale)
+IF( (gTravTech == 1) && (%PlcOp0.13) )THEN
+    VA7 = VA7 + 1
+ENDIF
+
+;//XXX Multiutensile non disponibile con grafica (manca istanza grafica)
+IF( %cn[WHO()].pc[14].25 == 0 ) JMPF .skipGraph
+    DBL phInitialStatus
+    DBL phX_Axis, phY_Axis
+    DBL phX_Offset, phY_Offset
+
+    ;//...cionostante, questi dati possono direttamente serializzati alla DLL
+    ix = %UnitLun[VA19].UL_gTravUnit
+    IF( ix <= 0 ) ix = VA19 - 1
+    ;//Programmare 256 per testa 0
+    ix = ix & 0xff
+    ;IF( !ISQNAN(ileave_y) ) ileave_x = ileave_y        ;//[V]
+    IF( ISQNAN(ileave_y) ) ileave_y = 0        ;//[V]
+    IF( luns_cnt == 0 ) THEN
+        ;//List start: initialize
+        CALL phGraphInitialize()
+        CALL phGraphUserPathInfo(0, start_track)
+        CALL phGraphUserPathInfo(1, %PEZZO)
+        CALL phGraphUserPathInfo(2, %GEOMETRIA)
+        ;;;CALL phGraphUnadjPathColorChange(tabColor)
+
+    ENDIF
+
+    ;//Add new tool - see phGraphCore.TXT
+    ;//0-machining, 1-in range, 2-ranging out
+    phInitialStatus = IFEXP( ((VA5&0x0020)!=0), 2, IFEXP( (fFlyCutMode), 1, 0 ) )
+    ;//3=U, -1=not used
+    phX_Axis = IFEXP( (VA5&0x0001)!=0, 3, -1 )
+    ;//4=V, -1=not used
+    phY_Axis = IFEXP( (VA5&0x0002)!=0, 4, -1 )
+
+    phX_Offset = IFEXP( (VA5&0x0001)!=0, 0.0, ileave_x )
+    phY_Offset = IFEXP( (VA5&0x0002)!=0, 0.0, ileave_y )
+
+    CALL phGraphAdd( ix, phInitialStatus, VA19, VA7, VA3, VA4, svl, phX_Offset, phY_Offset, phX_Axis, phY_Axis, VA5 )
+    ;//$APP X-U redundant graphics
+    CALL phGraphAdd( ix, phInitialStatus, VA19, VA7, VA3, VA4, svl, 0.0, 0.0, 3, -1, 0x0000 )
+    CALL phGraphColorChange(ix,tabColor)
+
+    G(200+sav_G70)
+    IF( VA12 != 0 ) luns_cnt = luns_cnt + 1 ;//[M]
+    IF( VA12 != 0 ) RET ;//[M]
+    G271
+
+    ;//List ended: set last as ref tool and send multitool info
+    CALL phGraphSetRefTool( ix )
+    GRAPH 999
+
+    luns_cnt=0
+    JMPF .noGraph
+.skipGraph
+;//!Grafica (automatico || verify)
+
+;//
+;// GESTIONE MULTIUTENSILE
+;//
+SYN         ;//molte scritture ed, in piu', dobbiamo rileggere uxh_gTravT
+
+IF( luns_cnt > 0 ) JMPF .endifFirstLun
+    ;//THEN
+    ;//Disabilita tutte le unita'
+    FOR ix = 0 TO 0
+        %UnitWork.uxh[ix].uxh_gTravT = 0
+    ENDFOR
+    luns_tech = %UnitLun[VA19].UL_gTravTech
+;//ENDIF
+.endifFirstLun
+
+;//Controlla consistenza tecnologia utensili
+IF( luns_tech != (%UnitLun[(VA19)].UL_gTravTech )) ERROR(63)  ;//Descrittore utensile errato
+
+ix = %UnitLun[VA19].UL_gTravUnit
+IF( ix <= 0 ) ix = VA19 - 1
+;//Programmare 256 per testa 0
+ix = ix & 0xff
+
+;//Ammessa solo una testa per ogni unita'
+IF( %UnitWork.uxh[ix].uxh_gTravT != 0 ) ERROR(63)    ;//Descrittore utensile errato
+
+%UnitWork.uxh[ix].uxh_gTravT   = VA19
+%UnitWork.uxh[ix].uxh_gTravH   = VA7
+%UnitWork.uxh[ix].uxh_gTravD   = VA3
+%UnitWork.uxh[ix].uxh_gTravS   = svl
+%UnitWork.uxh[ix].uxh_gTravE   = VA4
+
+;//assi a predisposizione con multiutensile
+;IF( !ISQNAN(ileave_y) ) ileave_x = ileave_y        ;//[V]
+IF( %UnitWork.uxh[ix].uxh_SpacingX != ileave_x ) gTravT = 0  ;//[U] - disabilita ottimizzazioni
+IF( %UnitWork.uxh[ix].uxh_SpacingY != ileave_y ) gTravT = 0  ;//[U] - disabilita ottimizzazioni
+IF( %UnitWork.uxh[ix].uxh_Flags & 0x0002 ) gTravT = 0    ;//[F] - disabilita ottimizzazioni
+%UnitWork.uxh[ix].uxh_SpacingX = ileave_x  ;//[U]
+%UnitWork.uxh[ix].uxh_SpacingY = ileave_y  ;//[U]
+%UnitWork.uxh[ix].uxh_Flags = VA5      ;//[F]
+;//assi a predisposizione
+%UnitWork.uxh[ix].uxh_BvlAngC  = VA1   ;//[B]
+%UnitWork.uxh[ix].uxh_BvlAngA  = VA1   ;//[B]
+;//taper
+%UnitWork.uxh[ix].uxh_Tilt  = VA9       ;//[J]
+%UnitWork.uxh[ix].uxh_Lead  = VA11      ;//[L]
+
+G(200+sav_G70)
+IF( VA12 != 0 ) luns_cnt = luns_cnt + 1 ;//[M]
+IF( VA12 != 0 ) RET ;//[M]
+G271
+
+IF( prev_luns_cnt != luns_cnt ) gTravT = 0   ;//disabilita ottimizzazioni
+
+prev_luns_cnt = luns_cnt
+luns_cnt=0
+
+.noGraph
+
+;//
+;// GESTIONE UTENSILE PRINCIPALE
+;//
+IF( gTravTech == 10 ) JMP .skip
+
+IF( !gOptimEnableG806 ) JMP .skip
+
+.transOnly
+
+;//Ottimizzazione nel caso la cinematica non cambi.
+IF( (gTravT==VA19) && (gTravH==VA7) && (gTravD==VA3) && (gTravS==svl) && (gTravE==VA4) && (gTravI==VA8) ) G(200+sav_G70)
+IF( (gTravT==VA19) && (gTravH==VA7) && (gTravD==VA3) && (gTravS==svl) && (gTravE==VA4) && (gTravI==VA8) ) RET
+
+;//Ottimizzazione nel caso cambi solo la trasformazione.
+IF( (gTravT==VA19) && (gTravH==VA7) && (gTravD==VA3) && (gTravS==svl) && (gTravE==VA4) ) THEN
+    gTravI=VA8
+    G172 T(gTravT) H(gTravH) D(gTravD) S(gTravS) E(gTravE) I(gTravI)
+    POP(1)
+    JMPF .exitSkip
+ENDIF
+.skip
+
+gOptimEnableG806 = 1
+IF( !VA16 ) gOptimEnableG806 = 0
+
+gTravT=VA19
+gTravH=VA7
+gTravD=VA3
+gTravS=svl
+gTravE=VA4
+gTravI=VA8
+
+gTravTech=%UnitLun[gTravT].UL_gTravTech
+gTravUnit=%UnitLun[gTravT].UL_gTravUnit
+
+;;; ***********************************************************
+?%UnitWork.gTravT =  gTravT
+?%UnitWork.gTravH =  gTravH
+?%UnitWork.gTravD =  gTravD
+?%UnitWork.gTravS =  gTravS
+?%UnitWork.gTravE =  gTravE
+;//assi a predisposizione
+?%UnitWork.BvlAngC = VA1    ;//[B]
+?%UnitWork.BvlAngA = VA1    ;//[B]
+;;; ***********************************************************
+
+IF( gTravT == 0 ) ERROR(63)     ;//Descrittore utensile errato
+IF( gTravD == 0 ) ERROR(63)     ;//Descrittore utensile errato
+
+G172 T(gTravT) H(gTravH) D(gTravD) S(gTravS) E(gTravE) I(gTravI)
+
+;Gestione origini
+IF( gTravE == 1 ) THEN
+
+; orig_c attualmente corrisponde al punto di taratura dell'asse C
+;  
+
+    trav_safe_z= (%ax29.pa[22] - 20000 ) / 1000     ;//Same as G0 Z in $START
+    trav_safe_z_start = trav_safe_z
+
+    IF( %cn[WHO()].pc[14].25 == 0 ) THEN
+        ; manage orig_c for pipe
+        IF (%CalPipe[0].General[0].4) G178 C-(%tab[1].t_ttab.t_oart.t_dEC - (-90)) ; in X 
+        IF (%CalPipe[0].General[0].5) G178 C-(%tab[1].t_ttab.t_oart.t_dEC - (90)) ; in Y
+
+        IF( (!%cn[WHO()].rc[0].21) && (%IndexORG != 19) ) ERROR (781)
+  
+        ;tubo
+        IF( tube_y ) THEN
+            G161 L(ml_usr_origin)     
+            G178 V(orig_y)    
+            G186 L(ml_usr_origin) B(-orig_c)   ;XXX verificare segno!!!
+        ELSE
+
+            G161 L(ml_usr_origin) X(orig_x)   
+            ;G178 U(orig_x)
+            ;G178 X(orig_x)
+            G186 L(ml_usr_origin) A(-orig_c)   ;XXX CORRETTO (VERIFICATO)... poi riportare nella G254
+        ENDIF
+        G179 C(orig_c)
+
+        _paras(0x00,X,3, lim_minx+spin_dim, lim_maxx )
+    ENDIF 
+ELSE
+    IF( gTravTech != 10 ) THEN
+
+        IF( (!%cn[WHO()].rc[0].21) && (%IndexORG == 19) ) ERROR (784)
+        JSR "SafetyPipeOrig.cfs"
+        IF (doM30) M30
+
+        ;piano        
+;;;        IF ((%LSRPlcOp1.17) && (%LsPlc26.1)) THEN
+;;;            gL_Tickness = (%rLsGui62/1000)  ; offset between pallet 1 AND pallet 2, pallet 1 is the 0 level
+;;;        ELSE
+            gL_Tickness = 0
+;;;        ENDIF
+        orig_z = gL_Tickness
+        G161 L(ml_usr_origin) X(orig_x) Y(orig_y) Z(orig_z)
+        G186 L(ml_usr_origin) C(orig_c)
+        ERROR(55) ;non consistente con tubo 11
+        G179 C(orig_c)
+    ELSE
+        ;//gTravTech == 10
+        ;foratura, ... su piano
+        ;//La Z delle lavorazioni propriamente da centro di lavoro sono riferite al piano
+        G161 L(ml_usr_origin) X(orig_x) Y(orig_y) Z(0)
+        G186 L(ml_usr_origin) C(orig_c)
+	G178 C0
+        G182
+        _paras(0x00,X,3, lim_minx, lim_maxx )
+    ENDIF
+ENDIF
+
+;//$APP
+;//Grafica dinamica e visloc
+JSR "graph_set_kine.cfs"
+
+IF( VA16 ) THEN                 ; Parametro "Q" serve quando chiamato da Plasma.inc
+    ;// Ricerca blocco NON in corso e NON verify|grafica
+    IF ( ((!(%cn[0].rc[8].8)) || (%cn[0].rc[8].15)) && !%cn[WHO()].rc[0].21 ) THEN
+        ;//Laser
+        ;//Solo testa Y4Z4 selezionata
+        IF( (%UnitWork.uxh[1].uxh_gTravT != 0) && (%UnitWork.uxh[0].uxh_gTravT == 0) ) JSR "Sel_Y4Z4.cfs"
+
+        ;//Solo testa Y3Z3 selezionata
+        IF( (%UnitWork.uxh[0].uxh_gTravT != 0) && (%UnitWork.uxh[1].uxh_gTravT == 0) ) JSR "Sel_Y3Z3.cfs"
+
+        ;//Teste Y3Z3 e Y4Z4 selezionate
+        IF( (%UnitWork.uxh[0].uxh_gTravT != 0) && (%UnitWork.uxh[1].uxh_gTravT != 0) ) JSR "Sel_Y3Z3_Y4Z4.cfs"
+        ;//XXX
+
+    ENDIF
+ENDIF
+
+.exitSkip
+G(200+sav_G70)
+
+; Jump BTW faces
+G1019
+
+RET

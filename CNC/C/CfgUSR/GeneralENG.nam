@@ -1,0 +1,86 @@
+
+[KEYS]
+TITLE=
+TXT0=[0] Unloader
+TXT1=[1] Loader
+TXT2=[2] Supports
+TXT3=[3] Spindles
+TXT16=Fast Command
+TXT17=Anticolision Parameters
+
+[PROMPT]
+KEY_NODE=Node
+GENERAL=Leaf
+GroupBox3=Supports (Cylinder)
+GroupBox2=C Rotation
+Button1=L2 Flap Home
+Button4=L2 Flap Incline
+Button5=L1 Flap Home
+Button6=L1 Flap Incline
+Button9=L3 Flap Home
+Button10=L3 Flap Incline
+Button19=Open Cm
+Button20=Close Cm
+Button21=Open C2
+Button22=Close C2
+Button23=Open C1
+Button24=Close C1
+P_REF2=FEED +
+Label4=%
+P_REF1=FEED -
+P_REF3=<< X
+P_REF4=X >>
+P_REF5=<< X1
+P_REF6=X1 >>
+P_REF7=Load Init
+GroupBox1=ISO Info
+P_REF8=START
+Button7=Camera Piston
+P_REF9=<< X3
+P_REF10=X3 >>
+Button8=Dustbin
+ButtonSpindleAlig1=Park YZCB Axes
+Label15=AX54
+Label16=AX53
+Label17=AX52
+Label18=AX51
+Label19=AX71
+Label20=AX72
+Label21=AX73
+Label22=W-AX36
+Label23=AX57
+Label24=V-AX31
+Label25=X-AX30
+Label26=AX34
+Label27=AX58
+Label28=AX33
+Label29=AX28
+Label30=AX29
+Button13=Open Centering Z3
+Button14=Close Centering Z3
+Button15=Open Centering Z1
+Button16=Close Centering Z1
+Button17=Open Centering Z2
+Button18=Close Centering Z2
+Button25=Open Centering Z4
+Button26=Close Centering Z4
+Button11=WeldDetec Enable
+ButtonSpindleAlig2=All Flaps Incline
+Button12=Park All Supports Z
+Button27=All Supports Z To Follow Position
+Button28=Park All Supports L
+Button29=All Supports L To Follow
+Button30=Park All Centerings
+Button31=All Centerings To Follow
+Button32=Ascend
+Button33=Descend
+Button34=L4 Flap Home
+Button35=L4 Flap Incline
+Label39=AX74
+GroupBox4=Unload Supports (Cylinder)
+Button36=Ascend
+Button37=Descend
+
+[STATUS]
+
+[HELP]

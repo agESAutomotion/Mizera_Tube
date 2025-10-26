@@ -1,0 +1,24 @@
+
+[KEYS]
+TITLE=Lubrificazione
+
+[PROMPT]
+KEY_NODE=Nodo
+LUBR=LEAF
+GroupBox=Impostazioni Lubrificazione
+Label=Timer per lubrificazione [h]
+Label1=Timer per lubrificazione [min]
+Label2=Tempo lubrificazione attiva [sec]
+Label3=Pompa attiva
+Label4=Livello olio basso
+Label5=Tempo movimento assi [h]
+Label6=Tempo movimento assi [min]
+Label7=Abilita timer con minuti
+Button=Lubrificazione manuale
+Label8=Pressione olio bassa
+Label9=Tempo lubrificazione disattiva [sec]
+Label10=Ripetizione
+
+[STATUS]
+
+[HELP]

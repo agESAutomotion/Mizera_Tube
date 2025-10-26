@@ -1,0 +1,75 @@
+
+[KEYS]
+
+[STRUCT]
+
+KEY_NODE {
+    FLYOUT_CUT,(1,1,1280,1024);
+
+}
+
+
+FLYOUT_CUT <0> {
+    Image,<0>,(87,82,269,182);
+    PIN1,<0>,(355,210,555,241);
+    PIN2,<0>,(355,159,655,190);
+    PIN3,<0>,(356,108,856,139);
+
+}
+
+
+[FLYOUT_CUT]
+BKG=RGB(192,192,192)
+TMR=-1
+STB=1
+HIDE_HOR_KEYS=0
+HIDE_VERT_KEYS=0
+
+
+
+
+[Image]
+FNM=Arial
+FSZ=10
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+PIC=flycut out.bmp
+
+
+[PIN1]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=LEFT
+
+
+[PIN2]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=LEFT
+
+
+[PIN3]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=LEFT

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--ByStorm drive configured for Profile Velocity Mode-->
+<Config DeviceConfig="Servotronix_CDHD_PC0_RV0_1_41_13.xml">
+
+    <Device>CDHD</Device>
+    
+    <Slot></Slot>
+    
+    <Module></Module>
+
+	<RxPdo Index="#x1600">
+		<SMObject>
+		  <Comment><![CDATA[Ctrl Word]]></Comment>
+		  <Address>#x60400010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Target Position]]></Comment>
+		  <Address>#x607A0020</Address>
+		</SMObject>
+	</RxPdo>
+
+	<TxPdo Index="#x1A00">
+		<SMObject>
+		  <Comment><![CDATA[Status Word]]></Comment>
+		  <Address>#x60410010</Address>
+		</SMObject>
+		<SMObject>
+		  <Comment><![CDATA[Position actual value]]></Comment>
+		  <Address>#x60640020</Address>
+		</SMObject>
+	</TxPdo>
+
+	<DistribuitedClock>1</DistribuitedClock>
+
+	<CyclicOperation>
+		<Enabled>1</Enabled>
+
+		<Sync0>1</Sync0>
+		<Sync0CycleTime AdaptCycleTime="1">2000</Sync0CycleTime>
+		<Sync0ShiftTime>0</Sync0ShiftTime>
+
+		<Sync1>0</Sync1>
+		<Sync1CycleTime AdaptCycleTime="1">2000</Sync1CycleTime>
+		<Sync1ShiftTime>0</Sync1ShiftTime>
+	</CyclicOperation>
+
+
+	<DictionaryExceptions>
+		<Objects>
+			<Object exclude="true" include="false" default="0">#x60850020</Object>
+        </Objects>
+	</DictionaryExceptions>
+
+
+	<PublicDictionary>
+		<Objects>
+		</Objects>  
+	</PublicDictionary>
+</Config>

@@ -1,0 +1,21 @@
+
+[KEYS]
+TITLE=Lubrificação
+
+[PROMPT]
+KEY_NODE=Node
+LUBR=Leaf
+GroupBox=Definições Lubrificação
+Label=Tempo para Lubrificação [ h]
+Label1=Tempo para Lubrificação [ min ]
+Label2=Tempo Lubrificação [ sec ]
+Label3=Bomba Ligada
+Label4=Nível Óleo Baixo
+Label5=Tempo de Movimento Eixos [ h ]
+Label6=Tempo de Movimento Eixos [min ]
+Label7=Ativar Temporizador com Minutos
+Button=Lubrificação Manual
+
+[STATUS]
+
+[HELP]

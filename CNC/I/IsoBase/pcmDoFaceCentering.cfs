@@ -1,0 +1,131 @@
+ : pcmDoFaceCentering
+;// pipe calibration cycles:
+;// adjusts face centering using face facing upwards with given C coordinate
+;// if no C coordinate is given, face is automatically chosen.
+;// Spindle centering error is returned
+;// INPUT:
+;//     pcRequiredCS (QNAN = auto)
+;//     pcRequiredZ
+;//     pcRequiredW
+;// OUTPUT:
+;//     pcErrorS[2]
+DBL c = pcRequiredCS
+DBL z = pcRequiredZ
+DBL w = pcRequiredW
+DBL Ang, PrevAng, OftYCap
+DBL fSimul = %cn[WHO()].rc[0].21
+
+;// See pcsEligibleFace, pcsDoSpindleCentering(#1)
+;// INPUTS
+DBL pcRequiredC
+DBL pcSearchMode
+;// OUTPUTS, INPUTS(#1)
+DBL pcCommonAngle
+DBL pcFaces[2]
+DBL pcVLeads[2]
+DBL pcIsEdge[2]
+DBL pcIsEligible
+;// See pcsDoSpindleCentering
+;// INPUTS
+DBL pcSpindleZ
+DBL pcSpindleW
+;// OUTPUT:
+DBL pcDeltaS[2]
+
+DBL sn, cs
+DBL dx, dy
+DBL dst
+
+DBL i
+
+pcRequiredC = c
+pcSearchMode = 2    ;//PC_SPINDLE_CENTERING
+JSR "pcsEligibleFace.cfs"
+IF (!pcIsEligible) ERROR(55)
+
+pcSpindleZ = z
+pcSpindleW = w
+JSR "pcsDoSpindleCentering.cfs"
+
+pcErrorS[0] = pcDeltaS[0]
+pcErrorS[1] = pcDeltaS[1]
+
+sn = SIN(pcPolyToPhy)
+cs = COS(pcPolyToPhy)
+;// errorS' = R * errorS
+dx = pcErrorS[0]
+dy = pcErrorS[1]
+pcErrorS[0] = +cs * dx -sn * dy
+pcErrorS[1] = +sn * dx +cs * dy
+ 	   
+;// Adjust spindle
+IF (!fSimul) THEN
+    dst = TABIDX(0)
+    G153
+    SYN
+    SWITCH (tubeAxis)
+    CASE 0
+	    IF( %CalPipe.General.9 ) THEN
+	        RPT .usr_edgeOft_s, .usr_edgeOft_e, 1
+	        pcErrorS[0] = pcErrorS[0] + OftYCap
+	    ENDIF	
+        %tab[dst].t_ttab.t_oart.t_dY = %tab[dst].t_ttab.t_oart.t_dY + pcErrorS[0]
+        %tab[dst].t_ttab.t_oart.t_dZ = %tab[dst].t_ttab.t_oart.t_dZ + pcErrorS[1]
+    CASE 1
+        %tab[dst].t_ttab.t_oart.t_dZ = %tab[dst].t_ttab.t_oart.t_dZ + pcErrorS[0]
+        %tab[dst].t_ttab.t_oart.t_dX = %tab[dst].t_ttab.t_oart.t_dX + pcErrorS[1]
+    CASE 2
+        %tab[dst].t_ttab.t_oart.t_dX = %tab[dst].t_ttab.t_oart.t_dX + pcErrorS[0]
+        %tab[dst].t_ttab.t_oart.t_dY = %tab[dst].t_ttab.t_oart.t_dY + pcErrorS[1]
+    OTHERWISE
+        ERROR(55) ;bad tubeAxis
+    ENDSWITCH
+    G152
+ENDIF
+
+RET
+
+.usr_edgeOft_s
+    SYN
+	; EnUserOffset            AT  %CalPipe.General.9;      
+    ; Usr_CorrectionGen       AT  %CalPipe.UsrPara0;
+    ; Usr_CorrectionC0        AT  %CalPipe.UsrPara1;
+    ; Usr_CorrectionC90       AT  %CalPipe.UsrPara2;
+    ; Usr_CorrectionC180      AT  %CalPipe.UsrPara3;
+    ; Usr_CorrectionC270      AT  %CalPipe.UsrPara4;
+    	
+    ; Angle within 360
+	OftYCap = 0
+    Ang = QCALC(C)
+    PrevAng = MOD(Ang,360)
+    IF( PrevAng < -0.0001 ) THEN
+        PrevAng = PrevAng + 360
+    ENDIF
+	
+	;SYN
+	;MSGOUT "PrevAng = " PrevAng " Ang = " Ang
+    ;M0
+	
+    ; Precondition: Tube C deviation less than 30 degree
+	; C0
+    IF( (ABS(PrevAng)<30) || (ABS(PrevAng-360)<30) )THEN
+	    MSGOUT "C0"
+		OftYCap = (%CalPipe.UsrPara0 + %CalPipe.UsrPara1) / 1000
+	ENDIF
+	; C90
+    IF( ABS(PrevAng-90)<30 )THEN
+	    MSGOUT "C90"
+	    OftYCap = (%CalPipe.UsrPara0 + %CalPipe.UsrPara2) / 1000
+	ENDIF
+	; C180
+    IF( ABS(PrevAng-180)<30 )THEN
+	    MSGOUT "C180"
+	    OftYCap = (%CalPipe.UsrPara0 + %CalPipe.UsrPara3) / 1000
+	ENDIF
+	; C270
+    IF( ABS(PrevAng-270)<30 )THEN
+	    MSGOUT "C270"
+	    OftYCap = (%CalPipe.UsrPara0 + %CalPipe.UsrPara4) / 1000
+	ENDIF
+
+.usr_edgeOft_e

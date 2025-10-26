@@ -1,0 +1,38 @@
+[PROMPT]
+KEYWORD       =Parameters
+KEY_SYS       =System
+#include "orgeng.nam"
+#include "twieng.nam"
+#include "thdeng.nam"
+#include "cedeng.nam"
+#include "tabeng.nam"
+#include "gorgeng.nam"
+#include "uteng.nam"
+#include "weareng.nam"
+#include "mageng.nam"
+#include "czoeng.nam"
+#include "vrtceng.nam"
+#include "probeeng.nam"
+#include "toreng.nam"
+#include "gantreng.nam"
+#include "cnfge?.nam"
+#include "CnfPLCeng.nam"
+#include "cnfch?.nam"
+#include "geocheng.nam"
+#include "parch?.nam"
+#include "fdceng.nam"
+#include "cnfax?.nam"
+#include "parax?.nam"
+#include "trasloeng.nam"
+#include "antslteng.nam"
+#include "dgteng.nam"
+#include "caneng.nam"
+#include "ssistateng.nam"
+#include "UserDlleng.nam"
+#include "FastInp?.nam"
+#include "Iocfgeng.nam"
+#include "LinDaceng.nam"
+
+[HELP]
+KEYWORD       =Parameters
+

@@ -1,0 +1,37 @@
+: select the Head 1
+
+DBL Z_Saw_Max = (MaxQta_Z) - 1.5 
+
+GRPQ[V]=1
+
+    G153
+    G4005 S(AXIDX(3,X))
+    G4005 S(AXIDX(3,Y))
+    G4005 S(AXIDX(3,Z))
+    IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+    IF (AEXISTS(3,V)) G4005 S(AXIDX(3,V))    
+    IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+    IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+    IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+	;Saw Cutting
+	IF (AEXISTS(5,W)) G4005 S(AXIDX(5,W))   ; Z Saw
+    IF (AEXISTS(5,A)) G4005 S(AXIDX(5,A))   ; C of Saw but spindle uses A 
+	
+    G152
+    G4099
+
+    G153 
+    ;Saw Cutting
+    G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+    G4010 M(AXIDX(Z)) S(AXIDX(5,W)) I1
+	G4010 M(AXIDX(A)) S(AXIDX(5,A)) I1
+	
+    IF (AEXISTS(3,U)) G4010 M(AXIDX(U)) S(AXIDX(3,U)) I1
+    IF (AEXISTS(3,V)) G4010 M(AXIDX(V)) S(AXIDX(3,V)) I1
+    IF (AEXISTS(3,C)) G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1            
+    IF (AEXISTS(5,W)) G4010 M(AXIDX(Z)) S(AXIDX(5,W)) I1        
+    G152
+    G4099
+    
+GRPQ[V]=0
+RET

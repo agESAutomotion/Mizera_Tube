@@ -1,0 +1,28 @@
+ : calibrationConfirm
+
+;// RTCP Calibration Cycle
+;// DEFINED -> rtcp_calib
+;// Moves Temporary calibration data to Current data.
+;// Temporary calibration data must be present.
+;// NOTE: to do manual intervention to calibration data, Confirm first.
+
+DBL dstTable
+DBL srcTable
+DBL subTable
+
+SYN
+IF (%twi[tbTemporary].yKine == 0) $No calibration data!
+IF (%twi[tbTemporary].yKine == 0) RET
+
+dstTable = tbCurrent
+srcTable = tbTemporary
+JSR "copyCalibrationData.cfs"
+
+;//reset delta
+dstTable = tbDelta
+srcTable = tbTemporary
+subTable = tbCurrent
+JSR "diffCalibrationData.cfs"
+
+$Confirmed.
+RET

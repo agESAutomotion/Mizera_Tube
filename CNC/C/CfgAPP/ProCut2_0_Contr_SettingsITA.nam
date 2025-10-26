@@ -1,0 +1,20 @@
+[KEYS]
+TITLE=Impostazioni di Controllo ProCut 2.0
+
+[PROMPT]
+KEY_NODE=Nodo
+PROCUT2_0_CONTR_SETTINGS=Foglia
+LabelPerr1=Fattore di Guadagno Luce Parassita (1:basso, 2:medio, 3:alto)
+LabelPerr2=Luce Parassita Massima Lente Collimante Superiore [%] (predefinito 80%)
+LabelPerr3=Temperatura Massima Finestra Protettiva Processo [°C] (predefinito 90°)
+LabelPerr4=Luce Parassita Massima Finestra Protettiva Inferiore [%] (predefinito 80%)
+LabelPerr5=Temperatura Massima Testina di Taglio [°C] (predefinito 55°C)
+LabelPerr6=Pressione Massima Gas di Assistenza [bar] (predefinito 30 bar)
+LabelPerr7=Pressione Massima Tenuta Finestra Protettiva Processo [bar] (predefinito 30 bar)
+LabelPerr9=Luce Parassita Massima Testina di Taglio [%]
+LabelPerr11=Umidita Massima Testina di Taglio [%] (valore predefinito 100%)
+LabelPerr12=Temperatura Massima Lente Collimante [°C] (valore predefinito 100°C)
+
+[STATUS]
+
+[HELP]

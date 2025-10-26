@@ -1,0 +1,258 @@
+*******************************************************************************
+*   FASTS.PLC (SIMULATION)
+*   ESAutomotion
+*   LASER machine
+*******************************************************************************
+#funcdec "intgraph.plc"
+#funcdec "DynMng.plc"
+
+VAR
+#include "MainFast.inc"
+
+BEVEL_INT:      InterpGraph;
+spindleCalib:   BOOL;
+new_tcp:        DWORD;
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+
+END_VAR
+
+#include "Iol.inc"
+#include "LsrGest.inc"
+
+*******************************************************************************
+FUNCTION FAST_SIM
+
+
+***************************************
+* GAS valve simulation
+***************************************
+LD   OA_GAS                        ** Gas analog valve
+ST   IA_Feedback_GAS_OUT           ** Gas proportional valve feedback (OUTPUT)
+
+*LD   OA_GAS_HOERB                  ** Gas analog valve
+*ST   IA_Feedb_HOERB_GAS_OUT        ** Hoerbiger gas proportional valve feedback (OUTPUT)
+
+
+***************************************
+* SIMULAZIONE INGRESSO CAPACITIVO
+***************************************
+LD   tcp_Z_head1_fast           * Z tcp measured of ch3 
+*SUB  %C162                      * Z tcp calculated of ch0
+SUB  %ax50.ra4
+MUL  (
+LD   %vrtc1.VrSensorGain
+DIV  1000
+)
+DIV  1000
+ADD  %vrtc1.VrSensorOffset
+ST   IA_A18_19_DIST_LINEAR
+
+LD   IA_A18_19_DIST_LINEAR
+GT   4095
+*ORN  %uvHeads0.uvhCommand0.1        * NB !
+JMPCN no_out_max
+
+LD   4095
+ST   IA_A18_19_DIST_LINEAR         ** Capacitive sensor
+JMP  no_out_min
+
+no_out_max:
+LD   IA_A18_19_DIST_LINEAR
+LT   0
+JMPCN no_out_min
+
+LD   0
+ST   IA_A18_19_DIST_LINEAR         ** Capacitive sensor
+
+no_out_min:
+LD   IA_A18_19_DIST_LINEAR         ** Capacitive sensor
+ST   %C120                         * calibration and linearization of capacitive sensor
+
+*******************************************************************************
+* Capacitive linearization
+*******************************************************************************
+*LD   Gest5Ax                        ** (gPlc0.0)Gestione MAcchina 5 assi
+LD  %LSRPlcOp1.9                  ** Capacitive linearization from CNC
+ANDN CALIBRATION_CHECK             ** (C26.0) Calibration control in run 
+ANDN CAP_LINEAR_RUN                 ** (C26.2) Linearizzazione capacitivo in esecuzione
+JMPCN no_calibration_bevel 
+
+LD   41                               * table 0�
+ST   BEVEL_INT.xIndexFirstTable
+
+LD   42                               * table 15�
+ST   BEVEL_INT.xIndexSecondTable
+
+LD   43                               * table 30�
+ST   BEVEL_INT.xIndexThirdTable
+
+LD   44                               * table 45� 
+ST   BEVEL_INT.xIndexFourthTable
+
+LD   47                               * table for the interpolation angle distance
+ST   BEVEL_INT.xIndexOutIntVal 
+
+LD   bevAngleHead1_calc1
+ST   BEVEL_INT.xActualAngle         
+
+*** TEST INTERNO (NON ABILITARE !)
+LD   %User_Option0.10
+JMPCN no_test_interno
+LD   %gPlc99    * input signal
+ST   BEVEL_INT.xInput         
+JMP  com_t
+
+no_test_interno:
+LD   IA_A18_19_DIST_LINEAR                            * input signal
+ST   BEVEL_INT.xInput         
+
+com_t:
+CAL   BEVEL_INT                    ** for plc in simulation no external encoder head 1          
+
+LD   %User_Option0.10
+JMPCN no_test_interno2
+LD   BEVEL_INT.yOutInterpVal
+ST   %gPlc98
+JMP  com_t2
+
+no_test_interno2:
+LD   BEVEL_INT.yOutInterpVal
+ST   IA_A18_19_DIST_LINEAR         ** Capacitive sensor
+com_t2:
+
+
+no_calibration_bevel:
+
+***************************************
+LD   IA_A18_19_DIST_LINEAR         ** Capacitive sensor
+ST   TempCapacitiveSensorPoints
+ST   %C121
+ST   %C120                            * input signal
+
+LD   TempCapacitiveSensorPoints
+ST   Capacit_Anal                  ** (C102)Analogica Capacitivo
+
+LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
+MUL  %LSRCostK31                   ** Capacitive sensor range
+DIV  1000
+MUL  100			   ** Moltiplica per 100 per visualizzare le 2 cifre decimali
+*DIV  4095
+DIV  AnalCapFeedback       *Capacitive analog resolution
+ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+
+***************************************
+*   Sicurezza 
+***************************************
+LD   CUT_DISTANCE
+DIV  10
+ADD  25                            *  RANGE
+ST   StandOff                      ** Valore distanza taglio in centesimi
+
+LD   BlcAvX1_Sens_Capac            ** M74.3 Blocco avanz. asse X1 Sens. Capacitivo in contatto con la lamiera
+OR   BlcAvY1_Sens_Capac            ** M74.6 Blocco avanz. asse Y Sens. Capacitivo in contatto con la lamiera
+OR   Pul_Stop                      ** (gPlc0.2)Stop pushbutton
+S    b_TipTouch                    ** (LsPlc47.7) TipTouch Attivo da MainFast
+
+LDN  PRGSTOP_CN0                   ** (cn0.rc8.1)  Programma interrotto CN0
+AND(
+LD   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+LE   StandOff                      ** Valore distanza taglio in centesimi
+)
+ORN  PRGRUN_CN0                    ** M0.0 cn0.rc8.0  Programma in corso
+R    b_TipTouch                    ** (LsPlc47.7) TipTouch Attivo da MainFast
+***************************************
+
+
+*******************************************************************************
+* threshold detection for manual cut
+*******************************************************************************
+LD  %PLCFLAGS.0                ** PLCFLAGS.0  ALWAYS 0
+ST  NozzleLosePlate            * (LsPlc47.13) Nozzle is far more then threshold
+
+LD   exeaux_for_mancut         * (LsPlc47.8) manual cut request
+*AND  M4001_REQ                 * (LsPlc47.14) M4001 request to enable height threshold detection 
+JMPCN no_check_threshold
+
+*  value of cutting distance
+LD   CUT_DISTANCE    * Distance height [um]
+ADD  3200                       
+ST   TmpHeightCheck                ** threshold for capacitive sensor
+
+LD   %C121                     * Capacitive linearized signal (0-4095)
+MUL  10                        
+MUL  1000                       * convert in [um]
+*DIV  4095                      * convert in [mm]
+DIV  AnalCapFeedback       *Capacitive analog resolution convert in [mm]
+GT   TmpHeightCheck                ** threshold for capacitive sensor
+ST   NozzleLosePlate           * (LsPlc47.13) Nozzle is far more then threshold
+
+no_check_threshold:
+*******************************************************************************
+* Pipe Spindle calibration
+*******************************************************************************
+LD  %CalPipe.General.4               * pipe along X         
+JMPCN sim_no_x
+
+LD  %ax28.ra4
+GE  (
+LD  %tab1.t_ttab.t_oart.t_dY
+ADD  (
+*LD   %CalPipe.Side2
+LD   %M196
+DIV  2
+)
+)
+OR (
+LD  %ax28.ra4
+LE  (
+LD  %tab1.t_ttab.t_oart.t_dY
+SUB (
+*LD   %CalPipe.Side2
+LD   %M197
+DIV 2
+)
+*MUL -1
+)
+)
+ST  spindleCalib
+sim_no_x:
+
+LD  %CalPipe.General.5               * pipe along y
+JMPCN sim_no_y
+
+LD  %ax27.ra4
+GE  (
+LD  %tab1.t_ttab.t_oart.t_dX
+ADD  (
+LD   %CalPipe.Side2
+DIV  2
+)
+)
+OR (
+LD  %ax27.ra4
+LE  (
+LD  %tab1.t_ttab.t_oart.t_dX
+SUB (
+LD   %CalPipe.Side2
+DIV 2
+)
+*MUL -1
+)
+)
+ST  spindleCalib
+sim_no_y:
+
+LD   %UnitWork.gTravE               * =1 pipe, =0 plane
+EQ   0
+JMPC no_pipe
+
+LDN  spindleCalib
+ST   ApaPlateSense                 ** (gPlc2.13)Sensore Rilevamento lamiera per "APA"
+
+no_pipe:
+
+
+END_FUNCTION

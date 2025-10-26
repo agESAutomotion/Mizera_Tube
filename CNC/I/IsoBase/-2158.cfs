@@ -1,0 +1,13 @@
+:G1158
+;//(Interna)
+;//Esegue la somma di tutti livelli di trasformazione assi polari ed ausiliari
+;//produce un output in pl_orig_ di basso livello.
+
+pl_orig_u = pl_add1_u + pl_add2_u
+pl_orig_v = pl_add1_v + pl_add2_v
+pl_orig_w = pl_add1_w + pl_add2_w
+pl_orig_a = pl_add1_a + pl_add2_a
+pl_orig_b = pl_add1_b + pl_add2_b
+pl_orig_c = pl_add1_c + pl_add2_c
+
+RET

@@ -1,0 +1,631 @@
+[STRUCT]
+
+KEY_PLCOPT1 {
+        PLC1_OPT0;
+        PLC1_OPT1;
+        PLC1_OPT2;
+        PLC1_OPT3;
+        PLC1_OPT4;
+        PLC1_OPT5;
+        PLC1_OPT6;
+        PLC1_OPT7;
+        PLC1_OPT8;
+        PLC1_OPT9;
+        PLC1_OPT10;
+        PLC1_OPT11;
+        PLC1_OPT12;
+        PLC1_OPT13;
+        PLC1_OPT14;
+        PLC1_OPT15;
+        PLC1_OPT16;
+        PLC1_OPT17;
+        PLC1_OPT18;
+        PLC1_OPT19;
+        PLC1_OPT20;
+        PLC1_OPT21;
+        PLC1_OPT22;
+        PLC1_OPT23;
+        PLC1_OPT24;
+        PLC1_OPT25;
+        PLC1_OPT26;
+        PLC1_OPT27;
+        PLC1_OPT28;
+        PLC1_OPT29;
+        PLC1_OPT30;
+        PLC1_OPT31;
+}
+
+KEY_COSTK {
+        PLC_COSTK0;
+        PLC_COSTK1;
+        PLC_COSTK2;
+        PLC_COSTK3;
+        PLC_COSTK4;
+        PLC_COSTK5;
+        PLC_COSTK6;
+        PLC_COSTK7;
+        PLC_COSTK8;
+        PLC_COSTK9;
+        PLC_COSTK10;
+        PLC_COSTK11;
+        PLC_COSTK12;
+        PLC_COSTK13;
+        PLC_COSTK14;
+        PLC_COSTK15;
+        PLC_COSTK16;
+        PLC_COSTK17;
+        PLC_COSTK18;
+        PLC_COSTK19;
+        PLC_COSTK20;
+        PLC_COSTK21;
+        PLC_COSTK22;
+        PLC_COSTK23;
+        PLC_COSTK24;
+        PLC_COSTK25;
+        PLC_COSTK26;
+        PLC_COSTK27;
+        PLC_COSTK28;
+        PLC_COSTK29;
+        PLC_COSTK30;
+        PLC_COSTK31;
+        PLC_COSTK32;
+        PLC_COSTK33;
+        PLC_COSTK34;
+        PLC_COSTK35;
+        PLC_COSTK36;
+        PLC_COSTK37;
+        PLC_COSTK38;
+        PLC_COSTK39;
+        PLC_COSTK40;
+        PLC_COSTK41;
+        PLC_COSTK42;
+        PLC_COSTK43;
+        PLC_COSTK44;
+        PLC_COSTK45;
+        PLC_COSTK46;
+        PLC_COSTK47;
+        PLC_COSTK48;
+        PLC_COSTK49;
+        PLC_COSTK50;
+        PLC_COSTK51;
+        PLC_COSTK52;
+        PLC_COSTK53;
+        PLC_COSTK54;
+        PLC_COSTK55;
+        PLC_COSTK56;
+        PLC_COSTK57;
+        PLC_COSTK58;
+        PLC_COSTK59;
+        PLC_COSTK60;
+        PLC_COSTK61;
+        PLC_COSTK62;
+        PLC_COSTK63;
+}
+
+
+[DEFAULT]  
+BKG=RGB(239,239,239)
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+MCH = 0
+
+
+//***************** PLCOPT ***********************
+
+[PLC1_OPT0]
+ADR = PlcOp0
+MSK = 0,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT1]
+ADR = PlcOp0
+MSK = 1,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT2]
+ADR = PlcOp0
+MSK = 2,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT3]
+ADR = PlcOp0
+MSK = 3,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT4]
+ADR = PlcOp0
+MSK = 4,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT5]
+ADR = PlcOp0
+MSK = 5,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT6]
+ADR = PlcOp0
+MSK = 6,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT7]
+ADR = PlcOp0
+MSK = 7,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT8]
+ADR = PlcOp0
+MSK = 8,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT9]
+ADR = PlcOp0
+MSK = 9,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT10]
+ADR = PlcOp0
+MSK = 10,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT11]
+ADR = PlcOp0
+MSK = 11,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT12]
+ADR = PlcOp0
+MSK = 12,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT13]
+ADR = PlcOp0
+MSK = 13,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT14]
+ADR = PlcOp0
+MSK = 14,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT15]
+ADR = PlcOp0
+MSK = 15,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT16]
+ADR = PlcOp0
+MSK = 16,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT17]
+ADR = PlcOp0
+MSK = 17,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT18]
+ADR = PlcOp0
+MSK = 18,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT19]
+ADR = PlcOp0
+MSK = 19,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT20]
+ADR = PlcOp0
+MSK = 20,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT21]
+ADR = PlcOp0
+MSK = 21,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT22]
+ADR = PlcOp0
+MSK = 22,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT23]
+ADR = PlcOp0
+MSK = 23,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT24]
+ADR = PlcOp0
+MSK = 24,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT25]
+ADR = PlcOp0
+MSK = 25,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT26]
+ADR = PlcOp0
+MSK = 26,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT27]
+ADR = PlcOp0
+MSK = 27,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT28]
+ADR = PlcOp0
+MSK = 28,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT29]
+ADR = PlcOp0
+MSK = 29,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT30]
+ADR = PlcOp0
+MSK = 30,1
+FRM = CHK, 0
+DSV = 0
+
+[PLC1_OPT31]
+ADR = PlcOp0
+MSK = 31,1
+FRM = CHK, 0
+DSV = 0
+
+
+//***************** COSTK ***********************
+[PLC_COSTK0]
+ADR = CostK0
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK1]
+ADR = CostK1
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK2]
+ADR = CostK2
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK3]
+ADR = CostK3
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK4]
+ADR = CostK4
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK5]
+ADR = CostK5
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK6]
+ADR = CostK6
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK7]
+ADR = CostK7
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK8]
+ADR = CostK8
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK9]
+ADR = CostK9
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK10]
+ADR = CostK10
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK11]
+ADR = CostK11
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK12]
+ADR = CostK12
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK13]
+ADR = CostK13
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK14]
+ADR = CostK14
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK15]
+ADR = CostK15
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK16]
+ADR = CostK16
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK17]
+ADR = CostK17
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK18]
+ADR = CostK18
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK19]
+ADR = CostK19
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK20]
+ADR = CostK20
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK21]
+ADR = CostK21
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK22]
+ADR = CostK22
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK23]
+ADR = CostK23
+MCH = 7
+
+[PLC_COSTK24]
+ADR = CostK24
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK25]
+ADR = CostK25
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK26]
+ADR = CostK26
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK27]
+ADR = CostK27
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK28]
+ADR = CostK28
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK29]
+ADR = CostK29
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK30]
+ADR = CostK30
+UDM = mm,inch
+FRM = QTA, 3
+MCH = 7
+
+[PLC_COSTK31]
+ADR = CostK31
+FRM = QTA, 3
+UDM = mm,inch
+MCH = 7
+
+[PLC_COSTK32]
+ADR = CostK32
+FRM = QTA, 3
+UDM = mm,inch
+MCH = 7
+
+[PLC_COSTK33]
+ADR = CostK33
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK34]
+ADR = CostK34
+FRM = QTA, 3
+UDM = mm,inch
+MCH = 7
+
+[PLC_COSTK35]
+ADR = CostK35
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK36]
+ADR = CostK36
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK37]
+ADR = CostK37
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK38]
+ADR = CostK38
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK39]
+ADR = CostK39
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK40]
+ADR = CostK40
+FRM = DEC, 0
+MCH = 7
+
+[PLC_COSTK41]
+ADR = CostK41
+FRM = DEC, 2
+MCH = 7
+
+[PLC_COSTK42]
+ADR = CostK42
+FRM = DEC, 2
+MCH = 7
+
+[PLC_COSTK43]
+ADR = CostK43
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK44]
+ADR = CostK44
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK45]
+ADR = CostK45
+FRM = DEC, 0
+MCH = 7
+
+[PLC_COSTK46]
+ADR = CostK46
+FRM = DEC, 0
+MCH = 7
+
+[PLC_COSTK47]
+ADR = CostK47
+FRM = DEC, 0
+MCH = 7
+
+[PLC_COSTK48]
+ADR = CostK48
+FRM = DEC, 0
+MCH = 7
+
+[PLC_COSTK49]
+ADR = CostK49
+FRM = DEC, 0
+MCH = 7
+
+[PLC_COSTK50]
+ADR = CostK50
+FRM = DEC, 0
+MCH = 7
+
+[PLC_COSTK51]
+ADR = CostK51
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK52]
+ADR = CostK52
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK53]
+ADR = CostK53
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK54]
+ADR = CostK54
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK55]
+ADR = CostK55
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK56]
+ADR = CostK56
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK57]
+ADR = CostK57
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK58]
+ADR = CostK58
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK59]
+ADR = CostK59
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK60]
+ADR = CostK60
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK61]
+ADR = CostK61
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK62]
+ADR = CostK62
+FRM = DEC, 3
+MCH = 7
+
+[PLC_COSTK63]
+ADR = CostK63
+FRM = QTA, 3
+MCH = 7

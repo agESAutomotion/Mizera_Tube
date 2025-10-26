@@ -1,0 +1,37 @@
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Nodo
+SPINDLES=Foglia
+GroupBox2=Impostazioni
+GroupBox=Mandrino Mobile
+GroupBox1=Mandrino Fisso
+Button=Apri
+Button1=Chiudi
+Label=Pressione di Apertura [bar]
+Button2=Grafico D - P
+LabelWorkListTotalTime1=TEMPO TOTALE
+Button3=Grafico P - V (costruttore)
+Label1=Test - Diametro Chiusura Manuale [mm]
+LIST0=12 bit,16 bit
+Label2=Risoluzione Uscita Analogica
+Button4=Apri
+Button5=Chiudi
+Button6=Grafico D - P
+Button7=Grafico P - V (costruttore)
+Label3=Risoluzione Uscita Analogica
+LIST1=12 bit,16 bit
+Label4=Diametro [mm]
+Label5=Soglia sul Feedback Analogico [Bar]
+Label6=Tempo di Timeout [s]
+Label7=Pressione Massima Feedback [Bar]
+Label8=Feedback Pressione [Bar]
+Label9=Feedback Pressione [Bar]
+Label10=Comando di Chiusura Pressione [Bar]
+Label12=Tempo Mantenimento Pressione Stabile [s]
+Label13=Comando di Chiusura Pressione [Bar]
+
+[STATUS]
+
+[HELP]

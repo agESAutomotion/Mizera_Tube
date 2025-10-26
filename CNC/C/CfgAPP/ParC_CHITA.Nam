@@ -1,0 +1,9 @@
+[PROMPT]
+KEYWORD =Parameters
+
+#include "cnfch?.nam"
+#include "parch?.nam"
+
+[HELP]
+
+[KEYS]

@@ -1,0 +1,156 @@
+ C [L]0 A [W] : G708
+
+;// Risolve la cinematica di tipo Nutator.
+;// L'output avviene nelle variabili NutaC e NutaA, che devono essere definite
+;// al livello superiore.  <quota_c> e' l'orientamento del versore sx.
+;//
+;// G708
+;//     C<quota_c> [L<lead>] A<quota_a> [W<forcedC>]
+
+DBL TargetC=VA2
+DBL LeadC=VA11
+DBL TargetA=VA0
+DBL ForcedC=VA22
+
+DBL nut_dTilt
+DBL NutaA_CosMinus, TiltSin, TiltCos
+DBL Ang
+DBL rTurnsA, rTurnsB
+
+DBL tool_xa, tool_ya, tool_za
+DBL tool_xf, tool_yf, tool_zf
+DBL tool_xyf
+
+DBL phy
+
+
+IF(ABS(TargetA)>0.1) THEN
+    IF(TargetA>0) THEN
+        TargetC = TargetC + LeadC
+    ELSE
+        TargetC = TargetC - LeadC
+    ENDIF
+ENDIF
+
+IF( !kf_identity ) THEN
+    ;//Trasforma angoli ZX da frame assoluto a frame della cinematica
+    tool_xa = COS(TargetC)*SIN(-TargetA)
+    tool_ya = SIN(TargetC)*SIN(-TargetA)
+    tool_za = COS(-TargetA)
+
+    tool_xf = kf_a11 * tool_xa + kf_a21 * tool_ya + kf_a31 * tool_za
+    tool_yf = kf_a12 * tool_xa + kf_a22 * tool_ya + kf_a32 * tool_za
+    tool_zf = kf_a13 * tool_xa + kf_a23 * tool_ya + kf_a33 * tool_za
+
+    TargetC = ATANXY(tool_yf,tool_xf)
+    tool_xyf = SQRT(tool_xf*tool_xf + tool_yf*tool_yf)
+    TargetA = -ATANXY(tool_xyf, tool_zf)
+ENDIF
+
+IF( (rtcp_oritrans != 0) && (rtcp_oritrans != 1) ) ERROR(55)
+
+IF(%twi[TWIIDX(0)].yKine == 3) THEN
+    ;//TWI_OBLIQUE_AXIS_ROTARY_HEAD_KINEMATICS
+    nut_dTilt   = %twi[TWIIDX(0)].htwi.oarh.dTilt
+    IF( rtcp_oritrans == 1 ) nut_dTilt = 0
+    TiltSin = SIN(nut_dTilt)
+    TiltCos = COS(nut_dTilt)
+
+    IF( COS(TargetA) >= 0.9999 ) THEN
+        NutaC = 0
+        NutaA = 0
+    ELSE
+        ;//Tool orientation violates constraints
+        IF( (TiltCos*TiltCos) < 0.0001 ) ERROR(229)
+
+        NutaA_CosMinus = (TiltSin*TiltSin - COS(TargetA)) / (TiltCos*TiltCos)
+        IF( NutaA_CosMinus >= 0.9999 ) THEN
+            ;//Tool orientation violates constraints
+            IF( NutaA_CosMinus > 1.0001 ) ERROR(229)
+
+            NutaA = 180
+            NutaC = -90
+        ELSE
+        IF( NutaA_CosMinus <= -0.9999 ) THEN
+            ;//Tool orientation violates constraints
+            IF( NutaA_CosMinus < -1.0001 ) ERROR(229)
+
+            NutaA = 0
+            NutaC = 0
+        ELSE
+            NutaA = 180 - ACOS(NutaA_CosMinus)
+            NutaC = -ATANXY(TiltSin * (1 + NutaA_CosMinus), SIN(NutaA))
+        ENDIF
+        ENDIF
+    ENDIF
+
+    IF( SIN(TargetA) < -0.000001 ) THEN
+        NutaC = -NutaC
+        NutaA = -NutaA
+    ENDIF
+
+    ;//XXX Adattamento cinematica (testa CA)
+    NutaC = -NutaC
+    NutaA = -NutaA
+    Ang = TargetC+90
+    ;//XXX Adattamento cinematica (soluzione preferenziale con testa skew)
+    IF( !kf_identity ) THEN
+        NutaC = -NutaC
+        NutaA = -NutaA
+        Ang = Ang-180
+    ENDIF
+
+    IF( !ISQNAN(ForcedC) ) THEN
+        rTurnsA = (ForcedC - (NutaC + Ang)) / 360
+        rTurnsB = (ForcedC - (180 - NutaC + Ang)) / 360
+
+        IF( ABS(rTurnsB-ROUND(rTurnsB)) < ABS(rTurnsA-ROUND(rTurnsA)) ) THEN
+            gKineFlip = 1
+            gKineOffs = ROUND(rTurnsB) * 360
+        ELSE
+            gKineFlip = 0
+            gKineOffs = ROUND(rTurnsA) * 360
+        ENDIF
+    ENDIF
+
+    IF( gKineFlip ) THEN
+        NutaC = 180-NutaC
+        NutaA = -NutaA
+    ENDIF
+
+    NutaC = NutaC + Ang + gKineOffs
+
+    ;//XXX Adattamento cinematica (Offset A)
+    phy = %twi[TWIIDX(0)].htwi.oarh.dEB
+
+    ;//$APP #MAG: Show required A
+    IF( (kf_HeadIsAB7 == 0) && ISQNAN(QCALCQ(A)) ) THEN
+    IF( %cn[WHO()].pc[14].25 ) THEN
+            IF( !wah_phy_a_inited ) THEN 
+                %gIso[16] = NutaA * 1000
+                %gIso17.0 = 1
+            ENDIF
+            wah_phy_a_inited = 1
+        phy = %gIso[16] / 1000
+    ENDIF
+    ENDIF
+
+    IF( nut_dTilt == 0 ) NutaA = NutaA - phy
+
+    IF( (kf_HeadIsAB7 == 0) && ISQNAN(QCALCQ(A)) ) THEN
+        ;//Tool orientation violates constraints
+        IF( ABS(NutaA) > 0.1 ) ERROR(229)
+        NutaA = QNAN()
+    ENDIF
+
+    POP(1)
+    JMP .EndCaseKine
+ENDIF
+
+;//Unsupported Kinematics
+ERROR(221)
+
+.EndCaseKine
+
+RET
+

@@ -1,0 +1,40 @@
+
+[KEYS]
+TITLE=PRECITEC
+TXT4=Linearizzazione capacitivo
+TXT5=Capacitive Test
+TXT6=Linearizzazione Focale
+TXT7=Parameters
+TXT8=Height control
+TXT16=Service 1
+TXT17=Service 2 (MDI)
+TXT18=Service 3
+
+[PROMPT]
+KEY_NODE=
+CAPFOC_PROCON=Leaf
+GroupBoxDiag=Diagnostic
+lbDiagPar1=Potenza attuale [w]
+lbDiagPar2=Actual DUTY [%]
+lbDiagPar3=Actual FREQUENCY [Hz]
+lbDiagPresSetted=Pressione GAS configurata [BAR]
+lbDiagPresReaded=Pressione GAS attuale [BAR]
+GroupBoxCapacitive=Capacitivo
+LabelPrec1=I_TIP_TOUCH_A11
+LabelPrec2=I_CABLE_CUT_A12
+LabelPrec11=CAPACITIVO
+ButtonStartCalib1=Inizio calibrazione
+GroupBoxFocal=Focale
+LabelFoc1=FOCALE [mm]
+LabelPrec12=Errore focale
+LabelPrec13=Focale in posizione
+Reference travel=Muovere focale
+LabelCalikOK1=Calibrazione Corretta
+Label1=Effettuare Calibrazione!
+Label2=Calibrazione INCORRETTA
+P_REF1=VEL. +
+P_REF4=VEL. -
+
+[STATUS]
+
+[HELP]

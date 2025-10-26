@@ -1,0 +1,18 @@
+
+[KEYS]
+TITLE=Service 2
+
+[PROMPT]
+KEY_NODE=Node
+SERVICE2=Leaf
+PP Iso=PP Iso
+ButtonEditMDI=EDITA MDI
+LabelSelChannel=SELEZIONE CANALE
+Label=Label
+Label1=Label
+Axes=Axes
+LabelSelQtaINC=QUOTA INC [mm]
+
+[STATUS]
+
+[HELP]

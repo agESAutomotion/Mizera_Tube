@@ -1,0 +1,19 @@
+[PROMPT]
+INTEC_POS001 = Rpm Gain_P
+INTEC_POS002 = Rpm GAIN_I
+INTEC_POS003 = Rpm Time Constant
+INTEC_POS004 = Position GAIN_P
+INTEC_POS005 = Position Limit
+INTEC_POS009 = Position restore windows
+INTEC_POS00A = Enable Operation Deeleration
+INTEC_POS00B = Rpm GAIN_D
+
+[HELP]
+HLP_INTEC_POS001 = Rpm Gain_P
+HLP_INTEC_POS002 = Rpm GAIN_I
+HLP_INTEC_POS003 = Rpm Time Constant
+HLP_INTEC_POS004 = Position GAIN_P
+HLP_INTEC_POS005 = Position Limit
+HLP_INTEC_POS009 = Position restore windows
+HLP_INTEC_POS00A = Enable Operation Deeleration
+HLP_INTEC_POS00B = Rpm GAIN_D

@@ -1,0 +1,26 @@
+[PROMPT]
+KEY_WEAR      =Daten Verschleiﬂ u.Standzeit
+
+WEAR_MODE    =Kriter. Berechn. Werkzeugverschleiﬂ
+WEAR_ELACYC  =Ausgef¸hrte Zyklen
+WEAR_ELATIM  =Abgelaufene Zeit
+WEAR_ELASPC  =Durchlaufener Raum
+WEAR_MAXCYC  =Max. Zyklen
+WEAR_MAXTIM  =Max. abgelaufene Zeit
+WEAR_MAXSPC  =Max. durchlaufener Raum
+WEAR_WEALENZ =Koeffizient L‰ngenverschleiﬂ Z
+WEAR_WEALENX =Koeffizient L‰ngenverschleiﬂ X
+WEAR_WEALENY =Koeffizient L‰ngenverschleiﬂ Y
+WEAR_ACTRAD  =Aktueller Radiusverschleiﬂ
+WEAR_ACTLENZ =Aktueller L‰ngenverschleiﬂ Z
+WEAR_ACTLENX =Aktueller L‰ngenverschleiﬂ X
+WEAR_ACTLENY =Aktueller L‰ngenverschleiﬂ Y
+WEAR_MAXRAD  =Max. Radiusverschleiﬂ
+WEAR_MAXLENZ =Max. L‰ngenverschleiﬂ Z
+WEAR_MAXLENX =Max. L‰ngenverschleiﬂ X
+WEAR_MAXLENY =Max. L‰ngenverschleiﬂ Y
+WEAR_WRAD    =Koeffizient Radiusverschleiﬂ
+
+
+[HELP]
+

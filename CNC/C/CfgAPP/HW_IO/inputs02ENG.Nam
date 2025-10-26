@@ -1,0 +1,56 @@
+
+[KEYS]
+TITLE=Inputs test
+TXT0=IW0-IW1
+TXT1=IW4-IW5
+TXT2=IW510-IW500
+TXT3=Force inputs
+MSG3=Are you sure to force inputs ?
+TXT4=QW2-QW3
+TXT5=QW6-QW7
+TXT6=QW410
+TXT7=Release inputs
+TXT12=IO Help
+MSG14=Are you sure to force inputs ?
+
+[PROMPT]
+KEY_NODE=
+INPUTS02=Leaf
+lbInp1=Digital inputs (IW4-IW5)
+lbForcedInp1=Inputs forced
+lb1=IW4.0
+lb2=IW4.1 pall in MAC: in posizione
+lb3=IW4.2 pall in MAC: extracorsa
+lb4=IW4.3
+lb5=IW4.4
+lb6=IW4.5
+lb7=IW4.6 pall 1 in MAC: bloccato
+lb8=IW4.7 pall 1 in MAC: sbloccato
+lb9=IW4.8 pall 2 in MAC: bloccato
+lb10=IW4.9 pall 2 in MAC: sbloccato
+lb11=IW4.10 lubrificazione: livello basso olio
+lb12=IW4.11 lubrificazione: pressione olio basso
+lb13=IW4.12
+lb14=IW4.13
+lb15=IW4.14
+lb16=IW4.15
+lb17=IW5.0
+lb18=IW5.1 Taratura X
+lb19=IW5.2 Extracorsa max X/U
+lb20=IW5.3 Extracorsa min X/U
+lb21=IW5.4
+lb22=IW5.5 Taratura U
+lb23=IW5.6
+lb24=IW5.7
+lb25=IW5.8
+lb26=IW5.9 Taratura Y
+lb27=IW5.10 Extracorsa max Y
+lb28=IW5.11 Extracorsa min Y
+lb29=IW5.12 Extracorsa max/tarat. Z
+lb30=IW5.13 Extracorsa min Z
+lb31=IW5.14
+lb32=IW5.15
+
+[STATUS]
+
+[HELP]

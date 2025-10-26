@@ -1,0 +1,74 @@
+[PROMPT]
+KEY_DGT       =Daten ServoLink
+
+KEY_RING0     =Ring(0)
+KEY_RING1     =Ring(1)
+KEY_RING2     =Ring(2)
+KEY_RING3     =Ring(3)
+KEY_RING4     =Ring(4)
+KEY_RING5     =Ring(5)
+KEY_RING6     =Ring(6)
+KEY_RING7     =Ring(7)
+KEY_RING8     =Ring(8)
+
+KEY_NAXES     =Ring Data
+RING_AXES     =Number of Axes
+RING_BAUD     =Baudrate
+RING_BAUDLIST =NULL, 2-Mbit, 4-Mbit, 8-Mbit, 16-Mbit
+RING_FLEN     =Fiber Optics Length
+RING_FLENLIST =NULL, 1-10m, 10-30m, 30-50m, Over 50m
+RING_TCYC     =Cycle Time
+
+KEY_DRV       =Servo Drives
+DRV_IAX       =Axis Sys-wide Number
+DRV_ADX       =Servo Dip Switch
+S_0032        =Position control mode
+S_0139        =Park/Out of service
+S_0123        =Feed constant
+DRV_END_SETUP =Setup terminated
+DRV_SERVOPACK =Controller type
+DRV_ENCODER   =Application type
+DRV_MOTOR     =Motor type
+DRV_OPTUNIT   =SYSTEM interface version
+DRV_C1D       =Class 1 diag
+DRV_C2D       =Class 2 diag
+DRV_C3D       =Manufacturer errors
+
+
+KEY_ID_DESCRIPTION =Device Description
+KEY_ID_DIAGNOSTICS =Device Diagnostics
+KEY_ID_DRIVEDATA   =Device Parameters
+
+DRV_FCONV_TORQUE=Torque conversion factor
+DRV_FCONV_TORQUE_ABS=Convert to absolute values
+DRV_FLT_TORQUE=Torque filter sample number
+DRV_ENB_OFF_REF =Homing offset enable
+DRV_OFFSET_REF  =Homing offset
+DRV_DIS_PROF_VEL=Disable velocity profile
+DRV_ENB_DEBUG_TXRX=Enable debug TX/RX data
+DRV_RT_BIT1_IDN=IDN programmed on RT_BIT1 ( IDN135 )
+
+[HELP]
+RING_AXES=Number of axes installed on the communications ring (1-8)
+RING_BAUD=2-Megabits 4-Megabits
+RING_FLEN=Fiber optics cable length in meters (1 - 100)
+DRV_IAX=Axis System-wide identification Number
+DRV_ADX=SERCOS Address
+S_0032 =b0=0:Mit Schleppabstand\nb0=1:Ohne Schleppabstand\nb1=0:Modul polare Achsen 360°x 12\nb1=1:Modul polare Achsen 360°
+S_0139 =Command function of drive parking, motor and encoder cable can be disconnected (activated during phase 2)
+S_0123 =Linear mm per revolution (S-0-0123)
+DRV_END_SETUP =Speficies that drive setup has already been carried out and, thus, not to further send configuration data to the drive at boot time.
+DRV_FCONV_TORQUE=This conversion factor allows to transform drive IDN84 (S-0-0084) value (Torque Feedback Value) to a meaningful measure unit so that it can be understood by the user.\nSome examples:\n*Motor current consumption (A).\n*Motor delivered torque (Nm).\n*Motor delivered force (N).\n\nThe calculated value is then published to the axis ra26 register (es. ax[28].ra26).
+DRV_FCONV_TORQUE_ABS=Converts drive IDN84 (S-0-0084) / ax[x].ra26 values to absolute values.
+DRV_FLT_TORQUE=Number of samples for istant torque filter IDN84 (S-0-0084), if N > 1 will be calculated the average value of last N samples.
+DRV_ENB_OFF_REF =This option enables the homing offset feature, to be used only with absolute encoders.
+DRV_OFFSET_REF  =The homing offset is an offset applied (added) to the drive measured position.
+DRV_DIS_PROF_VEL=On linear and polar axes disable the sercos velocity profile (no open loop mode), has no effect on spindles. Enabling this parameter can be optimized sercos protocol consumption
+DRV_ENB_DEBUG_TXRX=Enable shared memory publishing (registers Pn0-Pn11) of sincronous TX and RX telegrams and of internal values for debug scopes.
+DRV_RT_BIT1_IDN=RT bit 1 will be refreshed on the drive's status word cyclically, this parameter define which IDN must be associated to RT bit 1 \n(IDN135 bit 6 alias %RDD_wStatus.6)
+
+
+DRV_C1D=Class 1 diagnostics (S-0-0011)
+DRV_C2D=Class 2 diagnostics (S-0-0012)
+DRV_C3D=Manufacturer specific errors (S-0-0129)
+

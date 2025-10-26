@@ -1,0 +1,7 @@
+[PROMPT]
+
+TH7_VXOBJ8 = Pn100 Speed Loop Gain
+TH7_VXOBJ9 = Pn101 Speed Loop Integral Time Constant
+TH7_VXOBJ10 = Pn102 Position Loop Gain
+TH7_VXOBJ11 = Pn103 Moment of Inertia Ratio
+

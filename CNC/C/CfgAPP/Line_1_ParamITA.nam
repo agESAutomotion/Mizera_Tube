@@ -1,0 +1,71 @@
+
+[KEYS]
+TITLE=PAR. DI TAGLIO
+
+[PROMPT]
+KEY_NODE=Node
+LINE_1_PARAM=Leaf
+GroupBox=Parametri di taglio
+LBL_VELOCITA1=Velocita' [mm/min]
+LBL_VELOCITA2=Potenza [W]
+LBL_VELOCITA3=Pressione [Bar]
+LBL_VELOCITA4=Focale -mm-
+LBL_VELOCITA5=Altezza [mm]
+LBL_VELOCITA6=Duty [%]
+LBL_VELOCITA8=Frequenza [Hz]
+LBL_VELOCITA9=Dinamica [%]
+LBL_VELOCITA10=Kerf  [mm]
+LBL_VELOCITA11=Sensibilita' capac. [%]
+LBL_VELOCITA12=0,1,2 = O2, N2, AIR
+LBL_VELOCITA13=Ritardo laser off [ms]
+GroupBox2=Opzioni
+Label1=Riduzione vel. attacco
+Label2=Lunghezza [mm]
+Label3=Velocita' [mm/min]
+Label6=Controllo Duty
+Label8=Controllo Potenza
+Label9=Controllo Frequenza
+TabDuty=Duty
+TabPower=Potenza
+TabFreq=Frequenza
+Complete=Controllo completo
+Plot1=Curva duty
+L_SPEED2=Velocita' [%]
+L_POWER1=Duty [%]
+L_TYPE_INTERP1=Modello
+LIST0=Lineare,Segmento,Smussato
+L_TYPE_INTERP2=Punti
+Plot3=Curva potenza
+L_TYPE_INTERP3=Modello
+LIST0=Lineare,Segmento,Smussato
+L_TYPE_INTERP4=Points
+power_duty=Power [%]
+power_SPEED=Speed [%]
+Plot4=Curva frequenza
+L_SPEED3=Speed [%]
+L_POWER3=Freq [%]
+L_TYPE_INTERP5=Modello
+LIST0=Lineare,Segmento,Smussato
+L_TYPE_INTERP6=Points
+GroupBox5=Zoom
+Cut_Line_2=1
+Cut_Line_1=2
+Cut_Line_4=Angolo
+Cut_Line_3=3
+Cut_Line_6=5
+Cut_Line_5=6
+Cut_Line_8=7
+Cut_Line_7=8
+Cut_Line_10=9
+Cut_Line_9=10
+Button=Copy Su W:
+Label13=In corso...
+
+[STATUS]
+Plot2=Plot2
+Plot1=Duty(%),Vel(%)
+Plot3=Potenza(%),Vel(%)
+Plot4=Frequenza(%),Vel(%)
+Plot_angle_power1=Plot_angle_power1
+
+[HELP]

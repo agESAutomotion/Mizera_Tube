@@ -1,0 +1,93 @@
+[STRUCT]
+KEY_SYSANTSLT {
+        KEY_ANTSLT,ax,cg1;
+}
+KEY_ANTSLT {
+    *,ANTSLT_ENABLE;
+    if( antslt.byMaster > 0 ) {                    
+        ANTSLT_VELMAX;
+        ANTSLT_VELMIN;
+        ANTSLT_ERRMIN;
+        ANTSLT_ERRMAX; 
+        *,ANTSLT_LOG_ENABLE;
+        $,?R-1,ANTSLT_LOG_STATE;
+        $,?R-1,ANTSLT_MAXERR; 
+        $,?R-1,ANTSLT_ERRACT;
+        $,?R-1,ANTSLT_PERCERR;
+        $,?R-1,ANTSLT_MAXVEL;   
+    }
+}
+
+[DEFAULT]
+MSK = 0, 32
+FRM = DEC, 0
+LEN = 10
+
+[ANTSLT_ENABLE]
+HLP = ANTSLT_ENABLE
+ADR = antslt.byMaster
+MSK = 0, 8
+RNG = {0,1,2}
+FRM = CBX,3
+LST = ANTSLT_ENABLE_LIST
+RST = 1
+
+[ANTSLT_ERRMIN]
+HLP = ANTSLT_ERRMIN
+ADR = antslt.dwLimiteMin
+FRM = QTA, 3
+MSK = 0, 32
+
+[ANTSLT_ERRMAX]
+HLP = ANTSLT_ERRMAX
+ADR = antslt.dwLimiteMax
+FRM = QTA, 3
+MSK = 0, 32
+
+[ANTSLT_VELMIN]
+HLP = ANTSLT_VELMIN
+ADR = antslt.dwVelMinRPM
+FRM = DEC, 3
+MSK = 0, 32
+
+[ANTSLT_VELMAX]
+HLP = ANTSLT_VELMAX
+ADR = antslt.dwVelMaxRPM
+FRM = DEC, 3
+MSK = 0, 32
+
+[ANTSLT_MAXERR]
+HLP = ANTSLT_MAXERR
+ADR = antslt.dwPar0
+FRM = QTA, 3
+MSK = 0, 32
+
+[ANTSLT_PERCERR]
+HLP = ANTSLT_PERCERR
+ADR = antslt.dwPar1
+FRM = DEC, 0
+MSK = 0, 32
+           
+[ANTSLT_ERRACT]
+HLP = ANTSLT_ERRACT
+ADR = antslt.dwPar2
+FRM = QTA, 3
+MSK = 0, 32
+
+[ANTSLT_MAXVEL]
+HLP = ANTSLT_MAXVEL
+ADR = antslt.dwPar3
+FRM = QTA, 3
+MSK = 0, 32
+
+[ANTSLT_LOG_ENABLE]
+HLP = ANTSLT_LOG_ENABLE
+ADR = @ax0.antslt.dwPar8
+FRM = DEC, 0
+MSK = 0, 32
+
+[ANTSLT_LOG_STATE]
+HLP = ANTSLT_LOG_STATE
+ADR = @ax0.antslt.dwPar9
+FRM = DEC, 0
+MSK = 0, 32

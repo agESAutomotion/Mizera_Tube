@@ -1,0 +1,181 @@
+**************************************************
+* New state machine to restart the machine after
+* an hold command or tip touch event
+**************************************************
+
+
+
+FUNCTION_BLOCK Restart_Cut
+
+VAR 
+State:              DWORD;
+ActualAttempts:     DWORD;
+PrevCountAttempt:   DWORD;
+RetraceTimeout:     DWORD; 
+
+ResetCounter:       BOOL;
+MaxAttemptsDone:    BOOL;
+
+TON_RETR_DONE:      TON;
+TON_RESCOUNT:       TON;
+FTRIG_END_RETRACE:  F_TRIG;
+
+END_VAR
+
+VAR_INPUT
+xProg_Run:      BOOL;
+xTip_Touch:     BOOL;
+xZupExecuted:   BOOL;
+xMachineInHold: BOOL;
+xRetraceOn:     BOOL;
+xAttempts:      DWORD; 
+END_VAR
+
+VAR_OUTPUT
+yZupRequest:    BOOL;
+yStartRetrace:  BOOL;
+yStartProg:     BOOL; 
+yHoldProg:      BOOL;
+yInibTipTouch:  BOOL;
+END_VAR
+
+*********************************************************************
+
+LD   3000           
+ST   RetraceTimeout
+
+LDN  xProg_Run
+JMPCN no_ResetVar
+
+LD   0
+ST   yZupRequest
+ST   yStartRetrace
+ST   yStartProg
+ST   yHoldProg
+ST   yInibTipTouch
+ST   State
+
+LD   1
+ST   ActualAttempts
+ST   PrevCountAttempt
+no_ResetVar:
+
+*****************************
+* Attempt counter
+
+LD   ActualAttempts
+GT   xAttempts
+ST   MaxAttemptsDone
+
+LD   ActualAttempts
+EQ   PrevCountAttempt
+ANDN MaxAttemptsDone
+ST   ResetCounter
+
+CAL  TON_RESCOUNT (IN:=ResetCounter,PT:=20000)
+
+LD   TON_RESCOUNT.Q
+JMPCN no_res_count
+LD   0
+ST   PrevCountAttempt
+ST   ActualAttempts
+no_res_count:
+******************************
+
+
+
+*********************************************************************
+*   STATO=0
+*   In case of tip touch this state makes a request to the regulator
+*   to bring up the head  
+*********************************************************************
+LD   State
+EQ   0                               
+JMPCN STATE0_end
+ 
+R    yStartProg
+
+LD   ActualAttempts
+ST   PrevCountAttempt
+
+LD   xTip_Touch  
+AND  xProg_Run
+ANDN MaxAttemptsDone
+JMPCN STATE0_endif_A   
+
+** assume stay here just one scan
+LD  ActualAttempts
+ADD 1
+ST  ActualAttempts
+** 
+
+S   yZupRequest  
+S   yInibTipTouch
+  
+LD  10
+ST  State  
+
+STATE0_endif_A:
+JMP state_machine_end                    
+
+STATE0_end:
+
+CAL  TON_RETR_DONE (IN:=yStartRetrace,PT:=RetraceTimeout)
+CAL  FTRIG_END_RETRACE(CLK=xRetraceOn)
+
+
+*********************************************************************
+*   STATO=10
+*   Wait that the machine is in hold then send the request of retrace back
+*********************************************************************
+LD   State
+EQ   10                               
+JMPCN STATE10_end
+
+LD   xZupExecuted 
+AND  xMachineInHold 
+JMPCN STATE10_endif_A   
+  
+S  yStartRetrace
+  
+LD  11
+ST  State  
+  
+STATE10_endif_A:
+JMP state_machine_end                    
+
+STATE10_end:
+
+*********************************************************************
+*   STATO=11
+*   Wait that the machine is in hold then send the request of retrace back
+*********************************************************************
+LD   State
+EQ   11
+JMPCN STATE11_end
+
+LD   FTRIG_END_RETRACE.Q
+OR (
+LD   TON_RETR_DONE.Q
+ANDN xRetraceOn
+)
+JMPCN no_retrace_end
+
+R   yStartRetrace
+R   yInibTipTouch
+R   yZupRequest  
+S   yStartProg
+ 
+LD  0
+ST  State
+
+no_retrace_end:
+JMP state_machine_end                    
+
+STATE11_end:
+
+
+*********************************************************************
+state_machine_end:
+
+END_FUNCTION_BLOCK

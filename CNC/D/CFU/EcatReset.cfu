@@ -1,0 +1,32 @@
+:Check Focal and Capacitive Ecat Device, Reset Once Bootup (In CN6)
+
+DBL NodeCounter, NodeAxis = 0, NodeType
+DBL focalnode = 0, baxisnode = 0, ecationode = 0
+DBL EcatNodeNum = %ecat_ring.can_drives
+
+IF( fscanLock == 0 ) THEN
+	FOR NodeCounter = 1 TO EcatNodeNum
+	    SYN
+	    NodeAxis = %ecat_ring.EcatNode[NodeCounter].CanAx0.AxSw
+		IF( NodeAxis == 9 ) focalnode = NodeCounter 
+		IF( NodeAxis == 33 ) baxisnode = NodeCounter 
+		NodeType = %ecat_ring.EcatNode[NodeCounter].CanProf
+		IF( NodeType == 5001 ) ecationode = NodeCounter 
+	ENDFOR
+	
+	SYN
+	IF( focalnode != 0 ) ?%ecat_ring.EcatNode[focalnode].CoEFb59.28 = 1
+	IF( baxisnode != 0 ) ?%ecat_ring.EcatNode[baxisnode].CoEFb59.28 = 1
+	IF( ecationode != 0 ) ?%ecat_ring.EcatNode[ecationode].CoEFb59.28 = 1
+	
+	IF( (focalnode != 0) || (baxisnode != 0) || (ecationode != 0) ) G4 F1
+	
+    IF( focalnode != 0 ) ?%ecat_ring.EcatNode[focalnode].CoEFb59.28 = 0
+	IF( baxisnode != 0 ) ?%ecat_ring.EcatNode[baxisnode].CoEFb59.28 = 0
+	IF( ecationode != 0 ) ?%ecat_ring.EcatNode[ecationode].CoEFb59.28 = 0
+	
+    fscanLock = 1
+ENDIF
+
+
+RET

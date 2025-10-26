@@ -1,0 +1,22 @@
+:
+DBL ti_sav_G70 = XGET("@G70")
+DBL ti_fGraph = %cn[WHO()].pc[14].25
+G71
+
+COPYRTOV(^%CalPipe0.General0)
+
+;// tube rotation axis (0=X, 1=Y, 2=Z)
+DBL tubeAxis = %CalPipe[0].General[0].5             ;// table type select 
+;// tube class
+;// 0 = NOT A TUBE
+;// 1 = RECTANGLE/FLAT OVAL/ROUND
+;// 2 = TRIANGLE
+;// 3 = REGULAR POLYGON
+;// 4 = I-BEAM
+;// 5 = C-BEAM
+;// 6 = L-BEAM
+DBL tubeClass = 0
+DBL tubePI = IFEXP(ti_fGraph, 2, 0)
+
+G(ti_sav_G70)
+RET

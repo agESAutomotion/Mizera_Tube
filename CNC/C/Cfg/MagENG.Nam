@@ -1,0 +1,124 @@
+[PROMPT]
+KEY_MAG       =Tool storage data
+
+KEY_REV0      =Revolver(0)
+KEY_REV1      =Revolver(1)
+KEY_REV2      =Revolver(2)
+KEY_REV3      =Revolver(3)
+KEY_REV4      =Revolver(4)
+KEY_REV5      =Revolver(5)
+
+KEY_RV        =Revolver setup
+KEY_TPMAP     =Pocket-Tool matching
+KEY_KINPOCKET =Revolver Kinematics data
+KEY_DYNTOOL   =Spindle Dynamics data
+
+RV_AXTYPE     =Type
+RV_TURRETS    =Number of revolver turrets (1-12)
+RV_GIRISP     =Spindle reduction ratio
+RV_GIRIRV     =Revolver reduction ratio
+RV_VELLIM     =Revolver limit speed (rpm)
+RV_ACCTIME    =Acceleration time (s)
+RV_DECTIME    =Deceleration time (s)
+RV_DELAYS     =S-curve time
+RV_GAINP      =P Gain
+RV_FWERR      =Maximum follow error (pulses)
+RV_TOLLERF    =Fine tolerance target (degrees)
+RV_TARQUOTA   =Sizing target (degrees)
+RV_PARKQTA    =Parking target (degrees)
+RV_VELPOS     =Orientation speed (rpm)
+RV_VELJOG     =JOG speed (rpm)
+RV_VELCYCLE   =SINGLE-CYCLE speed (rpm)
+
+TP_PROMPT0     =Number
+TP_PROMPT1     =Type
+TP_PROMPT2     =Pocket
+TP_PROMPT3     =Dynamic
+TP_TOOL1       =T 1
+TP_TOOL2       =T 2
+TP_TOOL3       =T 3
+TP_TOOL4       =T 4
+TP_TOOL5       =T 5
+TP_TOOL6       =T 6
+
+PKIN_COMPX     =X mechanics compensation
+PKIN_COMPY     =Y mechanics compensation
+PKIN_COMPZ     =Z mechanics compensation
+
+TDYN_VELLIM    =Limit speed (rpm)
+TDYN_ACCTIME   =Acceleration time (s)
+TDYN_DECTIME   =Deceleration time (s)
+TDYN_DELAYS    =S-curve time
+TDYN_GAINP     =P Gain
+TDYN_FWERR     =Maximum follow error (pulses)
+TDYN_TOLLERF   =Fine tolerance target (degrees)
+TDYN_VELPOS    =Spindle speed in positioning (rpm)
+
+
+[HELP]
+
+KEY_MAG       =Tool storage data
+
+KEY_REV0      =Revolver(0)
+KEY_REV1      =Revolver(1)
+KEY_REV2      =Revolver(2)
+KEY_REV3      =Revolver(3)
+KEY_REV4      =Revolver(4)
+KEY_REV5      =Revolver(5)
+
+KEY_RV        =Revolver setup
+KEY_TPMAP     =Pocket-Tool matching
+KEY_KINPOCKET =Revolver Kinematics data
+KEY_DYNTOOL   =Spindle Dynamics data
+
+RV_AXTYPE     =Type
+RV_TURRETS    =Revolver model description data: Number of revolver turrets (1-12)
+RV_GIRISP     =Spindle gear ratio: numerator of the fraction q=n/d, where q is the number of spindle revolutions corresponding to a single revolver revolution
+RV_GIRIRV     =Spindle gear ratio: denominator of the fraction q=n/d, where q is the number of spindle revolutions corresponding to a single revolver revolution
+RV_VELLIM     =Revolver limit speed (rpm)
+RV_ACCTIME    =Acceleration time (s)
+RV_DECTIME    =Deceleration time (s)
+RV_DELAYS     =S-curve time
+RV_GAINP      =P Gain
+RV_FWERR      =Maximum follow error (pulses)
+RV_TOLLERF    =Fine tolerance target (degrees)
+RV_TARQUOTA   =Sizing target (degrees)
+RV_PARKQTA    =Parking target (degrees)
+RV_VELPOS     =Orientation speed (rpm)
+RV_VELJOG     =JOG speed (rpm)
+RV_VELCYCLE   =SINGLE-CYCLE speed (rpm)
+
+TP_PROMPT0     =Number
+TP_PROMPT1     =Type
+TP_PROMPT2     =Pocket
+TP_PROMPT3     =Dynamic
+
+TP_MAP1        =This column makes possible the matching of the tool and its revolver station numbering position (default is tool 1 on pocket 1)
+TP_MAP2        =
+TP_MAP3        =
+TP_MAP4        =
+TP_MAP5        =
+TP_MAP6        =
+
+TP_DYN1        =This column makes possible the differencing of the dynamics of each tool depending on the tool holder weight and on the machining characteristics.  The input value is considered as the index to acceed the Spindle Dynamics Data table (default is tool 1 matched with dynamics data 1)
+TP_DYN2        =
+TP_DYN3        =
+TP_DYN4        =
+TP_DYN5        =
+TP_DYN6        =
+
+
+PKIN_COMPX     =Revolver Kinematics Data: each revolver turret, to be aligned with the first one, must be compensated in its components dX,dY and dZ:                            X mechanics compensation             Y mechanics compensation            Z mechanics compensation        (these values are provided by the revolver supplier)
+PKIN_COMPX     =X mechanics compensation
+PKIN_COMPY     =Y mechanics compensation
+PKIN_COMPZ     =Z mechanics compensation
+
+TDYN_VELLIM    =Spindle Dynamics Data: this data makes possible the customization of the spindle dynamics after having selected the tool from the tool storage.  Spindle upper speed.
+TDYN_ACCTIME   =Acceleration time (s)
+TDYN_DECTIME   =Deceleration time (s)
+TDYN_DELAYS    =S-curve time
+TDYN_GAINP     =P Gain
+TDYN_FWERR     =Maximum follow error (pulses)
+TDYN_TOLLERF   =Fine tolerance target (degrees)
+TDYN_VELPOS    =Spindle speed in positioning (rpm)
+

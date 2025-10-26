@@ -1,0 +1,121 @@
+%  
+
+G2292 X0 Y-25 Z-25 U-500 V25 W25 I1.3 J0 K0
+
+;******************************************************************************
+;   RTCP Chk PGM
+;******************************************************************************
+
+INCLUDE "var_usr.cfs"
+                                   
+DBL Speed
+DBL Attesa
+DBL pdsel
+DBL sel                     ; offset calibration tables (for head1 or head2)
+DBL angle
+DBL pds_index
+DBL start_pds_index, i, err, err1, err1_mm
+
+DBL ABSINC = 0x01
+DBL VOUT0 = 0x04
+DBL VOUT = 0x08
+DBL VMAX = 0x10
+DBL VHIGH = 2000
+DBL VLOW = 300
+DBL LevelE = 0                      ; [(Normale close)  Aspetta il segnale a 0 per uscire dal comando]
+DBL LevelS = 1                      ; [(Normale open)   Aspetta il segnale a 1 per uscire dal comando]
+
+DBL z_ini = %ax29.pa22/1000 - 10
+DBL squaresize = 20 / 2
+DBL tubedim = 50 / 2
+
+SYN
+JSR "Sel_Y3Z3.cfs"
+DBL x_ini = QCALC(X)
+DBL y_ini = 0
+
+G153 G1 Z(z_ini) F10000
+G153 G1 X(x_ini) Y(y_ini) A0 B0 C0 F10000
+
+?%C26.0=1                   ; Calibrazione in corso (serve per disab. tip touch)
+?%C26.3=1                   ; ISOTipTouchDisable
+
+;Tastatura
+G153
+
+IF( %M33 == 0 ) THEN
+    ; FAR INPUT management enabled
+    IF( (%LSRPlcOp0.20) && (%config_machine26 != 3) ) _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%C31.0", LevelE )
+	IF( (%LSRPlcOp0.20) && (%config_machine26 == 3) ) _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%EmConfig.Far_signal.0 ", LevelE )
+	
+    _singfc( ( VMAX | VOUT0 ), Z, 2, VLOW, 0, "%C31.1", LevelS )  ; Aspetta TIP TOUCH alto per uscire
+    _singfc( ( VMAX | VOUT0 ), Z, 1, VLOW/4, 0, "%C31.1", LevelE )  ; Aspetta TIP TOUCH basso per uscire
+    G4 F0.2
+    SYN
+    kine_z = GET(Z) 
+    G10 G0 Z(QCALC(Z)) 
+ELSE
+    kine_z = %TabLsr1.L_Tickness / 1000
+ENDIF
+
+G152
+
+SYN
+G153 G0 Z(kine_z+squaresize)         ; Posizionamento a distanza specificata dal pezzo
+?%C26.3=0                                  ; ISOTipTouchDisable
+?%C26.0=0
+
+M301                                          ; Load data for shooting
+?%TabLsr[0].L_CutFocal = %TabLsr0.L_UserInt2 /1000
+
+IF( %LsrGest0.ShootGasType != 3 ) THEN     
+    IF( %LsrGest0.ShootGasType == 0 ) M480  ; O2
+    IF( %LsrGest0.ShootGasType == 1 ) M481  ; N2
+    IF( %LsrGest0.ShootGasType == 2 ) M482  ; Air
+ENDIF
+
+?%LsPlc31 =  %LsrGest0.ShootGasPress
+
+SYN
+G172 T1 H1 D1                ; Select the head to work with tcp coordinates
+
+G1 Y(y_ini-squaresize)
+M410    ; Shoot ON
+G1 Y(y_ini+squaresize)
+M411    ; Shoot OFF
+G1 Y(y_ini)
+
+G1 X(x_ini) Y(y_ini) B45
+G1 Y(y_ini-squaresize)
+M410    ; Shoot ON
+G1 Y(y_ini+squaresize)
+M411    ; Shoot OFF
+G1 Y(y_ini) 
+
+G1 X(x_ini) Y(y_ini) B-45
+G1 Y(y_ini-squaresize)
+M410    ; Shoot ON
+G1 Y(y_ini+squaresize)
+M411    ; Shoot OFF
+G1 Y(y_ini)
+G1 B0
+
+G153 G0 Z(kine_z+(tubedim+squaresize)*COS(45)) 
+G1 C(45)
+
+G1 X(x_ini+squaresize) Y(tubedim-squaresize*SIN(45))
+M410    ; Shoot ON
+G1 X(x_ini-squaresize)
+M411    ; Shoot OFF
+
+G1 C(-45)
+G1 X(x_ini+squaresize) Y(-tubedim+squaresize*SIN(45))
+M410    ; Shoot ON
+G1 X(x_ini-squaresize)
+M411    ; Shoot OFF
+   
+G153 G1 Z(z_ini) F10000
+G153 G1 X(x_ini) Y(y_ini) B0 F10000
+
+M30
+M2

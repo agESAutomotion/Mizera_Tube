@@ -1,0 +1,288 @@
+*******************************************************************************
+*   PIPE CALIBRATION 
+*   ESAutomotion
+*   LASER machine
+*   Support and clamp system for pipe
+*******************************************************************************
+
+VAR
+#include "cnc.inc"
+
+supp1up:        BOOL;    * memory for support 1 up
+supp1down:      BOOL;    * memory for support 1 down
+supp2up:        BOOL;    * memory for support 2 up
+supp2down:      BOOL;    * memory for support 2 down
+supp3up:        BOOL;    * memory for support 3 up
+supp3down:      BOOL;    * memory for support 3 down
+supp4up:        BOOL;    * memory for support 4 up
+supp4down:      BOOL;    * memory for support 4 down
+CLAMP_C1_OPEN_AUX:        BOOL;
+CLAMP_C_OPEN_AUX:         BOOL;
+CLAMP_C_CLOSE_AUX:        BOOL;
+
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+END_VAR
+
+#include "iol.inc"
+#include "pipe.inc"
+
+FUNCTION  CLAMP_SUPPORT
+
+* If W axis is configured
+
+LD   %cn3.cc1.5          * If W axis is configured
+JMPCN no_pipe_axis  
+
+* Support 1
+
+LD   %ax36.ra4           * Position of W axis in um
+GT   %LSRCostK10         * Distance Support 1 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax36.ra5           * W axis speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp1down                     ** memory for support 1 down
+
+LDN  supp1down                     ** memory for support 1 down
+ST   supp1up                       ** memory for support 1 up
+
+* Support 2
+
+LD   %ax36.ra4           * Position of W axis in um
+GT   %LSRCostK11         * Distance Support 2 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax36.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp2down                     ** memory for support 2 down
+
+LDN  supp2down                     ** memory for support 2 down
+ST   supp2up                       ** memory for support 2 up
+
+* Support 3
+
+LD   %ax36.ra4           * Position of W axis in um
+GT   %Cost_User30        * Distance Support 2 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax36.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp3down                     ** memory for support 3 down
+
+LDN  supp3down                     ** memory for support 3 down
+ST   supp3up                       ** memory for support 3 up
+
+* Support 4
+
+LD   %ax36.ra4           * Position of W axis in um
+GT   %Cost_User29        * Distance Support 4 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax36.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp4down                     ** memory for support 4 down
+
+LDN  supp4down                     ** memory for support 4 down
+ST   supp4up                       ** memory for support 4 up
+
+no_pipe_axis:
+
+*-------------------------------------------------------------------------------
+* If W axis is not configured,pipe along Y
+
+LDN  %cn3.cc1.5          * If W axis is configured
+AND  PipeAlongY                    ** (CalPipe.General.5) Pipe is cutted along Y axis
+AND  %cn3.cc1.8          * If C axis is configured
+JMPCN no_pipe_axis1  
+* Support 1
+
+LD   %ax28.ra4           * Position of W axis in um
+GT   %LSRCostK10         * Distance Support 1 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax28.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp1down                     ** memory for support 1 down
+
+LDN  supp1down                     ** memory for support 1 down
+ST   supp1up                       ** memory for support 1 up
+
+* Support 2
+
+LD   %ax28.ra4           * Position of W axis in um
+GT   %LSRCostK11         * Distance Support 2 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax28.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp2down                     ** memory for support 2 down
+
+LDN  supp2down                     ** memory for support 2 down
+ST   supp2up                       ** memory for support 2 up
+
+* Support 3
+
+LD   %ax28.ra4           * Position of W axis in um
+GT   %Cost_User30        * Distance Support 2 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax28.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp3down                     ** memory for support 3 down
+
+LDN  supp3down                     ** memory for support 3 down
+ST   supp3up                       ** memory for support 3 up
+
+* Support 4
+
+LD   %ax28.ra4           * Position of W axis in um
+GT   %Cost_User29        * Distance Support 4 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax28.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp4down                     ** memory for support 4 down
+
+LDN  supp4down                     ** memory for support 4 down
+ST   supp4up                       ** memory for support 4 up
+no_pipe_axis1:
+*-------------------------------------------------------------------------------
+
+* If W axis is not configured,pipe along X
+
+LDN  %cn3.cc1.5          * If W axis is configured
+AND  PipeAlongX                    ** (CalPipe.General.4) Pipe is cutted along X axis
+AND  %cn3.cc1.8          * If C axis is configured
+JMPCN no_pipe_axis2  
+* Support 1
+
+LD   %ax27.ra4           * Position of W axis in um
+GT   %LSRCostK10         * Distance Support 1 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax27.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp1down                     ** memory for support 1 down
+
+LDN  supp1down                     ** memory for support 1 down
+ST   supp1up                       ** memory for support 1 up
+
+* Support 2
+
+LD   %ax27.ra4           * Position of W axis in um
+GT   %LSRCostK11         * Distance Support 2 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax27.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp2down                     ** memory for support 2 down
+
+LDN  supp2down                     ** memory for support 2 down
+ST   supp2up                       ** memory for support 2 up
+
+* Support 3
+
+LD   %ax27.ra4           * Position of W axis in um
+GT   %Cost_User30        * Distance Support 2 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax27.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp3down                     ** memory for support 3 down
+
+LDN  supp3down                     ** memory for support 3 down
+ST   supp3up                       ** memory for support 3 up
+
+* Support 4
+
+LD   %ax27.ra4           * Position of W axis in um
+GT   %Cost_User29        * Distance Support 4 down
+OR   BSG_TAR                       ** rg1.0 Selezione modo REF (taratura)
+ORN  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   (
+LD   %ax27.ra5           * W axie speed in um/s
+DIV  1000                * mm/s
+MUL  60                  * mm/min
+GT   %LSRCostK56         * speed limit for support axes management 
+)
+ST   supp4down                     ** memory for support 4 down
+
+LDN  supp4down                     ** memory for support 4 down
+ST   supp4up                       ** memory for support 4 up
+no_pipe_axis2:
+*-------------------------------------------------------------------------------
+
+* Output
+
+LD   supp1down                     ** memory for support 1 down
+ST   O_O_SUPPORT_1_DOWN    * (QW710.7) Support 1 down
+
+LD   supp1up                       ** memory for support 1 up
+ST   O_O_SUPPORT_1_UP      * (QW710.6) Support 1 up
+
+LD   supp2down                     ** memory for support 2 down
+ST   O_O_SUPPORT_2_DOWN    * (QW710.9) Support 2 down
+
+LD   supp2up                       ** memory for support 2 up
+ST   O_O_SUPPORT_2_UP      * (QW710.8) Support 2 up
+
+LD   supp3down                     ** memory for support 3 down
+ST   O_O_SUPPORT_3_DOWN    * (QW710.9) Support 3 down
+
+LD   supp3up                       ** memory for support 3 up
+ST   O_O_SUPPORT_3_UP      * (QW710.8) Support 3 up
+
+LD   supp4down                     ** memory for support 4 down
+ST   O_O_SUPPORT_4_DOWN    * (QW710.9) Support 4 down
+
+LD   supp4up                       ** memory for support 4 up
+ST   O_O_SUPPORT_4_UP      * (QW710.8) Support 4 up
+
+END_FUNCTION

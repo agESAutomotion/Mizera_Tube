@@ -1,0 +1,18 @@
+[KEYS]
+TITLE=CLEAN HEAD
+TXT14=Clear Alarm
+MSG40=Clean Head ?
+[PROMPT]
+CLEANHEAD=Leaf
+GroupBox=Nozzle Cleaning Parameters
+ButtonStartCalib1=START CLEAN
+Label1=X INIT abs quota
+Label2=Y INIT abs quota
+Label3=Z abs quota for cleaning nozzle [mm]
+Label4=Number of cleaning cycles
+AxesCh1=Axes
+LabelXend=X END abs quota
+LabelYend=Y END abs quota
+GroupBox1=Calibration Plate Parameters
+Label5=X plate position for capacitive calibration
+Label6=Y plate position for capacitive calibration

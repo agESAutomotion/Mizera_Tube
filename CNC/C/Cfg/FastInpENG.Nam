@@ -1,0 +1,22 @@
+[PROMPT]
+
+KEY_FASTINP         =Fast Inputs
+FI_CONF             =Fast inputs configuration
+FI_NUMBER           =Fast inputs number [0-36]
+FI_DATA             =Fast inputs data
+FI_EDGE             =Active edge [0-3]
+FI_AXIS             =Associated axis
+FI_INPNUM           =internal drive input number
+FI_NOVER            =No overwrite [0/1/2]
+FI_DELAY            =Delay [µs]
+
+[HELP]
+FI_CONF             =Fast inputs configuration
+FI_NUMBER           =Fast inputs number [0-36]
+FI_DATA             =Fast inputs data
+FI_EDGE             =Active edge: 0-disab,1-rise,2-fall,3-both
+FI_AXIS             =Associated axis (system wide)
+FI_INPNUM           =on digital drives, internal drive input number (0-disab,1-3)
+FI_NOVER            =Selection 0-overwrite 1-no overwrite target 2-queued
+FI_DELAY            =Input transition delay [µs]
+
