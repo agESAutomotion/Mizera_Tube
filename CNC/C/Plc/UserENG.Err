@@ -1,0 +1,340 @@
+
+#640    *PLCerr20
+Mandrino Mobile: Errore apertura/chiusura     PLCerr20.0
+Mandrino Fisso: Errore apertura/chiusura      PLCerr20.1 
+Pressione chiusura mandrino mobile fuori range PLCerr20.2 
+Pressione chiusura mandrino fisso fuori range PLCerr20.3 
+Cylinder Support On Ax71 Down Timeout         PLCerr20.4
+Cylinder Support On Ax72 Down Timeout         PLCerr20.5
+Cylinder Support On Ax73 Down Timeout         PLCerr20.6
+Cylinder Support On Ax74 Down Timeout         PLCerr20.7
+Cylinder Support On Ax75 Down Timeout         PLCerr20.8
+649                                           PLCerr20.9
+Loader Not Ready                              PLCerr20.10
+Loader Not in Back Position                   PLCerr20.11
+External Plc Communication Error              PLCerr20.12
+Loader Support G Up/Down timeout              PLCerr20.13
+Loader Cyliner F Forward/Backward timeout     PLCerr20.14
+655                                           PLCerr20.15
+656                                           PLCerr20.16
+657                                           PLCerr20.17
+658                                           PLCerr20.18
+659                                           PLCerr20.19
+Possible collision between spindles           PLCerr20.20
+Possible Collision Between 2nd and 3rd Spindle(Hold)  PLCerr20.21
+Possible Collision Between Laser Head and 2nd Spindle PLCerr20.22
+Possible Collision Between 2nd and 3rd Spindle(Emer)  PLCerr20.23
+Following Supports Quote Wrong (inside tube)  PLCerr20.24
+X,X1 OR X3 Spindle Out of Software Limit      PLCerr20.25
+Collision Between 2nd Spindle and Laser Bevel Head PLCerr20.26
+Vertical Following Supports (Loader) Could not follow the profile  PLCerr20.27
+Vertical Following Supports (Unloader) Could not follow the profile PLCerr20.28
+669                                           PLCerr20.29
+670                                           PLCerr20.30
+671                                           PLCerr20.31
+
+#672    *PLCerr21
+Support 1 Down Timeout                        PLCerr21.0
+Support 2 Down Timeout                        PLCerr21.1
+Support 3 Down Timeout                        PLCerr21.2
+Support 4 Down Timeout                        PLCerr21.3
+Support 5 Down Timeout                        PLCerr21.4
+Support 6 Down Timeout                        PLCerr21.5
+Support 7 Down Timeout                        PLCerr21.6
+Unload Support 1 Up/Down Timeout              PLCerr21.7
+Loader Inverter Alarm(Chain)                  PLCerr21.8
+Loader Inverter Alarm(Arms)                   PLCerr21.9
+Loader Support 1 Center Cylinder Timeout      PLCerr21.10
+Loader Support 2 Center Cylinder Timeout      PLCerr21.11
+Loader Support 3 Center Cylinder Timeout      PLCerr21.12
+Loader Support 4 Center Cylinder Timeout      PLCerr21.13
+Flap L1 Home/Incline Timeout                  PLCerr21.14
+Machine Door Open                             PLCerr21.15
+Safety Grating Activated                      PLCerr21.16
+Unloader Door Open In Cutting                 PLCerr21.17
+Loader System Alarm                           PLCerr21.18
+Loader System Pump Alarm                      PLCerr21.19
+Possible Collision Between Spindles           PLCerr21.20
+Possible Collision Between B Axis AND Slave Spindle PLCerr21.21
+Flap L2 Home/Incline Timeout                  PLCerr21.22
+Fix Spindle Open/Close Timeout                PLCerr21.23
+Bevel Head Anti-Colision                      PLCerr21.24
+Saw Clamp Z Open/Close Timeout                PLCerr21.25
+Flap L3 Home/Incline Timeout                  PLCerr21.26
+Flap L4 Home/Incline Timeout                  PLCerr21.27
+Flap L5 Home/Incline Timeout                  PLCerr21.28
+Saw Clamp Rotate Open/Close Timeout           PLCerr21.29
+Unloader L1 Safely Down Sensor OFF            PLCerr21.30
+703                                           PLCerr21.31
+
+#704    *PLCerr22
+Timeout: Loader V piston support 1             PLCerr22.0
+Timeout: Loader V piston support 2             PLCerr22.1
+Timeout: Loader V piston support 3             PLCerr22.2
+Timeout: Loader V piston support 4             PLCerr22.3
+                                               PLCerr22.4
+                                               PLCerr22.5
+                                               PLCerr22.6
+                                               PLCerr22.7
+                                               PLCerr22.8
+                                               PLCerr22.9
+                                              PLCerr22.10
+                                              PLCerr22.11
+                                              PLCerr22.12
+                                              PLCerr22.13
+                                              PLCerr22.14
+                                              PLCerr22.15
+                                              PLCerr22.16
+                                              PLCerr22.17
+                                              PLCerr22.18
+                                              PLCerr22.19
+                                              PLCerr22.20
+                                              PLCerr22.21
+Loader alarm                                  PLCerr22.22
+727                                           PLCerr22.23
+728                                           PLCerr22.24
+729                                           PLCerr22.25
+730                                           PLCerr22.26
+731                                           PLCerr22.27
+732                                           PLCerr22.28
+733                                           PLCerr22.29
+734                                           PLCerr22.30
+735                                           PLCerr22.31
+
+#736    *PLCerr23
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#768    *PLCerr24
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#800    *PLCerr25
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#832    *PLCerr26
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#864    *PLCerr27
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#896    *PLCerr28
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#928    *PLCerr29
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-

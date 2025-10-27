@@ -1,0 +1,298 @@
+*Vedere [PhisErr.Txt] per informazioni sulla mappatura degli errori
+                                                                                
+#0                                                                              
+VK. Elore                                                                       
+VK. Vissza                                                                      
+VK. Szoftver                                                                    
+Tengely vészjelzés: Külso kérés                                                 
+Kalibrálási Hiba                                                                
+Tengely nincs meghatározva                                                      
+Tengely nem található és fly                                                    
+Torés Hiba                                                                      
+Követési hiba                                                                   
+Offset Hiba                                                                     
+I/O ellenorzés vészjelzés Kérés                                                 
+Hiányzó DAC interfész vagy Enkóder                                              
+Hiányzó Enkóder számlálás                                                       
+Tengely ütközik                                                                 
+Tartomány nem található                                                         
+Enkóder nincs csatlakoztatva                                                    
+Tengely nem elérheto                                                            
+Digitális Szervo Erosíto Vészjelzés                                             
+Portál Tengelyek Helyzeti Eltolódása                                            
+CanOpen Protokoll Vészjelzés                                                    
+Vészjelzés a drive-on                                                           
+Parancshiba                                                                     
+Fenntartva                                                                      
+Fenntartva                                                                      
+Fenntartva                                                                      
+Fenntartva                                                                      
+Fenntartva                                                                      
+Digitális moködtetés nincs kész                                                 
+Érvénytelen adatok                                                              
+Sérült adatcsomag BCC hiba                                                      
+Zaj a moködtetot csatlakoztató kommunikációs vonalon                            
+Kommunikációs idotúllépés a digitális moködtetéssel                             
+#32                                                                             
+Általános Hiba                                                                  
+Guarding hiba a csomóponton                                                     
+EMCY                                                                            
+Lemezhiba                                                                       
+Csomóponti hiba újraindításkor                                                  
+Perifériahiba                                                                   
+Konfigurációs hiba                                                              
+SDO hiba                                                                        
+Védelem hiba a csomóponton                                                      
+Hiba a csomóponton                                                              
+Max speed demand exceeded
+Általános Hiba                                                                  
+(2000) Áram                                                                            
+(2100) Áramerosség nagyobb mint a berendezésre megengedett                             
+(2110) Rövidzárlat / szivárgás föld felé                                               
+(2120) Szivárgás a föld felé                                                           
+(2130) Rövidzárlat                                                                     
+(2200) Belso áramerosség                                                               
+(2211) Current offset error                                                            
+(2221) Continuous over-current No.1                                                    
+(2222) Continuous over-current No.2                                                    
+(2300) Túláram a berendezés kimeneti méretén                                           
+(2310) Túlfeszültség                                                                   
+(3000) Feszültség                                                                      
+(3100) Hálózati feszültség                                                             
+(3110) Hálózat túlfeszültség                                                           
+(3120) Hálózat feszültségcsökkenés                                                     
+(3130) Hiányzó fázis                                                                   
+(3140) Hálózati frekvencia                                                             
+(3200) DC link feszültsége                                                             
+(3210) DC link túlfeszültség                                                           
+(3220) DC link feszültség alatt                                                        
+(3300) Kimeno feszültség                                                               
+(3310) Túlfeszültség kimenet                                                           
+(3320) Armatúra kör                                                                    
+(3330) Mezo kör                                                                        
+(4000) Homérséklet                                                                     
+(4100) Környezeti homérséklet                                                          
+(4110) Túl magas környezeti homérséklet                                                
+(4120) Túl alacsony környezeti homérséklet                                             
+(4130) Levegohomérséklet                                                               
+(4140) Levego kimeneti homérséklet                                                     
+(4200) Homérséklet érzékelo berendezés                                                 
+(4210) Túl magas homérséklet érzékelo berendezés                                       
+(4220) Túl alacsony homérséklet érzékelo berendezés                                    
+(4300) Homérséklet egység                                                              
+(4310) Túl magas homérséklet egység                                                    
+(4320) Túl alacsony homérséklet drive                                                  
+(4400) Nyomó oldali homérséklet                                                        
+(4410) Túl magas nyomó oldali homérséklet                                              
+(4420) Túl alacsony nyomó oldali homérséklet                                           
+(5000) Hardvereszköz                                                                   
+(5100) Hardver áramellátását biztosító berendezések                                    
+(5110) Kis feszültségo hardvereszköz                                                   
+(5111) Auxiliary low voltage                                                           
+(5118) Battery low voltage                                                             
+(5120) Köztes áramkör hardvereszköz                                                    
+(5200) Ellenorzo mérés / feldolgozó áramkör                                            
+(5210) Ellenorzo mérés áramköre                                                        
+(5220) Ellenorzo számítások áramköre                                                   
+(5300) Operatív egység                                                                 
+(5400) Teljesítmény                                                                    
+(5410) Kimenti szakasz                                                                 
+(5420) Chopper                                                                         
+(5430) bemeno fázisok                                                                  
+(5440) Érintkezok                                                                      
+(5450) Biztosítékok                                                                    
+(5500) RAM / EPROM / EEPROM memória adatok                                             
+(6000) Device Software                                                                 
+(6110) Belso hiba                                                                      
+(6111) Számítás túlcsordulás                                                           
+(7000) Kiegészíto modulok                                                              
+(7100) Power                                                                           
+(7110) Fékezo chopper                                                                  
+(7114) Szorító Túlterhelés                                                             
+(7115) Szorító idotúllépés                                                             
+(7120) Motor                                                                           
+(7200) Mérési áramkör                                                                  
+(7300) Érzékelo                                                                        
+(7303) Rezolver meghibásodás                                                           
+(7305) Enkóder Meghibásodás                                                            
+(7310) Sebesség                                                                        
+(7320) Helyzet                                                                         
+(7400) Kör kiszámítása                                                                 
+(7500) Kommunikáció                                                                    
+(7600) Adatok mentése                                                                  
+(8000) Összeszerelés                                                                   
+(8100) Kommunikáció                                                                    
+(8110) CAN túlterhelés (objektum nem található)                                        
+(8120) CAN passzív hiba üzemmódban                                                     
+(8130) Life guard vagy szívverési hiba                                                 
+(8200) Ellenorzés                                                                      
+(8210) PDO not processed due length error                                              
+(8220) PDO length exceed                                                               
+(8300) Nyomaték ellenorzés                                                             
+(8400) Velocity sebességszabályozó                                                     
+(8410) Overspeed                                                                       
+(8500) Helyzetbeállító                                                                 
+(8600) Kontroller helyzetének beállítása                                               
+(8611) Követési hiba                                                                   
+(8620) Hardver negatív végállás                                                        
+(8621) Hardver pozitív végállás                                                        
+(8631) Max. pálya nulláig                                                              
+(8700) Sync szabályozó                                                                 
+(9000) Külso kontroller                                                                
+"EMCY error code (%X)",ra53,
+A.6A:
+Áramellátás megszakadt                                                          
+Hotoborda homérséklet                                                           
+Hall érzékelo / Inicializálás feedback                                          
+Feedback                                                                        
+l2t drive                                                                       
+Motor hokapcsoló vészjelzés                                                     
+Regeneratív ellenállás Túlterhelése                                             
+Min-Max Feszültség                                                              
+Rezolver                                                                        
+Túlfeszültség                                                                   
+Kíséroelem pozicionálási hiba                                                   
+Homérséklet board                                                               
+Túlfeszültség visszanyero áramkör                                               
+Mechanikus fék                                                                  
+Segédfeszültség                                                                 
+24 V határértéken túl                                                           
+Vészjelzés túlfeszültség                                                        
+Flash Vészjelzés                                                                
+Sync Error                                                                      
+Phase Loss                                                                      
+Sto A / B vészjelzés                                                            
+Alapbeállítási paraméterek betöltve                                             
+Flash Loaded default param protected                                            
+A.82:                                                                                 
+F00 Flash failure	                                                            
+F01 Loaded default param.	                                                    
+F02 Loaded default protected	                                                
+F03 N.A.	                                                                    
+F04 I2t Drive	                                                                
+F05 Over voltage	                                                            
+F06 Under voltage	                                                            
+F07 Power fail	                                                                
+F08 Heatsink temperature	                                                    
+F09 Motor temperature	                                                        
+F10 Regenerative resistence overload	                                        
+F11 Internal temperature	                                                    
+F12 Overcurrent Regenerative Circuit	                                        
+F13 Over Voltage 24V	                                                        
+F14 Under Voltage 24V	                                                        
+F15 N.A.	                                                                    
+F16 Brake	                                                                    
+F17 Fan	                                                                        
+F18 Phase Loss	                                                                
+F19 Feedback	                                                                
+F20 Feedback initialization	                                                    
+F21 Current Over Range	                                                        
+F22 error	                                                                    
+F23 error	                                                                    
+F24 error	                                                                    
+F25 error                                                                       
+F26 error	                                                                    
+F27 error	                                                                    
+F28 error	                                                                    
+F29 error	                                                                    
+F30 STO	                                                                        
+F31 error	                                                                    
+A.A3
+Vészjelzés túlfeszültség                                                        
+EEPROM vészjelzés                                                               
+Abszolút érzékelo hiba                                                          
+Áramellátás megszakadt                                                          
+Alk / Guarding vészjelzés                                                       
+Motor hokapcsoló vészjelzés                                                     
+I2t motor homérséklet vészjelzés                                                
+Auto-tuning teszt nem fejezodött be                                             
+Külso vészjelzés                                                                
+Sebesség érzékelo                                                               
+Az áramkör minimum tápfeszültsége                                               
+Túlfeszültség az ellátó áramkörön                                               
+Belso vészjelzés                                                                
+Power soft indítási hiba                                                        
+U, V, W csatlakozás hiba vészjelzés                                             
+Beállítási hiba a vészjelzési paramétereken                                     
+A.B4
+F01 Heatsink overtemperature                                                    
+F02 DC-Link overvoltage                                                         
+F03 Contouring error of the external trajectory                                 
+F04 Feedback error                                                              
+F05 Undervoltage protection                                                     
+F06 Motor overtemperature                                                       
+F07 Internal electronic supply is faulty                                        
+F08 Overspeed                                                                   
+F09 EEPROM Checksum error                                                       
+F10 Signal failure digital encoder input                                        
+F11 Brake error                                                                 
+F12 -----                                                                       
+F13 Ambient overtemperature                                                     
+F14 Output stage fault                                                          
+F15 I2t max override.                                                           
+F16 Mains BTB                                                                   
+F17 A/D converter error                                                         
+F18 Regen error                                                                 
+F19 DC bus breakdown                                                            
+F20 Slot error                                                                  
+F21 PROFIBUS handling error                                                     
+F22 -----                                                                       
+F23 CANopen Bus-Off                                                             
+F24 Warning generates a error message                                           
+F25 Commutation Error                                                           
+F26 Hardware limit switch error at homing move                                  
+F27 "-AS-Option" error                                                          
+F28 EtherCAT Error synchronisation                                              
+F29 Slotcard Error                                                              
+F30 Emergency stop time out                                                     
+F31 -----                                                                       
+F32 System error                                                                
+A.D5                                                                          
+A.D6                                                                          
+A.D7                                                                          
+A.D8                                                                          
+A.D9                                                                          
+A.DA                                                                          
+A.DB                                                                          
+A.DC                                                                          
+A.DD                                                                          
+A.DE                                                                          
+A.DF                                                                          
+SDO Kapcsolóbit nem változik                                                    
+SDO protokoll idotúllépés                                                       
+SDO Client / Server érvénytelen parancsazonosító                                
+SDO érvénytelen blokk méret                                                     
+Érvénytelen SDO sorszám                                                         
+SDO CRC hiba                                                                    
+SDO Out of memory                                                               
+Objektum SDO hozzáférés nem támogatva                                           
+Csak olvasható SDO objektum írása                                               
+Csak írható SDO objektum olvasása                                               
+SDO objektum nem létezik az objektumtárban                                      
+SDO objektum nem rendelheto hozzá a PDO-hoz                                     
+A hozzárendelendo SDO objektum meghaladja a PDO hosszát                         
+általános SDO paraméter-összeférhetetlenség miatt                               
+Általános SDO inkompatibilitás a berendezésben                                  
+Hardverhiba miatt SDO hozzáférés sikertelen                                     
+SDO Hosszúság paraméter nem megfelelo                                           
+SDO Hosszúság paraméter túl nagy                                                
+SDO Hosszúság paraméter túl kicsi                                               
+Nem létezo SDO Sub-Index                                                        
+SDO értéktartomány túllépve                                                     
+Beírt SDO érték túl nagy                                                        
+Beírt SDO érték túl kicsi                                                       
+a maximum SDO érték nem éri el a minimum értéket                                
+SDO Általános hiba                                                              
+Az SDO adatokat nem lehet átvinni vagy menteni                                  
+Az SDO adatokat nem lehet átvinni vagy menteni                                  
+Az SDO adatokat nem lehet átvinni vagy menteni                                  
+SDO Nincs objektumtár                                                           
+A.FD:                                                                           
+A.FE:                                                                           
+A.FF:                                                                         
+
+                                                                                
+#288                                                                            
+#include "axnameng.err"
+
+

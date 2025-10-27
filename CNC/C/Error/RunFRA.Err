@@ -1,0 +1,775 @@
+*Vedere [RunErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+Attente caractère [
+Numéro Registre Erroné
+Fonction non valable
+Paramétrique : caractère non valable
+IF : Attente caractère =
+JSR: Niveau Imbrication Sous-Programme Erroné
+RET: Imbrication Sous-Programme Erroné
+Fonction non disponible
+Trop de fonctions M consécutives
+Rayon sans G2/G3
+Rayon Inconsistant
+Erreur initialisation canal
+Blocage canal
+Cycle fixe inexistant
+Trop de niveaux de parenthèses (
+Affectation : attente caractère =
+Attente caractère CR
+Mode opérationnel changé
+JMP: Numéro Bloc pas trouvé
+Programme pas trouvé
+Erreur de procédure extérieure
+Quote Hors Limite
+Axe non configuré
+Mandrin non configuré
+Plan Sélectionné Erroné
+Axe non Disponible
+Pas Taraudage Nul
+Axe en Alarme
+Vitesse d'Avance Nulle
+Rayon Outil Nul
+Symbole % pas trouvé
+Change Plan ou Côté avec CUT Actif
+Mandrin sans Codeur
+Adresse sans numéro
+SQRT: Argument négatif
+TAN: Valeur Infinie
+ASIN, ACOS: Argument hors gamme
+Division par zéro
+Adresse inutilisée
+Numéro sans adresse
+Paramètre sur adresse G
+Programme sans M2-M30
+Interpolation avec axes incompatibles
+Vitesse de broche trop élevée
+Vit Axe Z > Vit Max Canal
+Correction Tour G18
+Type Géométrie Outil non gérée
+Queue Transmission Achevée
+Queue Paquets Libres Achevée
+Rayon profil plus petit que Rayon Outil
+Point Final Arc inconsistant
+Le Parcours ne peut pas être exécuté
+Segment nul
+Angle nul
+Opération illégale
+Intersection entre segments ou arcs
+Attaque Profil non autorisé : utiliser G0
+Superfinition sur Segment Linéaire
+Superfinition sur Arc de Circonférence
+Attente caractère ]
+Valeur trop élevée
+Erreur accès fichier
+Descripteur Outil Erroné
+Trop de paramètres
+Trop de caractères dans les champs
+Attente objet après ^
+Affectation à registre inexistant
+Argument inexistant
+Code SPC non reconnu
+Violation sémantique bloc APND
+Consulter le Manuel
+CFC: Sous-programme pas trouvé
+CFC: Paramètres erronés
+CFC: Erreur de gestion ressources
+CFC: Aucune ressource
+CFC: Erreur de fermeture
+CFC: Non spécifié
+CFC: <DEBUG 1>
+CFC: (Consulter le Manuel)
+CFC: Tâche exécutée correctement
+CVB: Code opérationnel inconnu
+CVB: Erreur de gestion des ressources
+CVB: Aucune ressource
+CVB: Erreur de fermeture
+CVB: Flot interrompu
+CVB: Reprise après blocage/Fin fichier inattendue
+CVB: Non spécifié
+CVB: <DEBUG 1>
+CVB: (Consulter le Manuel)
+CVB: Tâche exécutée correctement
+<unused>
+<unused>
+APIO: Aucune ressource
+APIO: Erreur de fermeture
+APIO: Non spécifié
+APIO: <DEBUG 1>
+APIO: (Consulter le Manuel)
+APIO: Tâche exécutée correctement
+XCL: Code opérationnel inconnu
+XCL: Erreur de gestion ressources
+XCL: Aucune ressource
+XCL: Erreur de fermeture
+XCL: Flot interrompu
+XCL: Reprise après blocage/Fin fichier inattendue
+XCL: Non spécifié
+XCL: <DEBUG 1>
+XCL: (Consulter le Manuel)
+XCL: Tâche exécutée correctement
+XAM: Code opérationnel inconnu
+XAM: Erreur de gestion ressources
+XAM: Aucune ressource
+XAM: Erreur de fermeture
+XAM: Flot interrompu
+XAM: Reprise après blocage/Fin fichier inattendue
+XAM: Non spécifié
+XAM: <DEBUG 1>
+XAM: (Consulter le Manuel)
+XAM: Tâche exécutée correctement
+RETR: Code opérationnel inconnu
+RETR: Erreur de gestion ressources
+RETR: Aucune ressource
+RETR: Erreur de fermeture
+RETR: Flot interrompu
+RETR: Reprise après blocage/Fin fichier inattendue
+RETR: Non spécifié
+RETR: <DEBUG 1>
+RETR: (Consulter le Manuel)
+RETR: Tâche exécutée correctement
+PG2: Code opérationnel inconnue
+PG2: Erreur de gestion ressources
+PG2: Aucune ressource
+PG2: Erreur de fermeture
+PG2: Flot interrompu
+PG2: Reprise après blocage/Fin fichier inattendue
+PG2: Non spécifié
+PG2: <DEBUG 1>
+PG2: (Consulter le Manuel)
+PG2: Tâche exécutée correctement
+WARP: Code opérationnel inconnu
+WARP: Erreur de gestion ressources
+WARP: Aucune ressource
+WARP: Erreur de fermeture
+WARP: Flot interrompu
+WARP: Reprise après blocage/Fin fichier inattendue
+WARP: Non spécifié
+WARP: <DEBUG 1>
+WARP: (Consulter le Manuel)
+WARP: Tâche exécutée correctement
+PAG: Code opérationnel inconnu
+PAG: Erreur de gestion ressources
+PAG: Aucune ressource
+PAG: Erreur de fermeture
+PAG: Flot interrompu
+PAG: Reprise après blocage/Fin fichier inattendue
+PAG: Non spécifié
+PAG: <DEBUG 1>
+PAG: (Consulter le Manuel)
+PAG: Tâche exécutée correctement
+Code d'erreur inconnue
+Axe X Quote Hors Limite
+Axe Y Quote Hors Limite
+Axe Z Quote Hors Limite
+Axe U Quote Hors Limite
+Axe V Quote Hors Limite
+Axe W Quote Hors Limite
+Axe A Quote Hors Limite
+Axe B Quote Hors Limite
+Axe C Quote Hors Limite
+<unused>
+Erreur définition variable enregistrement [symbole]
+Erreur affectation variable enregistrement [symbole]
+Erreur définition variable enregistrement [var defcn]
+Erreur affectation variable enregistrement [var defcn]
+Erreur définition variable enregistrement [ENTREE]
+Impossible affecter l'enregistrement d'entrée
+Erreur définition variable enregistrement [SORTIE]
+Erreur affectation variable enregistrement [SORTIE]
+Erreur définition variable enregistrement [enregistrement logique]
+Erreur définition variable enregistrement [variable automatique]
+Attente valeur à affecter à variable enregistrement
+Ensemble au-delà du maximum autorisé
+Symbole déjà défini
+Impossible initialiser les Ensembles
+Erreur initialisation variable
+Erreur syntaxique définition paramétrique
+Type de donnée incompatible
+Impossible définir d'autres symboles
+Symbole non défini
+Erreur affectation chaîne
+Erreur affectation numérique
+Symbole inexistant
+Erreur définition variable enregistrement [registre logique]
+Attente symbole paramétrique
+Erreur accès registre dans defcn
+Nombre maximum de variables symboliques dépassé
+<unused>
+Out of memory/Memory not awarded
+<unused>
+Erreur d'initialisation
+<DEBUG: TCO: Unknown opcode>
+<DEBUG: TCO: Error negotiating resources>
+<DEBUG: TCO: No resources>
+<DEBUG: TCO: Shutdown error>
+<DEBUG: TCO: Broken pipe>
+<DEBUG: TCO: Rescued from deadlock/UnXpected EOF>
+<DEBUG: TCO: Unspecified>
+<DEBUG: TCO: <DEBUG: should have used GetExtErr() to get extended error info>>
+<DEBUG: TCO: (See Manual for explanation)>
+<DEBUG: TCO: Task accomplished successfully>
+XCL: Violation Sémantique Bloc APND
+XAM: Violation Sémantique Bloc APND
+<DEBUG: PMI: Invalid op-code>
+<DEBUG: PMI: Bad I/O Vector Parameters>
+<DEBUG: PMI: Terminate Signal Received>
+<DEBUG: PMI: Init error>
+<DEBUG: PMI: Shutdown error>
+<DEBUG: PMI: Unspecified>
+<DEBUG: PMI: (See Manual for explanation)>
+<DEBUG: PMI: Task accomplished successfully>
+Données Taillant pas trouvées
+Cinématique non supportée
+Orientation entité TWI erronée
+Orientation outil non définie
+TCP introuvable
+Transformation THD non supportée
+Sélection arête de coupe Impossible, IJK absents
+Violation arête de coupe
+XCL: Voir manuel
+Tool orientation violates constraints
+Gestionnaire des axes polaires non supporté
+Tangage incohérent
+Embardée incohérente
+Modalité ICDSID non supportée
+Relation ambivalente entre arête de coupe et usinage
+Demande de blocage de mouvement après G00
+Trop de blocs qui ne sont pas de mouvement
+Séquence axes de parcours non gérée
+Erreur interne XCL
+<unused>
+Débordement mémoire tampon DLE
+Deceleration Look-Ahead: Trop de blocs qui ne sont pas de mouvement
+Format non reconnu par DLE
+Le Flot interne de DLE est interrompu
+Erreur interne DLE
+DLE: (Pour informations consulter le Manuel)
+<unused>
+<unused>
+<unused>
+<unused>
+TCO: Violation Sémantique Bloc APND
+PG2: Violation Sémantique Bloc APND
+<unused>
+<unused>
+<unused>
+<unused>
+Orientation outil non définie avec ICDSID
+Vecteur de surface non défini avec ICDSID
+Battement outil incompatible avec l'usinage
+Embardée outil indéterminée avec PADSID actif
+Modalité PADSID non supportée
+Modalité PADCHK non supportée
+Discontinuité de surface trop grande
+Avance matière incompatible avec l'outil
+<unused>
+Code TWI trop élevé
+Code THD trop élevé
+Code D trop élevé
+Code TAB trop élevé
+<unused>
+Demande orientation outil appropriée avec xSCMOD
+Demande vecteur de surface approprié avec  xSCMOD
+Orientation outil non définie avec xSCMOD
+Vecteur de surface non défini avec xSCMOD
+Autorise blocs G1 seulement avec xSCMOD
+Longueur bloc en tête incompatible avec ESCMOD
+Longueur unique bloc incompatible avec xSCMOD
+Longueur bloc en queue incompatible avec XSCMOD
+<unused>
+<unused>
+<unused>
+<unused>
+PAG: Implementation restriction
+PAG: Not enough data
+PAG: Ambiguous data
+PAG: Undetermined solution
+PAG: No solution found
+PAG: Invalid feed command
+<unused>
+<unused>
+<DEBUG: PMI: Extension outil non initialisée>
+<unused>
+Speed Mandrino < Speed Min
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Nombre maximum de structures de contrôle dépassé
+IF () THEN ne sont pas sur le même bloc
+BREAK non inséré dans la structure de contrôle
+ELSE sans IF/THEN
+Deux ELSE consécutifs
+Structures de contrôle mal alignées
+ENDW,ENDFOR,REPEAT ne doivent pas être suivis par un code
+UNTIL sans REPEAT
+FOR sans valeur limite
+RPT/BREAK: erreur saut hors du cycle
+<unused>
+<unused>
+Erreur accès données recherche bloc dans DEFCN
+Procédure Overstore: blocs de mouvement non admis
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+File sharing violation
+Not enough core to handle file
+Unknown file error
+<unused>
+Vie outil épuisée
+<unused>
+<unused>
+<unused>
+Motion command error: see PLC Menu
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Could not read axes boundaries data>
+<DEBUG: Internal error>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Axe X Quote Hors Limite
+Axe Y Quote Hors Limite
+Axe Z Quote Hors Limite
+Axe U Quote Hors Limite
+Axe V Quote Hors Limite
+Axe W Quote Hors Limite
+Axe A Quote Hors Limite
+Axe B Quote Hors Limite
+Axe C Quote Hors Limite
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics output pipe error>
+<DEBUG: Unimplemented TMAPI call>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics server connection pending>
+<DEBUG: Graphics server login failed>
+<DEBUG: Graphics server no pending connection>
+<DEBUG: Graphics server is down>
+<unused>
+<unused>
+<DEBUG: Term has been signaled by the Kernel>
+<unused>
+<unused>
+<unused>
+<DEBUG: Not enough core to initialize TMAPI>
+<DEBUG: Some resources could not be freed>
+<DEBUG: Unspecified>
+<unused>
+<unused>
+<DEBUG: See manual>
+<unused>
+<unused>
+<unused>
+<unused>
+SRCVB: SPC out of phase
+SRCVB: no records
+SRCVB: too many records
+SRCVB: G0 not as 1st block
+SRCVB: eop found while recording
+SRCVB: invalid user extension
+<unused>
+<unused>
+<unused>
+<unused>
+<SR: Errbase>
+SR: Internal error
+SR: Unimplemented feature
+SR: X feed not monotone
+SR: Y feed not monotone
+SR: Output Callback failed
+SR: Argument singularity
+SR: Invalid argument
+SR: Parameter error
+SR: Missing side face intersection
+SR: Stock ranging error
+SR: Stock bottom reached
+SR: Stock top reached
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Unhandled axes matching>
+<DEBUG: Unimplemented feature>
+<unused>
+<DEBUG: GRAPH Multitool setup has bad freecells>
+<DEBUG: GRAPH Multitool setup has NO freecells>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics server config read error>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Packed write failed>
+<DEBUG: Packed dest type wrong>
+<DEBUG: Packed source type wrong>
+<DEBUG: Cannot round packed value>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Unpacked write failed>
+<DEBUG: Unpacked dest type wrong>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Bad semantics>
+<DEBUG: Unknown command>
+Unrecognized SPC code
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Could not acceed CED, THD or TWI data>
+Mémoire insuffisante pour le cache outil
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Unsupported Kinematics
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Code TWI trop élevé
+Code THD trop élevé
+Code D trop élevé
+Pilote axes plaires non supporté
+Code TAB trop élevé
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Cinématique non supportée
+Orientation entité TWI erronée
+Orientation outil non définie
+TCP introuvable
+Transformation THD non supportée
+Sélection arête de coupe Impossible, IJK absents
+Violation arête de coupe
+<unused>
+<unused>
+<unused>
+<DEBUG: See manual>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: PassThru input pipe error>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: PassThru server is down>
+<unused>
+<unused>
+<DEBUG: PassThru has too many locally open files>
+<unused>
+<unused>
+Instruction de saut à étiquette impossible dans l'exécution passante
+<DEBUG: PassThru channel config read error>
+Ligne trop longue en exécution passante
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+#768
+#include "dll?.err"
+
+#1000
+#include "chnam.err"

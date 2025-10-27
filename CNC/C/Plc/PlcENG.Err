@@ -1,0 +1,300 @@
+0                                           PLCerr0.0
+1                                           PLCerr0.1
+Drive X1 Not Ok                             PLCerr0.2 
+Drive Y1 Not Ok                             PLCerr0.3 
+Drive Z1 Not Ok                             PLCerr0.4 
+Drive U1 Not Ok                             PLCerr0.5 
+Drive A1 Not Ok                             PLCerr0.6 
+Drive B1 Not Ok                             PLCerr0.7 
+Drive C Not Ok                              PLCerr0.8
+Drive Z2 Not Ok                             PLCerr0.9 
+Sw mandatory limit reached (VRTC)           PLCerr0.10 
+Channel 0 in STOP                           PLCerr0.11
+Sw mandatory limit reached (VRTC)           PLCerr0.12 
+Drive X2 Not Ok                             PLCerr0.13  
+Drive U2 Not Ok                             PLCerr0.14 
+Drives not Ok                               PLCerr0.15
+Channel 6 in STOP                           PLCerr0.16
+Drive C1 Not Ok                             PLCerr0.17
+Alarm quota probing (VRTC)                  PLCerr0.18
+Time-out M function VRTC (WaitMFun)         PLCerr0.19
+Wrong working counter increasing (ethercat error) PLCerr0.20
+Rx error received on ethercat               PLCerr0.21
+DC error occurred (ethercat)                PLCerr0.22
+23                                          PLCerr0.23
+24                                          PLCerr0.24
+25                                          PLCerr0.25
+Time-out to reach capacitive tolerance      PLCerr0.26
+Time-Out piercing                           PLCerr0.27
+28                                          PLCerr0.28
+29                                          PLCerr0.29
+30                                          PLCerr0.30
+Spindles not aligned, do reference          PLCerr0.31
+General emergency                           PLCerr1.0
+Laser safe activated,reset to continue      PLCerr1.1
+34                                          PLCerr1.2
+35                                          PLCerr1.3
+No compressed air                           PLCerr1.4
+37                                          PLCerr1.5
+38                                          PLCerr1.6
+39                                          PLCerr1.7
+40                                          PLCerr1.8
+41                                          PLCerr1.9
+42                                          PLCerr1.10
+43                                          PLCerr1.11
+44                                          PLCerr1.12
+45                                          PLCerr1.13
+46                                          PLCerr1.14
+47                                          PLCerr1.15
+Missing Drives Power (POWER ON)             PLCerr1.16
+Power On U axis not present                 PLCerr1.17
+Power On Spindle not present                PLCerr1.18 
+Power On X axis not present                 PLCerr1.19
+Power On Y axis not present                 PLCerr1.20
+Power On Z axis not present                 PLCerr1.21
+Power On X_T2 not present                   PLCerr1.22 
+Power On Y_T2 not present                   PLCerr1.23 
+Power On Z_T2 not present                   PLCerr1.24 
+Power On X AUX not present                  PLCerr1.25 
+Power On X pallet not present               PLCerr1.26
+Power On U pallet not present               PLCerr1.27
+Power On Focal axis not present             PLCerr1.28
+Power On C axis not present                 PLCerr1.29
+Power On C1 axis xis not present            PLCerr1.30
+Power On Pipe axis not present              PLCerr1.31
+Axis X drive not enable                     PLCerr2.0
+Axis Y drive not enable                     PLCerr2.1
+Axis Z drive not enable                     PLCerr2.2
+Axis U drive not enable                     PLCerr2.3
+Axis C drive not enable                     PLCerr2.4
+Axis 36, drive not enable                   PLCerr2.5
+Axis C1 drive not enable                    PLCerr2.6
+Axis W drive not enable                     PLCerr2.7
+Axis B drive not enable                     PLCerr2.8
+Axis 35, drive not enable                   PLCerr2.9
+Pipe axis configured, but not define X OR Y PLCerr2.10
+Pipe Vertical Overtravel, check Calibration data PLCerr2.11
+Pipe Vertical Horizontal, check Calibration data PLCerr2.12
+Power On Z follower axis                    PLCerr2.13
+Axis Z follower drive not enable            PLCerr2.14
+Axis Z follower 2 drive not enable          PLCerr2.15
+Axis C2 drive not enable                    PLCerr2.16
+Axis Z follower 3 drive not enable          PLCerr2.17
+Axis Z follower 4 drive not enable          PLCerr2.18
+Axis W Spindle not enable                   PLCerr2.19
+84                                          PLCerr2.20
+85                                          PLCerr2.21
+86                                          PLCerr2.22
+87                                          PLCerr2.23
+88                                          PLCerr2.24
+89                                          PLCerr2.25
+Axes in alarm                               PLCerr2.26
+91                                          PLCerr2.27
+92                                          PLCerr2.28
+93                                          PLCerr2.29
+94                                          PLCerr2.30
+95                                          PLCerr2.31
+Power ON Ax71 not Present                   PLCerr3.0
+Power ON Ax72 not Present                   PLCerr3.1
+Power ON Ax73 not Present                   PLCerr3.2
+Power ON Ax74 not Present                   PLCerr3.3
+Power ON Ax75 not Present                   PLCerr3.4
+Axis 71 drive not enable                    PLCerr3.5
+Axis 72 drive not enable                    PLCerr3.6
+Axis 73 drive not enable                    PLCerr3.7
+Axis 74 drive not enable                    PLCerr3.8
+Axis 75 drive not enable                    PLCerr3.9
+Power ON Ax51 not Present                   PLCerr3.10
+Power ON Ax54 not Present                   PLCerr3.11
+Power ON Ax52 not Present                   PLCerr3.12
+Power ON Ax53 not Present                   PLCerr3.13
+*                                           PLCerr3.14
+*                                           PLCerr3.15
+Axis 85 drive not enable                    PLCerr3.16
+Axis 86 drive not enable                    PLCerr3.17
+Axis 87 drive not enable                    PLCerr3.18
+Axis 88 drive not enable                    PLCerr3.19
+Power ON Ax85 not Present                   PLCerr3.20
+Power ON Ax86 not Present                   PLCerr3.21
+Power ON Ax87 not Present                   PLCerr3.22
+Power ON Ax88 not Present                   PLCerr3.23
+Axis 81 drive not enable                    PLCerr3.24
+Axis 82 drive not enable                    PLCerr3.25
+Axis 83 drive not enable                    PLCerr3.26
+Axis 84 drive not enable                    PLCerr3.27
+Power ON Ax81 not Present                   PLCerr3.28
+Power ON Ax82 not Present                   PLCerr3.29
+Power ON Ax83 not Present                   PLCerr3.30
+Power ON Ax84 not Present                   PLCerr3.31
+
+#128    *PLCerr4
+alarm tool surface                          PLCerr4.0
+alarm motion command error                  PLCerr4.1
+130                                         PLCerr4.2
+131                                         PLCerr4.3
+IPG laser in Emergency                      PLCerr4.4   
+133                                         PLCerr4.5
+134                                         PLCerr4.6
+135                                         PLCerr4.7
+Rofin laser is not active                   PLCerr4.8
+Rofin laser not assigned                    PLCerr4.9
+Rofin No power supply                       PLCerr4.10
+Rofin general error active                  PLCerr4.11
+Rofin laser is not ready                    PLCerr4.12
+Rofin laser error                           PLCerr4.13
+142                                         PLCerr4.14
+143                                         PLCerr4.15
+144                                         PLCerr4.16
+145                                         PLCerr4.17
+146                                         PLCerr4.18
+147                                         PLCerr4.19
+148                                         PLCerr4.20
+149                                         PLCerr4.21
+150                                         PLCerr4.22
+151                                         PLCerr4.23
+152                                         PLCerr4.24
+153                                         PLCerr4.25
+154                                         PLCerr4.26
+155                                         PLCerr4.27
+156                                         PLCerr4.28
+157                                         PLCerr4.29
+158                                         PLCerr4.30
+159                                         PLCerr4.31
+
+#160    *PLCerr5
+Precitec: lens/prot. not present            PLCerr5.0    
+Precitec: reference error                   PLCerr5.1
+Precitec: automatic error                   PLCerr5.2
+Precitec: reference timeout                 PLCerr5.3
+Tip touch (A11=1, A14=0, A15=0)             PLCerr5.4
+Body touch (A11=1, A14=1, A15=0)            PLCerr5.5
+Nozzle lost (A11=1, A14=0, A15=1)           PLCerr5.6
+Calibration timeout                         PLCerr5.7
+Capacitive sensor cable cut                 PLCerr5.8
+                                            PLCerr5.9
+Wrong cutting gas selected                  PLCerr5.10
+LOW oxigen pressure                         PLCerr5.11
+LOW nitrogen pressure                       PLCerr5.12
+LOW Air cut pressure                        PLCerr5.13
+Proportional valve pressure out of range    PLCerr5.14
+175                                         PLCerr5.15
+IPG laser not assigned (A1 without B7)      PLCerr5.16
+IPG laser not enbaled (C1 without B8)       PLCerr5.17
+IPG laser not ready (A2 without B1)         PLCerr5.18
+IPG laser error (B4)                        PLCerr5.19
+IPG Timeout feedback emission ON            PLCerr5.20
+Emission laser with gas valve close         PLCerr5.21
+Laser power greater than maximum power      PLCerr5.22
+IPG (YLR) No power supply                   PLCerr5.23 
+Laser thermic error                         PLCerr5.24 
+Zoom not changed                            PLCerr5.25
+186                                         PLCerr5.26
+187                                         PLCerr5.27
+188                                         PLCerr5.28
+189                                         PLCerr5.29
+190                                         PLCerr5.30
+PROCON: focal out of the limit              PLCerr5.31
+
+#192    *PLCerr6
+Chiller error                               PLCerr6.0 
+Low air pressure                            PLCerr6.1
+Low air table pressure                      PLCerr6.2
+195                                         PLCerr6.3
+196                                         PLCerr6.4
+197                                         PLCerr6.5
+198                                         PLCerr6.6
+Electrical cabinet exchanger failure        PLCerr6.7
+Optical push-button barrier intervened      PLCerr6.8 
+Rear Door Open                              PLCerr6.9
+202                                         PLCerr6.10
+203                                         PLCerr6.11
+204                                         PLCerr6.12
+205                                         PLCerr6.13
+206                                         PLCerr6.14
+207                                         PLCerr6.15
+208                                         PLCerr6.16
+nLight Laser Error                          PLCerr6.17
+nLight doesn't accept Input...Check nLight GUI PLCerr6.18
+nLight Resonator not ready                  PLCerr6.19
+212                                         PLCerr6.20
+213                                         PLCerr6.21
+214                                         PLCerr6.22
+215                                         PLCerr6.23
+216                                         PLCerr6.24
+217                                         PLCerr6.25
+218                                         PLCerr6.26
+219                                         PLCerr6.27
+220                                         PLCerr6.28
+221                                         PLCerr6.29
+222                                         PLCerr6.30
+223                                         PLCerr6.31
+
+#224    *PLCerr7
+Laser resonator general alarm               PLCerr7.0
+225                                         PLCerr7.1
+226                                         PLCerr7.2
+227                                         PLCerr7.3
+228                                         PLCerr7.4
+229                                         PLCerr7.5
+230                                         PLCerr7.6
+General Precitec Error                      PLCerr7.7
+Hoerbiger calibration error                 PLCerr7.8 
+233                                         PLCerr7.9
+234                                         PLCerr7.10
+235                                         PLCerr7.11
+Hoerbiger low air pressure                  PLCerr7.12 
+Hoerbiger low nitrogen pressure             PLCerr7.13 
+Hoerbiger low oxigen pressure               PLCerr7.14 
+239                                         PLCerr7.15
+240                                         PLCerr7.16
+241                                         PLCerr7.17
+242                                         PLCerr7.18
+243                                         PLCerr7.19
+244                                         PLCerr7.20
+Axes cannot move, not safe movement         PLCerr7.21
+246                                         PLCerr7.22
+247                                         PLCerr7.23
+248                                         PLCerr7.24
+249                                         PLCerr7.25
+250                                         PLCerr7.26
+251                                         PLCerr7.27
+252                                         PLCerr7.28
+253                                         PLCerr7.29
+254                                         PLCerr7.30
+255                                         PLCerr7.31
+
+#256    *PLCerr8
+257                                         PLCerr8.0
+258                                         PLCerr8.1
+259                                         PLCerr8.2
+260                                         PLCerr8.3
+261                                         PLCerr8.4
+262                                         PLCerr8.5
+263                                         PLCerr8.6
+264                                         PLCerr8.7
+265                                         PLCerr8.8 
+266                                         PLCerr8.9
+267                                         PLCerr8.10
+268                                         PLCerr8.11
+269                                         PLCerr8.12 
+270                                         PLCerr8.13 
+271                                         PLCerr8.14 
+272                                         PLCerr8.15
+273                                         PLCerr8.16
+274                                         PLCerr8.17
+275                                         PLCerr8.18
+276                                         PLCerr8.19
+277                                         PLCerr8.20
+278                                         PLCerr8.21
+279                                         PLCerr8.22
+280                                         PLCerr8.23
+281                                         PLCerr8.24
+282                                         PLCerr8.25
+283                                         PLCerr8.26
+284                                         PLCerr8.27
+285                                         PLCerr8.28
+286                                         PLCerr8.29
+287                                         PLCerr8.30
+288                                         PLCerr8.31
+
+#include "usereng.err"

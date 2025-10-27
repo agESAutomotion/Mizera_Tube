@@ -1,0 +1,599 @@
+#0
+Generic Error
+Communications not available
+Noisy line
+Wrong sequence
+#100
+PSS Hardware-Errors
+Hardware Error in CPU-A
+Hardware Error in CPU-B
+Hardware Error in CPU-C
+Battery low (Change Battery)
+"Wrong I\O Module Card on Slot %d",PilzSrv.PilzErrCodes[1],
+#107
+CRC Error in User Program
+#111
+Cycle time Exceeded
+Error:on refreshing of Alarm-Queue
+#114
+Error:on handling Alarm messages
+#120
+Operating System Warning
+Division by 0
+Actual DB is to small
+Actual DB is READ-ONLY
+Error in parameter Adressing
+Error in indirect Adressing
+Block is missing
+Error in Parameter assignment
+Program call branch: Too many levels
+FS stopped by PG
+System Error in CPU
+Synchronization Error
+CPU A didn't receive results from CPU B/C
+Error while reading Input Image Pattern
+Error in Configuration table
+Programming Gate error, (Try again)
+Compiler error
+Error while loading Program, (Try again)
+Error while linking Program
+Error when comparing Output Image Pattern
+Fatal Error (Switch Off/On PSS)
+Parameter error in Data Block,DB 003
+"Error/Short Circuit at Test pulse  %d",PilzSrv.PilzErrCodes[1],
+Debug error
+Error while reading XW tolerance
+#148
+"Undefined error Class %d Number %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+No FS error found in PSS error stack
+FS Section STOP:Turn FS RUN switch ON
+"Error in DOZ wiring at Slot.Output %d.%d",,PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ wiring at Slot.Output=%d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOZ Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT wiring at Slot.Output=%d.%d ",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DO wiring at Slot.Output=%d.%d ",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DO-T wiring at Slot.Output=%d.%d ",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT wiring at Slot.Output=%d.%d ",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Error in DO Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DO Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DO Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DO Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DO Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DO Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DO Wiring at Slot.Output=%d.%d ",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Test Pulse error at DIF Module Slot %d",PilzSrv.PilzErrCodes[1],
+"Test Pulse error at DIF Module Slot %d",PilzSrv.PilzErrCodes[1],
+"Test Pulse error at DOT Module Slot %d",PilzSrv.PilzErrCodes[1],
+"Test Pulse error at DOT Module Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DI Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DI Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DI Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DI Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Test Pulse error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Test Pulse error in DIF Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Test Pulse error in DI Module at Sl %d.%d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in XW memory for Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DO Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DO/DOZ/DOT at Slot %d",PilzSrv.PilzErrCodes[1],
+"Attempt to write to Test Pulse Output %d ",PilzSrv.PilzErrCodes[1],
+"Error in DOR Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOT Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DOS Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error in DI2 Module at Slot %d",PilzSrv.PilzErrCodes[1],
+"Short circuit to 0V Test Pulse at Slot %d",PilzSrv.PilzErrCodes[1],
+"Short circuit to 24V Test Pulse at Slot %d",PilzSrv.PilzErrCodes[1],
+"Cross circuit Test Pulse at Slot %d",PilzSrv.PilzErrCodes[1],
+Error non gestito
+"Error Inputs at Slot %d",PilzSrv.PilzErrCodes[1],
+"Error Test Pulse at Slot %d",PilzSrv.PilzErrCodes[1],
+"SafetyBUS p - Group STOP Device %d Group %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"SafetyBUS p - internal Error at Device %d",PilzSrv.PilzErrCodes[1],
+"SafetyBUS p - Error Device %d Group %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"SafetyBUS p - Buserror Device %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+SafetyBUS p - Systemerror
+Error non gestito
+SafetyBUS p - Error Bus interface
+#291
+"Short circuit to 0 V Test Pulse %d",PilzSrv.PilzErrCodes[1],
+"Short circuit to 24V Test Pulse %d",PilzSrv.PilzErrCodes[1],
+"Cross circuit Test Pulse %d",PilzSrv.PilzErrCodes[1],
+Systemerror see Errorstack PG
+#298
+Pilz Safety System System Status: Ready
+"Safety Device type Unknown : SSNR %d ",PilzSrv.PilzErrCodes[1],
+#309
+"E-Stop %d Operated ",PilzSrv.PilzErrCodes[1],
+#314
+"E-Stop %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"E-Stop %d released Reset is missing",PilzSrv.PilzErrCodes[1],
+"E-Stop %d Operated ",PilzSrv.PilzErrCodes[1],
+"E-Stop %d:S1 switch Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"E-Stop %d:S2 switch Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"E-Stop %d operated and Reset pressed",PilzSrv.PilzErrCodes[1],
+#324
+"E-Stop %d released Reset is missing",PilzSrv.PilzErrCodes[1],
+"E-Stop %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"E-Stop %d Reset Err S1 failed to open",PilzSrv.PilzErrCodes[1],
+"E-Stop %d Reset Err S2 failed to open",PilzSrv.PilzErrCodes[1],
+#340
+"S-Gate %d Function test not carried out",PilzSrv.PilzErrCodes[1],
+"S-Gate %d S1 and S2 Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"S-Gate %d open S1 open ",PilzSrv.PilzErrCodes[1],
+"S-Gate %d open S2 open ",PilzSrv.PilzErrCodes[1],
+"S-Gate %d closed S1 was not open",PilzSrv.PilzErrCodes[1],
+"S-Gate %d closed S2 was not open",PilzSrv.PilzErrCodes[1],
+"S-Gate %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"S-Gate %d closed Reset is missing",PilzSrv.PilzErrCodes[1],
+"S-Gate %d open ",PilzSrv.PilzErrCodes[1],
+"S-Gate %d S1 contact Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"S-Gate %d S2 contact Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"S-Gate %d open and Reset pressed ",PilzSrv.PilzErrCodes[1],
+#356
+"S-Gate %d closed Reset is missing",PilzSrv.PilzErrCodes[1],
+"S-Gate %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"S-Gate %d closed S1 was not open ",PilzSrv.PilzErrCodes[1],
+"S-Gate %d closed S2 was not open ",PilzSrv.PilzErrCodes[1],
+#364
+"Light Curtain %d S1/S2 not synch.",PilzSrv.PilzErrCodes[1],
+#366
+"Light Curtain %d Test time exceeded ",PilzSrv.PilzErrCodes[1],
+#369
+"Light Curtain %d Reset is missing",PilzSrv.PilzErrCodes[1],
+#371
+"Light Curtain %d Change operat. mode",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Interrupted",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Do function test",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Cyc.start-up disabl.",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d waiting for pulse 1",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d waiting for pulse 2",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Cycle time exceeded ",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d More than one mode ",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d No operating mode ",PilzSrv.PilzErrCodes[1],
+#388
+"Light Curtain %d Do function test",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d S1/S2 not synch.",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Interrupted:S1 open ",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Interrupted:S2 open ",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d S1 was not open",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d S2 was not open",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Reset const/too soon",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Reset is missing",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Interrupted ",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d S1 Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d S2 Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Interrupted + Reset ",PilzSrv.PilzErrCodes[1],
+#404
+"Light Curtain %d Reset is missing",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d Reset const/too soon",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d S1 failed to open ",PilzSrv.PilzErrCodes[1],
+"Light Curtain %d S2 failed to open ",PilzSrv.PilzErrCodes[1],
+#412
+"E-Stop %d Operated",PilzSrv.PilzErrCodes[1],
+"E-Stop %d released Reset is missing",PilzSrv.PilzErrCodes[1],
+#415
+"E-Stop %d Function test not carried out",PilzSrv.PilzErrCodes[1],
+"E-Stop %d operated  and Reset pressed",PilzSrv.PilzErrCodes[1],
+"E-Stop %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"E-Stop %d Reset is missing",PilzSrv.PilzErrCodes[1],
+"E-Stop %d contact 1 synch. error",PilzSrv.PilzErrCodes[1],
+"E-Stop %d contact 2 synch. error",PilzSrv.PilzErrCodes[1],
+"E-Stop %d start I/O-group",PilzSrv.PilzErrCodes[1],
+#428
+"Lockout Switch %d Button pressed ",PilzSrv.PilzErrCodes[1],
+"Lockout Switch %d S1 Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"Lockout Switch %d S2 Synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"Lockout Switch %d and Reset operated ",PilzSrv.PilzErrCodes[1],
+#436
+"Lockout Switch %d Reset is missing",PilzSrv.PilzErrCodes[1],
+"Lockout Switch %d Reset const/too soon",PilzSrv.PilzErrCodes[1],
+"Lockout Switch %d S1 was not open",PilzSrv.PilzErrCodes[1],
+"Lockout Switch %d S2 was not open",PilzSrv.PilzErrCodes[1],
+#444
+"Two-hand %d Button 1 N/O and N/C open",PilzSrv.PilzErrCodes[1],
+"Two-hand %d Button 1 N/O and N/C closed ",PilzSrv.PilzErrCodes[1],
+"Two-hand %d Button 2 N/O and N/C open",PilzSrv.PilzErrCodes[1],
+"Two-hand %d Button 2 N/O and N/C closed ",PilzSrv.PilzErrCodes[1],
+"Two-hand %d selected but disconnected",PilzSrv.PilzErrCodes[1],
+"Two-hand %d connected but deselected",PilzSrv.PilzErrCodes[1],
+#452
+"Two-hand %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"Two-hand %d pressed without start enable",PilzSrv.PilzErrCodes[1],
+"Two-hand %d -SyncErr Button 1 is missing ",PilzSrv.PilzErrCodes[1],
+"Two-hand %d -SyncErr Button 2 is missing ",PilzSrv.PilzErrCodes[1],
+"Two-hand %d Reset via MEin-release buttons",PilzSrv.PilzErrCodes[1],
+#458
+"Two-hand %d Button 1 not released",PilzSrv.PilzErrCodes[1],
+"Two-hand %d Button 2 not released",PilzSrv.PilzErrCodes[1],
+"Foot switch %d T1 N/C and N/O open",PilzSrv.PilzErrCodes[1],
+"Foot switch %d T1 N/C and N/O closed",PilzSrv.PilzErrCodes[1],
+"Foot switch %d T2 N/C and N/O open",PilzSrv.PilzErrCodes[1],
+"Foot switch %d T2 N/C and N/O closed ",PilzSrv.PilzErrCodes[1],
+"Foot Sw %d selected but disconnected",PilzSrv.PilzErrCodes[1],
+"Foot Sw %d connected but deselected ",PilzSrv.PilzErrCodes[1],
+#468
+"Foot switch %d Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"Foot Sw %d pressed without start enable",PilzSrv.PilzErrCodes[1],
+"Foot switch %d Sync. error - T1 missing ",PilzSrv.PilzErrCodes[1],
+"Foot switch %d Sync. error - T2 missing ",PilzSrv.PilzErrCodes[1],
+"Foot Sw %d Reset via MEin-release button ",PilzSrv.PilzErrCodes[1],
+#474
+"Foot switch %d T1 not released",PilzSrv.PilzErrCodes[1],
+"Foot switch %d T2 not released",PilzSrv.PilzErrCodes[1],
+"Mode Switch %d Wrong Input",PilzSrv.PilzErrCodes[1],
+"Mode Switch %d No signal received ",PilzSrv.PilzErrCodes[1],
+#484
+"ModeSwitch %d schanged before unlocked",PilzSrv.PilzErrCodes[1],
+#490
+"Mode Switch %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+#492
+"Feed back %d error Loop 1 remains open ",PilzSrv.PilzErrCodes[1],
+"Feed back %d error Loop 1 remains close",PilzSrv.PilzErrCodes[1],
+"Feed back %d error Loop 2 remains open ",PilzSrv.PilzErrCodes[1],
+"Feed back %d error Loop 2 remains close",PilzSrv.PilzErrCodes[1],
+"Feed back %d error Loop 1 interrupted",PilzSrv.PilzErrCodes[1],
+"Feed back %d error Loop 1 closed ",PilzSrv.PilzErrCodes[1],
+"Feed back %d error Loop 2 interrupted",PilzSrv.PilzErrCodes[1],
+"Feed back %d error Loop 2 closed ",PilzSrv.PilzErrCodes[1],
+"Feed back %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+#509
+"PSV %d Feedback error S1 signal stuck high",PilzSrv.PilzErrCodes[1],
+"PSV %d Feedback error S1 signal stuck low ",PilzSrv.PilzErrCodes[1],
+"PSV %d not switched in last Press-cycle ",PilzSrv.PilzErrCodes[1],
+"PSV %d -Startpos. S1 missing to switch on",PilzSrv.PilzErrCodes[1],
+"PSV %d -Feedback err S2 Signal stuck high",PilzSrv.PilzErrCodes[1],
+"PSV %d -Feedback err S2 Signal stuck low ",PilzSrv.PilzErrCodes[1],
+"PSV %d -Startpos. S2 missing to switch on",PilzSrv.PilzErrCodes[1],
+"PSV %d -Reset=1 or S1=0 / S2=0 / EIN=1 ",PilzSrv.PilzErrCodes[1],
+"PSV %d No pressure during operation",PilzSrv.PilzErrCodes[1],
+"PSV %d No pressure at start-up ",PilzSrv.PilzErrCodes[1],
+#524
+"Cam control %d overrun",PilzSrv.PilzErrCodes[1],
+"Cam control %d NL-cam switch-off ",PilzSrv.PilzErrCodes[1],
+"Cam control %d HL cam switch-off ",PilzSrv.PilzErrCodes[1],
+"Cam control %d DY cam 0/1-edge at TDC "0" a "1" con OT (camma PMS) = "1"",PilzSrv.PilzErrCodes[1],
+"Cam control %d HLcam switch-off in rev. ",PilzSrv.PilzErrCodes[1],
+"Cam control %d Rev. at TDC active ",PilzSrv.PilzErrCodes[1],
+"Cam control %d HLcam missing in cycle",PilzSrv.PilzErrCodes[1],
+"Cam control %d NLcam missing in cycle",PilzSrv.PilzErrCodes[1],
+"Cam control %d Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"Cam control %d DYcam missing in cycle",PilzSrv.PilzErrCodes[1],
+"Cam control %d STP cam missing in cycle",PilzSrv.PilzErrCodes[1],
+"Cam control %d NL- cam=1 at start of HL",PilzSrv.PilzErrCodes[1],
+"Cam control %d HL- cam=1 at end of NL",PilzSrv.PilzErrCodes[1],
+"Cam control %d error NL before DY ",PilzSrv.PilzErrCodes[1],
+"Cam control %d error HL before DY ",PilzSrv.PilzErrCodes[1],
+#540
+"Shaft motion ctrl %d no change detected",PilzSrv.PilzErrCodes[1],
+#548
+"Shaft motion ctrl %d Reset const/too soon",PilzSrv.PilzErrCodes[1],
+#564
+"SBlock %d -check not carried out ",PilzSrv.PilzErrCodes[1],
+"SBlock %d S1 and S2 synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"SBlock %d pulled (S1 open)",PilzSrv.PilzErrCodes[1],
+"SBlock %d pulled (S2 open)",PilzSrv.PilzErrCodes[1],
+"SBlock %d plugged S1 was not open",PilzSrv.PilzErrCodes[1],
+"SBlock %d plugged S2 was not open",PilzSrv.PilzErrCodes[1],
+"SBlock %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"SBlock %d plugged Reset is missing",PilzSrv.PilzErrCodes[1],
+#581
+"Pres-SW %d - Error Switch activated",PilzSrv.PilzErrCodes[1],
+#586
+"Pres-SW %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"Pres-SW %d -OK Reset is missing",PilzSrv.PilzErrCodes[1],
+#597
+"Cool %d -Error Temp. monitoring activated",PilzSrv.PilzErrCodes[1],
+#602
+"Cool %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"Cool %d -control OK Reset is missing",PilzSrv.PilzErrCodes[1],
+"Deadman %d -Warning 1 minute passed",PilzSrv.PilzErrCodes[1],
+"Deadman %d -Warning 2 minutes passed",PilzSrv.PilzErrCodes[1],
+"Deadman %d -Warning 3 minutes passed",PilzSrv.PilzErrCodes[1],
+"Deadman %d -STOP was activated",PilzSrv.PilzErrCodes[1],
+"Deadman %d -Button > 1 Minute pressed",PilzSrv.PilzErrCodes[1],
+"Deadman %d -Enable not set ",PilzSrv.PilzErrCodes[1],
+#620
+"GasWarn %d Switch 1 Concentration 40 %",PilzSrv.PilzErrCodes[1],
+"GasWarn %d Switch 2 Concentration 40 %",PilzSrv.PilzErrCodes[1],
+"GasWarn %d Switch 1 Concentration 20 %",PilzSrv.PilzErrCodes[1],
+"GasWarn %d Switch 2 Concentration 20 %",PilzSrv.PilzErrCodes[1],
+#636
+"Ballvalve %d -Contact S1-closed is missing",PilzSrv.PilzErrCodes[1],
+"Ballvalve %d -Contact S2-closed is missing",PilzSrv.PilzErrCodes[1],
+"Ballvalve %d Switch time exceeded",PilzSrv.PilzErrCodes[1],
+"Ballvalve %d Enable was reseted",PilzSrv.PilzErrCodes[1],
+"Ballvalve %d switched S1(closed) stuck"S1 chiuso" bloccato",PilzSrv.PilzErrCodes[1],
+"Ballvalve %d switched S2(open) stuck "S2 aperto" bloccato",PilzSrv.PilzErrCodes[1],
+"Ballvalve %d -Error Reset is missing",PilzSrv.PilzErrCodes[1],
+#652
+"Fill level %d -Error Time exceeded ",PilzSrv.PilzErrCodes[1],
+"Fill level %d -Error STOP was activated ",PilzSrv.PilzErrCodes[1],
+"Fill level %d Button pressed too long",PilzSrv.PilzErrCodes[1],
+#676
+"Press %d -Static enable is missing ",PilzSrv.PilzErrCodes[1],
+"Press %d Start enable missing on start-up ",PilzSrv.PilzErrCodes[1],
+"Press %d -Safety enable is missing",PilzSrv.PilzErrCodes[1],
+"Press %d Stop at TDC Start not withdrawn ",PilzSrv.PilzErrCodes[1],
+"Press %d -Start when STOP=0",PilzSrv.PilzErrCodes[1],
+"Press %d Start enable missing at TDC start",PilzSrv.PilzErrCodes[1],
+#684
+"FS<->FS comm.Bus %d Broken wire Chan 1 ",PilzSrv.PilzErrCodes[1],
+"FS<->FS comm.Bus %d Broken wire Chan 5 ",PilzSrv.PilzErrCodes[1],
+"FS<->FS comm.Bus %d Broken wire Chan 2 ",PilzSrv.PilzErrCodes[1],
+"FS<->FS comm.Bus %d Broken wire Chan 6 ",PilzSrv.PilzErrCodes[1],
+"FS<->FS comm.Bus %d Broken wire Chan 3 ",PilzSrv.PilzErrCodes[1],
+"FS<->FS comm.Bus %d Broken wire Chan 7 ",PilzSrv.PilzErrCodes[1],
+"FS<->FS comm.Bus %d Broken wire Chan 4 ",PilzSrv.PilzErrCodes[1],
+"FS<->FS comm.Bus %d Broken wire Chan 8 ",PilzSrv.PilzErrCodes[1],
+#698
+"FS<->FS comm.Bus %d Reset const/too soon",PilzSrv.PilzErrCodes[1],
+#708
+"SafeBar %d -check not carried out ",PilzSrv.PilzErrCodes[1],
+"SafeBar %d S1 and S2 synch. time exceeded",PilzSrv.PilzErrCodes[1],
+"SafeBar %d -Barrier open, S1 open ",PilzSrv.PilzErrCodes[1],
+"SafeBar %d -Barrier open, S2 open ",PilzSrv.PilzErrCodes[1],
+"SafeBar %d -Barrier OK, S1 was not open ",PilzSrv.PilzErrCodes[1],
+"SafeBar %d -Barrier OK, S2 was not open ",PilzSrv.PilzErrCodes[1],
+"SafeBar %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"SafeBar %d -Barrier OK, Reset is missing",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d Synch. time NO_1/2 exceeded",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d NO_1 or NO_2 stuck high",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d MS1 and MS2 simultaneous",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d MS1 or MS2 change at Toff=1",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d MP1 or MP2 change at Toff=1",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d MP1 or MP2 not in start pos",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d 'TPSy' for MP1/2 exceeded "TPSy" superato",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d 'Tint' for MP1/2 exceeded "Tint" superato",PilzSrv.PilzErrCodes[1],
+#725
+"LC-MUTING %d 'TS12' for MS1/2 exceeded "TS12" superato",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d Light curtain interrupted ",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d -Max. Muting time exceeded"TMut" superato",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d -Max. time 'TOPD' exceeded"TBWS" superato",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d -1/0 from MS2 while MS1=1",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+"LC-MUTING %d -OK Reset is missing",PilzSrv.PilzErrCodes[1],
+"CAM-ERROR %d Check cam 0/1initiator=1",PilzSrv.PilzErrCodes[1],
+"CAM-ERROR %d Check cam 1/0initiator=1",PilzSrv.PilzErrCodes[1],
+"CAM-ERROR %d Check cam 1/0initiator=0",PilzSrv.PilzErrCodes[1],
+"CAM-ERROR %d Check cam constantly 1or0 ",PilzSrv.PilzErrCodes[1],
+"CAM-ERROR %d Check cam=0TDC-range=1 ",PilzSrv.PilzErrCodes[1],
+"CAM-ERROR %d Check cam 1/0TDC-range=1",PilzSrv.PilzErrCodes[1],
+#740
+"CAM-ERROR %d -Reset constantly/too soon ",PilzSrv.PilzErrCodes[1],
+#748
+"Manual PSV %d Fly- wheel no standstill ",PilzSrv.PilzErrCodes[1],
+"Man. drive of PSV %d Press not at BDC",PilzSrv.PilzErrCodes[1],
+#756
+"Man. drive of PSV %d Reset const/too soon",PilzSrv.PilzErrCodes[1],
+#764
+"Hydr.PSV %d Wrong handling of Y1/2On",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d S1 stuck at 1 after switch on",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d S1 stuck at0 after switch off",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d S1 gets 1 while Y1=1 ",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d S1=0 at switching on",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d S2 stuck at 1 after switch on",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d S2 stuck at0 after switch off",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d S2=0 at switching on",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d Reset=1 S1=0 / S2=0 / EIN=1 ",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d S2 gets 1 while Y2=1 ",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d Static enable is missing",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d Simult. activ. of Y1 and Y2 ",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d -Valve 1 did not switch",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d -Valve 2 did not switch",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d Wrong time value at TOn",PilzSrv.PilzErrCodes[1],
+"Hydr.PSV %d Wrong time value at TOff",PilzSrv.PilzErrCodes[1],
+"Enable switch %d E-STOP ",PilzSrv.PilzErrCodes[1],
+"Enable switch %d NO is defective",PilzSrv.PilzErrCodes[1],
+#788
+"Enable switch %d Reset const/too soon",PilzSrv.PilzErrCodes[1],
+"Enable switch %d OK Reset is missing",PilzSrv.PilzErrCodes[1],
+#796
+"HYDR-UN %d - S2-1 and 0/1-edge on 'On'",PilzSrv.PilzErrCodes[1],
+#798
+"HYDR-UN %d - STFG + 0 and 0/1-edge on 'On'",PilzSrv.PilzErrCodes[1],
+"HYDR-UN %d - Reset const/too soon",PilzSrv.PilzErrCodes[1],
+#812
+"FLAME %d Burner ON but no flame ",PilzSrv.PilzErrCodes[1],
+"FLAME %d Burner OFF but flame is on",PilzSrv.PilzErrCodes[1],
+"FLAME %d Burner ON both flame monitor=1",PilzSrv.PilzErrCodes[1],
+"FLAME %d Burner ON both flame monitor=0",PilzSrv.PilzErrCodes[1],
+"FLAME %d Burner OFF both flame monitor=1",PilzSrv.PilzErrCodes[1],
+"FLAME %d Burner OFF both flame monitor=0",PilzSrv.PilzErrCodes[1],
+#819
+"FLAME %d Operation Reset not allowed",PilzSrv.PilzErrCodes[1],
+"FLAME MONITORING %d Switched off",PilzSrv.PilzErrCodes[1],
+#837
+"SUPPRESSION %d Time and signal error",PilzSrv.PilzErrCodes[1],
+#842
+"TRANS.SUPPRESSION %d Reset const/too soon",PilzSrv.PilzErrCodes[1],
+"SUPPRESSION %d Signal Ok but Reset missing",PilzSrv.PilzErrCodes[1],
+"BURNER %d Flame sig. chain interrupted",PilzSrv.PilzErrCodes[1],
+"BURNER %d Safety chain interrupted",PilzSrv.PilzErrCodes[1],
+"BURNER %d Error chain interrupted",PilzSrv.PilzErrCodes[1],
+"BURNER %d Control chain interrupted",PilzSrv.PilzErrCodes[1],
+"BURNER %d Start-up Air pr. is missing",PilzSrv.PilzErrCodes[1],
+"BURNER %d Operation Air pr. is missing",PilzSrv.PilzErrCodes[1],
+"BURNER %d STOP by Stop button",PilzSrv.PilzErrCodes[1],
+"BURNER %d Flame sig. chain interrupted",PilzSrv.PilzErrCodes[1],
+"BURNER %d Reset is missing",PilzSrv.PilzErrCodes[1],
+"BURNER %d Start=0/1 but Stop button=1",PilzSrv.PilzErrCodes[1],
+"BURNER %d Stop=0/1 but Start button=1",PilzSrv.PilzErrCodes[1],
+"BURNER %d Start signal is missing",PilzSrv.PilzErrCodes[1],
+"BURNER %d Time delay f. enable is running",PilzSrv.PilzErrCodes[1],
+"BURNER %d -Error Press Reset or Start",PilzSrv.PilzErrCodes[1],
+#860
+"FLAP %d C! does not corresp.to drive dir",PilzSrv.PilzErrCodes[1],
+"FLAP %d O! does not corresp.to drive dir",PilzSrv.PilzErrCodes[1],
+"FLAP %d Change in pos. - time exceeded",PilzSrv.PilzErrCodes[1],
+"FLAP %d DirO and DirC simultaneously ",PilzSrv.PilzErrCodes[1],
+"FLAP %d No limit switch operated",PilzSrv.PilzErrCodes[1],
+"FLAP %d Both limit switches operated",PilzSrv.PilzErrCodes[1],
+"FLAP %d Reset is missing ",PilzSrv.PilzErrCodes[1],
+"FLAP %d Select a new drive direction ",PilzSrv.PilzErrCodes[1],
+#876
+"VALVE %d Pos1 doesn't corresp.to drive dir",PilzSrv.PilzErrCodes[1],
+"VALVE %d Pos2 doesn't corresp.to drive dir",PilzSrv.PilzErrCodes[1],
+"VALVE %d Change in pos. - time exceeded",PilzSrv.PilzErrCodes[1],
+"VALVE %d Dir1 and Dir2 simultaneously ",PilzSrv.PilzErrCodes[1],
+"VALVE %d No limit switch operated",PilzSrv.PilzErrCodes[1],
+"VALVE %d Both limit switches operated",PilzSrv.PilzErrCodes[1],
+"VALVE %d Reset is missing ",PilzSrv.PilzErrCodes[1],
+"VALVE %d Start position is missing ",PilzSrv.PilzErrCodes[1],
+#892
+"PRE-PURGE %d -Max-Pos missing/air flow low",PilzSrv.PilzErrCodes[1],
+#908
+"TIGHTNESS CONTROL %d Non-defined step",PilzSrv.PilzErrCodes[1],
+"TIGHTNESS CONTROL %d 'VAV1' not seated",PilzSrv.PilzErrCodes[1],
+"TIGHTNESS CONTROL %d VAV3/VAV4 not seated",PilzSrv.PilzErrCodes[1],
+"TIGHTNESS CONTROL %d Check time exceeded ",PilzSrv.PilzErrCodes[1],
+"TIGHTNESS CONTROL %d Order not maintained",PilzSrv.PilzErrCodes[1],
+"TIGHTNESS CONTROL %d Gas pr. is exceeded ",PilzSrv.PilzErrCodes[1],
+"TIGHTNESS CONTROL %d Air pr. is exceeded ",PilzSrv.PilzErrCodes[1],
+#924
+"IGNITION %d Non-defined step ",PilzSrv.PilzErrCodes[1],
+"IGNITION %d Sequence was not maintained ",PilzSrv.PilzErrCodes[1],
+#940
+"RUN %d Non-defined step ",PilzSrv.PilzErrCodes[1],
+"RUN %d Order was not maintained",PilzSrv.PilzErrCodes[1],
+#956
+"FAN %d Start button pressed continuously",PilzSrv.PilzErrCodes[1],
+"FAN %d Stop button pressed continuously",PilzSrv.PilzErrCodes[1],
+"FAN %d -'NEXT' was not reset",PilzSrv.PilzErrCodes[1],
+#972
+"Light curtain %d NO_1/2 not synch.",PilzSrv.PilzErrCodes[1],
+#974
+"Light curtain %d Test time exceeded",PilzSrv.PilzErrCodes[1],
+#977
+"Light curtain %d Reset is missing ",PilzSrv.PilzErrCodes[1],
+"Light curtain %d constantly/too soon ",PilzSrv.PilzErrCodes[1],
+#980
+"Light curtain %d Interrupted ",PilzSrv.PilzErrCodes[1],
+"Light curtain %d",PilzSrv.PilzErrCodes[1],
+#9010
+Error ! Configuration error - Syntax error in configuration statement !
+#9031
+Warning ! No text ! The selected record number is greater than the highest possible value !
+#9035
+Error ! Record number > 9999 ! An attempt was made to recall a record number greater than 999"9
+#9040
+Error ! BCD digits / syntax - Too many BCD digits have been transmitted or incorrect MIN/MAX/NOTL statement syntax
+Error ! During the selection of the text number a BCD digit > 9 was transmitted
+Error ! Binary value too high ! The transmitted value is greater that the highest admitted value !
+#9044
+Error ! Negative record number ! A negative record number was specified in text processing mode
+#9051
+Error ! Variable without a reserved position. A command acting on variables was edited, without a reserved position for variables !
+Warning ! Too many reserved positions.  More that eleven positions reserved to variables have been edited!
+#9080
+Error ! Wrong special code ! The specified special function code cannot be admitted !
+Error ! Invalid command ! When in serial mode, in a command acting on variables a telegram without variables data has been sent
+Error ! When in serial mode, in a text command a telegram without a text number has been sent
+#9100
+Error ! Statement cannot be admitted ! A statement which cannot be admitted has been sent in "Text Monitor" mode
+#9120
+Warning ! PLC data missing ! The text memory does not contain PLC data. The text memory may be empty !
+Error ! Wrong PLC data ! The PLC data contain information about a service which cannot be admitted
+Error ! Wrong PLC data ! The PLC data records are duplicated
+Error ! Wrong PLC data ! An invalid PLC address was parametrized
+Error ! Missing PLC link, possible reasons are: * wrong wiring * wrong PLC type * Hardware defect
+Error ! Wrong PLC data ! During the variables assignement an invalid text number was parametrized
+Error ! Wrong PLC data  ! During the assignment of variables a coding which cannot be admitted has been specified
+Error ! During the assignment of variables a data length which cannot be admitted has been specified
+Error ! Wrong PLC data ! During the assignment of variables a variable number which cannot be admitted has been specified
+Error !  Insufficient memory! There is not enough text memory. The text memory contains too many PLC data
+Error ! Wrong PLC data ! Either an invalid LED indentification number or an invalid amount of LEDs was specified
+Error ! Wrong PLC data ! An invalid Offset value was specified
+Error ! Wrong PLC data ! Either an invalid function key indentification number or an invalid amount of function key numbers was specified
+#9140
+Warning ! The PLC is stopped
+Error ! Wrong nominal values ! Wrong nominal values addressing
+#9160
+Error ! Error in character set! The specified character table has could not be retrieved into the text memory !
+Error ! Error in character set! The specified character table is not complete
+#9170
+Error !  Serial interface timeout.
+#9120
+Error !  Flash erase error ! The Flash-Eprom memory could not be erased. Please check whether, in effect, a Flash-Eprom memory has been employed.
+#9201
+Error! Flash: Wrong ID ! During Flash programming, a text memory memory with a wrong ID has been detected
+Error ! Flash: Write error ! During Flash programming, a write error has occured. The Flash memory may be not empty.
+Warning !  Insufficient memory ! The text memory programming exceeds the text memory capacity

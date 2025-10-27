@@ -1,0 +1,362 @@
+
+#640    *PLCerr20
+Mandrino Mobile: Errore apertura/chiusura     PLCerr20.0 
+Mandrino Fisso: Errore apertura/chiusura      PLCerr20.1 
+Pressione chiusura mandrino mobile fuori range PLCerr20.2 
+Pressione chiusura mandrino fisso fuori range PLCerr20.3 
+644                                           PLCerr20.4 
+645                                           PLCerr20.5 
+646                                           PLCerr20.6 
+647                                           PLCerr20.7 
+648                                           PLCerr20.8 
+649                                           PLCerr20.9 
+Loader Not Ready                              PLCerr20.10
+Loader Not in Back Position                   PLCerr20.11
+External Plc Communication Error              PLCerr20.12
+Loader Support G Up/Down timeout              PLCerr20.13
+Loader Cyliner F Forward/Backward timeout     PLCerr20.14
+655                                           PLCerr20.15
+656                                           PLCerr20.16
+657                                           PLCerr20.17
+658                                           PLCerr20.18
+659                                           PLCerr20.19
+Possibile collisione tra i mandrini           PLCerr20.20
+Possibile collisione tra 2nd Mandrino e Mandrino slave PLCerr20.21
+Possible Collision Between Laser Head and 2nd Spindle  PLCerr20.22
+Possible Collision Between 2nd and 3rd Spindle(Emer)   PLCerr20.23
+Following Supports Quote Wrong (inside tube)  PLCerr20.24
+X,X1 OR X3 Spindle Out of Software Limit      PLCerr20.25
+Collision Between 2nd Spindle and Laser Bevel Head PLCerr20.26
+667                                           PLCerr20.27
+668                                           PLCerr20.28
+669                                           PLCerr20.29
+670                                           PLCerr20.30
+671                                           PLCerr20.31
+
+
+#672    *PLCerr21
+Supporto 1 Carico non � basso                 PLCerr21.0  
+Supporto 2 Carico non � basso                 PLCerr21.1  
+Supporto 3 Carico non � basso                 PLCerr21.2  
+Supporto 4 Carico non � basso                 PLCerr21.3  
+Supporto 5 Carico non � basso                 PLCerr21.4  
+Supporto 6 Carico non � basso                 PLCerr21.5  
+Supporto 7 Carico non � basso                 PLCerr21.6  
+Unload Support 1 Up/Down Timeout                PLCerr21.7
+Loader Inverter Alarm(Chain)                  PLCerr21.8
+Loader Inverter Alarm(Arms)                   PLCerr21.9
+Loader Support 1 Center Cylinder Timeout      PLCerr21.10
+Loader Support 2 Center Cylinder Timeout      PLCerr21.11
+Loader Support 3 Center Cylinder Timeout      PLCerr21.12
+Loader Support 4 Center Cylinder Timeout      PLCerr21.13
+Flap L1 Home/Incline Timeout                  PLCerr21.14
+Machine Door Open                             PLCerr21.15
+Safety Grating Activated                      PLCerr21.16
+Unloader Door Open In Cutting                 PLCerr21.17
+Loader System Alarm                           PLCerr21.18
+Loader System Pump Alarm                      PLCerr21.19
+Possible Collision Between Spindles           PLCerr21.20
+Possible Collision Between B Axis AND Slave Spindle PLCerr21.21
+Flap L2 Home/Incline Timeout                  PLCerr21.22
+Fix Spindle Open/Close Timeout                PLCerr21.23
+Bevel Head Anti-Colision                      PLCerr21.24
+Saw Clamp Z Open/Close Timeout                PLCerr21.25
+Flap L3 Home/Incline Timeout                  PLCerr21.26
+Flap L4 Home/Incline Timeout                  PLCerr21.27
+Flap L5 Home/Incline Timeout                  PLCerr21.28
+Saw Clamp Rotate Open/Close Timeout           PLCerr21.29
+Unloader L1 Safely Down Sensor OFF            PLCerr21.30
+701                                           PLCerr21.31
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#704    *PLCerr22
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#736    *PLCerr23
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#768    *PLCerr24
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#800    *PLCerr25
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#832    *PLCerr26
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#864    *PLCerr27
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#896    *PLCerr28
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+
+#928    *PLCerr29
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
