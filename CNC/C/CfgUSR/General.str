@@ -184,6 +184,13 @@ GENERAL <0> {
     GroupBox4,<0>,(1583,38,1810,171);
     $,Button36,<0>,(1593,69,1693,169);
     $,Button37,<0>,(1703,69,1803,169);
+    Label40,<0>,(338,561,405,583);
+    Label41,<0>,(466,561,533,583);
+    Label42,<0>,(604,561,671,583);
+    Label43,<0>,(738,561,805,583);
+    Label44,<0>,(1216,562,1283,584);
+    Label45,<0>,(1354,562,1421,584);
+    Label46,<0>,(1489,562,1556,584);
 
 }
 
@@ -2570,3 +2577,94 @@ LNK=-1
 STY=CENTER
 FBR=3
 DSV=0
+
+
+[Label40]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=CENTER
+SHW=(Uipl.CurPsw == 0)
+
+
+[Label41]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=CENTER
+SHW=(Uipl.CurPsw == 0)
+
+
+[Label42]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=CENTER
+SHW=(Uipl.CurPsw == 0)
+
+
+[Label43]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=CENTER
+SHW=(Uipl.CurPsw == 0)
+
+
+[Label44]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=CENTER
+SHW=(Uipl.CurPsw == 0)
+
+
+[Label45]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=CENTER
+SHW=(Uipl.CurPsw == 0)
+
+
+[Label46]
+FNM=Arial
+FSZ=11
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+STY=CENTER
+SHW=(Uipl.CurPsw == 0)

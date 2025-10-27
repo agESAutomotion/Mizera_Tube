@@ -80,6 +80,13 @@ Label39=AX74
 GroupBox4=Unload Supports (Cylinder)
 Button36=Ascend
 Button37=Descend
+Label40=AX84
+Label41=AX83
+Label42=AX82
+Label43=AX81
+Label44=AX85
+Label45=AX86
+Label46=AX87
 
 [STATUS]
 
