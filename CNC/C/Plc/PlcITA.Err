@@ -1,0 +1,300 @@
+0                                           PLCerr0.0
+1                                           PLCerr0.1
+Drive X1 Not Ok                             PLCerr0.2
+Drive Y1 Not Ok                             PLCerr0.3
+Drive Z1 Not Ok                             PLCerr0.4
+Drive U1 Not Ok                             PLCerr0.5
+Drive A1 Not Ok                             PLCerr0.6
+Drive B1 Not Ok                             PLCerr0.7
+Drive C Not Ok                              PLCerr0.8
+Drive Z2 Not Ok                             PLCerr0.4
+Superati limiti sw in lavorazione (VRTC)    PLCerr0.10
+Canale 0 in blocco                          PLCerr0.11
+Superati limiti sw in lavorazione (VRTC)    PLCerr0.12
+Drive X2 Not Ok                             PLCerr0.13
+Drive U2 Not Ok                             PLCerr0.14
+Drives not Ok                               PLCerr0.15
+Canale 6 in blocco                          PLCerr0.16
+Drive C1 Not Ok                             PLCerr0.17
+Allarme quota tastatura (VRTC)              PLCerr0.18
+Time-out funzioni M VRTC (WaitMFun)         PLCerr0.19
+Wrong working counter sta incrementando (errore ethercat) PLCerr0.20
+Errore ricezione pacchetti su ethercat      PLCerr0.21
+Errore DC error su ethercat                 PLCerr0.22
+23                                          PLCerr0.23
+24                                          PLCerr0.24
+25                                          PLCerr0.25
+Time-out per capacitivo in tolleranza       PLCerr0.26
+Time-Out piercing                           PLCerr0.27
+28                                          PLCerr0.28
+29                                          PLCerr0.29
+30                                          PLCerr0.30
+Mandrini non allineati, rifare taratura     PLCerr0.31
+Emergenza generale                          PLCerr1.0
+Interruzione laser,reset per continuare     PLCerr1.1
+34                                          PLCerr1.2
+35                                          PLCerr1.3
+Manca aria compressa                        PLCerr1.4
+37                                          PLCerr1.5
+38                                          PLCerr1.6
+39                                          PLCerr1.7
+40                                          PLCerr1.8
+41                                          PLCerr1.9
+42                                          PLCerr1.10
+43                                          PLCerr1.11
+44                                          PLCerr1.12
+45                                          PLCerr1.13
+46                                          PLCerr1.14
+47                                          PLCerr1.15
+Manca potenza Drives (POWER ON)             PLCerr1.16
+Power On asse U non presente                PLCerr1.17
+Power On Mandrino non presente              PLCerr1.18
+Power On asse X non presente                PLCerr1.19
+Power On asse Y non presente                PLCerr1.20
+Power On asse Z non presente                PLCerr1.21
+Power On asse X (T2) non presente           PLCerr1.22
+Power On asse Y (T2) non presente           PLCerr1.23
+Power On asse Z (T2) non presente           PLCerr1.24
+Power On asse X AUX non presente            PLCerr1.25
+Power On asse X pallet non presente         PLCerr1.26
+Power On asse U pallet non presente         PLCerr1.27
+Power On asse Focale non presente           PLCerr1.28
+Power On asse C                             PLCerr1.29
+Power On asse C1                            PLCerr1.30
+Power On asse Tubo                          PLCerr1.31
+Axis X drive non abilitato                  PLCerr2.0
+Axis Y drive non abilitato                  PLCerr2.1
+Axis Z drive non abilitato                  PLCerr2.2
+Axis U drive non abilitato                  PLCerr2.3
+Axis C drive non abilitato                  PLCerr2.4
+Axis 36, drive non abilitato                PLCerr2.5
+Axis C1 drive non abilitato                 PLCerr2.6
+Axis W drive not enable                     PLCerr2.7
+Axis B drive not enable                     PLCerr2.8
+Axis 35, drive not enable                   PLCerr2.9
+Asse tubo configurato, ma non assegnato a X o Y PLCerr2.10
+Superamento soglia Z, contr i dati calibr tubo  PLCerr2.11
+Superamento soglia orizz, contr i dati calibr tubo PLCerr2.12
+Power On Z inseguitore lunette              PLCerr2.13
+Asse Z drive non abitlitato                 PLCerr2.14
+79                                          PLCerr2.15
+80                                          PLCerr2.16
+81                                          PLCerr2.17
+82                                          PLCerr2.18
+83                                          PLCerr2.19
+84                                          PLCerr2.20
+85                                          PLCerr2.21
+86                                          PLCerr2.22
+87                                          PLCerr2.23
+88                                          PLCerr2.24
+89                                          PLCerr2.25
+Asse/i in allarme                           PLCerr2.26
+91                                          PLCerr2.27
+92                                          PLCerr2.28
+93                                          PLCerr2.29
+94                                          PLCerr2.30
+95                                          PLCerr2.31
+96                                          PLCerr3.0
+97                                          PLCerr3.1
+98                                          PLCerr3.2
+99                                          PLCerr3.3
+100                                         PLCerr3.4
+101                                         PLCerr3.5
+102                                         PLCerr3.6
+103                                         PLCerr3.7
+104                                         PLCerr3.8
+105                                         PLCerr3.9
+106                                         PLCerr3.10
+107                                         PLCerr3.11
+108                                         PLCerr3.12
+109                                         PLCerr3.13
+110                                         PLCerr3.14
+111                                         PLCerr3.15
+112                                         PLCerr3.16
+113                                         PLCerr3.17
+114                                         PLCerr3.18
+115                                         PLCerr3.19
+116                                         PLCerr3.20
+117                                         PLCerr3.21
+118                                         PLCerr3.22
+119                                         PLCerr3.23
+120                                         PLCerr3.24
+121                                         PLCerr3.25
+122                                         PLCerr3.26
+123                                         PLCerr3.27
+124                                         PLCerr3.28
+125                                         PLCerr3.29
+126                                         PLCerr3.30
+127                                         PLCerr3.31
+
+#128    *PLCerr4
+alarm tool surface                          PLCerr4.0
+alarm motion command error                  PLCerr4.1
+130                                         PLCerr4.2
+131                                         PLCerr4.3
+IPG laser in Emergenza                      PLCerr4.4
+133                                         PLCerr4.5
+134                                         PLCerr4.6
+135                                         PLCerr4.7
+Rofin laser non attivo                      PLCerr4.8
+Rofin Laser non assegnato                   PLCerr4.9
+Rofin Potenza laser non presente            PLCerr4.10
+Rofin Rofin general error                   PLCerr4.11
+Rofin Laser non pronto                      PLCerr4.12
+141                                         PLCerr4.13
+142                                         PLCerr4.14
+143                                         PLCerr4.15
+144                                         PLCerr4.16
+145                                         PLCerr4.17
+146                                         PLCerr4.18
+147                                         PLCerr4.19
+148                                         PLCerr4.20
+149                                         PLCerr4.21
+150                                         PLCerr4.22
+151                                         PLCerr4.23
+152                                         PLCerr4.24
+153                                         PLCerr4.25
+154                                         PLCerr4.26
+155                                         PLCerr4.27
+156                                         PLCerr4.28
+157                                         PLCerr4.29
+158                                         PLCerr4.30
+159                                         PLCerr4.31
+
+#160    *PLCerr5
+Precitec-cassetto lente/prot. non presente  PLCerr5.0
+Precitec-errore in azzeramento              PLCerr5.1
+Precitec-errore durante funz. automatico    PLCerr5.2
+Precitec-trascorso tempo max azzeramento    PLCerr5.3
+Tip touch (A11=1, A14=0, A15=0)             PLCerr5.4
+Body touch (A11=1, A14=1, A15=0)            PLCerr5.5
+Nozzle lost (A11=1, A14=0, A15=1)           PLCerr5.6
+Timeout calibrazione sensore capacitivo     PLCerr5.7
+Cavo interrotto sensore capacitivo          PLCerr5.8
+169                                         PLCerr5.9
+Errata selezione gas di taglio              PLCerr5.10
+Bassa pressione ossigeno                    PLCerr5.11
+Bassa pressione azoto                       PLCerr5.12
+Bassa pressione aria taglio                 PLCerr5.13
+Pressione valvola proporzionale fuori range PLCerr5.14
+175                                         PLCerr5.15
+IPG laser non assegnato (A1 senza B7)       PLCerr5.16
+IPG laser non attivo (C1 senza B8)          PLCerr5.17
+IPG laser non pronto (A2 senza B1)          PLCerr5.18
+IPG errore laser (B4)                       PLCerr5.19
+Timeout attesa segn. emission on dal laser  PLCerr5.20
+Comandata emissione laser con valvole chiuse PLCerr5.21
+Potenza laser superiore alla max del generatore PLCerr5.22
+IPG (YLR) Mancanza potenza                  PLCerr5.23
+Termica Laser intervenuta                   PLCerr5.24
+Variazione Zoom non eseguita                PLCerr5.25
+186                                         PLCerr5.26
+187                                         PLCerr5.27
+188                                         PLCerr5.28
+189                                         PLCerr5.29
+190                                         PLCerr5.30
+PROCON: focale fuori dai limiti             PLCerr5.31
+
+#192    *PLCerr6
+Chiller in anomalia                         PLCerr6.0
+Bassa pressione aria impianto               PLCerr6.1
+Bassa pressione aria banco                  PLCerr6.2
+195                                         PLCerr6.3
+196                                         PLCerr6.4
+197                                         PLCerr6.5
+198                                         PLCerr6.6
+Anomalia da scambiatore armadio elettrico   PLCerr6.7
+Barriera ottica pulsantiera intervenuta     PLCerr6.8
+Porta Indietro Aperta                       PLCerr6.9
+202                                         PLCerr6.10
+203                                         PLCerr6.11
+204                                         PLCerr6.12
+205                                         PLCerr6.13
+206                                         PLCerr6.14
+207                                         PLCerr6.15
+208                                         PLCerr6.16
+nLight Errore Laser                         PLCerr6.17    
+nLight non accetta Input...Controllare nLight GUI PLCerr6.18 
+nLight Generatore non pronto                PLCerr6.19    
+212                                         PLCerr6.20
+213                                         PLCerr6.21
+214                                         PLCerr6.22
+215                                         PLCerr6.23
+216                                         PLCerr6.24
+217                                         PLCerr6.25
+218                                         PLCerr6.26
+219                                         PLCerr6.27
+220                                         PLCerr6.28
+221                                         PLCerr6.29
+222                                         PLCerr6.30
+223                                         PLCerr6.31
+
+#224    *PLCerr7
+Sorgente laser allarme generale             PLCerr7.0
+225                                         PLCerr7.1
+226                                         PLCerr7.2
+227                                         PLCerr7.3
+228                                         PLCerr7.4
+229                                         PLCerr7.5
+230                                         PLCerr7.6
+Errore Generale Precitec                    PLCerr7.7
+Errore taratura hoerbiger                   PLCerr7.8
+233                                         PLCerr7.9
+234                                         PLCerr7.10
+235                                         PLCerr7.11
+Hoerbiger bassa pressione aria              PLCerr7.12
+Hoerbiger bassa pressione azoto             PLCerr7.13
+Hoerbiger bassa pressione ossigeno          PLCerr7.14
+239                                         PLCerr7.15
+240                                         PLCerr7.16
+241                                         PLCerr7.17
+242                                         PLCerr7.18
+243                                         PLCerr7.19
+244                                         PLCerr7.20
+Movimento non in sicurezza                  PLCerr7.21
+246                                         PLCerr7.22
+247                                         PLCerr7.23
+248                                         PLCerr7.24
+249                                         PLCerr7.25
+250                                         PLCerr7.26
+251                                         PLCerr7.27
+252                                         PLCerr7.28
+253                                         PLCerr7.29
+254                                         PLCerr7.30
+255                                         PLCerr7.31
+
+#256    *PLCerr8
+  PLCerr8.0
+  PLCerr8.1
+259                                         PLCerr8.2
+260                                         PLCerr8.3
+261                                         PLCerr8.4
+262                                         PLCerr8.5
+263                                         PLCerr8.6
+264                                         PLCerr8.7
+265                                         PLCerr8.8 
+266                                         PLCerr8.9
+267                                         PLCerr8.10
+268                                         PLCerr8.11
+269                                         PLCerr8.12 
+270                                         PLCerr8.13 
+271                                         PLCerr8.14 
+272                                         PLCerr8.15
+273                                         PLCerr8.16
+274                                         PLCerr8.17
+275                                         PLCerr8.18
+276                                         PLCerr8.19
+277                                         PLCerr8.20
+278                                         PLCerr8.21
+279                                         PLCerr8.22
+280                                         PLCerr8.23
+281                                         PLCerr8.24
+282                                         PLCerr8.25
+283                                         PLCerr8.26
+284                                         PLCerr8.27
+285                                         PLCerr8.28
+286                                         PLCerr8.29
+287                                         PLCerr8.30
+288                                         PLCerr8.31
+
+#include "userita.err"
