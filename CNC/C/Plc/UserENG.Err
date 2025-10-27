@@ -65,62 +65,41 @@ Flap L4 Home/Incline Timeout                  PLCerr21.27
 Flap L5 Home/Incline Timeout                  PLCerr21.28
 Saw Clamp Rotate Open/Close Timeout           PLCerr21.29
 Unloader L1 Safely Down Sensor OFF            PLCerr21.30
-701                                           PLCerr21.31
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
+703                                           PLCerr21.31
 
 #704    *PLCerr22
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
+Timeout: Loader V piston support 1             PLCerr22.0
+Timeout: Loader V piston support 2             PLCerr22.1
+Timeout: Loader V piston support 3             PLCerr22.2
+Timeout: Loader V piston support 4             PLCerr22.3
+                                               PLCerr22.4
+                                               PLCerr22.5
+                                               PLCerr22.6
+                                               PLCerr22.7
+                                               PLCerr22.8
+                                               PLCerr22.9
+                                              PLCerr22.10
+                                              PLCerr22.11
+                                              PLCerr22.12
+                                              PLCerr22.13
+                                              PLCerr22.14
+                                              PLCerr22.15
+                                              PLCerr22.16
+                                              PLCerr22.17
+                                              PLCerr22.18
+                                              PLCerr22.19
+                                              PLCerr22.20
+                                              PLCerr22.21
+Loader alarm                                  PLCerr22.22
+727                                           PLCerr22.23
+728                                           PLCerr22.24
+729                                           PLCerr22.25
+730                                           PLCerr22.26
+731                                           PLCerr22.27
+732                                           PLCerr22.28
+733                                           PLCerr22.29
+734                                           PLCerr22.30
+735                                           PLCerr22.31
 
 #736    *PLCerr23
 -
