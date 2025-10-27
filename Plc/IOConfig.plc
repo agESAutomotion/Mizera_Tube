@@ -776,8 +776,8 @@ ST   I_I_FC_L3_NEG
 LD   I_FC_L4_NEG          
 ST   I_I_FC_L4_NEG
 
-LD   I_FC_L5_NEG          
-ST   I_I_FC_L5_NEG
+* LD   I_FC_L5_NEG          
+* ST   I_I_FC_L5_NEG
 
 LD   I_FC_L1_POS         
 ST   I_I_FC_L1_POS
@@ -791,8 +791,8 @@ ST   I_I_FC_L3_POS
 LD   I_FC_L4_POS          
 ST   I_I_FC_L4_POS
 
-LD   I_FC_L5_POS          
-ST   I_I_FC_L5_POS
+* LD   I_FC_L5_POS          
+* ST   I_I_FC_L5_POS
 
 LD   I_FC_O4_POS
 ST   I_I_FC_O4_POS

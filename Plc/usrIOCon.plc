@@ -198,8 +198,8 @@ ST   I_I_Loader_Reach_Pos
 LD   I_Loader_Back_Pos          
 ST   I_I_Loader_Back_Pos          
 
-LD   I_Loader_Alarm
-ST   I_I_Loader_Alarm
+* LD   I_Loader_Alarm
+* ST   I_I_Loader_Alarm
 
 LD   I_Mobile_Spindle_Slave_Open2 
 ST   I_I_Mobile_Spindle_Slave_Open2 
@@ -242,23 +242,23 @@ LD   O_O_FlapL5_Incline
 ST   I_I_FlapL5_Inclined  
 
 
-LDN  I_M1_M2_M3_CLOSE  
-ST   I_I_M1_M2_M3_CLOSE
+* LDN  I_M1_M2_M3_CLOSE  
+* ST   I_I_M1_M2_M3_CLOSE
 
-LDN  I_M1_M2_M3_OPEN   
-ST   I_I_M1_M2_M3_OPEN
+* LDN  I_M1_M2_M3_OPEN   
+* ST   I_I_M1_M2_M3_OPEN
 
-LD   I_M1_M2_M3_ALARM  
-ST   I_I_M1_M2_M3_ALARM
+* LD   I_M1_M2_M3_ALARM  
+* ST   I_I_M1_M2_M3_ALARM
 
-LD   I_B1_B2_OPEN    
-ST   I_I_B1_B2_OPEN
+* LD   I_B1_B2_OPEN    
+* ST   I_I_B1_B2_OPEN
       
-LD   I_B1_B2_CLOSE 
-ST   I_I_B1_B2_CLOSE
+* LD   I_B1_B2_CLOSE 
+* ST   I_I_B1_B2_CLOSE
         
-LD   I_B1_B2_ALARM 
-ST   I_I_B1_B2_ALARM
+* LD   I_B1_B2_ALARM 
+* ST   I_I_B1_B2_ALARM
 
 LD   I_L1_Down
 ST   I_I_L1_Down
@@ -294,44 +294,44 @@ ST   I_I_Pic_Weld
 LD   I_HomeChain_E
 ST   I_I_HomeChain_E
 
-LD   I_TubeOnChain_D_1
-OR   I_TubeOnChain_D_2
-OR   I_TubeOnChain_D_3
-ST   I_I_TubeOnChain_D
+* LD   I_TubeOnChain_D_1
+* OR   I_TubeOnChain_D_2
+* OR   I_TubeOnChain_D_3
+* ST   I_I_TubeOnChain_D
 
-LD   I_CylinderForw_F_1
-AND  I_CylinderForw_F_2
-AND  I_CylinderForw_F_3
-ST   I_I_CylinderForw_F
+* LD   I_CylinderForw_F_1
+* AND  I_CylinderForw_F_2
+* AND  I_CylinderForw_F_3
+* ST   I_I_CylinderForw_F
 
-LD   I_CylinderBack_F_1    
-AND  I_CylinderBack_F_2    
-AND  I_CylinderBack_F_3    
-ST   I_I_CylinderBack_F 
+* LD   I_CylinderBack_F_1    
+* AND  I_CylinderBack_F_2    
+* AND  I_CylinderBack_F_3    
+* ST   I_I_CylinderBack_F 
 
-LD   I_CylinderUp_G_1
-AND  I_CylinderUp_G_2
-AND  I_CylinderUp_G_3
-ST   I_I_CylinderUp_G
+* LD   I_CylinderUp_G_1
+* AND  I_CylinderUp_G_2
+* AND  I_CylinderUp_G_3
+* ST   I_I_CylinderUp_G
 
-LD   I_CylinderDwn_G_1
-AND  I_CylinderDwn_G_2
-AND  I_CylinderDwn_G_3
-ST   I_I_CylinderDwn_G
+* LD   I_CylinderDwn_G_1
+* AND  I_CylinderDwn_G_2
+* AND  I_CylinderDwn_G_3
+* ST   I_I_CylinderDwn_G
 
-LD   I_TubeOnSup_C_1
-OR   I_TubeOnSup_C_2
-ST   I_I_TubeOnSup_C
+* LD   I_TubeOnSup_C_1
+* OR   I_TubeOnSup_C_2
+* ST   I_I_TubeOnSup_C
 
-LDN  I_Loader_Slow
-ST   I_I_Loader_Slow
+* LDN  I_Loader_Slow
+* ST   I_I_Loader_Slow
 
-LD   I_Bin_DoorUp
-ST   I_I_Bin_DoorUp
+* LD   I_Bin_DoorUp
+* ST   I_I_Bin_DoorUp
 
-*LD   I_Bin_DoorDwn
-LD   O_O_Bin_Door
-ST   I_I_Bin_DoorDwn
+* *LD   I_Bin_DoorDwn
+* LD   O_O_Bin_Door
+* ST   I_I_Bin_DoorDwn
 
 LDN  I_Photocell_Unload
 AND  %cn0.rc8.0
@@ -416,6 +416,20 @@ ST I_I_VshapeZ3_Dwn
 
 LD I_Vshape4_Dwn
 ST I_I_VshapeZ4_Dwn
+
+** LOADER
+LDN I_Loader_Alarm
+ST  I_I_Loader_Alarm
+
+LD I_TubeOnChain
+ST I_I_TubeOnChain
+
+LD I_HomeChain
+ST I_I_HomeChain
+
+LDN I_ChainAligned
+ST  I_I_ChainAligned
+
 
 END_FUNCTION
 
@@ -697,71 +711,71 @@ ST   O_FlapL5_Home
 LD   O_O_FlapL5_Incline	  
 ST   O_FlapL5_Incline	 
 
-LD   O_O_M1_M2_M3_Open
-ST   O_M1_M2_M3_Open  
+* LD   O_O_M1_M2_M3_Open
+* ST   O_M1_M2_M3_Open  
 
-LD   O_O_M1_M2_M3_Close
-ST   O_M1_M2_M3_Close
+* LD   O_O_M1_M2_M3_Close
+* ST   O_M1_M2_M3_Close
 
-LD   O_O_Chain_Forw_D
-ST   O_Chain_Forw_D
+* LD   O_O_Chain_Forw_D
+* ST   O_Chain_Forw_D
 
-LD   O_O_Chain_Back_D
-ST   O_Chain_Back_D
+* LD   O_O_Chain_Back_D
+* ST   O_Chain_Back_D
 
-LD   O_O_Centering_Open_1
-ST   O_Centering_Open_1 
+* LD   O_O_Centering_Open_1
+* ST   O_Centering_Open_1 
 
-LD   O_O_Centering_Close_1
-ST   O_Centering_Close_1  
+* LD   O_O_Centering_Close_1
+* ST   O_Centering_Close_1  
 
-LD   O_O_Centering_Open_2
-ST   O_Centering_Open_2 
+* LD   O_O_Centering_Open_2
+* ST   O_Centering_Open_2 
 
-LD   O_O_Centering_Close_2
-ST   O_Centering_Close_2
+* LD   O_O_Centering_Close_2
+* ST   O_Centering_Close_2
 
-LD   O_O_Centering_Open_3
-ST   O_Centering_Open_3 
+* LD   O_O_Centering_Open_3
+* ST   O_Centering_Open_3 
 
-LD   O_O_Centering_Close_3
-ST   O_Centering_Close_3
+* LD   O_O_Centering_Close_3
+* ST   O_Centering_Close_3
 
-LD   O_O_Centering_Open_4
-ST   O_Centering_Open_4 
+* LD   O_O_Centering_Open_4
+* ST   O_Centering_Open_4 
 
-LD   O_O_Centering_Close_4
-ST   O_Centering_Close_4      
+* LD   O_O_Centering_Close_4
+* ST   O_Centering_Close_4      
 
-LD   O_O_B1_B2_Open
-ST   O_B1_B2_Open    
+* LD   O_O_B1_B2_Open
+* ST   O_B1_B2_Open    
 
-LD   O_O_B1_B2_Close
-ST   O_B1_B2_Close   
+* LD   O_O_B1_B2_Close
+* ST   O_B1_B2_Close   
       
 *************************************************
 *  LOADER SUPPORTs
 *************************************************
-LD   O_O_CylinderUp_G            
-ST   O_CylinderUp_G
+* LD   O_O_CylinderUp_G            
+* ST   O_CylinderUp_G
 
-LD   O_O_CylinderDwn_G 
-ST   O_CylinderDwn_G
+* LD   O_O_CylinderDwn_G 
+* ST   O_CylinderDwn_G
 
-LD   O_O_CylinderForw_F
-ST   O_CylinderForw_F
+* LD   O_O_CylinderForw_F
+* ST   O_CylinderForw_F
 
-LD   O_O_CylinderBack_F
-ST   O_CylinderBack_F
+* LD   O_O_CylinderBack_F
+* ST   O_CylinderBack_F
 
-LD   O_O_Arm_Slow
-ST   O_Arm_Slow
+* LD   O_O_Arm_Slow
+* ST   O_Arm_Slow
 
-LD   O_O_Arm_Fast 
-ST   O_Arm_Fast 
+* LD   O_O_Arm_Fast 
+* ST   O_Arm_Fast 
 
-LD   O_O_Rst_InverterAlm
-ST   O_Rst_InverterAlm
+* LD   O_O_Rst_InverterAlm
+* ST   O_Rst_InverterAlm
 
 *************************************************
 *  Weldseam Detection
@@ -832,5 +846,15 @@ ST O_Ev_VShape3_Dwn
 
 LD O_O_Ev_VShapeZ4_Dwn
 ST O_Ev_VShape4_Dwn
+
+*** LOADER
+LD O_O_Chain_Forw
+ST O_Chain_Forw
+
+* LD O_Rst_InverterAlm
+* ST O_O_Rst_InverterAlm
+
+LD O_O_Chain_Back
+ST O_Chain_Back
 
 END_FUNCTION

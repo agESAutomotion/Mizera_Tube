@@ -2,43 +2,207 @@
 *   SCHEDA n.1 SU CNC (16+16 INGRESSI)
 *******************************************************************************
 
-** 16 input - On CNC board position 1 - 1 
+** 16 input - On CNC board position M.In 1
 
-I_FC_Y1_POS                  AT %IW0.0;        * ax28 Y axis
-I_FC_Y1_NEG                  AT %IW0.1;        * ax28 Y axis
-I_FC_UV_NEG                  AT %IW0.2;        * ax30 X axis
-I_FC_UV_POS                  AT %IW0.3;        * ax30 X axis
-I_FC_W_NEG                   AT %IW0.4;        * ax36 X3
-I_FC_W_POS                   AT %IW0.5;        * ax36 X3
-I_FC_V_NEG                   AT %IW0.6;        * ax31 X1
-I_FC_V_POS                   AT %IW0.7;        * ax31 X1
+I_LSR_ERROR                 AT %IW0.0;  ** Laser error / Alarm source
+I_LSR_READY                 AT %IW0.1;  ** Laser ready / Device Status Output
+** free                     AT %IW0.2;
+I_PRESSIONE_N2              AT %IW0.3;  ** Nitrogen OK
+I_PRESSIONE_O2              AT %IW0.4;  ** Oxygen OK
+I_PRESSIONE_ARIA            AT %IW0.5;  ** Air OK
+I_CHILLER_ERR               AT %IW0.6;  ** Chiller OK (inverse logic)
+I_ASPIRATORE_OK             AT %IW0.7;  ** Dust collector
+I_EMERGENZA                 AT %IW0.8;  ** E-Stop 
+I_Photocell_Load            AT %IW0.9;  ** Loading barriers
+I_Photocell_Unload          AT %IW0.10; ** Unloading barriers
+I_SAFETY_DOOR               AT %IW0.11; ** Closed door
+* AT %IW0.12;   ** Tool raised
+* AT %IW0.13;   ** Abandoned tool
+I_TubeDetector_Out          AT %IW0.14;   ** Sensor extended - Tube detector mounted on 1st spindle 
+I_TubeDetector_In           AT %IW0.15;   ** Sensor inserted - Tube detector mounted on 1st spindle 
+
+** 16 input - On CNC board position M.In 2
+
+****** TODO 
+I_ChainAligned                  AT %IW1.0;    ** Chain Position loading - inductor sensor 
+I_TubeOnChain                   AT %IW1.1;    ** Presence of material loading - optical sensor (tube ready to be loaded)
+* AT %IW1.2;    ** Chain position unloading - future work
+* AT %IW1.3;    ** Presence of material move    - not used 
+* AT %IW1.4;    ** Presence of material complete    - not used 
+I_Loader_Alarm                  AT %IW1.5;    ** Ok loading inverter
+* AT %IW1.6;    ** Unloading inverter ok
+* AT %IW1.7;    ** Printer raised
+* AT %IW1.8;    ** Printer abandoned
+I_FixedSpindle_Open             AT %IW1.9;    ** Chuck 2 open 
+I_Mobile_Spindle_Slave_Open_Jaws AT %IW1.10;   ** Chuck 3 open Jaws
+I_Mobile_Spindle_Slave_Open     AT %IW1.11;   ** Chuck 3 open Rollers
+I_TubeDetected                  AT %IW1.12;   ** Edge detection
+I_Mobile_Spindle_Close          AT %IW1.13;   ** Chuck 1 origin - closed?
+I_FixedSpindle_Close            AT %IW1.14;   ** Chuck 2 origin - closed?
+I_Mobile_Spindle_Slave_Close    AT %IW1.15;   ** Chuck 3 origin - closed?
+I_HomeChain     AT %PLCFLAGS.0;
+
+*******************************************************************************
+*   SCHEDA n.2 SU CNC (16+16 INGRESSI)
+*******************************************************************************
+
+** 16 input - On CNC board position M.In 1
+
+
+* AT %IW4.0;    (usrIof.inc) I_VertPistonSup1_Up
+* AT %IW4.1;    (usrIof.inc) I_VertPistonSup1_Dwn
+* AT %IW4.2;    (usrIof.inc) I_Vshape1_Up
+* AT %IW4.3;    (usrIof.inc) I_Vshape1_Dwn
+* AT %IW4.4;    (usrIof.inc) I_VertPistonSup2_Up
+* AT %IW4.5;    (usrIof.inc) I_VertPistonSup2_Dwn
+* AT %IW4.6;    (usrIof.inc) I_Vshape2_Up
+* AT %IW4.7;    (usrIof.inc) I_Vshape2_Dwn
+* AT %IW4.8;    (usrIof.inc) I_VertPistonSup3_Up
+* AT %IW4.9;    (usrIof.inc) I_VertPistonSup3_Dwn
+* AT %IW4.10;   (usrIof.inc) I_Vshape3_Up
+* AT %IW4.11;   (usrIof.inc) I_Vshape3_Dwn
+* AT %IW4.12;   (usrIof.inc) I_VertPistonSup4_Up
+* AT %IW4.13;   (usrIof.inc) I_VertPistonSup4_Dwn
+* AT %IW4.14;   (usrIof.inc) I_Vshape4_Up
+* AT %IW4.15;   (usrIof.inc) I_Vshape4_Dwn
+
+** 16 input - On CNC board position M.In 2
+
+* AT %IW5.0;    (usrIof.inc) Support 5 – raised position
+* AT %IW5.1;    (usrIof.inc) Support 5 – lowered position
+* AT %IW5.2;    (usrIof.inc) Support 5 – clamp opened
+* AT %IW5.3;    (usrIof.inc) Support 5 – clamp closed
+* AT %IW5.4;    (usrIof.inc) Support 6 – raised position
+* AT %IW5.5;    (usrIof.inc) Support 6 – lowered position
+* AT %IW5.6;    (usrIof.inc) Support 6 – clamp opened
+* AT %IW5.7;    (usrIof.inc) Support 6 – clamp closed
+* AT %IW5.8;    (usrIof.inc) Support 7 – raised position
+* AT %IW5.9;    (usrIof.inc) Support 7 – lowered position
+* AT %IW5.10;   (usrIof.inc) Support 8 – raised position 1
+* AT %IW5.11;   (usrIof.inc) Support 8 – lowered position 1
+* AT %IW5.12;   (usrIof.inc) Support 8 – raised position 2
+* AT %IW5.13;   (usrIof.inc) Support 8 – lowered position 2
+* AT %IW5.14;   (usrIof.inc) Table raised
+* AT %IW5.15;   (usrIof.inc) Table lowered
+
+
+*******************************************************************************
+*   SCHEDA n.1 SU CNC (16+16 USCITE)
+*******************************************************************************
+
+** 16 outputs - On CNC board position 1 - 1
+
+O_LSR_REMOTE_START              AT %QW2.0;  
+O_LSR_LASER_ON                  AT %QW2.1;  
+O_EVGAS_OSSIGENO                AT %QW2.2;          
+O_EVGAS_OAZOTO                  AT %QW2.3;  
+O_EVGAS_ARIA                    AT %QW2.4;  
+START_ASPIRATORE                AT %QW2.5;  ** Dust collector
+O_LAMPADA_VERDE                 AT %QW2.6;  ** Signal light green
+O_LAMPADA_ARANCIONE             AT %QW2.7;  ** Signal light orange
+O_LAMPADA_ROSSA                 AT %QW2.8;  ** Signal light red
+* AT %QW2.9;  ** Signal light beam - Laser beam indicator 
+O_Lock_Safety_Door              AT %QW2.10; ** Unlock door
+O_LSR_GUIDE_ON                  AT %QW2.11;
+O_Chain_Forw                    AT %QW2.12;  ** Loader forward
+O_Chain_Back                    AT %QW2.13;  ** Loader backward
+** free                         AT %QW2.14;
+** free                         AT %QW2.15;
+
+** 16 outputs - On CNC board position 1 - 2
+
+O_Mobile_Spindle_Open               AT %QW3.0;  ** Open chuck 1
+O_Mobile_Spindle_Close              AT %QW3.1;  ** Close chuck 1
+O_SpindleFix_Open                   AT %QW3.2;  ** Open chuck 2
+O_SpindleFix_Close                  AT %QW3.3;  ** Close chuck 2
+O_Mobile_Spindle_Slave_Open_Jaws    AT %QW3.4;  ** Open chuck 3 - Jaws
+O_Mobile_Spindle_Slave_Close_Jaws   AT %QW3.5;  ** Close chuck 3 - Jaws
+O_Mobile_Spindle_Slave_Open         AT %QW3.6;  ** Open chuck 3 - Rollers
+O_Mobile_Spindle_Slave_Close        AT %QW3.7;  ** Close chuck 3 - Rollers
+* AT %QW3.8;  ** Dremel – turn on
+* AT %QW3.9;  ** Spare
+* AT %QW3.10; ** Lift the Printer
+* AT %QW3.11; ** Lower the printer
+O_TubeDetector_Out                  AT %QW3.12; ** Extend the sensor
+O_TubeDetector_In                   AT %QW3.13; ** Insert the sensor
+* AT %QW3.14; ** Lift the Dremel
+* AT %QW3.15; ** Lower the Dremel 
+
+*******************************************************************************
+*   SCHEDA n.2 SU CNC (16+16 USCITE)
+*******************************************************************************
+** AT %QW6.0;       (usrIof.inc) O_Ev_VertPistonSup1_Up
+** AT %QW6.1;       (usrIof.inc) O_Ev_VertPistonSup1_Dwn
+** AT %QW6.2;       (usrIof.inc) O_Ev_VShape1_Up
+** AT %QW6.3;       (usrIof.inc) O_Ev_VShape1_Dwn
+** AT %QW6.4;       (usrIof.inc) O_Ev_VertPistonSup2_Up
+** AT %QW6.5;       (usrIof.inc) O_Ev_VertPistonSup2_Dwn
+** AT %QW6.6;       (usrIof.inc) O_Ev_VShape2_Up
+** AT %QW6.7;       (usrIof.inc) O_Ev_VShape2_Dwn
+** AT %QW6.8;       (usrIof.inc) O_Ev_VertPistonSup3_Up
+** AT %QW6.9;       (usrIof.inc) O_Ev_VertPistonSup3_Dwn
+** AT %QW6.10;      (usrIof.inc) O_Ev_VShape3_Up
+** AT %QW6.11;      (usrIof.inc) O_Ev_VShape3_Dwn
+** AT %QW6.12;      (usrIof.inc) O_Ev_VertPistonSup4_Up
+** AT %QW6.13;      (usrIof.inc) O_Ev_VertPistonSup4_Dwn
+** AT %QW6.14;      (usrIof.inc) O_Ev_VShape4_Up
+** AT %QW6.15;      (usrIof.inc) O_Ev_VShape4_Dwn
+
+
+* AT %QW7.0;        (usrIof.inc) Support 5 – Lift 
+* AT %QW7.1;        (usrIof.inc) Support 5 – Lower 
+* AT %QW7.2;        (usrIof.inc) Support 5 – open
+* AT %QW7.3;        (usrIof.inc) Support 5 – close
+* AT %QW7.4;        (usrIof.inc) Support 6 – Lift 
+* AT %QW7.5;        (usrIof.inc) Support 6 – Lower 
+* AT %QW7.6;        (usrIof.inc) Support 6 – open
+* AT %QW7.7;        (usrIof.inc) Support 6 – close
+* AT %QW7.8;        (usrIof.inc) Support 7 – lift
+* AT %QW7.9;        (usrIof.inc) Support 7 – lower
+* AT %QW7.10;       (usrIof.inc) Support 8 – Table – slide-in 1
+* AT %QW7.11;       (usrIof.inc) Support 8 – Table – pull-out 1
+* AT %QW7.12;       (usrIof.inc) Support 8 – Table – slide-in 2
+* AT %QW7.13;       (usrIof.inc) Support 8 – Table – pull-out 2
+* AT %QW7.14;       (usrIof.inc) Table - raise
+* AT %QW7.15;       (usrIof.inc) Table - lean
+
+
+** OLD ******
+I_FC_Y1_POS                  AT %PLCFLAGS.1;        * ax28 Y axis
+I_FC_Y1_NEG                  AT %PLCFLAGS.1;        * ax28 Y axis
+I_FC_UV_NEG                  AT %PLCFLAGS.1;        * ax30 X axis
+I_FC_UV_POS                  AT %PLCFLAGS.1;        * ax30 X axis
+I_FC_W_NEG                   AT %PLCFLAGS.1;        * ax36 X3
+I_FC_W_POS                   AT %PLCFLAGS.1;        * ax36 X3
+I_FC_V_NEG                   AT %PLCFLAGS.1;        * ax31 X1
+I_FC_V_POS                   AT %PLCFLAGS.1;        * ax31 X1
 *                            AT %IW0.8; 
 *                            AT %IW0.9; 
 *                            AT %IW0.10; 
-I_FC_Z1_NEG                  AT %IW0.11;       * ax29 Z axis
-I_FC_Z1_POS                  AT %IW0.12;       * ax29 Z axis
-I_FC_Z4_SUP_POS              AT %IW0.13;       * ax54 Z4 axis limit switch
-I_FC_Z4_SUP_NEG              AT %IW0.14;       * ax54 Z4 axis limit switch
-I_FC_Z3_SUP_NEG              AT %IW0.15;       * ax53 Z3 axis limit switch
+I_FC_Z1_NEG                  AT %PLCFLAGS.1;       * ax29 Z axis
+I_FC_Z1_POS                  AT %PLCFLAGS.1;       * ax29 Z axis
+I_FC_Z4_SUP_POS              AT %PLCFLAGS.1;       * ax56 Z4 axis limit switch
+I_FC_Z4_SUP_NEG              AT %PLCFLAGS.1;       * ax56 Z4 axis limit switch
+I_FC_Z3_SUP_NEG              AT %PLCFLAGS.1;       * ax53 Z3 axis limit switch
 
 ** 16 input - On CNC board position 1 - 2
 
 I_FC_Z3_SUP_POS              AT %PLCFLAGS.1;   * ax53 Z3 axis limit switch
-I_FC_Z2_SUP_NEG              AT %IW1.1;        * ax51 Z2 axis limit switch
-I_FC_Z2_SUP_POS              AT %IW1.2;        * ax51 Z2 axis limit switch
-I_FC_Z1_SUP_NEG              AT %IW1.3;        * ax52 Z1 axis limit switch
-I_FC_Z1_SUP_POS              AT %IW1.4;        * ax52 Z1 axis limit switch
-I_FC_L1_POS                  AT %IW1.5;        * ax71 L1 axis limit switch
-I_FC_L1_NEG                  AT %IW1.6;        * ax71 L1 axis limit switch
-I_FC_L2_POS                  AT %IW1.7;        * ax72 L2 axis limit switch
-I_FC_L2_NEG                  AT %IW1.8;        * ax72 L2 axis limit switch
-I_FC_L3_POS                  AT %IW1.9;        * ax73 L3 axis limit switch
-I_FC_L3_NEG                  AT %IW1.10;       * ax73 L3 axis limit switch
-I_Bin_DoorDwn                AT %IW1.11;
-I_Bin_DoorUp                 AT %IW1.12;
-I_L1_Down                    AT %IW1.13;       * Safety reason to ensure support 1 fully down
-I_Flap_Home                  AT %IW1.14;
-I_FlapL2_Home                AT %IW1.15;       
+I_FC_Z2_SUP_NEG              AT %PLCFLAGS.1;        * ax51 Z2 axis limit switch
+I_FC_Z2_SUP_POS              AT %PLCFLAGS.1;        * ax51 Z2 axis limit switch
+I_FC_Z1_SUP_NEG              AT %PLCFLAGS.1;        * ax52 Z1 axis limit switch
+I_FC_Z1_SUP_POS              AT %PLCFLAGS.1;        * ax52 Z1 axis limit switch
+I_FC_L1_POS                  AT %PLCFLAGS.1;        * ax72 L1 axis limit switch
+I_FC_L1_NEG                  AT %PLCFLAGS.1;        * ax72 L1 axis limit switch
+I_FC_L2_POS                  AT %PLCFLAGS.1;        * ax71 L2 axis limit switch
+I_FC_L2_NEG                  AT %PLCFLAGS.1;        * ax71 L2 axis limit switch
+I_FC_L3_POS                  AT %PLCFLAGS.1;        * ax73 L3 axis limit switch
+I_FC_L3_NEG                  AT %PLCFLAGS.1;       * ax73 L3 axis limit switch
+I_Bin_DoorDwn                AT %PLCFLAGS.1;
+I_Bin_DoorUp                 AT %PLCFLAGS.1;
+I_L1_Down                    AT %PLCFLAGS.1;       * Safety reason to ensure support 1 fully down
+I_Flap_Home                  AT %PLCFLAGS.1;
+I_FlapL2_Home                AT %PLCFLAGS.1;       
 
 *******************************************************************************
 *   SCHEDA n.2 SU CNC (16+16 INGRESSI)
@@ -46,60 +210,63 @@ I_FlapL2_Home                AT %IW1.15;
 
 ** 16 input - On CNC board position 2 - 1 
 
-I_FlapL3_Home                AT %IW4.0;
-I_CenterZ4_Open              AT %IW4.1;
-I_CenterZ3_Open              AT %IW4.2;
-I_CenterZ2_Open              AT %IW4.3;
-I_CenterZ1_Open              AT %IW4.4;
-I_EMERGENZA                  AT %IW4.5; 
-I_LSR_ERROR                  AT %IW4.6;  
-I_CHILLER_ERR                AT %IW4.7;
-I_LUB_LOW_LEVEL              AT %IW4.8;
-I_SAFETY_DOOR                AT %IW4.9;
-I_SAFETY_CabDoor             AT %IW4.10;
-I_Photocell_Load             AT %IW4.11;
-I_Photocell_Unload           AT %IW4.12;
-I_PRESSIONE_ARIA             AT %PLCFLAGS.1; *%IW4.13;            
-I_PRESSIONE_O2               AT %IW4.14;
-I_PRESSIONE_N2               AT %IW4.15;
+I_FlapL3_Home                AT %PLCFLAGS.1;
+I_CenterZ4_Open              AT %PLCFLAGS.1;
+I_CenterZ3_Open              AT %PLCFLAGS.1;
+I_CenterZ2_Open              AT %PLCFLAGS.1;
+I_CenterZ1_Open              AT %PLCFLAGS.1;
+* I_EMERGENZA                  AT %IW4.5; 
+* I_LSR_ERROR                  AT %IW4.6;  
+* I_CHILLER_ERR                AT %IW4.7;
+I_LUB_LOW_LEVEL              AT %PLCFLAGS.0;
+* I_SAFETY_DOOR                AT %IW4.9;
+I_SAFETY_CabDoor             AT %PLCFLAGS.1;
+* I_Photocell_Load             AT %IW4.11;
+* I_Photocell_Unload           AT %IW4.12;
+* I_PRESSIONE_ARIA             AT %PLCFLAGS.1; *%IW4.13;            
+* I_PRESSIONE_O2               AT %IW4.14;
+* I_PRESSIONE_N2               AT %IW4.15;
 
 ** 16 input - On CNC board position 2 - 2 
-
-I_TubeMobile_Spindle         AT %IW5.0;
-I_TubeFix_Spindle            AT %IW5.1;
-I_Detec_Weld                 AT %IW5.2;
-I_Pic_Weld                   AT %IW5.3;
-I_Loader_Alarm               AT %IW5.4;
-I_M1_M2_M3_ALARM             AT %IW5.5;
-I_CylinderDwn_G_1            AT %IW5.6;
-I_CylinderDwn_G_2            AT %IW5.7;
-I_CylinderDwn_G_3            AT %IW5.8;
-I_CylinderUp_G_1             AT %IW5.9;
-I_CylinderUp_G_2             AT %IW5.10;
-I_CylinderUp_G_3             AT %IW5.11;
-I_CylinderBack_F_1           AT %IW5.12; 
-I_CylinderBack_F_2           AT %IW5.13; 
-I_CylinderBack_F_3           AT %IW5.14;
-I_CylinderForw_F_1           AT %IW5.15;
+I_TubeMobile_Spindle            AT %PLCFLAGS.0;
+I_TubeFix_Spindle               AT %PLCFLAGS.1;
+I_Detec_Weld                    AT %PLCFLAGS.0;
+I_Pic_Weld                      AT %PLCFLAGS.0;
+* I_TubeMobile_Spindle         AT %IW5.0;
+* I_TubeFix_Spindle            AT %IW5.1;
+* I_Detec_Weld                 AT %IW5.2;
+* I_Pic_Weld                   AT %IW5.3;
+* I_Loader_Alarm               AT %IW5.4;
+* I_M1_M2_M3_ALARM             AT %IW5.5;
+* I_CylinderDwn_G_1            AT %IW5.6;
+* I_CylinderDwn_G_2            AT %IW5.7;
+* I_CylinderDwn_G_3            AT %IW5.8;
+* I_CylinderUp_G_1             AT %IW5.9;
+* I_CylinderUp_G_2             AT %IW5.10;
+* I_CylinderUp_G_3             AT %IW5.11;
+* I_CylinderBack_F_1           AT %IW5.12; 
+* I_CylinderBack_F_2           AT %IW5.13; 
+* I_CylinderBack_F_3           AT %IW5.14;
+* I_CylinderForw_F_1           AT %IW5.15;
 
 *******************************************************************************
 * BRD.007.461 INPUTS (NODE 1)
 *******************************************************************************
-I_CylinderForw_F_2           AT %IW610.0;
-I_CylinderForw_F_3           AT %IW610.1;
-I_TubeOnChain_D_1            AT %IW610.2;
-I_TubeOnChain_D_2            AT %IW610.3;
+* I_CylinderForw_F_2           AT %IW610.0;
+* I_CylinderForw_F_3           AT %IW610.1;
+* I_TubeOnChain_D_1            AT %IW610.2;
+* I_TubeOnChain_D_2            AT %IW610.3;
 *                            AT %IW610.4;
-I_TubeOnSup_C_1              AT %IW610.5;  
-I_TubeOnSup_C_2              AT %IW610.6;
-I_M1_M2_M3_OPEN              AT %IW610.7;
-I_M1_M2_M3_CLOSE             AT %IW610.8; 
-I_Loader_Slow                AT %IW610.9;
-I_Ready_To_Load              AT %PLCFLAGS.1; 
+* I_TubeOnSup_C_1              AT %IW610.5;  
+* I_TubeOnSup_C_2              AT %IW610.6;
+* I_M1_M2_M3_OPEN              AT %IW610.7;
+* I_M1_M2_M3_CLOSE             AT %IW610.8; 
+* I_Loader_Slow                AT %IW610.9;
+* I_Ready_To_Load              AT %PLCFLAGS.1; 
 *                            AT %IW610.10;
 *                            AT %IW610.11;
 *                            AT %IW610.12;
-I_TubeOnChain_D_3            AT %IW610.13;
+* I_TubeOnChain_D_3            AT %IW610.13;
 *                            AT %IW610.14;
 *                            AT %IW610.15;
 
@@ -114,8 +281,8 @@ I_TubeOnChain_D_3            AT %IW610.13;
 *                            AT %IW611.5;
 *                            AT %IW611.6;          
 I_PRESSIONE_ARIA_IMPIANTO    AT %PLCFLAGS.1;
-I_AntiColide_1               AT %IW611.8;
-I_AntiColide_2               AT %IW611.9;  
+I_AntiColide_1               AT %PLCFLAGS.1;
+I_AntiColide_2               AT %PLCFLAGS.1;  
 I_FC_W1_POS                  AT %IW611.10;        *ax9 FOCAL axis
 I_FC_W1_NEG                  AT %IW611.11;       *ax9 FOCAL axis
 I_HomeChain_E                AT %IW611.12;      
@@ -131,52 +298,52 @@ IA_Emower_cap                AT %ecat_ring0.EcatNode16.EcMDPIn0;
 
 ** 16 outputs - On CNC board position 1 - 1
 
-O_EVGAS_OSSIGENO             AT %QW2.0;  *Out O2
-O_EVGAS_OAZOTO               AT %QW2.1;  *Out N2
-O_EVGAS_ARIA                 AT %QW2.2;  *Out AIR
-O_LAMPADA_ROSSA              AT %QW2.3;  
-O_LAMPADA_ARANCIONE          AT %QW2.4;  
-O_LAMPADA_VERDE              AT %QW2.5; 
-O_Mobile_Spindle_Slave_Close AT %QW2.6;
-O_Mobile_Spindle_Slave_Open  AT %QW2.7;
-O_SpindleFix_Close           AT %QW2.8;
-O_SpindleFix_Open            AT %QW2.9;
-O_Mobile_Spindle_Close       AT %QW2.10;
-O_EV_AUX_GAS                 AT %QW2.11;
-O_EV_ARIA_UGELLO             AT %QW2.12;
+* O_EVGAS_OSSIGENO             AT %QW2.0;  *Out O2
+* O_EVGAS_OAZOTO               AT %QW2.1;  *Out N2
+* O_EVGAS_ARIA                 AT %QW2.2;  *Out AIR
+* O_LAMPADA_ROSSA              AT %QW2.3;  
+* O_LAMPADA_ARANCIONE          AT %QW2.4;  
+* O_LAMPADA_VERDE              AT %QW2.5; 
+* O_Mobile_Spindle_Slave_Close AT %QW2.6;
+* O_Mobile_Spindle_Slave_Open  AT %QW2.7;
+* O_SpindleFix_Close           AT %QW2.8;
+* O_SpindleFix_Open            AT %QW2.9;
+* O_Mobile_Spindle_Close       AT %QW2.10;
+O_EV_AUX_GAS                 AT %M5.0;
+O_EV_ARIA_UGELLO             AT %M5.0;
 *                            AT %QW2.13;
-O_Centering_Close_4          AT %QW2.14;
-O_Centering_Close_3          AT %QW2.15;
+O_Centering_Close_4          AT %M5.0;
+O_Centering_Close_3          AT %M5.0;
 
 ** 16 outputs - On CNC board position 1 - 2
 
-O_Centering_Close_2          AT %QW3.0;
-O_Centering_Close_1          AT %QW3.1;
-O_Flap_Incline               AT %QW3.2;
-O_FlapL2_Incline             AT %QW3.3;
-O_FlapL3_Incline             AT %QW3.4;
-O_Bin_Door                   AT %QW3.5;  *(1 = Bin Door Up )
+O_Centering_Close_2          AT %M5.0;
+O_Centering_Close_1          AT %M5.0;
+O_Flap_Incline               AT %M5.0;
+O_FlapL2_Incline             AT %M5.0;
+O_FlapL3_Incline             AT %M5.0;
+O_Bin_Door                   AT %M5.0;  *(1 = Bin Door Up )
 *                            AT %QW3.6;
-START_ASPIRATORE             AT %QW3.7;  
-O_LSR_LASER_ON               AT %QW3.8;  
-O_LSR_GUIDE_ON               AT %QW3.9;  * Out A5 
-O_LSR_REMOTE_START           AT %QW3.10;
-O_Chain_Forw_D               AT %QW3.11;
-O_Chain_Back_D               AT %QW3.12;
-O_CylinderBack_F             AT %QW3.13; 
-O_CylinderUp_G               AT %QW3.14;
-O_CylinderForw_F             AT %QW3.15; * Loader Side
+* START_ASPIRATORE             AT %QW3.7;  
+* O_LSR_LASER_ON               AT %QW3.8;  
+* O_LSR_GUIDE_ON               AT %QW3.9;  * Out A5 
+* O_LSR_REMOTE_START           AT %QW3.10;
+* O_Chain_Forw_D               AT %QW3.11;
+* O_Chain_Back_D               AT %QW3.12;
+* O_CylinderBack_F             AT %QW3.13; 
+* O_CylinderUp_G               AT %QW3.14;
+* O_CylinderForw_F             AT %QW3.15; * Loader Side
 
 *******************************************************************************
 *   SCHEDA n.2 SU CNC (16+16 USCITE)
 *******************************************************************************
-O_M1_M2_M3_Close             AT %QW6.0;
-O_M1_M2_M3_Open              AT %QW6.1;
-O_Arm_Fast                   AT %QW6.2;
-O_Arm_Slow                   AT %QW6.3;
-O_Rst_InverterAlm            AT %QW6.4;
-O_Detec_Weld_Piston          AT %QW6.5;
-O_Detec_Weld                 AT %QW6.6;
+* O_M1_M2_M3_Close             AT %QW6.0;
+* O_M1_M2_M3_Open              AT %QW6.1;
+* O_Arm_Fast                   AT %QW6.2;
+* O_Arm_Slow                   AT %QW6.3;
+O_Rst_InverterAlm            AT %M5.0;
+O_Detec_Weld_Piston          AT %M5.0;
+O_Detec_Weld                 AT %M5.0;
 O_WeldDetec_En               AT %M5.0;
 *                            AT %QW6.7;
 *                            AT %QW6.8;
@@ -191,7 +358,7 @@ O_WeldDetec_En               AT %M5.0;
 *******************************************************************************
 * BRD.007.461 INPUTS (NODE 2)
 *******************************************************************************
-O_Mobile_Spindle_Open        AT %M5.0;
+* O_Mobile_Spindle_Open        AT %M5.0;
 O_LUB                        AT %M5.0;
 O_Centering_Open_1           AT %M5.0;
 O_Centering_Open_2           AT %M5.0;
@@ -239,7 +406,7 @@ I_FC_B1_NEG               AT %PLCFLAGS.1;
 I_FC_L4_NEG               AT %PLCFLAGS.1;        * ax74 L4 axis limit switch
 I_FC_L4_POS               AT %PLCFLAGS.1;        * ax74 L4 axis limit switch
 						  
-I_LSR_READY               AT %PLCFLAGS.1;   
+* I_LSR_READY               AT %PLCFLAGS.1;   
 I_FW_READY_nLight         AT %PLCFLAGS.1; 
 I_EMISS_nLight            AT %PLCFLAGS.0;   
 I_ERR_nLight              AT %PLCFLAGS.0; 
@@ -253,7 +420,7 @@ I_PUL_RESET               AT %PLCFLAGS.0;
 I_UNLOAD_DOOR             AT %PLCFLAGS.0;
 I_LUB_LOW_PRESSURE        AT %PLCFLAGS.0;
 I_OVER_PRES_LUB           AT %PLCFLAGS.0;
-I_ASPIRATORE_OK           AT %PLCFLAGS.1;
+* I_ASPIRATORE_OK           AT %PLCFLAGS.1;
 						  
 I_I_FC_Z_FOLL2_NEG        AT %PLCFLAGS.0;
 I_I_FC_Z_FOLL2_POS        AT %PLCFLAGS.0; 
@@ -273,7 +440,7 @@ I_LSR_EMISSION_ON         AT %PLCFLAGS.1;
 I_LSR_GUIDE_ON            AT %PLCFLAGS.0;  
 I_LSR_ANALOG_CONTROL      AT %PLCFLAGS.0;  
 I_LSR_ASSIGNED            AT %PLCFLAGS.1;  
-I_LSR_LASER_ON            AT %PLCFLAGS.0;  
+I_LSR_LASER_ON            AT %PLCFLAGS.1;  
 I_LSR_WARNING             AT %PLCFLAGS.0;  
 
 I_IA_Feedb_HOERB_GAS_OUT  AT %PLCFLAGS.0;  *%ecat_ring0.EcatNode28.EcMDPIn1;
@@ -303,7 +470,7 @@ O_CLAMP_C_OPEN            AT %M5.0;
 O_CLAMP_C1_CLOSE          AT %M5.0;
 O_CLAMP_C1_OPEN           AT %M5.0;
 						  
-O_Lock_Safety_Door        AT %M5.0;
+* O_Lock_Safety_Door        AT %M5.0;
 O_Safety_Bypass           AT %M5.0;
 O_Unlock_Fence            AT %M5.0;
 O_Unlock_Fence_LED        AT %M5.0;
@@ -379,6 +546,3 @@ I_RDY_RAYCUS              AT %PLCFLAGS.1;
 O_Guide_RAYCUS            AT %M5.0;
 
 ***************************
-
-I_FC_L5_POS               AT %PLCFLAGS.1;
-I_FC_L5_NEG               AT %PLCFLAGS.1;

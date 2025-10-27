@@ -13,7 +13,6 @@ I_FlapL4_Inclined_A            AT %PLCFLAGS.0;
 I_FlapL4_Inclined_B            AT %PLCFLAGS.0;
 I_Pul_Mobile_Spindle_Close     AT %PLCFLAGS.0;
 I_Pul_Mobile_Spindle_Open      AT %PLCFLAGS.0;
-I_Mobile_Spindle_Slave_Open    AT %PLCFLAGS.0;
 I_Mobile_Spindle_Slave_Open2   AT %PLCFLAGS.0;
 
 I_Loader_Back_Pos              AT %PLCFLAGS.1;
@@ -50,8 +49,7 @@ O_B1_B2_Open                   AT %M5.0;
 O_B1_B2_Close                  AT %M5.0;
 O_CylinderDwn_G                AT %M5.0;
 
-I_FixedSpindle_Open            AT %PLCFLAGS.0;
-I_FixedSpindle_Close           AT %PLCFLAGS.0;
+
 I_SawClampZ_Open               AT %PLCFLAGS.0;
 I_SawClampZ_Close              AT %PLCFLAGS.0;
 I_SawClampZ_Rot_Open           AT %PLCFLAGS.0;
@@ -64,9 +62,9 @@ I_FlapL4_Inclined              AT %PLCFLAGS.0;
 I_FlapL5_Home                  AT %PLCFLAGS.0;
 I_FlapL5_Inclined              AT %PLCFLAGS.0;
 
-I_Mobile_Spindle_Open          AT %PLCFLAGS.0;
-I_Mobile_Spindle_Close         AT %PLCFLAGS.0;
-I_Mobile_Spindle_Slave_Close   AT %PLCFLAGS.0;
+* I_Mobile_Spindle_Open          AT %PLCFLAGS.0;
+* I_Mobile_Spindle_Close         AT %PLCFLAGS.0;
+* I_Mobile_Spindle_Slave_Close   AT %PLCFLAGS.0;
 
 I_Butt_Open_Mobile             AT %PLCFLAGS.0;
 I_Butt_Close_Mobile            AT %PLCFLAGS.0;
