@@ -1679,7 +1679,7 @@ BKC=RGB(128,128,128)
 DTX=RGB(130,130,130)
 DBK=RGB(192,192,192)
 ADR=SUPPORTS_SYSTEM.values27
-MSK=3,1
+MSK=2,1
 TBS=1
 ABIL=(cn3.rc0.9 == 1)
 FRM=BTN,1
@@ -2130,7 +2130,7 @@ FBK=RGB(233,179,3)
 FSN=0
 FRL=0
 STY=LEFT
-SHW=(USR_M49.8.11 == 1) && (cn9.cc1.0 == 0)
+SHW=(USR_M49.11 == 1) && (cn9.cc1.0 == 0)
 
 
 [Label35]
@@ -2147,7 +2147,7 @@ FBK=RGB(233,179,3)
 FSN=0
 FRL=0
 STY=LEFT
-SHW=(USR_M41.21 == 1) && (cn9.cc1.0 == 0)
+SHW=(USR_M49.14 == 1) && (cn9.cc1.0 == 0)
 
 
 [Label36]
@@ -2164,7 +2164,7 @@ FBK=RGB(233,179,3)
 FSN=0
 FRL=0
 STY=LEFT
-SHW=(USR_M49.14 == 1) && (cn9.cc1.0 == 0)
+SHW=(USR_M49.15 == 1) && (cn9.cc1.0 == 0)
 
 
 [ButtonSpindleAlig2]
