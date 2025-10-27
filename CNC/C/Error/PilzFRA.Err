@@ -1,0 +1,599 @@
+#0
+Errore generico
+Comunicazione non attiva
+Linea disturbata
+Sequenza errata
+#100
+PSS Errori Hardware
+Errore Hardware nella CPU - A
+Errore Hardware nella CPU - B
+Errore Hardware nella CPU - C
+Errore di batteria (sostituire la batteria)
+"Errore di dotazione rack nello slot %d",PilzSrv.PilzErrCodes[1],
+#107
+Errore CRC nel programma applicativo
+#111
+Superato il tempo di ciclo impostato
+Errore nel refresh della lista allarmi
+#114
+Errore nell'elaborazione degli allarmi
+#120
+Warning da sistema operativo
+Divisione per 0
+Il DB attuale è troppo piccolo
+Il DB attuale è del tipo Read-Only
+Errore di indirizzamento parametrizzato
+Errore di indirizzamento indiretto
+Manca il modulo
+Errore di assegnazione di un parametro
+Troppe concatenazioni
+#130
+Errore di sistema nella CPU
+Errore di sincronizzazione
+Le CPU B/C non rispondono alla CPU A
+Errore durante la lettura dell'immagine degli ingressi
+Errore nella tabella di configurazione
+Errore del programmatore (restart)
+Errore di Compilazione
+Errore durante il download del programma (ripetere la procedura)
+Errore durante il link del programma
+Errore durante il confronto delle immagini delle uscite
+Errore fatale (spegnere il PSS)
+Errore di parametrizzazione del Datablock (DB) 0003
+"Errore / cortocircuito in fase di test %d",PilzSrv.PilzErrCodes[1],
+#144
+Errore di lettura: Tolleranza delle XW
+#148
+"Errore indefinito Categoria %d Numero %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+Nella stack errori non si riscontra alcun errore FS
+Parte FS in STOP Ripristinare lo switch RUN/STOP
+"Errore Linea DOZ su slot %d.%d",,PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore Linea DOZ su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOZ su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore linea DOT su slot %d.%d",,PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore linea DO su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore linea DO(T) su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore linea DOT su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore nel modulo DO su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DO su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DO su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DO su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DO su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DO su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore linea DO su slot %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Errore di fase modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore di fase modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore di fase modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore di fase modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DI  su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DI su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DI su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DI su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore di trigger nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore di test modulo DIF su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore di test modulo DI su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo XW su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DO su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore in DO / DOZ / DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Accesso di scrittura a modulo Trigger %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOR su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOT su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DOS su slot %d",PilzSrv.PilzErrCodes[1],
+"Errore nel modulo DI2 su slot %d",PilzSrv.PilzErrCodes[1],
+"Cortocircuito rispetto 0V del trigger nello slot %d",PilzSrv.PilzErrCodes[1],
+"Cortocircuito rispetto 24V del trigger nello slot %d",PilzSrv.PilzErrCodes[1],
+"Cortocircuito rispetto al segnale trigger %d",PilzSrv.PilzErrCodes[1],
+Errore non gestito
+"Errore sugli ingressi nello slot %d",PilzSrv.PilzErrCodes[1],
+"Errore sui trigger nello slot %d",PilzSrv.PilzErrCodes[1],
+"SafetyBUS p - I/O Group in STOP Device %d  - I/O Group %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"SafetyBUS p - Errore interno del modulo Device %d",PilzSrv.PilzErrCodes[1],
+"SafetyBUS p - Errore generico Device %d  - I/O Group %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"SafetyBUS p - Errore di Bus Device %d  - I/O Group %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+SafetyBUS p - System error
+Errore non gestito
+SafetyBUS p - Errore sull'interfaccia BUS
+#291
+"Cortocircuito verso lo 0 V del trigger %d",PilzSrv.PilzErrCodes[1],
+"Cortocircuito verso i 24 V del trigger %d",PilzSrv.PilzErrCodes[1],
+"Cortocircuito tra trigger %d",PilzSrv.PilzErrCodes[1],
+Errore di sistema - Verificare la Error Stack
+#298
+Nessuna segnalazione di errore
+"Tipo di SB non specificato come SSNR %d",PilzSrv.PilzErrCodes[1],
+#309
+"Azionato pulsante di emergenza %d",PilzSrv.PilzErrCodes[1],
+#314
+"Reset emergenza %d premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Emergenza %d ripristinata Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Azionato pulsante di emergenza %d",PilzSrv.PilzErrCodes[1],
+"Emergenza %d Errore di sincronizzazione contatto n.c. S1",PilzSrv.PilzErrCodes[1],
+"Emergenza %d Errore di sincronizzazione contatto n.c. S2",PilzSrv.PilzErrCodes[1],
+"Azionato emergenza %d e premuto il Reset",PilzSrv.PilzErrCodes[1],
+#324
+"Emergenza %d ripristinata Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Emergenza %d  Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Emergenza %d  - Al Reset il contatto n.c. S1 non si è aperto",PilzSrv.PilzErrCodes[1],
+"Emergenza %d  - Al Reset il contatto n.c. S2 non si è aperto",PilzSrv.PilzErrCodes[1],
+#340
+"Porta di Protezione %d controllo Funzionamento non eseguito",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d - Errore di sincronizzazione Tempo S1-S2 superato",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d aperta S1 aperto",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d aperta S2 aperto",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d aperta Contatto n.c. S1 non era aperto",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d aperta Contatto n.c. S1 non era aperto",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d chiusa Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d aperta",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d errore di  sincronizzazione Tempo S1 superato",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d errore di sincronizzazione Tempo S2 superato",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d aperta e premuto Reset",PilzSrv.PilzErrCodes[1],
+#356
+"Porta di Protezione %d Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d chiusa Contatto n.c. S1 non era aperto",PilzSrv.PilzErrCodes[1],
+"Porta di Protezione %d chiusa Contatto n.c. S2 non era aperto",PilzSrv.PilzErrCodes[1],
+#364
+"Errore Barriera Fotoel. %d S1-S2 non sincronizzati",PilzSrv.PilzErrCodes[1],
+#366
+"Errore di tempo Barriera Fotoel. %d durante test della Barriera",PilzSrv.PilzErrCodes[1],
+#369
+"Errore Barriera Fotoel. %d Premere il reset",PilzSrv.PilzErrCodes[1],
+#371
+"Cambio - BA Barriera Fotoel. %d Premere il reset",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.  %d  campo di protezione interrotto",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d- partenza bloccata Eseguire Test di Funzionamento",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d- Fase bloccata Partenza",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Fase bloccata Attendere 1a interruzione",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Fase bloccata Attendere 2a interruzione",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Fase bloccata Tempo di attesa superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - selezionata più di una posizione",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - nessuna posizione selezionata",PilzSrv.PilzErrCodes[1],
+#388
+"Barriera Fotoel. %d - Test funzionale non eseguito",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - errore di sincronizzazione Tempo S1-S2 superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - campo di protezione interrotto (S1)",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - campo di protezione interrotto (S2)",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Reset Contatto n.c. S1 non era aperto",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Reset Contatto n.c. S2 non era aperto",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Campo di protezione OK Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Campo di protezione interrotto",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d  - Errore di sincronizzazione Tempo S1 superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d  - Errore di sincronizzazione Tempo S2 superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Campo di protezione interrotto e Reset premuto",PilzSrv.PilzErrCodes[1],
+#404
+"Barriera Fotoel. %d  Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Reset premuto in modo permanente  o troppo presto",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Errore iniziale Contatto n.c. S1 non era aperto",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel. %d - Errore iniziale Contatto n.c. S2 non era aperto",PilzSrv.PilzErrCodes[1],
+#412
+"Azionato pulsante di emergenza %d",PilzSrv.PilzErrCodes[1],
+"Emergenza %d ripristinata Premere il Reset",PilzSrv.PilzErrCodes[1],
+#415
+"Emergenza %d  Eseguire il test funzionale",PilzSrv.PilzErrCodes[1],
+"Azionata emergenza %d e premuto il Reset",PilzSrv.PilzErrCodes[1],
+"Emergenza %d  Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Emergenza %d  Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Emergenza %d  - Al Reset il contatto n.c. 1 non si è aperto; errore di sincronizzazione",PilzSrv.PilzErrCodes[1],
+"Emergenza %d  - Al Reset il contatto n.c. 2 non si è aperto; errore di sincronizzazione",PilzSrv.PilzErrCodes[1],
+"Emergenza %d  - Far ripartire l'I/O-group",PilzSrv.PilzErrCodes[1],
+#428
+"Safety Block %d Tasto azionato",PilzSrv.PilzErrCodes[1],
+"Safety Block %d - Tempo di sincronizzazione contatto n.c. S1 superato",PilzSrv.PilzErrCodes[1],
+"Safety Block %d - Tempo di sincronizzazione contatto n.c. S1 superato",PilzSrv.PilzErrCodes[1],
+"Safety Block %d azionato e premuto Reset",PilzSrv.PilzErrCodes[1],
+#436
+"Safety Block %d  Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Safety Block %d- Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Safety Block %d - Al Reset il contatto n.c. S1 non era aperto",PilzSrv.PilzErrCodes[1],
+"Safety Block %d - Al Reset il contatto n.c. S2 non era aperto",PilzSrv.PilzErrCodes[1],
+#444
+"Comando bimanuale %d- Tasto 1 contatti n.c. e n.a. aperti",PilzSrv.PilzErrCodes[1],
+"Comando bimanuale %d- Tasto 1 contatti n.c. e n.a. chiusi",PilzSrv.PilzErrCodes[1],
+"Comando bimanuale %d- Tasto 2 contatti n.c. e n.a. aperti",PilzSrv.PilzErrCodes[1],
+"Comando bimanuale %d- Tasto 2 contatti n.c. e n.a. chiusi",PilzSrv.PilzErrCodes[1],
+"Comando bimanuale  %d staccato, ma la funzione non è selezionata",PilzSrv.PilzErrCodes[1],
+"Comando bimanuale  %d inserito, benchè non selezionato",PilzSrv.PilzErrCodes[1],
+#452
+"Reset comando bimanuale %d premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Comando bimanuale %d azionato senza abilitazione",PilzSrv.PilzErrCodes[1],
+"Errore di sincronizz. comando bimanuale %d Manca tasto 1",PilzSrv.PilzErrCodes[1],
+"Errore di sincronizz. comando bimanuale %d Manca tasto 2",PilzSrv.PilzErrCodes[1],
+"Comando bimanuale %d  - Reset con Mein (rilasciare tasti)",PilzSrv.PilzErrCodes[1],
+#458
+"Errore comando bimanuale %d T1 non rilasciato",PilzSrv.PilzErrCodes[1],
+"Errore comando bimanuale %d T2 non rilasciato",PilzSrv.PilzErrCodes[1],
+"Pedale %d - tasto 1 contatti n.a. e n.c. aperti",PilzSrv.PilzErrCodes[1],
+"Pedale %d - tasto 1 contatti n.a. e n.c. chiusi",PilzSrv.PilzErrCodes[1],
+"Pedale %d - tasto 2 contatti n.a. e n.c. aperti",PilzSrv.PilzErrCodes[1],
+"Pedale %d - tasto 2 contatti n.a. e n.c. chiusi",PilzSrv.PilzErrCodes[1],
+"Pedale %d staccato ma non selezionato",PilzSrv.PilzErrCodes[1],
+"Pedale %d inserito benché selezionato",PilzSrv.PilzErrCodes[1],
+#468
+"Pedale %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Pedale %d - Tasto premuto senza abilitazione",PilzSrv.PilzErrCodes[1],
+"Pedale %d - Errore di sincronizzazione Manca contatto 1",PilzSrv.PilzErrCodes[1],
+"Pedale %d - Errore di sincronizzazione Manca contatto 2",PilzSrv.PilzErrCodes[1],
+"Pedale %d - Reset mediante Mein (rilasciare tasti)",PilzSrv.PilzErrCodes[1],
+#474
+"Errore pedale %d -  Contatto 1 non rilasciato",PilzSrv.PilzErrCodes[1],
+"Errore pedale %d -  Contatto 2 non rilasciato",PilzSrv.PilzErrCodes[1],
+"Errore Selettore %d  Codice errato della selezione",PilzSrv.PilzErrCodes[1],
+"Errore Selettore %d Nessuna selezione",PilzSrv.PilzErrCodes[1],
+#484
+"Errore Selettore %d - Selezione modificata durante il blocco LOCK-1",PilzSrv.PilzErrCodes[1],
+#490
+"Selettore %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+#492
+"Errore Retroazione %d RFK 1 rimane aperto",PilzSrv.PilzErrCodes[1],
+"Errore Retroazione %d RFK 1 rimane chiuso",PilzSrv.PilzErrCodes[1],
+"Errore Retroazione %d RFK 2 rimane aperto",PilzSrv.PilzErrCodes[1],
+"Errore Retroazione %d RFK 2 rimane chiuso",PilzSrv.PilzErrCodes[1],
+"Errore Retroazione %d RFK 1 interrotto",PilzSrv.PilzErrCodes[1],
+"Errore Retroazione %d RFK 1 chiuso",PilzSrv.PilzErrCodes[1],
+"Errore Retroazione %d RFK 2 interrotto",PilzSrv.PilzErrCodes[1],
+"Errore Retroazione %d RFK 2 chiuso",PilzSrv.PilzErrCodes[1],
+"Retroazione %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+#509
+"Valvola di sicurezza %d - Feedback Dopo ON, S1 rimane a 1",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d - Feedback Dopo OFF, S1 rimane a 0",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d non commutato nell'ultimo Ciclo",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d - posizione di riposo S1 manca con Y1-ON",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d - Feedback Dopo ON, S2 rimane a 1",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d - Feedback Dopo OFF, S2 rimane a 0",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d - posizione di riposo S2 manca con Y2-ON",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d - Reset = 1 oppure S1=0 /S2=0/ ON=1",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d - Manca la pressione durante il funzionamento",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza %d - Manca la pressione all'avviamento",PilzSrv.PilzErrCodes[1],
+#524
+"Progr. Camme %d - Extracorsa Superato il campo di frenata ",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - Arresto da Camma NL mancato comando delle camme dinamica e di salita",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - Arresto da camma di salita HL mancato comando della camma dinamica",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - La camma dinamica passa da "0" a "1" con OT (camma PMS) = "1"",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - Arresto da camma di salita HL nel ritorno mancato comando della camma di frenatura",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - Ritorno attivo al P.M.S.",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - camma HL manca nel ciclo",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - camma NL manca nel ciclo",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - camma DY manca nel ciclo",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - camma STP manca nel ciclo",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - NL a On ad inizio HL. Verificare la posizione delle camme",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d - HL a On a fine  NL Verificare la posizione delle camme",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d NL prima di DY Verificare la posizione delle camme",PilzSrv.PilzErrCodes[1],
+"Progr. Camme %d HL prima di DY. Verificare la posizione delle camme",PilzSrv.PilzErrCodes[1],
+#540
+"Rottura Albero %d Nessun cambio di impulso sul proximity",PilzSrv.PilzErrCodes[1],
+#548
+"Rottura Albero %d  Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+#564
+"Controllo Sblock %d non eseguito",PilzSrv.PilzErrCodes[1],
+"Sblock %d -tempo di sincronizzazione Tempo S1-S2 superato",PilzSrv.PilzErrCodes[1],
+"Sblock %d intervenuto (S1 aperto)",PilzSrv.PilzErrCodes[1],
+"Sblock %d intervenuto (S2 aperto)",PilzSrv.PilzErrCodes[1],
+"Sblock %d inserito Contatto n.c. S1 non era aperto",PilzSrv.PilzErrCodes[1],
+"Sblock %d inserito Contatto n.c. S2 non era aperto",PilzSrv.PilzErrCodes[1],
+"Sblock  %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Sblock %d inserito Premere il Reset",PilzSrv.PilzErrCodes[1],
+#581
+"Errore Contr. Livello %d Pressostato intervenuto",PilzSrv.PilzErrCodes[1],
+#586
+"Contr. Livello %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Contr. Livello %d - Pressostato OK Premere il Reset",PilzSrv.PilzErrCodes[1],
+#597
+"Errore raffreddam. %d Controllo temperatura intervenuto",PilzSrv.PilzErrCodes[1],
+#602
+"Raffreddam. %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Raffreddam. %d - Controllo OK Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Pulsante Uomomorto %d - avviso 1 minuto trascorso",PilzSrv.PilzErrCodes[1],
+"Pulsante Uomomorto %d - avviso 2 minuti trascorsi",PilzSrv.PilzErrCodes[1],
+"Pulsante Uomomorto %d - avviso 3 minuti trascorsi",PilzSrv.PilzErrCodes[1],
+"Pulsante Uomomorto %d - attivato lo STOP",PilzSrv.PilzErrCodes[1],
+"Pulsante Uomomorto %d premuto > 1 minuto",PilzSrv.PilzErrCodes[1],
+"Pulsante Uomomorto %d - Abilitazione non è stata data",PilzSrv.PilzErrCodes[1],
+#620
+"Allarme Gas %d  - Interruttore 1 Concentrazione 40 %",PilzSrv.PilzErrCodes[1],
+"Allarme Gas %d  - Interruttore 2 Concentrazione 40 %",PilzSrv.PilzErrCodes[1],
+"Allarme Gas %d  - Interruttore 1 Concentrazione 20 %",PilzSrv.PilzErrCodes[1],
+"Allarme Gas %d  - Interruttore 2 Concentrazione 20 %",PilzSrv.PilzErrCodes[1],
+#636
+"Valvola KH %d  - manca contatto S1 chiuso",PilzSrv.PilzErrCodes[1],
+"Valvola KH %d  - manca contatto S2 aperto",PilzSrv.PilzErrCodes[1],
+"Valvola KH %d  - superato tempo V- di variazione  posizione",PilzSrv.PilzErrCodes[1],
+"Valvola KH %d  - abilitazione disattivata",PilzSrv.PilzErrCodes[1],
+"Valvola KH %d  - reazione OK, ma "S1 chiuso" bloccato",PilzSrv.PilzErrCodes[1],
+"Valvola KH %d  - reazione OK, ma "S2 aperto" bloccato",PilzSrv.PilzErrCodes[1],
+"Valvola KH %d  - Premere il Reset",PilzSrv.PilzErrCodes[1],
+#652
+"Errore controllo livello %d -  Tempo scaduto",PilzSrv.PilzErrCodes[1],
+"Errore controllo livello %d - Attivato lo STOP",PilzSrv.PilzErrCodes[1],
+"Errore controllo livello %d - tasto premuto per troppo tempo",PilzSrv.PilzErrCodes[1],
+#676
+"Gestione Pressa %d - manca  abilitazione statica",PilzSrv.PilzErrCodes[1],
+"Gestione Pressa %d - manca  abilitazione all'avviamento",PilzSrv.PilzErrCodes[1],
+"Gestione Pressa %d - manca  abilitazione di sicurezza",PilzSrv.PilzErrCodes[1],
+"Gestione Pressa %d - Stop al P.M.S. Rilasciare lo start",PilzSrv.PilzErrCodes[1],
+"Gestione Pressa %d - Start con STOP = 0",PilzSrv.PilzErrCodes[1],
+"Gestione Pressa %d - Start al P.M.S. Manca abilitazione all'avviamento",PilzSrv.PilzErrCodes[1],
+#684
+"Comunicazione sicura : Ricevente %d  Rottura cavo canale 1",PilzSrv.PilzErrCodes[1],
+"Comunicazione sicura : Ricevente %d Rottura cavo canale 5",PilzSrv.PilzErrCodes[1],
+"Comunicazione sicura : Ricevente %d  Rottura cavo canale 2",PilzSrv.PilzErrCodes[1],
+"Comunicazione sicura : Ricevente %d   Rottura cavo canale 6",PilzSrv.PilzErrCodes[1],
+"Comunicazione sicura : Ricevente %d  Rottura cavo canale 3",PilzSrv.PilzErrCodes[1],
+"Comunicazione sicura : Ricevente %d  Rottura cavo canale 7",PilzSrv.PilzErrCodes[1],
+"Comunicazione sicura : Ricevente %d  Rottura cavo canale 4",PilzSrv.PilzErrCodes[1],
+"Comunicazione sicura : Ricevente %d  Rottura cavo canale 8",PilzSrv.PilzErrCodes[1],
+#698
+"Comunicazione sicura : Ricevente %d  Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+#708
+"Controllo Barriera di sicurezza %d  non eseguito",PilzSrv.PilzErrCodes[1],
+"Barriera di sicurezza %d  Tempo di sincronizzazione S1-S2 superato",PilzSrv.PilzErrCodes[1],
+"Barriera di sicurezza %d  - barriera aperta, S1 aperto",PilzSrv.PilzErrCodes[1],
+"Barriera di sicurezza %d  - barriera aperta, S2 aperto",PilzSrv.PilzErrCodes[1],
+"Barriera di sicurezza %d  - barriera OK, S1 non era aperto",PilzSrv.PilzErrCodes[1],
+"Barriera di sicurezza %d  - barriera OK, S2 non era aperto",PilzSrv.PilzErrCodes[1],
+"Barriera di sicurezza %d  - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Barriera di sicurezza %d  - barriera OK, Premere il Reset",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - tempo di sincronizzazione BWS1 - BWS2 superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - BWS1 o BWS2  non era a 0",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - MS1 e MS2 contemporaneamente a ON",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - Toff = 1 MS1 o MS2 modificato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - Toff = 1 MP1 o MP2 modificato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - MP1 o MP2 non era in GST",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - Tempo di sincronizzazione "TPSy" superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - Tempo massimo "Tint" superato",PilzSrv.PilzErrCodes[1],
+#725
+"Barriera Fotoel.-MUTE %d - Tempo massimo "TS12" superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d   Barriera Fotoelettrica interrotta",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - Tempo massimo "TMut" superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - Tempo massimo "TBWS" superato",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - MS1= 1/0 senza prima MS2 = 0/1",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoel.-MUTE %d - Barriera Fotoelettrica libera confermare con Reset",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - camma P 0/1 e proximity = 1",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - camma P 1/0 e proximity = 1",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - camma P 1/0 e proximity = 0",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - camma P Fronte 0/1 e PMS-0",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - camma P = 0 e OU-1",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - camma P Fronte 0/1 e PMS-1",PilzSrv.PilzErrCodes[1],
+#740
+"CAM-ERR %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+#748
+"Valvola di sicurezza-MAN %d - Arresto volano non intervenuto",PilzSrv.PilzErrCodes[1],
+"Valvola di sicurezza-MAN %d - Pressa non in UU",PilzSrv.PilzErrCodes[1],
+#756
+"Valvola di sicurezza-MAN %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+#764
+"HPSV %d - errore di manipolazione Y10n o Y20n",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S1 resta a 1 dopo ON",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S1 resta a 0 dopo OFF ",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S1 diventa 1 con Y1= ON",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Accensione Feedback S1 =0",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S2 resta 1 dopo ON",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S2 resta 0 dopo OFF",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Accensione Feedback S2 = 0",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Reserte-1 oppure S1-0 / S2 -0 / ON = 1",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S2 diventa 1 con Y2 = ON",PilzSrv.PilzErrCodes[1],
+"HPSV %d - manca abilitazione statica all'accensione",PilzSrv.PilzErrCodes[1],
+"HPSV %d - comando di Y1 e Y2",PilzSrv.PilzErrCodes[1],
+"HPSV %d - ON --> OFF : Y1 non ha commutato",PilzSrv.PilzErrCodes[1],
+"HPSV %d - ON --> OFF : Y2 non ha commutato",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Indicazioni di tempo errate per TOn",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Indicazioni di tempo errate per TOff",PilzSrv.PilzErrCodes[1],
+"Pulsante di consenso %d Emergenza",PilzSrv.PilzErrCodes[1],
+"Pulsante di consenso %d Contatto n.a. difettoso",PilzSrv.PilzErrCodes[1],
+#788
+"Pulsante di consenso %d Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Pulsante di consenso %d Premere il Reset",PilzSrv.PilzErrCodes[1],
+#796
+"HYDR-UN %d - S2-1 con fronte 0/1 su On",PilzSrv.PilzErrCodes[1],
+#798
+"HYDR-UN %d - STFG + 0 e fronte 0/1 su On",PilzSrv.PilzErrCodes[1],
+"HYDR-UN %d - Reset permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+#812
+"Contr. Fiamma %d - Bruciatore ON ma senza fiamma",PilzSrv.PilzErrCodes[1],
+"Contr. Fiamma %d - Bruciatore OFF ma è presente una fiamma",PilzSrv.PilzErrCodes[1],
+"Contr. Fiamma %d  - Bruciatore ON Entrambi i controlli di fiamma a 1",PilzSrv.PilzErrCodes[1],
+"Contr. Fiamma %d  - Bruciatore ON Entrambi i controlli di fiamma a 0",PilzSrv.PilzErrCodes[1],
+"Contr. Fiamma %d  - Bruciatore OFF Entrambi i controlli di fiamma a 1",PilzSrv.PilzErrCodes[1],
+"Contr. Fiamma %d  - Bruciatore OFF Entrambi i controlli di fiamma a 0",PilzSrv.PilzErrCodes[1],
+#819
+"Contr. Fiamma %d  - Reset non ammesso",PilzSrv.PilzErrCodes[1],
+"Contr. Fiamma %d  - Reset solo con controllo fiamma ON",PilzSrv.PilzErrCodes[1],
+#837
+"Soppressione %d - Tempo scaduto e segnale errato",PilzSrv.PilzErrCodes[1],
+#842
+"Soppressione %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+"Soppressione %d - Segnale OK, manca Reset",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - sequenza segnali di fiamma interrotta",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - sequenza segnali di sicurezza interrotta",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - sequenza segnali di errore interrotta",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - sequenza segnali dispositivi di controllo interrotta",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - Pressione aria inferiore al minimo all'avviamento",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - Pressione aria inferiore  al minimo in funzionamento",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - STOP da pulsante di Stop",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - sequenza segnali di fiamma interrotta",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d -Manca conferma per Reset",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - Start 0/1 e tasto di stop = 1",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - Stop 0/1 e tasto di Start = 1",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - Manca conferma per Start",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - Temporizzazione per avvio FG in corso",PilzSrv.PilzErrCodes[1],
+"BRUCIATORE %d - errore --> Premere Quit o tasto di Start",PilzSrv.PilzErrCodes[1],
+#860
+"SERRANDA %d - C : non corrisponde alla direzione desiderata",PilzSrv.PilzErrCodes[1],
+"SERRANDA %d - O : non corrisponde alla direzione desiderata",PilzSrv.PilzErrCodes[1],
+"SERRANDA %d - Tempo di commutazione per variazione posizione superato",PilzSrv.PilzErrCodes[1],
+"SERRANDA %d - DirO e dirC  contemporaneamente",PilzSrv.PilzErrCodes[1],
+"SERRANDA %d - controllo coppia Nessun finecorsa",PilzSrv.PilzErrCodes[1],
+"SERRANDA %d - controllo coppia Entrambi i finecorsa",PilzSrv.PilzErrCodes[1],
+"SERRANDA %d - manca  conferma",PilzSrv.PilzErrCodes[1],
+"SERRANDA %d - Selezionare direzione",PilzSrv.PilzErrCodes[1],
+#876
+"VALVOLA %d - Posizione POS1 errata",PilzSrv.PilzErrCodes[1],
+"VALVOLA %d - Posizione POS2 errata",PilzSrv.PilzErrCodes[1],
+"VALVOLA %d - Tempo di commutazione superato",PilzSrv.PilzErrCodes[1],
+"VALVOLA %d - Dir1 e  Dir2 contemporaneamente",PilzSrv.PilzErrCodes[1],
+"VALVOLA %d - Mancano  entrambi i finecorsa",PilzSrv.PilzErrCodes[1],
+"VALVOLA %d - Entrambi i finecorsa azionati",PilzSrv.PilzErrCodes[1],
+"VALVOLA %d - Manca Reset",PilzSrv.PilzErrCodes[1],
+"VALVOLA %d - Manca posizione di riposo valvola",PilzSrv.PilzErrCodes[1],
+#892
+"Lavaggio %d Manca finecorsa per posizione max. o portata inferiore al massimo",PilzSrv.PilzErrCodes[1],
+#908
+"Step %d - Sequenza  indefinita",PilzSrv.PilzErrCodes[1],
+"Step %d - Valvola di sicurezza VAV1 non a tenuta stagna",PilzSrv.PilzErrCodes[1],
+"Step %d - Valvola di sicurezza VAV3 non a tenuta",PilzSrv.PilzErrCodes[1],
+"Step %d - periodo di controllo scaduto",PilzSrv.PilzErrCodes[1],
+"Step %d - errata sequenza di passi",PilzSrv.PilzErrCodes[1],
+"Step %d - Alta pressione del Gas",PilzSrv.PilzErrCodes[1],
+"Step %d - Alta pressione dell'Aria",PilzSrv.PilzErrCodes[1],
+#924
+"Accensione %d - Passo indefinito",PilzSrv.PilzErrCodes[1],
+"Accensione %d  - errata sequenza di passi",PilzSrv.PilzErrCodes[1],
+#940
+"MARCIA %d - Passo indefinito",PilzSrv.PilzErrCodes[1],
+"MARCIA %d - errata sequenza di passi ",PilzSrv.PilzErrCodes[1],
+#956
+"VENTILATORE %d - Tasto di Start premuto permanentemente",PilzSrv.PilzErrCodes[1],
+"VENTILATORE %d - Tasto di Stop premuto permanentemente",PilzSrv.PilzErrCodes[1],
+"VENTILATORE %d - NEXT non disattivato",PilzSrv.PilzErrCodes[1],
+#972
+"Barriera Fotoelettrica %d - Contatti N.A. 1 e 2 non sincronizzati",PilzSrv.PilzErrCodes[1],
+#974
+"Barriera Fotoelettrica %d - Tempo di test superato",PilzSrv.PilzErrCodes[1],
+#977
+"Barriera Fotoelettrica %d - Manca il reset",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoelettrica %d - Reset premuto in modo permanente o troppo presto",PilzSrv.PilzErrCodes[1],
+#980
+"Barriera Fotoelettrica %d  Interrotta",PilzSrv.PilzErrCodes[1],
+"Barriera Fotoelettrica %d ",PilzSrv.PilzErrCodes[1],
+#9010
+Errore ! Errore di configurazione Errore di sintassi nell'istruzione di configurazione !
+#9031
+Attenzione ! Nessun testo esistente ! Il numero di record  selezionato è maggiore del numero di record più alto esistente !
+#9035
+Errore ! Numero di record > 9999 ! Si è tentato di richiamare un numero di record superiore a 999"9
+#9040
+Errore ! Numeri BCD / sintassi Sono stati trasmessi troppi numeri BCD oppure sintassi dell'istruzione MIN/MAX/NOTL non corrett"a
+Errore ! Durante la selezione del numero di testo è stato trasmesso un numero BCD > "9
+Errore ! Valore binario troppo elevato ! Il valore trasmesso è superiore a quanto ammesso !
+#9044
+Errore ! Numero di record negativo ! Nel modo di elaborazione testi è stato indicato un numero di record negativo
+#9051
+Errore ! Variabile senza posizione  riservata. E' stato editato un segnale di comando per variabili, ma senza posizione riservata per le variabili !
+Attenzione ! Troppe posizioni riservate. Sono stati editati  più di undici posizioni riservate per variabili !
+#9080
+Errore ! Codice speciale errato ! Il codice di funzione speciale selezionato non è ammissibile !
+Errore ! Comando errato ! Nel comando di variabili in modo seriale è stato inviato un telegramma privo dei dati delle variabili
+Errore ! Nel comando dei testi in modo seriale è stato inviato un telegramma senza numero di testo
+#9100
+Errore ! Istruzione non ammissibile ! Nel modo "monitor di testo" è stato trasmessa un'istruzione non ammissibile
+#9120
+Attenzione ! Mancano dati PLC ! La memoria di testo non contiene dati PLC. E' possibile che la memoria  di testo sia vuota !
+Errore ! Dati PLC errati ! I dati PLC contengono informazioni circa un servizio non ammissibile
+Errore ! Dati PLC errati ! I record di dati PLC sono doppi
+Errore ! Dati PLC errati ! E' stato parametrizzato un indirizzo PLC non valido
+Errore ! Manca collegamento con PLC, Possibili cause: * cavo errato * Tipo  di PLC errato * Difetto Hardware
+Errore ! Dati PLC errati ! Nell'assegnazione di variabili è stato parametrizzato un numero di testo non  valido
+Errore ! Dati PLC errati ! Nell'assegnazione di variabili è stata indicata una codifica non ammissibile
+Errore ! Nell'assegnazione di variabili è stata indicata una lunghezza non ammissibile
+Errore ! Dati PLC errati ! Nell'assegnazione di variabili è stato indicato un numero di variabile non ammissibile
+Errore !  Memoria insufficiente ! La memoria di testo non è sufficiente. La memoria di testo contiene troppi dati PLC
+Errore ! Dati PLC errati ! E' stato indicato un numero di identificazione LED inammissibile oppure una quantità   di Led  inammissibile
+Errore ! Dati PLC errati ! E' stato indicato un valore di Offset non ammissibile
+Errore ! Dati PLC errati ! E' stato indicato un numero di identificazione o una quantità  inammissibile di numeri di tasti di funzione.
+#9140
+Attenzione ! Il  PLC è in stato di stop
+Errore ! Errore nei valori nominali ! Errore nell'indirizzamento dei valori nominali
+#9160
+Errore ! Errore nel set di caratteri! La tabella di caratteri specificata non è stata ritrovata nella memoria di testo !
+Errore ! Errore nel set di caratteri! La tabella di caratteri specificata non è completa
+#9170
+Errore !  Time-out dell'interfaccia seriale.
+#9120
+Errore !  Errore di cancellazione Flash ! La memoria Flash-Eprom non è stata cancellata. Controllare se in effetti è stata impiegata una memoria Flash-Eprom
+#9201
+Errore! Flash: ID errato ! Durante la programmazione si è riscontrato che la memoria di testo ha una sigla ID errata
+Errore ! Flash: Errore di scrittura ! Durante la programmazione della memoria Flash-Eprom si è verificato un errore di scrittura E' possibile che la memoria Flash-Eprom non sia vuota
+Attenzione !  Memoria insufficiente ! La programmazione della memoria di testo eccede la capacità della memoria di testo

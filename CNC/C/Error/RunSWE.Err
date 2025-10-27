@@ -1,0 +1,775 @@
+*Vedere [RunErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+Väntar på tecken [
+Fel registernummer
+Ogiltig funktion
+Parametrisk instruktion: Ogiltigt tecken
+IF: Väntar på tecken =
+JSR: Fel kapslingsnivå för subrutin
+RET: Fel kapsling av subrutin
+Funktion ej tillgänglig
+För många sammanhängande M-funktioner
+Radie utan G2/G3
+Inkorrekt radie
+Fel vid initialisering av kanal
+Stoppad kanal (totalstopp)
+Fast cykel existerar ej
+För många nivåer med parentes (
+Tilldelning: Väntar på tecken =
+Väntar på tecken CR
+Ändrat funktionssätt
+JMP: Blocknummer ej hittat
+Program ej hittat
+Fel p.g.a. extern procedur
+Mått utanför intervall
+Axel ej konfigurerad
+Spindel ej konfigurerad
+Fel plan valt
+Axel ej tillgänglig
+Ogiltigt gängstigning
+Axel i larmläge
+Ogiltig matning
+Ogiltig verktygsradie
+Symbol % ej hittat
+Byte av plan eller sida med aktiv CUT
+Spindel utan encoder
+Adress utan nummer
+SQRT: Negativt argument
+TAN: Oändligt värde
+ASIN, ACOS: Argument utanför intervall
+Division med noll
+Oanvänd adress
+Nummer utan adress
+Parameter på adress G
+Program utan M2-M30
+Interpolation mellan två inkompatibla axlar
+För hög spindelhastighet
+Z-axelns hast. > kanalens max. hast.
+Korrigering av svarv G18
+Denna verktygsgeometri hanteras ej
+Överföringskö slut
+Kö av lediga paket slut
+Profilradie < verktygsradie
+Bågens slutpunkt inkorrekt
+Sträckan kan ej följas
+Ogiltigt segment
+Ogiltig vinkel
+Otillåtet moment
+Skärning mellan segment eller bågar
+Otillåtet profilkoppling: Använd G0
+Överskär på rätlinjigt segment
+Överskär på cirkelbåge
+Väntar på tecken ]
+För högt värde
+Fel vid filtillträde
+Fel verktygsdeskriptor
+För många parametrar
+För många tecken i strängfält
+Väntar på föremål efter ^
+Tilldelning till register som ej existerar
+Argument existerar ej
+Okänd SPC-kod
+Semantiskt fel block APND
+Se manual för förklaringar
+CFC: Subrutin ej hittad
+CFC: Felaktiga parametrar
+CFC: Fel vid hantering av resurser
+CFC: Ingen resurs
+CFC: Fel vid stängning
+CFC: Ospecificerad
+CFC: <FELSÖKNING 1>
+CFC: (Se manual för förklaringar)
+CFC: Korrekt utförd uppgift
+CVB: Okänd driftkod
+CVB: Fel vid hantering av resurser
+CVB: Ingen resurs
+CVB: Fel vid stängning
+CVB: Avbruten datakoppling
+CVB: Återställning från stopp/oväntat filslut
+CVB: Ospecificerad
+CVB: <FELSÖKNING 1>
+CVB: (Se manual för förklaringar)
+CVB: Korrekt utförd uppgift
+<används ej>
+<används ej>
+APIO: Ingen resurs
+APIO: Fel vid stängning
+APIO: Ospecificerad
+APIO: <FELSÖKNING 1>
+APIO: (Se manual för förklaringar)
+APIO: Korrekt utförd uppgift
+XCL: Okänd driftkod
+XCL: Fel vid hantering av resurser
+XCL: Ingen resurs
+XCL: Fel vid stängning
+XCL: Avbruten datakoppling
+XCL: Återställning från stopp/oväntat filslut
+XCL: Ospecificerad
+XCL: <FELSÖKNING 1>
+XCL: (Se manual för förklaringar)
+XCL: Korrekt utförd uppgift
+XAM: Okänd driftkod
+XAM: Fel vid hantering av resurser
+XAM: Ingen resurs
+XAM: Fel vid stängning
+XAM: Avbruten datakoppling
+XAM: Återställning från stopp/oväntat filslut
+XAM: Ospecificerad
+XAM: <FELSÖKNING 1>
+XAM: (Se manual för förklaringar)
+XAM: Korrekt utförd uppgift
+RETR: Okänd driftkod
+RETR: Fel vid hantering av resurser
+RETR: Ingen resurs
+RETR: Fel vid stängning
+RETR: Avbruten datakoppling
+RETR: Återställning från stopp/oväntat filslut
+RETR: Ospecificerad
+RETR: <FELSÖKNING 1>
+RETR: (Se manual för förklaringar)
+RETR: Korrekt utförd uppgift
+PG2: Okänd driftkod
+PG2: Fel vid hantering av resurser
+PG2: Ingen resurs
+PG2: Fel vid stängning
+PG2: Avbruten datakoppling
+PG2: Återställning från stopp/oväntat filslut
+PG2: Ospecificerad
+PG2: <FELSÖKNING 1>
+PG2: (Se manual för förklaringar)
+PG2: Korrekt utförd uppgift
+WARP: Okänd driftkod
+WARP: Fel vid hantering av resurser
+WARP: Ingen resurs
+WARP: Fel vid stängning
+WARP: Avbruten datakoppling
+WARP: Återställning från stopp/oväntat filslut
+WARP: Ospecificerad
+WARP: <FELSÖKNING 1>
+WARP: (Se manual för förklaringar)
+WARP: Korrekt utförd uppgift
+PAG: Okänd driftkod
+PAG: Fel vid hantering av resurser
+PAG: Ingen resurs
+PAG: Fel vid stängning
+PAG: Avbruten datakoppling
+PAG: Återställning från stopp/oväntat filslut
+PAG: Ospecificerad
+PAG: <FELSÖKNING 1>
+PAG: (Se manual för förklaringar)
+PAG: Korrekt utförd uppgift
+Okänd felkod
+X-axel, mått utanför intervall
+Y-axel, mått utanför intervall
+Z-axel, mått utanför intervall
+U-axel, mått utanför intervall
+V-axel, mått utanför intervall
+W-axel, mått utanför intervall
+A-axel, mått utanför intervall
+B-axel, mått utanför intervall
+C-axel, mått utanför intervall
+<används ej>
+Fel vid definiering av registervariabel [symbol]
+Fel vid tilldelning av registervariabel [symbol]
+Fel vid definiering av registervariabel [var defcn]
+Fel vid tilldelning av registervariabel [var defcn]
+Fel vid definiering av registervariabel [INGÅNG]
+Omöjligt att tilldela ingångsregister
+Fel vid definiering av registervariabel [UT]
+Fel vid tilldelning av registervariabel [UT]
+Fel vid definiering av registervariabel [logiskt register]
+Fel vid definiering av registervariabel [automatisk variabel]
+Väntar på värde som ska tilldelas till registervariabel
+Grupp över max. värde
+Redan definierad symbol
+Omöjligt att definiera grupper
+Fel vid initialisering av variabel
+Syntaxfel vid definiering av parametrisk instruktion
+Inkompatibel datatyp
+Omöjligt att definiera andra symboler
+Odefinierad symbol
+Fel vid tilldelning av sträng
+Fel vid tilldelning av nummer
+Symbol existerar ej
+Fel vid definiering av registervariabel [logiskt register]
+Väntar på symbol, parametrisk instruktion
+Fel vid tillträde till register i defcn
+Max. antal symboliska variabler har överskridits
+<används ej>
+Out of memory/Memory not awarded
+<används ej>
+Fel vid initialisering
+<FELSÖKNING: TCO: Okänd driftkod>
+<FELSÖKNING: TCO: Fel vid hantering av resurser>
+<FELSÖKNING: TCO: Ingen resurs>
+<FELSÖKNING: TCO: Fel vid stängning>
+<FELSÖKNING: TCO: Avbruten datakoppling>
+<FELSÖKNING: TCO: Återställning från stopp/oväntat filslut>
+<FELSÖKNING: TCO: Ospecificerad>
+<FELSÖKNING: TCO: <FELSÖKNING 1>>
+<FELSÖKNING: TCO: (Se manual för förklaringar)>
+<FELSÖKNING: TCO: Korrekt utförd uppgift>
+XCL: Semantiskt fel block APND
+XAM: Semantiskt fel block APND
+<FELSÖKNING: PMI: Ogiltig driftkod>
+<FELSÖKNING: PMI: Felaktiga I/O vektorparametrar>
+<FELSÖKNING: PMI: Avslutningssignal mottagen>
+<FELSÖKNING: PMI: Fel vid initialisering>
+<FELSÖKNING: PMI: Fel vid stängning>
+<FELSÖKNING: PMI: Ospecificerad>
+<FELSÖKNING: PMI: (Se manual för förklaringar)>
+<FELSÖKNING: PMI: Korrekt utförd uppgift>
+Eggdata ej hittade
+Okänd kinematik
+Fel vid orientering av TWI-enhet
+Odefinierad verktygsorientering
+TCP ej hittad
+THD-omvandling ej möjlig
+Omöjligt att välja egg, IJK saknas
+Fel egg
+XCL: Se manual
+Tool orientation violates constraints
+Okänd drivenhet för polära axlar
+Osammanhängande stigning
+Osammanhängande girvinkel
+Funktionssätt ICDSID ej möjligt
+Oklart förhållande mellan egg och bearbetning
+Begäran om block med rörelse efter G00
+För många stoppblock
+Okänd sekvens för axelsträcka
+Internt fel XCL
+<används ej>
+Överflödesbuffert DLE
+Retardationsframförhållning: För många stoppblock
+Okänt format av DLE
+Avbruten intern datakoppling i DLE
+Internt fel DLE
+DLE: (Se manual för förklaringar)
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+TCO: Semantiskt fel block APND
+PG2: Semantiskt fel block APND
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+Verktygsorientering ej definierad med ICDSID
+Ytvektor ej definierad med ICDSID
+Verktygets stigning inkompatibel med bearbetning
+Verktygets girvinkel ej fastställd med aktiv PADSID
+Funktionssätt PADSID ej möjligt
+Funktionssätt PADCHK ej möjligt
+För ojämn yta
+Frammatning i material inkompatibel med verktyg
+<används ej>
+För hög TWI-kod
+För hög THD-kod
+För hög D-kod
+För hög TAB-kod
+<används ej>
+Begäran om lämplig verktygsorientering med xSCMOD
+Begäran om lämplig ytvektor med xSCMOD
+Verktygsorientering ej definierad med xSCMOD
+Ytvektor ej definierad med xSCMOD
+Endast block G1 tillåtna med xSCMOD
+Längd på första blocket inkompatibel med ESCMOD
+Längd på enda block inkompatibel med xSCMOD
+Längd på sista blocket inkompatibel med XSCMOD
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+PAG: Implementation restriction
+PAG: Not enough data
+PAG: Ambiguous data
+PAG: Undetermined solution
+PAG: No solution found
+PAG: Invalid feed command
+<används ej>
+<används ej>
+<FELSÖKNING: PMI: Användarfiltillägg ej initialiserat>
+<används ej>
+Spindelhastighet < min. hastighet
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+Max. antal kontrollstrukturer har överskridits
+IF () THEN ej på samma block
+BREAK ej infogad i kontrollstruktur
+ELSE utan IF/THEN
+Två sammanhängande ELSE
+Förskjutning mellan kontrollstrukturer
+ENDW,ENDFOR,REPEAT ska ej efterföljas av kod
+UNTIL utan REPEAT
+FOR utan intervall
+RPT/BREAK: fel, hopp utanför cykel
+<används ej>
+<används ej>
+Fel vid datatillträde för sökning av block i DEFCN
+Overstore: Block med rörelse ej tillåtna
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+Fel vid fildelning
+Otillräckligt minne för att öppna fil
+Okänt fel på fil
+<används ej>
+Utslitet verktyg
+<används ej>
+<används ej>
+<används ej>
+Motion command error: see PLC Menu
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Fel vid datatillträde till axlarnas gränser>
+<FELSÖKNING: Internt fel>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+X-axel, mått utanför intervall
+Y-axel, mått utanför intervall
+Z-axel, mått utanför intervall
+U-axel, mått utanför intervall
+V-axel, mått utanför intervall
+W-axel, mått utanför intervall
+A-axel, mått utanför intervall
+B-axel, mått utanför intervall
+C-axel, mått utanför intervall
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Fel på grafikens utgående datakoppling>
+<FELSÖKNING: Anrop till TMAPI ej implementerat>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Redan ansluten till grafisk server>
+<FELSÖKNING: Registrering omöjlig i grafisk server>
+<FELSÖKNING: Ingen anslutning till grafisk server>
+<FELSÖKNING: Grafisk server har avbrutit åtgärderna>
+<används ej>
+<används ej>
+<FELSÖKNING: Stängning har signalerats av Kernel>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Otillräckligt minne för initialisering av TMAPI>
+<FELSÖKNING: Alla resurser ej frigjorda>
+<FELSÖKNING: Ospecificerad>
+<används ej>
+<används ej>
+<FELSÖKNING: Se manual>
+<unused>
+<unused>
+<unused>
+<unused>
+SRCVB: SPC out of phase
+SRCVB: no records
+SRCVB: too many records
+SRCVB: G0 not as 1st block
+SRCVB: eop found while recording
+SRCVB: invalid user extension
+<unused>
+<unused>
+<unused>
+<unused>
+<SR: Errbase>
+SR: Internal error
+SR: Unimplemented feature
+SR: X feed not monotone
+SR: Y feed not monotone
+SR: Output Callback failed
+SR: Argument singularity
+SR: Invalid argument
+SR: Parameter error
+SR: Missing side face intersection
+SR: Stock ranging error
+SR: Stock bottom reached
+SR: Stock top reached
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<FELSÖKNING: Okänd axelkonfiguration>
+<FELSÖKNING: Funktion ej implementerad>
+<används ej>
+<FELSÖKNING: Inställningen GRAPH Multitool har dåliga lediga celler>
+<FELSÖKNING: Inställningen GRAPH Multitool har INGA lediga celler>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Fel vid läsning av konfiguration för grafisk server>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Misslyckad skrivning av packade data>
+<FELSÖKNING: Felaktig måltyp för packade data>
+<FELSÖKNING: Felaktig källtyp för packade data>
+<FELSÖKNING: Avrundning av värde för packade data ej möjlig>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Misslyckad skrivning av opackade data>
+<FELSÖKNING: Felaktig måltyp för opackade data>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Felaktig semantik>
+<FELSÖKNING: Okänt kommando>
+Okänd SPC-kod
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Fel vid datatillträde till CED, THD eller TWI>
+Otillräckligt minne för hämtning av verktyg
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+Okänd kinematik
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+För hög TWI-kod
+För hög THD-kod
+För höd D-kod
+Okänd drivenhet för polära axlar
+För hög TAB-kod
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+Okänd kinematik
+Fel vid orientering av TWI-enhet
+Odefinierad verktygsorientering
+TCP ej hittad
+THD-omvandling ej möjlig
+Omöjligt att välja egg, IJK saknas
+Fel egg
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Se manual>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Fel på ingående datakoppling för genomgående bearbetning>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<FELSÖKNING: Servern för genomgående bearbetning har avbrutit åtgärderna>
+<används ej>
+<används ej>
+<FELSÖKNING: För många öppna lokala filer i genomgående bearbetning>
+<används ej>
+<används ej>
+Hopp till etikett i genomgående bearbetning omöjlig
+<FELSÖKNING: Fel vid läsning av konfiguration för genomgående bearbetning>
+För lång rad i genomgående bearbetning
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+<används ej>
+#768
+#include "dll?.err"
+
+#1000
+#include "chnam.err"

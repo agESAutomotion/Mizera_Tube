@@ -1,0 +1,101 @@
+*Vedere [PhisErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+启动失败
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+CANOPEN FIELDBUS ERROR
+ETHERCAT FIELDBUS ERROR
+19
+OPTIONS CONFIGURATION ERROR
+CONTACT ESA SERVICE
+SYSTEM ERROR PID
+机床数据错误
+错误配置
+NC锁定
+快速PLC超时
+27
+PLC超时
+PLC载入错误
+PLC停止
+31
+I/O 错误: CRC
+I/O 错误: 超时
+I/O 错误: NACK
+I/O 错误: 无效ID
+36
+37
+I/O 错误: RX没准备好
+I/O 错误: 一般错误
+I/O 错误: 电源KO
+I/O 错误: 输出保护
+I/O 错误: 24伏不存在
+I/O 错误: ADC忙
+44
+45
+I/O 错误: 板不存在
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+V+12 超出范围
+V-12 超出范围
+V 编码器超出范围
+V 电池超出范围
+68
+69
+70
+温度超出范围
+RACK1 V+12 超出范围
+RACK1 V-12 超出范围
+RACK1 V 编码器超出范围
+RACK1 V 超出范围
+76
+77
+78
+RACK1 温度超出范围
+RACK2 V+12 超出范围
+RACK2 V-12 超出范围
+RACK2 V 编码器超出范围
+RACK2 V 超出范围
+84
+85
+86
+RACK2 温度超出范围
+RACK3 V+12 超出范围
+RACK3 V-12 超出范围
+RACK3 V 编码器超出范围
+RACK3 V 超出范围
+92
+93
+94
+RACK3 温度超出范围
+ANEXP 忙
+ANEXP 24 伏超出范围

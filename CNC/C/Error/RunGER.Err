@@ -1,0 +1,775 @@
+*Vedere [RunErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+Warte auf Zeichen [
+Registernummer falsch
+Funktion nicht gültig
+Parametrik: Zeichen nicht gültig
+IF: Warte auf Zeichen =
+JSR: Falsches Verschachtelungsniveau Unterprogramm
+RET: Verschachtelung Unterprogramm falsch
+Funktion nicht verfügbar
+Zu viele M-Funktionen nacheinander
+Radius ohne G2/G3
+Null-Radius
+Fehler Kanalinitialisierung
+Kanalstillstand (Systemstillstand)
+Fester Zyklus nicht vorhanden
+Zu viele Klammerebenen (
+Neuzuordnung: Warte auf Zeichen =
+Warte auf Zeichen CR
+Betriebsart geändert
+JMP: Blocknummer nicht gefunden
+Programm nicht gefunden
+Fehler durch externe Prozedur
+Wert außerhalb Grenze
+Achse nicht konfiguriert
+Spindel nicht konfiguriert
+Gewählte Ebene falsch
+Achse nicht verfügbar
+Steigung Gewindeschneiden Null
+Achse im Alarm
+Vorschub Null
+Werkzeugradius Null
+Symbol % nicht gefunden
+Flächen- oder Seitenwechsel mit CUT Aktiv
+Spindel ohne Codierer
+Adresse ohne Nummer
+SQRT: Argument negativ
+TAN: Unendlicher Wert
+ASIN, ACOS: Argument außerhalb Bereich
+Teilung durch Null
+Adresse nicht benutzt
+Nummer ohne Adresse
+Parameter auf Adresse G
+Programm ohne M2-M30
+Interpolierung mit inkompatiblen Achsen
+Gewindigkeit zu groß
+Gesch. Z-Achse > Max.Geschw. Kanal
+Korrektur Drehbank G18
+Typ Werkzeuggeometrie nicht verwendbar
+Übertragungsschlange aufgearbeitet
+Schlange freie Pakete aufgearbeitet
+Profilradius kleiner als Werkzeugradius
+Bogenendpunkt nicht vorhanden
+Der Weg ist nicht möglich
+Nullsegment
+Nullwinkel
+Vorgang unzulässig
+Schnittpunkt zwischen Segmenten oder Bögen
+Profilanschluß nicht zulässig: G0 benutzen
+Überschneidung auf geradlinigem Segment
+Überschneidung auf Kreisbogen
+Warte auf Zeichen ]
+Wert zu groß
+Fehler bei Dateizugriff
+Werkzeugdeskriptor falsch
+Zu viele Parameter
+Zu viele Zeichen in Stringfeldern
+Warte auf Gegenstand nach ^
+Zuweisung zu nicht vorhandenem Register
+Argument nicht vorhanden
+SPC-Code nicht anerkannt
+APND Blocksemantikverletzung
+Suche Erklärung im Handbuch
+CFC: Unterprogramm nicht gefunden
+CFC: Parameter falsch
+CFC: Fehler bei Betriebsmittelverwaltung
+CFC: Keine Betriebsmittel
+CFC: Abschaltfehler
+CFC: Nicht angegeben
+CFC: <DEBUG 1>
+CFC: (Suche Erklärung im Handbuch)
+CFC: Task erfolgreich beendet
+CVB: Unbekannter Operationscode
+CVB: Fehler bei Betriebsmittelverwaltung
+CVB: Keine Betriebsmittel
+CVB: Abschaltfehler
+CVB: Pipebruch
+CVB: Rettung von Systemstillstand/Unerwartetes EOF
+CVB: Nicht angegeben
+CVB: <DEBUG 1>
+CVB: (Suche Erklärung im Handbuch)
+CVB: Task erfolgreich beendet
+<unused>
+<unused>
+APIO: Keine Betriebsmittel
+APIO: Abschaltfehler
+APIO: Nicht angegeben
+APIO: <DEBUG 1>
+APIO: (Suche Erklärung im Handbuch)
+APIO: Task erfolgreich beendet
+XCL: Unbekannter Operationscode
+XCL: Fehler bei Betriebsmittelverwaltung
+XCL: Keine Betriebsmittel
+XCL: Abschaltfehler
+XCL: Pipebruch
+XCL: Rettung von Systemstillstand/Unerwartetes EOF
+XCL: Nicht angegeben
+XCL: <DEBUG 1>
+XCL: (Suche Erklärung im Handbuch)
+XCL: Task erfolgreich beendet
+XAM: Unbekannter Operationscode
+XAM: Fehler bei Betriebsmittelverwaltung
+XAM: Keine Betriebsmittel
+XAM: Abschaltfehler
+XAM: Pipebruch
+XAM: Rettung von Systemstillstand/Unerwartetes EOF
+XAM: Nicht angegeben
+XAM: <DEBUG 1>
+XAM: (Suche Erklärung im Handbuch)
+XAM: Task erfolgreich beendet
+RETR: Unbekannter Operationscode
+RETR: Fehler bei Betriebsmittelverwaltung
+RETR: Keine Betriebsmittel
+RETR: Abschaltfehler
+RETR: Pipebruch
+RETR: Rettung von Systemstillstand/Unerwartetes EOF
+RETR: Nicht angegeben
+RETR: <DEBUG 1>
+RETR: (Suche Erklärung im Handbuch)
+RETR: Task erfolgreich beendet
+PG2: Unbekannter Operationscode
+PG2: Fehler bei Betriebsmittelverwaltung
+PG2: Keine Betriebsmittel
+PG2: Abschaltfehler
+PG2: Pipebruch
+PG2: Rettung von Systemstillstand/Unerwartetes EOF
+PG2: Nicht angegeben
+PG2: <DEBUG 1>
+PG2: (Suche Erklärung im Handbuch)
+PG2: Task erfolgreich beendet
+WARP: Unbekannter Code
+WARP: Fehler bei Betriebsmittelverwaltung
+WARP: Keine Betriebsmittel
+WARP: Abschaltfehler
+WARP: Pipebruch
+WARP: Rettung von Systemstillstand/Unerwartetes EOF
+WARP: Nicht angegeben
+WARP: <DEBUG 1>
+WARP: (Suche Erklärung im Handbuch)
+WARP: Task erfolgreich beendet
+PAG: Unbekannter Operationscode
+PAG: Fehler bei Betriebsmittelverwaltung
+PAG: Keine Betriebsmittel
+PAG: Abschaltfehler
+PAG: Pipebruch
+PAG: Rettung von Systemstillstand/Unerwartetes EOF
+PAG: Nicht angegeben
+PAG: <DEBUG 1>
+PAG: (Suche Erklärung im Handbuch)
+PAG: Task erfolgreich beendet
+Unbekannter Fehlercode
+Achse X wert außerhalb Grenze
+Achse Y wert außerhalb Grenze
+Achse Z wert außerhalb Grenze
+Achse U wert außerhalb Grenze
+Achse V wert außerhalb Grenze
+Achse W wert außerhalb Grenze
+Achse A wert außerhalb Grenze
+Achse B wert außerhalb Grenze
+Achse C wert außerhalb Grenze
+<unused>
+Fehler bei Festlegung Variable Record [Symbol]
+Fehler bei Zuweisung Variable Record [Symbol]
+Fehler bei Festlegung Variable Record [Var defcn]
+Fehler bei Zuweisung Variable Record [Var defcn]
+Fehler bei Festlegung Variable Record [INPUT]
+Zuweisung Input-Register unmöglich
+Fehler bei Festlegung Variable Record [OUT]
+Fehler bei Zuweisung Variable Record [OUT]
+Fehler bei Festlegung Variable Record [log. Register]
+Fehler bei Festlegung Variable Record [autom. Variable]
+Warten auf Wert für Zuweisung Variable Record
+Array über höchstzulässigem Wert
+Symbol schon definiert
+Initialisierung der Array unmöglich
+Fehler Initialisierung Variable
+Syntaxfehler Definition Parameter
+Nicht kompatibler Datentyp
+Definition weiterer Symbole unmöglich
+Symbol nicht definiert
+Fehler bei Stringzuweisung
+Fehler bei numerischer Zuweisung
+Symbol nicht vorhanden
+Fehler bei Festlegung Variable Record [log. Register]
+Warten auf Symbol Parameter
+Fehler bei Zugriff Register in defcn
+Höchstanzahl Symbolvariablen überschritten
+<unused>
+Out of memory/Memory not awarded
+<unused>
+Init-Fehler
+<DEBUG: TCO: Unknown opcode>
+<DEBUG: TCO: Error negotiating resources>
+<DEBUG: TCO: No resources>
+<DEBUG: TCO: Shutdown error>
+<DEBUG: TCO: Broken pipe>
+<DEBUG: TCO: Rescued from deadlock/UnXpected EOF>
+<DEBUG: TCO: Unspecified>
+<DEBUG: TCO: <DEBUG: should have used GetExtErr() to get extended error info>>
+<DEBUG: TCO: (See Manual for explanation)>
+<DEBUG: TCO: Task accomplished successfully>
+XCL: APND Blocksemantikverletzung
+XAM: APND Blocksemantikverletzung
+<DEBUG: PMI: Invalid op-code>
+<DEBUG: PMI: Bad I/O Vector Parameters>
+<DEBUG: PMI: Terminate Signal Received>
+<DEBUG: PMI: Init error>
+<DEBUG: PMI: Shutdown error>
+<DEBUG: PMI: Unspecified>
+<DEBUG: PMI: (See Manual for explanation)>
+<DEBUG: PMI: Task accomplished successfully>
+Konnte Daten für Schnittecke nicht finden
+Nicht unterstützte Kinematik
+Schlechte TWI Ausrichtung
+Werkzeugausrichtung nicht definiert
+TCP nicht gefunden
+Nicht unterstützte THD Transformation
+Wahl der Schneide unmöglich, IJK nicht vorhanden
+Verletzung Schneide
+XCL: Siehe Handbuch
+Tool orientation violates constraints
+Driver polare Achsen nicht unterstützt
+Unlogische Steigung
+Unlogische Gierung
+Betriebsart ICDSID nicht unterstützt
+Unklares Verhältnis zwischen Schneide und Fertigung
+Beantragung bewegungssperre nach G00
+Zu viele bewegungslose Blöcke
+Sequenz Achsen des Weges nicht gesteuert
+Interner Fehler XCL
+<unused>
+DLE Pufferüberlauf
+Deceleration Look-Ahead: Zu viele bewegungslose Blöcke
+DLE unerkanntes Format
+DLE innere Pipe ist gebrochen
+Interner Fehler DLE
+DLE: (Für Erläuterungen siehe Handbuch)
+<unused>
+<unused>
+<unused>
+<unused>
+TCO: APND Blocksemantikverletzung
+PG2: APND Blocksemantikverletzung
+<unused>
+<unused>
+<unused>
+<unused>
+Werkzeugausrichtung nicht definiert mit ICDSID
+Oberflächenvektor nicht definiert mit ICDSID
+Werkzeugnicken mit Fertigung unverträglich
+Unbestimmtes Gieren des Werkzeugs wenn PADSID aktiv
+Modalität PADSID nicht möglich
+Modalität PADCHK wird nicht unterstützt
+Zu große Diskontinuität der Fläche
+Vorschub im Material nicht mit Werkzeug verträglich
+<unused>
+Code TWI zu hoch
+Code THD zu hoch
+Code D zu hoch
+Code TAB zu hoch
+<unused>
+Anforderung geeignete Ausrichtung Werkzeug mit xSCMOD
+Anforderung geeigneter Oberflächenvektor mit xSCMOD
+Ausrichtung Werkzeug nicht definiert mit xSCMOD
+Oberflächenvektor nicht definiert mit xSCMOD
+Nur Blöcke G1 zugelassen mit xSCMOD
+Blocklänge am Kopf unverträglich mit ESCMOD
+Einzige Blocklänge unverträglich mit xSCMOD
+Blocklänge am Ende unverträglich mit XSCMOD
+<unused>
+<unused>
+<unused>
+<unused>
+PAG: Implementation restriction
+PAG: Not enough data
+PAG: Ambiguous data
+PAG: Undetermined solution
+PAG: No solution found
+PAG: Invalid feed command
+<unused>
+<unused>
+<DEBUG: PMI: Anwendererweiterung nicht initialisiert>
+<unused>
+Spindle Speed < Min Speed
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Höchstanzahl der Kontrollstrukturen überschritten
+IF () THEN sind nicht im gleichen Block
+BREAK nicht in Kontrollstruktur eingefügt
+ELSE ohne IF/THEN
+Zwei ELSE nacheinander
+Nichtausrichtung Kontrollstrukturen
+ENDW,ENDFOR,REPEAT darf kein Code folgen
+UNTIL ohne REPEAT
+FOR ohne Grenzwert
+RPT/BREAK: Fehler springt aus Zyklus heraus
+<unused>
+<unused>
+Fehler bei Zugriff Daten Blocksuche in DEFCN
+Prozedur Overstore: Unzulässige Bewegungsblöcke
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+File sharing violation
+Not enough core to handle file
+Unknown file error
+<unused>
+Standzeit Werkzeug abgelaufen
+<unused>
+<unused>
+<unused>
+Motion command error: see PLC Menu
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Could not read axes boundaries data>
+<DEBUG: Internal error>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Achse X wert außerhalb Grenze
+Achse Y wert außerhalb Grenze
+Achse Z wert außerhalb Grenze
+Achse U wert außerhalb Grenze
+Achse V wert außerhalb Grenze
+Achse W wert außerhalb Grenze
+Achse A wert außerhalb Grenze
+Achse B wert außerhalb Grenze
+Achse C wert außerhalb Grenze
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics output pipe error>
+<DEBUG: Unimplemented TMAPI call>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics server connection pending>
+<DEBUG: Graphics server login failed>
+<DEBUG: Graphics server no pending connection>
+<DEBUG: Graphics server is down>
+<unused>
+<unused>
+<DEBUG: Term has been signaled by the Kernel>
+<unused>
+<unused>
+<unused>
+<DEBUG: Not enough core to initialize TMAPI>
+<DEBUG: Some resources could not be freed>
+<DEBUG: Unspecified>
+<unused>
+<unused>
+<DEBUG: See manual>
+<unused>
+<unused>
+<unused>
+<unused>
+SRCVB: SPC out of phase
+SRCVB: no records
+SRCVB: too many records
+SRCVB: G0 not as 1st block
+SRCVB: eop found while recording
+SRCVB: invalid user extension
+<unused>
+<unused>
+<unused>
+<unused>
+<SR: Errbase>
+SR: Internal error
+SR: Unimplemented feature
+SR: X feed not monotone
+SR: Y feed not monotone
+SR: Output Callback failed
+SR: Argument singularity
+SR: Invalid argument
+SR: Parameter error
+SR: Missing side face intersection
+SR: Stock ranging error
+SR: Stock bottom reached
+SR: Stock top reached
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Unhandled axes matching>
+<DEBUG: Unimplemented feature>
+<unused>
+<DEBUG: GRAPH Multitool setup has bad freecells>
+<DEBUG: GRAPH Multitool setup has NO freecells>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics server config read error>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Packed write failed>
+<DEBUG: Packed dest type wrong>
+<DEBUG: Packed source type wrong>
+<DEBUG: Cannot round packed value>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Unpacked write failed>
+<DEBUG: Unpacked dest type wrong>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Bad semantics>
+<DEBUG: Unknown command>
+Unrecognized SPC code
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Could not acceed CED, THD or TWI data>
+Speicher unzureichend für Tool Caching
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Unsupported Kinematics
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Code TWI zu hoch
+Code THD zu hoch
+Code D zu hoch
+Nicht unterstützter Treiber für polare Achse
+Code TAB zu hoch
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Nicht unterstützte Kinematik
+Schlechte TWI Ausrichtung
+Werkzeugausrichtung nicht definiert
+TCP nicht gefunden
+Nicht unterstützte THD Transformation
+Wahl der Schneide unmöglich, IJK nicht vorhanden
+Verletzung Schneide
+<unused>
+<unused>
+<unused>
+<DEBUG: See manual>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: PassThru input pipe error>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: PassThru server is down>
+<unused>
+<unused>
+<DEBUG: PassThru has too many locally open files>
+<unused>
+<unused>
+Sprung zu Label unmöglich bei durchgehender Ausführung
+<DEBUG: PassThru channel config read error>
+Linie zu lang bei durchgehender Ausführung
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+#768
+#include "dll?.err"
+
+#1000
+#include "chnam.err"

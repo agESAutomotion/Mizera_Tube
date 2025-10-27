@@ -1,0 +1,296 @@
+*Vedere [PhisErr.Txt] per informazioni sulla mappatura degli errori       
+                                                                             
+#0                                                                           
+R.K. Eteen                                                                   
+R.K. Taakse                                                                  
+R.K. Ohjelmisto                                                              
+Akselin hälytys: Ulkoinen pyyntö                                             
+Kalibrointivirhe                                                             
+Akselia ei määritetty                                                        
+Akselia ei paikalla ja fly                                                   
+Toleranssivirhe                                                              
+Seurantavirhe                                                                
+Offset-virhe                                                                 
+Ohjauksen I/O hälytyspyyntö                                                  
+DAC-liittymä tai puuttuva enkooderi                                          
+Enkooderin laskenta puuttuu                                                  
+Akseli törmäyksessä                                                          
+Valikoima ei paikalla                                                        
+Enkooderia ei kytketty                                                       
+Akseli ei käytettävissä                                                      
+Digitaalisen servo-ohjauksen hälytys                                         
+Gantry-akselien suuntausvirhe                                                
+Hälytys protokolli CanOpen                                                   
+Käyttölaitteen hälytys                                                       
+Ohjausvirhe                                                                  
+Varattu                                                                      
+Varattu                                                                      
+Varattu                                                                      
+Varattu                                                                      
+Varattu                                                                      
+Digitaalinen käyttö ei valmis                                                
+Tiedot eivät ole voimassa                                                    
+Datapaketti korruptoitunut BCC-virhe                                         
+Meluääniä kommunikointilinjalla ja aktivointi                                
+Kommunikoinnin aikakatkaisu digitaalisella käytöllä                          
+#32                                                                          
+Yleinen virhe                                                                
+Solmu garding-virheessä                                                      
+EMCY                                                                         
+Levyvirhe                                                                    
+Solmun virhe käynnistyksessä                                                 
+Oheislaitteistovirhe                                                         
+Konfiguraatiovirhe                                                           
+SDO-virhe                                                                    
+Suojausvirheen solmu                                                         
+Solmu virhetilassa                                                           
+Max speed demand exceeded
+Yleinen virhe                                                                
+(2000) Virta                                                                        
+(2100) likuormitusvirta katkaisee laitteen                                          
+(2110) Oikosulku / dispersio maahan                                                 
+(2120) Dispersio maahan                                                             
+(2130) Oikosulku                                                                    
+(2200) Sisäinen virta                                                               
+(2211) Current offset error                                                         
+(2221) Continuous over-current No.1                                                 
+(2222) Continuous over-current No.2                                                 
+(2300) Ylivirta output-laitteen mitassa                                             
+(2310) Ylijännite                                                                   
+(3000) Jännite                                                                      
+(3100) Verkkojännite                                                                
+(3110) Ylijänniteverkko                                                             
+(3120) Alijänniteverkko                                                             
+(3130) Vaihe puuttuu                                                                
+(3140) Verkkovirran taajuus                                                         
+(3200) DC link-jännite                                                              
+(3210) Link DC ylijännite                                                           
+(3220) DC link alijännite                                                           
+(3300) Ulostulojännite                                                              
+(3310) Ylijännitteen ulostulo                                                       
+(3320) Suojavaippapiiri                                                             
+(3330) Kenttäpiiri                                                                  
+(4000) Lämpötila                                                                    
+(4100) Huonelämpötila                                                               
+(4110) Liian korkea huonelämpötila                                                  
+(4120) Liian matala huonelämpötila                                                  
+(4130) Ilmanlämpötila                                                               
+(4140) Ilman ulostulolämpötila                                                      
+(4200) Lämpötilamittari                                                             
+(4210) Liian korkean lämpötilan mittari                                             
+(4220) Liian matalan lämpötilan mittari                                             
+(4300) Lämpötilayksikkö                                                             
+(4310) Lämpötilayksikkö liian suuri                                                 
+(4320) Drive lämpötila liian matala                                                 
+(4400) Lähtölämpötila                                                               
+(4410) Lähtölämpötila liian korkea                                                  
+(4420) Lähtölämpötila liian matala                                                  
+(5000) Tietokonelaitteisto                                                          
+(5100) Tietokonelaitteiston syöttölaitteet                                          
+(5110) Matalajännitteinen tietokonelaitteisto                                       
+(5111) Auxiliary low voltage                                                        
+(5118) Battery low voltage                                                          
+(5120) Tietokonelaitteiston välivirtalähdepiiri                                     
+(5200) Ohjausmitta / laskentapiiri                                                  
+(5210) Ohjausmittapiiri                                                             
+(5220) Ohjauslaskennan piiri                                                        
+(5300) Käyttöyksikkö                                                                
+(5400) Yksikön teho                                                                 
+(5410) Ulostulotila                                                                 
+(5420) Chopper                                                                      
+(5430) sisäänmenovaiheet                                                            
+(5440) Kosketukset                                                                  
+(5450) Sulakkeet                                                                    
+(5500) RAM / EPROM / EEPROM -muistitiedot                                           
+(6000) Device Software                                                              
+(6110) Sisäinen virhe                                                               
+(6111) Laskennan overflow                                                           
+(7000) Lisämoduulit                                                                 
+(7100) Power                                                                        
+(7110) Jarrutuksen chopper                                                          
+(7114) Clamp-osan ylikuormitus                                                      
+(7115) Clamp-aika ylitetty                                                          
+(7120) Moottori                                                                     
+(7200) Mittauspiiri                                                                 
+(7300) Anturi                                                                       
+(7303) Resolverin vika                                                              
+(7305) Enkooderin vika                                                              
+(7310) Nopeus                                                                       
+(7320) Sijainti                                                                     
+(7400) Piirin laskenta                                                              
+(7500) Kommunikointi                                                                
+(7600) Tietojen tallennus                                                           
+(8000) Valvonta                                                                     
+(8100) Kommunikointi                                                                
+(8110) CAN-ylikuormitettu (kohde menetetty)                                         
+(8120) CAN passiivisessa virhetilassa                                               
+(8130) Henkilönsuojaus- tai HeartBeat-virhe                                         
+(8200) Valvonta                                                                     
+(8210) PDO not processed due length error                                           
+(8220) PDO length exceed                                                            
+(8300) Valvontapari                                                                 
+(8400) Nopeudensäätimen nopeus                                                      
+(8410) Overspeed                                                                    
+(8500) Asennon säädin                                                               
+(8600) Controllerin asemointi                                                       
+(8611) Seurantavirhe                                                                
+(8620) Tietokonelaitteiston rajakatkaisin negatiivinen                              
+(8621) Tietokonelaitteiston rajakatkaisin positiivinen                              
+(8631) Max liike nollaan                                                            
+(8700) Synk säädin                                                                  
+(9000) Ulkoinen controller                                                          
+"EMCY error code (%X)",ra53,
+A.6A:
+Virrankatkaisu                                                               
+Jäähdytyslevyn lämpötila                                                     
+Alustuksen Hall / Feedback -anturi                                           
+Feedback                                                                     
+Drive I2t                                                                    
+Moottorin lämpöhälytys                                                       
+Ylikuormitus regeneroiva vastus                                              
+Min-Max jännite                                                              
+Resolver                                                                     
+Ylijännite                                                                   
+Seuraava asemointivirhe                                                      
+Lämpötilan board                                                             
+Ylivirran regeneroiva piiri                                                  
+Mekaaninen jarru                                                             
+Apujännite                                                                   
+24V yli rajan                                                                
+Ylivirran hälytys                                                            
+Flash-hälytys                                                                
+Sync Error                                                                   
+Phase Loss                                                                   
+Sto A / B hälytys                                                            
+Oletusarvoparametrit ladattu                                                 
+Flash Loaded default param protected                                         
+A.82:                                                                         
+F00 Flash failure	                                                        
+F01 Loaded default param.	                                                
+F02 Loaded default protected	                                                
+F03 N.A.	                                                                    
+F04 I2t Drive	                                                            
+F05 Over voltage	                                                            
+F06 Under voltage	                                                        
+F07 Power fail	                                                            
+F08 Heatsink temperature	                                                    
+F09 Motor temperature	                                                    
+F10 Regenerative resistence overload	                                        
+F11 Internal temperature	                                                    
+F12 Overcurrent Regenerative Circuit	                                        
+F13 Over Voltage 24V	                                                        
+F14 Under Voltage 24V	                                                    
+F15 N.A.	                                                                    
+F16 Brake	                                                                
+F17 Fan	                                                                    
+F18 Phase Loss	                                                            
+F19 Feedback	                                                                
+F20 Feedback initialization	                                                
+F21 Current Over Range	                                                    
+F22 error	                                                                
+F23 error	                                                                
+F24 error	                                                                
+F25 error                                                                    
+F26 error	                                                                
+F27 error	                                                                
+F28 error	                                                                
+F29 error	                                                                
+F30 STO	                                                                    
+F31 error	                                                                
+A.A3
+Ylivirran hälytys                                                            
+EEPROM-hälytys                                                               
+absoluuttisen anturin hälytys                                                
+Virrankatkaisu                                                               
+App / Guarding hälytyksessä                                                  
+Moottorin lämpöhälytys                                                       
+Moottori I2t lämpöhälytys                                                    
+Automaattinen viritys testausta ei suoritettu                                
+Ulkoinen hälytys                                                             
+Nopeusanturi                                                                 
+Piirin virransyötön minimijännite                                            
+Ylijännitteen syöttöpiiri                                                    
+Sisäinen hälytys                                                             
+Power soft käynnistysongelma                                                 
+Liitäntä U, V, W hälytysvirhe                                                
+Hälytysparametrien asetusvirhe                                               
+A.B4
+F01 Heatsink overtemperature                                                 
+F02 DC-Link overvoltage                                                      
+F03 Contouring error of the external trajectory                              
+F04 Feedback error                                                           
+F05 Undervoltage protection                                                  
+F06 Motor overtemperature                                                    
+F07 Internal electronic supply is faulty                                     
+F08 Overspeed                                                                
+F09 EEPROM Checksum error                                                    
+F10 Signal failure digital encoder input                                     
+F11 Brake error                                                              
+F12 -----                                                                    
+F13 Ambient overtemperature                                                  
+F14 Output stage fault                                                       
+F15 I2t max override.                                                        
+F16 Mains BTB                                                                
+F17 A/D converter error                                                      
+F18 Regen error                                                              
+F19 DC bus breakdown                                                         
+F20 Slot error                                                               
+F21 PROFIBUS handling error                                                  
+F22 -----                                                                    
+F23 CANopen Bus-Off                                                          
+F24 Warning generates a error message                                        
+F25 Commutation Error                                                        
+F26 Hardware limit switch error at homing move                               
+F27 "-AS-Option" error                                                       
+F28 EtherCAT Error synchronisation                                           
+F29 Slotcard Error                                                           
+F30 Emergency stop time out                                                  
+F31 -----                                                                    
+F32 System error                                                             
+A.D5                                                                          
+A.D6                                                                          
+A.D7                                                                          
+A.D8                                                                          
+A.D9                                                                          
+A.DA                                                                          
+A.DB                                                                          
+A.DC                                                                          
+A.DD                                                                          
+A.DE                                                                          
+A.DF                                                                          
+SDO Toggle Bit ei vuorotellen                                                
+protokollin SDO aikakatkaisu                                                 
+SDO Client / Server ohjaustunniste ei voimassa                               
+SDO lohkon mitta ei kelvollinen                                              
+SDO järjestysnumero ei kelvollinen                                           
+CRC:n SDO-virhe                                                              
+SDO Out of memory                                                            
+SDO -pääsyä ei tueta kohteeseen                                              
+SDO-kohteen kirjoitus vain luettavissa                                       
+SDO-kohteen kirjoitus vain luettavissa                                       
+SDO-kohde ei ole kyseisessä sanakirjassa                                     
+SDO-kohdetta ei voi kartoittaa DOP:hen                                       
+SDO-kohteen kartoitettava pituus ylittää DOP:n pituuden                      
+Yleinen SDO parametrien epäyhdenmukaisuuden syy                              
+SDO:n yleinen epäyhdenmukaisuus laitteen sisällä                             
+SDO-sisäänmeno ei onnistunut tietokonelaitteiston virheen vuoksi             
+SDO:n pituusparametri ei vastaa                                              
+SDO:n pituusparametri liian korkea                                           
+SDO:n pituusparametri liian matala                                           
+SDO Sub-Index ei olemassa                                                    
+SDO arvokenttä ylitetty                                                      
+Kirjoitettu SDO-arvo liian korkea                                            
+Kirjoitettu SDO-arvo liian alhainen                                          
+SDO:n maksimiarvo on alle minimiarvon                                        
+SDO yleisvirhe                                                               
+SDO-tietoja ei voida siirtää tai tallentaa                                   
+SDO-tietoja ei voida siirtää tai tallentaa                                   
+SDO-tietoja ei voida siirtää tai tallentaa                                   
+SDO Mitään sanakirjaa ei ole paikalla                                        
+A.FD:                                                                        
+A.FE:                                                                        
+A.FF:                                                                         
+
+                                                                             
+#288                                                                         
+#include "axnameng.err"                                                      

@@ -1,0 +1,296 @@
+*Vedere [PhisErr.Txt] per informazioni sulla mappatura degli errori         
+                                                                            
+#0                                                                          
+Ettepoole L.S.                                                              
+Tahapoole L.S.                                                              
+Tarkvara L.S.                                                               
+Telje häire: Väline palve                                                   
+Kalibreerimise tõrge                                                        
+Defineerimata telg                                                          
+Telg puudub ja kiirusregulaator                                             
+Tolerantsi tõrge                                                            
+Jälgimise tõrge                                                             
+Kõrvalekalde tõrge                                                          
+Juhtimise I/O häire palve                                                   
+Puuduv DAC või kodeerija liides                                             
+Puudub kodeerija arvutlus                                                   
+Telg kokkupõrkes                                                            
+Puuduv vahemik                                                              
+Ühendamata kodeerija                                                        
+Mittekasutatav telg                                                         
+Digitaalse servoajami häire                                                 
+Portaali telgede vale joondamine                                            
+CanOpen protokolli häire                                                    
+Ajami rike                                                                  
+Juhtimise tõrge                                                             
+Reserveeritud                                                               
+Reserveeritud                                                               
+Reserveeritud                                                               
+Reserveeritud                                                               
+Reserveeritud                                                               
+Digitaalne ajam ei ole valmis                                               
+Valeandmed                                                                  
+Rikutud andmepakett - BCC tõrge                                             
+Müra kommunikatsiooniliinil ajamiga                                         
+Kommunikatsiooni ajalõpp digitaalse ajamiga                                 
+#32                                                                         
+Üldine tõrge                                                                
+Kaitsmise tõrke sõlm                                                        
+EMCY                                                                        
+Ajami rike                                                                  
+Sõlm taaskäivituse tõrkel                                                   
+Seadme tõrge                                                                
+Seadistuse tõrge                                                            
+SDO tõrge                                                                   
+Kaitsmise tõrke sõlm                                                        
+Sõlm tõrke staatusel                                                        
+Max speed demand exceeded
+Üldine tõrge                                                                
+(2000) Vool                                                                        
+(2100) Vool üle seadme suuruse                                                     
+(2110) Lühis/maanduse dispersioon                                                  
+(2120) Maanduse dispersioon                                                        
+(2130) Lühis                                                                       
+(2200) Sisseehitatud vool                                                          
+(2211) Current offset error                                                        
+(2221) Continuous over-current No.1                                                
+(2222) Continuous over-current No.2                                                
+(2300) Liigpinge seadme väljundi suurusel                                          
+(2310) Liigpinge                                                                   
+(3000) Pinge                                                                       
+(3100) Võrgupinge                                                                  
+(3110) Võrgupinge liigpinge                                                        
+(3120) Võrgupinge alapinge                                                         
+(3130) Faasi viga                                                                  
+(3140) Võrgusagedus                                                                
+(3200) Alalisvooluühenduse pinge                                                   
+(3210) Alalisvooluühenduse liigpinge                                               
+(3220) Alalisvooluühenduse alapinge                                                
+(3300) Väljundvool                                                                 
+(3310) Väljundi liigpinge                                                          
+(3320) Ankruahel                                                                   
+(3330) Välisahel                                                                   
+(4000) Temperatuur                                                                 
+(4100) Välistemperatuur                                                            
+(4110) Liigne välistemperatuur                                                     
+(4120) Liiga madal välistemperatuur                                                
+(4130) Õhutemperatuur                                                              
+(4140) Väljalaskeõhu temperatuur                                                   
+(4200) Seadme temperatuur                                                          
+(4210) Seadme üleliigne temperatuur                                                
+(4220) Seadme liiga madal temperatuur                                              
+(4300) Ajami temperatuur                                                           
+(4310) Ajami üleliigne temperatuur                                                 
+(4320) Ajami liiga madal temperatuur                                               
+(4400) Väljalaske temperatuur                                                      
+(4410) Liigne väljalaske temperatuur                                               
+(4420) Liiga madal väljalaske temperatuur                                          
+(5000) Riistvaraseade                                                              
+(5100) Riistvara väljalaske seade                                                  
+(5110) Madala pingega riistvaraseade                                               
+(5111) Auxiliary low voltage                                                       
+(5118) Battery low voltage                                                         
+(5120) Vaheväljundi ringi riistvaraseade                                           
+(5200) Kontrollmõõtmine/arvutusring                                                
+(5210) Kontrollmõõtmise ring                                                       
+(5220) Kontrollarvutuse ring                                                       
+(5300) Tootmisüksus                                                                
+(5400) Elektriosa                                                                  
+(5410) Väljalaske etapp                                                            
+(5420) Katkesti                                                                    
+(5430) Sisendetapid                                                                
+(5440) Kontaktid                                                                   
+(5450) Kaitsmed                                                                    
+(5500) RAM/EPROM/EEPROM Andmesalvestus                                             
+(6000) Tarkvaraseade                                                               
+(6110) Seesmine tõrge                                                              
+(6111) Arvutuse ületäitumine                                                       
+(7000) Täiendavad moodulid                                                         
+(7100) Elekter                                                                     
+(7110) Pidurikatkesti                                                              
+(7114) Kinniti ülekoormus                                                          
+(7115) Kinniti üleaeg                                                              
+(7120) Mootor                                                                      
+(7200) Mõõtering                                                                   
+(7300) Sensor                                                                      
+(7303) Selsüüni viga                                                               
+(7305) Kodeerija viga                                                              
+(7310) Kiirus                                                                      
+(7320) Asend                                                                       
+(7400) Ringi arvutus                                                               
+(7500) Kommunikatsioon                                                             
+(7600) Andmesalvestus                                                              
+(8000) Jälgimine                                                                   
+(8100) Kommunikatsioon                                                             
+(8110) CAN ülekoormus (kadunud objekt)                                             
+(8120) CAN passiivse tõrke režiimis                                                
+(8130) Elupäästja või HeartBeat tõrge                                              
+(8200) Juhtimine                                                                   
+(8210) PDO not processed due length error                                          
+(8220) PDO length exceed                                                           
+(8300) Momendi juhtimine                                                           
+(8400) Kiirusregulaator                                                            
+(8410) Ülekiirus                                                                   
+(8500) Asendiregulaator                                                            
+(8600) Regulaatori asend                                                           
+(8611) Jälgimise tõrge                                                             
+(8620) Negatiivne riistvara piirlüliti                                             
+(8621) Positiivne riistvara piirlüliti                                             
+(8631) Maksimaalne liikumine nulli puhuks                                          
+(8700) Sünkroniseerimisregulaator                                                  
+(9000) Väline regulaator                                                           
+"EMCY error code (%X)",ra53,
+"WARNING error code (%X)",ra53,
+Elektkrikatkestus                                                           
+Jahuti temperatuur                                                          
+Halli sensor/käivitamise tagasiside                                         
+Tagasiside                                                                  
+l2t ajam                                                                    
+Mootori soojushäire                                                         
+Regeneratiivse takistuse ülekoormus                                         
+Min-maks pinge                                                              
+Selsüün                                                                     
+Liigpinge                                                                   
+Jälgimise asendi tõrge                                                      
+Temperatuuriplaat                                                           
+Liigvoolu regeneratiivne ring                                               
+Käsipidur                                                                   
+Lisapinge                                                                   
+Liig-/alapinge 24V                                                          
+Liigvoolu häire                                                             
+Välgatusalarm                                                               
+Sync Error                                                                  
+Phase Loss                                                                  
+Sto A/B häire                                                               
+Vaikeparameetrid laetud                                                     
+Välgatus laetud vaikeparam. kaitstud                                        
+A.82:                                                                              
+F00 Flash failure	                                                        
+F01 Loaded default param.	                                                
+F02 Loaded default protected	                                            
+F03 N.A.	                                                                
+F04 I2t Drive	                                                            
+F05 Over voltage	                                                        
+F06 Under voltage	                                                        
+F07 Power fail	                                                            
+F08 Heatsink temperature	                                                
+F09 Motor temperature	                                                    
+F10 Regenerative resistence overload	                                    
+F11 Internal temperature	                                                
+F12 Overcurrent Regenerative Circuit	                                    
+F13 Over Voltage 24V	                                                    
+F14 Under Voltage 24V	                                                    
+F15 N.A.	                                                                
+F16 Brake	                                                                
+F17 Fan	                                                                    
+F18 Phase Loss	                                                            
+F19 Feedback	                                                            
+F20 Feedback initialization	                                                
+F21 Current Over Range	                                                    
+F22 error	                                                                
+F23 OverSpeed	                                                                 
+F24 Battery low voltage
+F25 error                                                                   
+F26 error	                                                                
+F27 error	                                                                
+F28 error	                                                                
+F29 error	                                                                
+F30 STO	                                                                    
+F31 STO-SLS-SOS-SBC-safety
+A.A3
+Liigvoolu häire                                                             
+EEPROM häire                                                                
+Absoluutse sensori häire                                                    
+Elektkrikatkestus                                                           
+Aparatuuri/kaitse häire                                                     
+Mootori soojushäire                                                         
+Mootori l2t soojushäire                                                     
+Lõpetamata automaatse häälestuse test                                       
+Väline alarm                                                                
+Kiirusandur                                                                 
+Min. vooluringi pinge                                                       
+Vooluringi liigpinge                                                        
+Seesmine alarm                                                              
+Voolu pehme käivituse probleem                                              
+Ühenduse U,V,W tõrke häire                                                  
+Häire parameetri seadistuse tõrge                                           
+A.B4
+F01 Heatsink overtemperature                                                
+F02 DC-Link overvoltage                                                     
+F03 Contouring error of the external trajectory                             
+F04 Feedback error                                                          
+F05 Undervoltage protection                                                 
+F06 Motor overtemperature                                                   
+F07 Internal electronic supply is faulty                                    
+F08 Overspeed                                                               
+F09 EEPROM Checksum error                                                   
+F10 Signal failure digital encoder input                                    
+F11 Brake error                                                             
+F12 -----                                                                   
+F13 Ambient overtemperature                                                 
+F14 Output stage fault                                                      
+F15 I2t max override.                                                       
+F16 Mains BTB                                                               
+F17 A/D converter error                                                     
+F18 Regen error                                                             
+F19 DC bus breakdown                                                        
+F20 Slot error                                                              
+F21 PROFIBUS handling error                                                 
+F22 -----                                                                   
+F23 CANopen Bus-Off                                                         
+F24 Warning generates a error message                                       
+F25 Commutation Error                                                       
+F26 Hardware limit switch error at homing move                              
+F27 "-AS-Option" error                                                      
+F28 EtherCAT Error synchronisation                                          
+F29 Slotcard Error                                                          
+F30 Emergency stop time out                                                 
+F31 -----                                                                   
+F32 System error                                                            
+A.D5                                                                          
+A.D6                                                                          
+A.D7                                                                          
+A.D8                                                                          
+A.D9                                                                          
+Slave state is different as the set one
+Slave is not configured
+Slave conf. doesn't match master conf.
+Error init command
+A.DE                                                                          
+A.DF                                                                          
+SDO ümberlülitamise osa ei ole vahelduv                                     
+SDO protokolli ajalõpp                                                      
+SDO Kliendi/serveri käskluse määraja pole kehtiv                            
+SDO Vale bloki maht                                                         
+SDO Vale jadanumber                                                         
+SDO CRC tõrge                                                               
+SDO Mälu otsas                                                              
+SDO Juurdepääsu objektile ei toetata                                        
+SDO Kirjutatakse kirjutuskaitstud objekti                                   
+SDO Loetakse lugemiskaitstud objekti                                        
+SDO Objekti ei ole objekti sõnastikus                                       
+SDO Objekti ei saa PDO-sse kaardistada                                      
+SDO Kaardistatava objekti pikkus ületab PDO pikkuse                         
+SDO Üldine parameetrite ühildumatuse põhjus                                 
+SDO Üldine seesmine ühildumatus seadmes                                     
+SDO Juurdepääs ebaõnnestus riistvara tõrke tõttu                            
+SDO Pikkuse parameeter ei ole vaste                                         
+SDO Pikkuse parameeter liiga suur                                           
+SDO Pikkuse parameeter liiga väike                                          
+SDO Ala-indeks ei eksisteeri                                                
+SDO Väärtuse vahemik ületati                                                
+SDO Kirjutatud väärtus on liiga suur                                        
+SDO Kirjutatud väärtus on liiga väike                                       
+SDO Maksimaalne väärtus on minimaalsest väärtusest väiksem                  
+SDO Üldine tõrge                                                            
+SDO Andmeid ei saa ülekanda ega salvestada                                  
+SDO Andmeid ei saa ülekanda ega salvestada                                  
+SDO Andmeid ei saa ülekanda ega salvestada                                  
+SDO Puudub objektisõnastik                                                  
+A.FD:                                                                       
+A.FE:                                                                       
+A.FF:                                                                         
+
+                                                                            
+#288                                                                        
+#include "axnameng.err"                                                     

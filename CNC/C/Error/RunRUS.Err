@@ -1,0 +1,775 @@
+*Vedere [RunErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+Ожидание символа [
+Номер Регистра Ошибочен
+Функция недействительна
+Параметризация: символ недействителен
+IF: Ожидание символа =
+JSR: Уровень Гнездования Подпрограммы Ошибочен
+RET: Гнездование Подпрограммы Ошибочно
+Функция недоступна
+Слишком много последовательных функций M
+Радиус без G2/G3
+Радиус Несогласован
+Ошибка инициализации канала
+Канал блокирован (deadlock)
+Фиксированный Цикл не существует
+Слишком много уровней скобок (
+Присвоение: ожидание символа =
+Ожидание символа CR
+Оперативный режим изменен
+JMP: Номер Блока не найден
+Программа не найдена
+Ошибка внешней процедуры
+Размер Вне Предела
+Ось не сконфигурирована
+Шпиндель не сконфигурирован
+Выбранная Плоскость Ошибочна
+Ось недоступна
+Нулевой Шаг Стержня
+Останов Оси
+Feed Ноль
+Радиус Инструмента Ноль
+Символ % не найден
+Смена Плоскости или Стороны с Активным CUT
+Шпиндель без Энкодера
+Адрес без номера
+SQRT: Отрицательный аргумент
+TAN: Бесконечная Величина
+ASIN, ACOS: Аргумент вне области определения
+Деление на ноль
+Неиспользуемый адрес
+Номер без адреса
+Параметр в адрес G
+Программа без M2-M30
+Интерполяция с несовместимыми осями
+Скорость шпинделя слишком велика
+Скор Оси Z > Скор Max Канала
+Коррекция Токарного Станка G18
+Тип Геометрия Инструмента не обрабатываемый
+Очередь Пересылок Переполнена
+Очередь Свободных Пакетов Coda Переполнена
+Радиус профиля меньше Радиуса Инструмента
+Конечная Точка Дуги несогласована
+Путь не может быть следован
+Нулевой сегмент
+Нулевой угол
+Нелегальная операция
+Пересечение между сегментами или дугами
+Присоединение Профиля не разрешено: использовать G0
+Перерез на Линейном Сегменте
+Перерез на Круговой Дуге
+Ожидание символа ]
+Значение слишком велико
+Ошибка доступа к файлу
+Описание Инструмента Ошибочно
+Слишком много параметров
+Слишком много символов в полях строки
+Ожидание объекта после ^
+Присвоение несуществующему регистру
+Несуществующий аргумент
+Код SPC не распознан
+Семантическое нарушение блок APND
+Для объяснений смотри Руководство
+CFC: Подпрограмма не найдена
+CFC: Ошибочные параметры
+CFC: Ошибка обработки данных
+CFC: Никаких ресурсов
+CFC: Ошибка при окончании
+CFC: Не специфицировано
+CFC: <DEBUG 1>
+CFC: (Для объяснений смотри Руководство)
+CFC: Task выполнен корректно
+CVB: Оперативный код неизвестен
+CVB: Ошибка обработки данных
+CVB: Никаких ресурсов
+CVB: Ошибка при окончании
+CVB: Pipe прерван
+CVB: Выведен из блокировки/Неожидаемый конец file
+CVB: Не специфицировано
+CVB: <DEBUG 1>
+CVB: (Для объяснений смотри Руководство)
+CVB: Task выполнен корректно
+<unused>
+<unused>
+APIO: Никаких ресурсов
+APIO: Ошибка при окончании
+APIO: Не специфицировано
+APIO: <DEBUG 1>
+APIO: (Для объяснений смотри Руководство)
+APIO: Task выполнен корректно
+XCL: Оперативный код неизвестен
+XCL: Ошибка обработки данных
+XCL: Никаких ресурсов
+XCL: Ошибка при окончании
+XCL: Pipe прерван
+XCL: Выведен из блокировки/Неожидаемый конец file
+XCL: Не специфицировано
+XCL: <DEBUG 1>
+XCL: (Для объяснений смотри Руководство)
+XCL: Задача выполнена корректно
+XAM: Оперативный код неизвестен
+XAM: Ошибка обработки данных
+XAM: Никаких ресурсов
+XAM: Ошибка при окончании
+XAM: Pipe прерван
+XAM: Выведен из блокировки/Неожидаемый конец file
+XAM: Не специфицировано
+XAM: <DEBUG 1>
+XAM: (Для объяснений смотри Руководство)
+XAM: Task выполнен корректно
+RETR: Оперативный код неизвестен
+RETR: Ошибка обработки данных
+RETR: Никаких ресурсов
+RETR: Ошибка при окончании
+RETR: Pipe прерван
+RETR: Выведен из блокировки/Неожидаемый конец file
+RETR: Не специфицировано
+RETR: <DEBUG 1>
+RETR: (Для объяснений смотри Руководство)
+RETR: Task выполнен корректно
+PG2: Оперативный код неизвестен
+PG2: Ошибка обработки данных
+PG2: Никаких ресурсов
+PG2: Ошибка при окончании
+PG2: Pipe прерван
+PG2: Выведен из блокировки/Неожидаемый конец file
+PG2: Не специфицировано
+PG2: <DEBUG 1>
+PG2: (Для объяснений смотри Руководство)
+PG2: Task выполнен корректно
+WARP: Оперативный код неизвестен
+WARP: Ошибка обработки данных
+WARP: Никаких ресурсов
+WARP: Ошибка при окончании
+WARP: Pipe прерван
+WARP: Выведен из блокировки/Неожидаемый конец file
+WARP: Не специфицировано
+WARP: <DEBUG 1>
+WARP: (Для объяснений смотри Руководство)
+WARP: Task выполнен корректно
+PAG: Оперативный код неизвестен
+PAG: Ошибка обработки данных
+PAG: Никаких ресурсов
+PAG: Ошибка при окончании
+PAG: Pipe прерван
+PAG: Выведен из блокировки/Неожидаемый конец file
+PAG: Не специфицировано
+PAG: <DEBUG 1>
+PAG: (Для объяснений смотри Руководство)
+PAG: Task выполнен корректно
+Код ошибки неизвестен
+Ось X Позиция Вне Предела
+Ось Y Позиция Вне Предела
+Ось Z Позиция Вне Предела
+Ось U Позиция Вне Предела
+Ось V Позиция Вне Предела
+Ось W Позиция Вне Предела
+Ось A Позиция Вне Предела
+Ось B Позиция Вне Предела
+Ось C Позиция Вне Предела
+<unused>
+Ошибка определения переменной записи [символ]
+Ошибка присвоения переменной записи [символ]
+Ошибка определения переменной записи [var defcn]
+Ошибка присвоения переменной записи [var defcn]
+Ошибка определения переменной записи [INPUT]
+Невозможно присвоить регистр input
+Ошибка определения переменной записи [OUT]
+Ошибка присвоения переменной записи [OUT]
+Ошибка определения переменной записи [registro logico]
+Ошибка определения переменной записи [variabile automatica]
+Ожидание значения для присвоения переменной записи
+Массив вне разрешенного максимума
+Символ уже определен
+Невозможно инициализировать Массивы
+Ошибка инициализации переменной
+Ошибка синтаксическая параметрического определения
+Тип данных несовместим
+Невозможно определить остальные символы
+Символ не определен
+Ошибка присвоения строки
+Ошибка цифрового присвоения
+Символ не существует
+Ошибка определения переменной записи [логический регистр]
+Ожидание параметрического символа
+Ошибка доступа регистр в defcn
+Превышено максимальное число символических переменных
+<unused>
+Out of memory/Memory not awarded
+<unused>
+Ошибка инициализации
+<DEBUG: TCO: Оперативный код неизвестен>
+<DEBUG: TCO: Ошибка обработки данных>
+<DEBUG: TCO: Никаких ресурсов>
+<DEBUG: TCO: Ошибка при окончании>
+<DEBUG: TCO: Pipe прерван>
+<DEBUG: TCO: Выведен из блокировки/Неожидаемый конец file>
+<DEBUG: TCO: Не специфицировано>
+<DEBUG: TCO: <DEBUG 1>>
+<DEBUG: TCO: (Для объяснений смотри Руководство)>
+<DEBUG: TCO: Task выполнен корректно>
+XCL: Нарушение Семантики Блок APND
+XAM: Нарушение Семантики Блок APND
+<DEBUG: PMI: Оперативный код недействителен>
+<DEBUG: PMI: Параметры вектора I/O ошибочны>
+<DEBUG: PMI: Получен сигнал окончания>
+<DEBUG: PMI: Ошибка инициализации>
+<DEBUG: PMI: Ошибка при окончании>
+<DEBUG: PMI: Не специфицировано>
+<DEBUG: PMI: (Для объяснений смотри Руководство)>
+<DEBUG: PMI: Task выполнен корректно>
+Данные Резака не найдены
+Кинематика не поддержана
+Ошибочная ориентация объекта TWI
+Ориентация инструмента не определена
+TCP не найден
+Трансформация THD не поддержана
+Невозможно выбрать резак, IJK отсутствуют
+Нарушение резака
+XCL: Смотри Руководство
+Tool orientation violates constraints
+Драйвер полярных осей не поддержан
+Качание некогерентно
+Рыскание некогерентно
+Режим ICDSID не поддержан
+Неоднозначное отношение между резаком и обработкой
+Запрос блокировки движения после G00
+Слишком много блоков не движения
+Последовательность осей маршрута не обрабатывается
+Внутренняя ошибка XCL
+<unused>
+Overflow buffer DLE
+Deceleration Look-Ahead: Слишком много блоков не движения
+Формат не распознан DLE
+Внутренний Pipe DLE прерван
+Внутренняя ошибка DLE
+DLE: (Для объяснений смотри Руководство)
+<unused>
+<unused>
+<unused>
+<unused>
+TCO: Нарушение Семантики Блок APND
+PG2: Нарушение Семантики Блок APND
+<unused>
+<unused>
+<unused>
+<unused>
+Ориентация инструмента не определена для ICDSID
+Поверхностный вектор не определен для ICDSID
+Качание инструмента несовместимо с обработкой
+Рыскание инструмента неопределено при активном PADSID
+Режим PADSID не поддержан
+Режим PADCHK не поддержан
+Прерывность поверхности слишком велика
+Продвижение материала несовместимо с инструментом
+<unused>
+Код TWI слишком велик
+Код THD слишком велик
+Код D слишком велик
+Код TAB слишком велик
+<unused>
+Требование подходящей ориентации инструмента для xSCMOD
+Требование подходящего поверхностного вектора для xSCMOD
+Ориентация инструмента не определена для xSCMOD
+Поверхностный вектор не определен для xSCMOD
+Только блоки G1 разрешены для xSCMOD
+Длина головного блока несовместима с ESCMOD
+Длина единого блока несовместима с xSCMOD
+Длина хвостового блока несовместима с XSCMOD
+<unused>
+<unused>
+<unused>
+<unused>
+PAG: Implementation restriction
+PAG: Not enough data
+PAG: Ambiguous data
+PAG: Undetermined solution
+PAG: No solution found
+PAG: Invalid feed command
+<unused>
+<unused>
+<DEBUG: PMI: Расширение пользователя не инициализировано>
+<unused>
+Speed Шпиндель < Speed Min
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Превышено максимальное число контрольных структур
+IF () THEN не в том же самом блоке
+BREAK не включен в контрольную структуру
+ELSE без IF/THEN
+Два ELSE подряд
+Разладка контрольных структур
+ENDW,ENDFOR,REPEAT не должны иметь за собой код
+UNTIL без REPEAT
+FOR без предельного значения
+RPT/BREAK: ошибка выход за пределы цикла
+<unused>
+<unused>
+Ошибка доступа к данным поиск блока в DEFCN
+Процедура Overstore: блоки движения не разрешены
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Ошибка разделения файла
+Недостаточная память для окрытия файла
+Неизвестная ошибка в файле
+<unused>
+Время жизни инструмента исчерпано
+<unused>
+<unused>
+<unused>
+Motion command error: see PLC Menu
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Ошибка доступа данных пределы осей>
+<DEBUG: Внутренняя ошибка>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Asse X Позиция Вне Предела
+Asse Y Позиция Вне Предела
+Asse Z Позиция Вне Предела
+Asse U Позиция Вне Предела
+Asse V Позиция Вне Предела
+Asse W Позиция Вне Предела
+Asse A Позиция Вне Предела
+Asse B Позиция Вне Предела
+Asse C Позиция Вне Предела
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Ошибка выходного pipe графики>
+<DEBUG: Обращение к TMAPI неактивно>
+<unused>
+<unused>
+<unused>
+<DEBUG: Связь с графическим сервером уже установлена>
+<DEBUG: Невозможно зарегистрироваться у графического сервера>
+<DEBUG: Никакого подключения к графическому серверу>
+<DEBUG: Графический сервер прервал свою работу>
+<unused>
+<unused>
+<DEBUG: Результат закрытия был сообщен Kernel>
+<unused>
+<unused>
+<unused>
+<DEBUG: Не хватает памяти для инициализации TMAPI>
+<DEBUG: Не было возможным освободить все ресурсы>
+<DEBUG: Не специфицировано>
+<unused>
+<unused>
+<DEBUG: Смотри Руководство>
+<unused>
+<unused>
+<unused>
+<unused>
+SRCVB: SPC out of phase
+SRCVB: no records
+SRCVB: too many records
+SRCVB: G0 not as 1st block
+SRCVB: eop found while recording
+SRCVB: invalid user extension
+<unused>
+<unused>
+<unused>
+<unused>
+<SR: Errbase>
+SR: Internal error
+SR: Unimplemented feature
+SR: X feed not monotone
+SR: Y feed not monotone
+SR: Output Callback failed
+SR: Argument singularity
+SR: Invalid argument
+SR: Parameter error
+SR: Missing side face intersection
+SR: Stock ranging error
+SR: Stock bottom reached
+SR: Stock top reached
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Неуправляемая конфигурация осей>
+<DEBUG: Функция неактивна>
+<unused>
+<DEBUG: GRAPH Multitool setup has bad freecells>
+<DEBUG: GRAPH Multitool setup has NO freecells>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Ошибка чтения конфигурации графического сервера>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Сбой записи данных packed>
+<DEBUG: Ошибочный тип назначения данного packed>
+<DEBUG: Ошибочный тип источника данного packed>
+<DEBUG: Невозможно округлить данное packed>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Сбой записи данных unpacked>
+<DEBUG: Ошибочный тип назначения данного unpacked>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Семантика ошибочна>
+<DEBUG: Неизвестная команда>
+Код SPC не распознан
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Ошибка доступа данных CED, THD или TWI>
+Недостаточно памяти для tool caching
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Кинематика не поддержана
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Код TWI слишком велик
+Код THD слишком велик
+Код D слишком велик
+Драйвер полярных осей не поддержан
+Код TAB слишком велик
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Кинематика не поддержана
+Ошибочная ориентация объекта TWI
+Ориентация инструмента не определена
+TCP не найден
+Трансформация THD не поддержана
+Невозможно выбрать резак, IJK отсутствуют
+Нарушение резака
+<unused>
+<unused>
+<unused>
+<DEBUG: Смотри Руководство>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Ошибка входной pipe в текущ. исполнении>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Сервер текущ.исполнения прервал работу>
+<unused>
+<unused>
+<DEBUG: Слишком много не удаленных файлов открыты в текущ. исполнении>
+<unused>
+<unused>
+Переход к метке невозможен в текущем исполнении
+<DEBUG: Ошибка чтения конфигурации в текущем исполнении>
+Слишком длинная линия в текущем исполнении
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+#768
+#include "dll?.err"
+
+#1000
+#include "chnam.err"

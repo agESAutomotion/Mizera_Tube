@@ -1,0 +1,296 @@
+*Vedere [PhisErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+Främre ändläge
+Bakre ändläge
+Mjukvaruändläge
+Axellarm: Extern begäran
+Kalibreringsfel
+Axel ej definierad
+Axel saknas och fly-instruktion
+Toleransfel
+Positioneringsfel
+Offsetfel
+Larmbegäran I/O för kontroll
+DAC-gränssnitt eller encoder saknas
+Räkning saknas från encoder
+Axel i kollision
+Område saknas
+Encoder ej ansluten
+Axel ej tillgänglig
+Larm från digital servodrivmodul
+Förskjutning gantry-axlar
+CanOpen Protocol Alarm
+Drive Fault
+Command error
+Reserved
+Reserved
+Reserved
+Reserved
+Reserved
+Digital drive not ready
+Invalid data
+Data packet corrupted - BCC error
+Noise on communication line with drive
+Communication Timeout with digital drive
+#32
+A.00: No errors
+A.01: Overload fault (IDN 114)
+A.02: Amplifier over temperature fault (IDN 203)
+A.03: Motor over temperature fault
+A.04: Cooling system fault (IDN 205)
+A.05: Control voltage fault (±15V)
+A.06: Feedback loss fault
+A.07: Commutation fault. Set to 0
+A.08: Over current fault
+A.09: Over voltage fault
+A.0A: Under voltage fault
+A.0B: Power supply phase fault
+A.0C: Excessive position deviation (IDN 159)
+A.0D: Communication interface fault (IDN 14)
+A.0E: Software limit switch fault (IDN 49 and 50)
+A.0F: <Reserved>
+A.10: Manufacturer defined fault (IDN 129)
+A.11: <Reserved>
+A.12: Non-volatile memory check-sum fault
+A.13: Warning fault (actual warning is mask to a fault)
+A.14: Motor brake fault
+A.15: Supply voltage not present
+A.16: A/D converter fault
+A.17: Regeneration fault
+A.18: System fault
+A.19: <Reserved>
+A.1A: Motor over speed fault
+A.1B: Excessive position command difference
+A.1C: Non-permissible software-enable
+A.1D: <Reserved>
+A.1E: <Reserved>
+A.1F: <Reserved>
+A.20: Overload warning
+A.21: Amplifier over temperature warning
+A.22: Motor over temperature warning
+A.23: Cooling system warning
+A.24: <Reserved>
+A.25: Positioning velocity >= n Limit
+A.26: <Reserved>
+A.27: <Reserved>
+A.28: <Reserved>
+A.29: <Reserved>
+A.2A: <Reserved>
+A.2B: <Reserved>
+A.2C: <Reserved>
+A.2D: Target position outside of travel range
+A.2E: <Reserved>
+A.2F: Manufacturer defined warning flags
+A.30: <Ukn error>
+A.31: <Ukn error>
+A.32: <Ukn error>
+A.33: <Ukn error>
+A.34: <Ukn error>
+A.35: <Ukn error>
+A.36: <Ukn error>
+A.37: <Ukn error>
+A.38: <Ukn error>
+A.39: <Ukn error>
+A.3A: <Ukn error>
+A.3B: <Ukn error>
+A.3C: <Ukn error>
+A.3D: <Ukn error>
+A.3E: <Ukn error>
+A.3F: <Ukn error>
+A.40: <Ukn error>
+A.41: <Ukn error>
+A.42: <Ukn error>
+A.43: <Ukn error>
+A.44: <Ukn error>
+A.45: <Ukn error>
+A.46: <Ukn error>
+A.47: <Ukn error>
+A.48: <Ukn error>
+A.49: <Ukn error>
+A.4A: <Ukn error>
+A.4B: <Ukn error>
+A.4C: <Ukn error>
+A.4D: <Ukn error>
+A.4E: <Ukn error>
+A.4F: <Ukn error>
+A.50: <Ukn error>
+A.51: <Ukn error>
+A.52: <Ukn error>
+A.53: <Ukn error>
+A.54: <Ukn error>
+A.55: <Ukn error>
+A.56: <Ukn error>
+A.57: <Ukn error>
+A.58: <Ukn error>
+A.59: <Ukn error>
+A.5A: <Ukn error>
+A.5B: <Ukn error>
+A.5C: <Ukn error>
+A.5D: <Ukn error>
+A.5E: <Ukn error>
+A.5F: <Ukn error>
+A.60: <Ukn error>
+A.61: <Ukn error>
+A.62: <Ukn error>
+A.63: <Ukn error>
+A.64: <Ukn error>
+A.65: <Ukn error>
+A.66: <Ukn error>
+A.67: <Ukn error>
+A.68: <Ukn error>
+A.69: <Ukn error>
+A.6A: <Ukn error>
+A.6B: <Ukn error>
+A.6C: <Ukn error>
+A.6D: <Ukn error>
+A.6E: <Ukn error>
+A.6F: <Ukn error>
+A.70: <Ukn error>
+A.71: <Ukn error>
+A.72: <Ukn error>
+A.73: <Ukn error>
+A.74: <Ukn error>
+A.75: <Ukn error>
+A.76: <Ukn error>
+A.77: <Ukn error>
+A.78: <Ukn error>
+A.79: <Ukn error>
+A.7A: <Ukn error>
+A.7B: <Ukn error>
+A.7C: <Ukn error>
+A.7D: <Ukn error>
+A.7E: <Ukn error>
+A.7F: <Ukn error>
+A.80: <Ukn error>
+A.81: <Ukn error>
+A.82: <Ukn error>
+A.83: <Ukn error>
+A.84: <Ukn error>
+A.85: <Ukn error>
+A.86: <Ukn error>
+A.87: <Ukn error>
+A.88: <Ukn error>
+A.89: <Ukn error>
+A.8A: <Ukn error>
+A.8B: <Ukn error>
+A.8C: <Ukn error>
+A.8D: <Ukn error>
+A.8E: <Ukn error>
+A.8F: <Ukn error>
+A.90: <Ukn error>
+A.91: <Ukn error>
+A.92: <Ukn error>
+A.93: <Ukn error>
+A.94: <Ukn error>
+A.95: <Ukn error>
+A.96: <Ukn error>
+A.97: <Ukn error>
+A.98: <Ukn error>
+A.99: <Ukn error>
+A.9A: <Ukn error>
+A.9B: <Ukn error>
+A.9C: <Ukn error>
+A.9D: <Ukn error>
+A.9E: <Ukn error>
+A.9F: <Ukn error>
+A.A0: <Ukn error>
+A.A1: <Ukn error>
+A.A2: <Ukn error>
+A.A3: <Ukn error>
+A.A4: <Ukn error>
+A.A5: <Ukn error>
+A.A6: <Ukn error>
+A.A7: <Ukn error>
+A.A8: <Ukn error>
+A.A9: <Ukn error>
+A.AA: <Ukn error>
+A.AB: <Ukn error>
+A.AC: <Ukn error>
+A.AD: <Ukn error>
+A.AE: <Ukn error>
+A.AF: <Ukn error>
+A.B0: <Ukn error>
+A.B1: <Ukn error>
+A.B2: <Ukn error>
+A.B3: <Ukn error>
+A.B4: <Ukn error>
+A.B5: <Ukn error>
+A.B6: <Ukn error>
+A.B7: <Ukn error>
+A.B8: <Ukn error>
+A.B9: <Ukn error>
+A.BA: <Ukn error>
+A.BB: <Ukn error>
+A.BC: <Ukn error>
+A.BD: <Ukn error>
+A.BE: <Ukn error>
+A.BF: <Ukn error>
+A.C0: <Ukn error>
+A.C1: <Ukn error>
+A.C2: <Ukn error>
+A.C3: <Ukn error>
+A.C4: <Ukn error>
+A.C5: <Ukn error>
+A.C6: <Ukn error>
+A.C7: <Ukn error>
+A.C8: <Ukn error>
+A.C9: <Ukn error>
+A.CA: <Ukn error>
+A.CB: <Ukn error>
+A.CC: <Ukn error>
+A.CD: <Ukn error>
+A.CE: <Ukn error>
+A.CF: <Ukn error>
+A.D0: <Ukn error>
+A.D1: <Ukn error>
+A.D2: <Ukn error>
+A.D3: <Ukn error>
+A.D4: <Ukn error>
+A.D5: <Ukn error>
+A.D6: <Ukn error>
+A.D7: <Ukn error>
+A.D8: <Ukn error>
+A.D9: <Ukn error>
+A.DA: <Ukn error>
+A.DB: <Ukn error>
+A.DC: <Ukn error>
+A.DD: <Ukn error>
+A.DE: <Ukn error>
+A.DF: <Ukn error>
+A.E0: <Ukn error>
+A.E1: <Ukn error>
+A.E2: <Ukn error>
+A.E3: <Ukn error>
+A.E4: <Ukn error>
+A.E5: <Ukn error>
+A.E6: <Ukn error>
+A.E7: <Ukn error>
+A.E8: <Ukn error>
+A.E9: <Ukn error>
+A.EA: <Ukn error>
+A.EB: <Ukn error>
+A.EC: <Ukn error>
+A.ED: <Ukn error>
+A.EE: <Ukn error>
+A.EF: <Ukn error>
+A.F0: <Ukn error>
+A.F1: <Ukn error>
+A.F2: <Ukn error>
+A.F3: Sercos Board not present
+A.F4: Write data error
+A.F5: Read data error
+A.F6: Check velocity error
+A.F7: Spindle Positioning error
+A.F8: Driver Config error
+A.F9: Switch Phase error
+A.FA: Class 1 diagnostic
+A.FB: (aux) Error transferring data to servodrive EEPROM
+A.FC: (aux) Error during Setpoint
+A.FD: (aux) Error during Torque Enable phase
+A.FE: (aux) CNC Shared memory/Servodrive EEPROM Parameters mismatch:  needs update?
+A.FF: (aux) Link is interrupted or malfunctioning
+
+#288
+#include "axnam?.err"
+

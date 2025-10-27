@@ -1,0 +1,600 @@
+#0
+Общая ошибка
+Соединение неактивно
+Помехи в линии 
+Ошибочная последовательность
+#100
+PSS Ошибки Hardware
+Ошибка Hardware в CPU - A
+Ошибка Hardware в CPU - B
+Ошибка Hardware в CPU - C
+Ошибка батареи (заменить батарею)
+"Ошибка оснащения стойки в слоте %d",PILZerr[1],
+#107
+Ошибка CRC в апликативной программе
+#111
+Превышено установленное время цикла
+Ошибка обновления списка остановов
+#114
+Ошибка обработки останова
+#120
+Предупреждение оперативной системы
+Деление на 0
+Текущее значение DB слишком мало
+Текущее значение DB типа Read-Only
+Ошибка параметрического адресования
+Ошибка непрямого адресования
+Модуль отсутствует
+Ошибка присвоения параметра
+Слишком много связей
+#130
+Системная ошибка в CPU
+Ошибка синхронизации
+Устройства CPU B/C не отвечают CPU A
+Ошибка чтения состояния входов 
+Ошибка в таблице конфигурации
+Ошибка программатора (restart)
+Ошибка Компиляции
+Ошибка при загрузке программы (повторить процедуру)
+Ошибка при выполнении link программы
+Ошибка при сравнении состояний выходов
+Фатальная ошибка (выключить PSS)
+Ошибка параметризации Datablock (DB) 0003
+"Ошибка / короткое замыкание во время теста %d",PilzSrv.PilzErrCodes[1],
+#144
+Ошибка чтения: Точность XW
+#148
+"Неопределенная ошибка Категория %d Номер %d",PILZerr[1],PilzSrv.PilzErrCodes[2],
+В списке ошибок не найдено никакой ошибки FS
+Имеет место FS в режиме STOP Инициализировать переключатель RUN/STOP
+"Ошибка Линия DOZ в слоте %d.%d",,PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DOZ в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOZ в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка Линия DOT в слоте %d.%d",,PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DO в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка Линия DO(T) в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка Линия DOT в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Ошибка в модуле DO в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DO в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DO в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DO в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DO в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DO в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка Линия DO в слоте %d.%d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"Фазовая ошибка модуль DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Фазовая ошибка модуль DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Фазовая ошибка модуль DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Фазовая ошибка модуль DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DI в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DI в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DI в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DI в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка триггера в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка теста модуля DIF в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка теста модуля DI в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле XW в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DO в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в DO / DOZ / DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Доступ к записи на модуле Триггер %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOR в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOT в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DOS в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в модуле DI2 в слоте %d",PilzSrv.PilzErrCodes[1],
+"Короткое замыкание на 0V триггера в слоте %d",PilzSrv.PilzErrCodes[1],
+"Короткое замыкание на 24V триггера в слоте %d",PilzSrv.PilzErrCodes[1],
+"Короткое замыкание на сигнале триггера %d",PilzSrv.PilzErrCodes[1],
+Неконтролируемая ошибка
+"Ошибка на входах в слоте %d",PilzSrv.PilzErrCodes[1],
+"Ошибка в триггерах в слоте %d",PilzSrv.PilzErrCodes[1],
+"SafetyBUS p - I/O Group in STOP Device %d  - I/O Group %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"SafetyBUS p - Внутренняя ошибка модуля Device %d",PilzSrv.PilzErrCodes[1],
+"SafetyBUS p - Общая ошибка Device %d  - I/O Group %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+"SafetyBUS p - Ошибка Bus Device %d  - I/O Group %d",PilzSrv.PilzErrCodes[1],PilzSrv.PilzErrCodes[2],
+SafetyBUS p - Системная ошибка
+Неконтролируемая ошибка
+SafetyBUS p - Ошибка в интерфейсе BUS
+#291
+"Короткое замыкание на 0V триггера %d",PilzSrv.PilzErrCodes[1],
+"Короткое замыкание на 24V триггера %d",PilzSrv.PilzErrCodes[1],
+"Короткое замыкание в триггере %d",PilzSrv.PilzErrCodes[1],
+Системная ошибка - Проконтролировать Error Stack
+#298
+Никакого сообщения об ошибке
+"Тип SB не специфицирован как SSNR %d",PilzSrv.PilzErrCodes[1],
+#309
+"Активирована аварийная кнопка %d",PilzSrv.PilzErrCodes[1],
+#314
+"Reset аварийного останова %d нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d инициализирован Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Активирована аварийная кнопка %d",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d Ошибка синхронизации контакта n.c. S1",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d Ошибка синхронизации контакта n.c. S2",PilzSrv.PilzErrCodes[1],
+"Активирована аварийная кнопка %d и нажат Reset",PilzSrv.PilzErrCodes[1],
+#324
+"Аварийный останов %d инициализирован Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d  Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d  - При Reset контакт n.c. S1 не открылся",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d  - При Reset контакт n.c. S2 не открылся",PilzSrv.PilzErrCodes[1],
+#340
+"Дверь защиты %d контроль Функциональности не выполнен",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d - Ошибка синхронизации Время S1-S2 превышено",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d открыта S1 открыт",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d открыта S2 открыт",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d открыта Контакт n.c. S1 не был открыт",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d открыта Контакт n.c. S1 не был открыт",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d закрыта Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d открыта",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d ошибка синхронизации Время S1 превышено",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d ошибка синхронизации Время S2 превышено",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d открыта и нажат Reset",PilzSrv.PilzErrCodes[1],
+#356
+"Дверь защиты %d Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d закрыта Контакт n.c. S1 не был открыт",PilzSrv.PilzErrCodes[1],
+"Дверь защиты %d закрыта Контакт n.c. S2 не был открыт",PilzSrv.PilzErrCodes[1],
+#364
+"Ошибка Фотоэл. Барьер %d S1-S2 не синхронизированы",PilzSrv.PilzErrCodes[1],
+#366
+"Временная ошибка Фотоэл. Барьер %d во время теста Барьера",PilzSrv.PilzErrCodes[1],
+#369
+"Ошибка Фотоэл. Барьер %d Нажать reset",PilzSrv.PilzErrCodes[1],
+#371
+"Замена - BA Фотоэл. Барьер %d Нажать reset",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер  %d  прерывание в защищенной области",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d- старт заблокирован Выполнить Функциональный Тест",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d- Фаза блокирована Старт",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Фаза блокирована Ждать 1го прерывания",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Фаза блокирована Ждать 2го прерывания",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Фаза блокирована Время ожидания превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - выбрана более чем одна позиция",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - не выбрано никакой позиции",PilzSrv.PilzErrCodes[1],
+#388
+"Фотоэл. Барьер %d - Функциональный Тест не выполнен",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - ошибка синхронизации Время S1-S2 превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - прерывание в защищенной области (S1)",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - прерывание в защищенной области (S2)",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Reset Контакт n.c. S1 не был открыт",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Reset Контакт n.c. S2 не был открыт",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Защищенная область OK Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Прерывание в защищенной области",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d  - Ошибка синхронизации Время S1 превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d  - Ошибка синхронизации Время S1 превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Прерывание в защищенной области и Reset нажат",PilzSrv.PilzErrCodes[1],
+#404
+"Фотоэл. Барьер %d  Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Начальная ошибка Контакт n.c. S1 не был открыт",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер %d - Начальная ошибка Контакт n.c. S2 не был открыт",PilzSrv.PilzErrCodes[1],
+#412
+"Активирована аварийная кнопка %d",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d инициализирован Нажать Reset",PilzSrv.PilzErrCodes[1],
+#415
+"Аварийный останов %d  Выполнить функциональный тест",PilzSrv.PilzErrCodes[1],
+"Активирована аварийная кнопка %d и нажат Reset",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d  Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d  Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d  - При Reset контакт n.c. 1 не открылся; ошибка синхронизации",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d  - При Reset контакт n.c. 2 не открылся; ошибка синхронизации",PilzSrv.PilzErrCodes[1],
+"Аварийный останов %d  - Перезапустить I/O-group",PilzSrv.PilzErrCodes[1],
+#428
+"Safety Block %d Кнопка активирована",PilzSrv.PilzErrCodes[1],
+"Safety Block %d - Время синхронизации контакта n.c. S1 превышено",PilzSrv.PilzErrCodes[1],
+"Safety Block %d - Время синхронизации контакта n.c. S1 превышено",PilzSrv.PilzErrCodes[1],
+"Safety Block %d активирован и нажат Reset",PilzSrv.PilzErrCodes[1],
+#436
+"Safety Block %d  Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Safety Block %d- Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Safety Block %d - При Reset контакт n.c. S1 не был открыт",PilzSrv.PilzErrCodes[1],
+"Safety Block %d - При Reset контакт n.c. S2 не был открыт",PilzSrv.PilzErrCodes[1],
+#444
+"Двуручный пульт %d- Кнопка 1 контакты n.c. и n.a. открыты",PilzSrv.PilzErrCodes[1],
+"Двуручный пульт %d- Кнопка 1 контакты n.c. и n.a. закрыты",PilzSrv.PilzErrCodes[1],
+"Двуручный пульт %d- Кнопка 2 контакты n.c. и n.a. открыты",PilzSrv.PilzErrCodes[1],
+"Двуручный пульт %d- Кнопка 2 контакты n.c. и n.a. закрыты",PilzSrv.PilzErrCodes[1],
+"Двуручный пульт  %d отключен, но функция не выбрана",PilzSrv.PilzErrCodes[1],
+"Двуручный пульт  %d подключен, однако не выбран",PilzSrv.PilzErrCodes[1],
+#452
+"Reset двуручного пульта %d нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Двуручный пульт %d активирован без готовности",PilzSrv.PilzErrCodes[1],
+"Ошибка синхрониз. двуручный пульт %d Отсутствует кнопка 1",PilzSrv.PilzErrCodes[1],
+"Ошибка синхрониз. двуручный пульт %d Отсутствует кнопка 2",PilzSrv.PilzErrCodes[1],
+"Двуручный пульт %d  - Reset с Mein (отпустить кнопки)",PilzSrv.PilzErrCodes[1],
+#458
+"Ошибка двуручный пульт %d T1 не отпущен",PilzSrv.PilzErrCodes[1],
+"Ошибка двуручный пульт %d T2 не отпущен",PilzSrv.PilzErrCodes[1],
+"Педаль %d - кнопка 1 контакты n.a. и n.c. открыты",PilzSrv.PilzErrCodes[1],
+"Педаль %d - кнопка 1 контакты n.a. и n.c. закрыты",PilzSrv.PilzErrCodes[1],
+"Педаль %d - кнопка 2 контакты n.a. и n.c. открыты",PilzSrv.PilzErrCodes[1],
+"Педаль %d - кнопка 2 контакты n.a. и n.c. закрыты",PilzSrv.PilzErrCodes[1],
+"Педаль %d отключена, но не выбрана",PilzSrv.PilzErrCodes[1],
+"Педаль %d подключена и выбрана",PilzSrv.PilzErrCodes[1],
+#468
+"Педаль %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Педаль %d - Кнопка нажата без готовности",PilzSrv.PilzErrCodes[1],
+"Педаль %d - Ошибка синхронизации Нет контакта 1",PilzSrv.PilzErrCodes[1],
+"Педаль %d - Ошибка синхронизации Нет контакта 2",PilzSrv.PilzErrCodes[1],
+"Педаль %d - Reset посредством Mein (отпустить кнопки)",PilzSrv.PilzErrCodes[1],
+#474
+"Ошибка педаль %d -  Контакт 1 не отпущен",PilzSrv.PilzErrCodes[1],
+"Ошибка педаль %d -  Контакт 1 не отпущен",PilzSrv.PilzErrCodes[1],
+"Ошибка переключатель %d  Ошибочный код выбора",PilzSrv.PilzErrCodes[1],
+"Ошибка переключатель %d Ничего не выбрано",PilzSrv.PilzErrCodes[1],
+#484
+"Ошибка Переключатель %d - Выбор изменен во время блокировки LOCK-1",PilzSrv.PilzErrCodes[1],
+#490
+"Переключатель %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+#492
+"Ретроактивная ошибка %d RFK 1 остается открыт",PilzSrv.PilzErrCodes[1],
+"Ретроактивная ошибка %d RFK 1 остается закрыт",PilzSrv.PilzErrCodes[1],
+"Ретроактивная ошибка %d RFK 2 остается открыт",PilzSrv.PilzErrCodes[1],
+"Ретроактивная ошибка %d RFK 2 остается закрыт",PilzSrv.PilzErrCodes[1],
+"Ретроактивная ошибка %d RFK 1 прерван",PilzSrv.PilzErrCodes[1],
+"Ретроактивная ошибка %d RFK 1 закрыт",PilzSrv.PilzErrCodes[1],
+"Ретроактивная ошибка %d RFK 2 прерван",PilzSrv.PilzErrCodes[1],
+"Ретроактивная ошибка %d RFK 2 закрыт",PilzSrv.PilzErrCodes[1],
+"Ретроактивность %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+#509
+"Клапан безопасности %d - Feedback После ON, S1 остается в 1",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d - Feedback После OFF, S1 остается в 0",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d нет коммутации в последнем Цикле",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d - нет позиции без нагрузки S1 при Y1-ON",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d - Feedback После ON, S2 остается в 1",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d - Feedback После OFF, S2 остается в 0",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d - нет позиции без нагрузки S2 при Y2-ON",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d - Reset = 1 или S1=0 /S2=0/ ON=1",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d - Не хватает давления при работе",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности %d - Не хватает давления при запуске",PilzSrv.PilzErrCodes[1],
+#524
+"Прогр. Кулачки %d - Экстра-ход превысил тормозной путь",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - Останов Кулачок NL нет управления динамическим кулачком и к. подъема",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - Останов кулачок подъема HL нет управления динамическим кулачком",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - Динамический кулачок переходит из "0" в "1" с OT (кулачок UDP) = "1"",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - Останов кулачок подъема HL при возврате нет управления кул. торможения",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - Активный возврат в UDP",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - кулачок HL нет в цикле",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - кулачок NL нет в цикле",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - кулачок DY нет в цикле",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - кулачок STP нет в цикле",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - NL в On в начале HL. Проверить положение кулачков",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d - HL в On в конце NL. Проверить положение кулачков",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d NL раньше чем DY. Проверить положение кулачков",PilzSrv.PilzErrCodes[1],
+"Прогр. Кулачки %d HL раньше чем DY. Проверить положение кулачков",PilzSrv.PilzErrCodes[1],
+#540
+"Разрыв Вала %d Никакого изменения импульса в proximity",PilzSrv.PilzErrCodes[1],
+#548
+"Разрыв Вала %d  Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+#564
+"Контроль Sblock %d не выполнен",PilzSrv.PilzErrCodes[1],
+"Sblock %d -время синхронизации Время S1-S2 превышено",PilzSrv.PilzErrCodes[1],
+"Sblock %d сработал (S1 открыт)",PilzSrv.PilzErrCodes[1],
+"Sblock %d сработал (S2 открыт)",PilzSrv.PilzErrCodes[1],
+"Sblock %d вставлен Контакт n.c. S1 не был открыт",PilzSrv.PilzErrCodes[1],
+"Sblock %d вставлен Контакт n.c. S2 не был открыт",PilzSrv.PilzErrCodes[1],
+"Sblock  %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Sblock %d вставлен Нажать Reset",PilzSrv.PilzErrCodes[1],
+#581
+"Ошибка Контр. Уровня %d Прессостат сработал",PilzSrv.PilzErrCodes[1],
+#586
+"Контр. Уровня %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Контр. Уровня %d - Прессостат OK Нажать Reset",PilzSrv.PilzErrCodes[1],
+#597
+"Ошибка охлаждение %d Контроль температуры сработал",PilzSrv.PilzErrCodes[1],
+#602
+"Охлаждение %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Охлаждение %d - Контроль OK Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Кнопка Мертвый %d - инфо 1 минута прошла",PilzSrv.PilzErrCodes[1],
+"Кнопка Мертвый %d - инфо 2 минуты прошли",PilzSrv.PilzErrCodes[1],
+"Кнопка Мертвый %d - инфо 3 минуты прошли",PilzSrv.PilzErrCodes[1],
+"Кнопка Мертвый %d - активирован STOP",PilzSrv.PilzErrCodes[1],
+"Кнопка Мертвый %d нажата > 1 минуты",PilzSrv.PilzErrCodes[1],
+"Кнопка Мертвый %d - Готовность не дана",PilzSrv.PilzErrCodes[1],
+#620
+"Останов Газ %d  - Прерыватель 1 Концентрация 40 %",PilzSrv.PilzErrCodes[1],
+"Останов Газ %d  - Прерыватель 2 Концентрация 40 %",PilzSrv.PilzErrCodes[1],
+"Останов Газ %d  - Прерыватель 1 Концентрация 20 %",PilzSrv.PilzErrCodes[1],
+"Останов Газ %d  - Прерыватель 2 Концентрация 20 %",PilzSrv.PilzErrCodes[1],
+#636
+"Клапан KH %d  - нет контакта S1 закрыт",PilzSrv.PilzErrCodes[1],
+"Клапан KH %d  - нет контакта S2 открыт",PilzSrv.PilzErrCodes[1],
+"Клапан KH %d  - превышено время для изменения положения V",PilzSrv.PilzErrCodes[1],
+"Клапан KH %d  - готовность дизактивирована",PilzSrv.PilzErrCodes[1],
+"Клапан KH %d  - реакция OK, но "S1 закрыт" заблокирован",PilzSrv.PilzErrCodes[1],
+"Клапан KH %d  - реакция OK, но "S2 открыт" заблокирован",PilzSrv.PilzErrCodes[1],
+"Клапан KH %d  - Нажать Reset",PilzSrv.PilzErrCodes[1],
+#652
+"Ошибка контроль уровня %d -  Время просрочено",PilzSrv.PilzErrCodes[1],
+"Ошибка контроль уровня %d - Активирован STOP",PilzSrv.PilzErrCodes[1],
+"Ошибка контроль уровня %d - кнопка нажата слишком долго",PilzSrv.PilzErrCodes[1],
+#676
+"Управление Прессом %d - нет статической готовности",PilzSrv.PilzErrCodes[1],
+"Управление Прессом %d - нет готовности к запуску",PilzSrv.PilzErrCodes[1],
+"Управление Прессом %d - нет готовности по безопасности",PilzSrv.PilzErrCodes[1],
+"Управление Прессом %d - Stop в UDP Отпустить кнопку старта",PilzSrv.PilzErrCodes[1],
+"Управление Прессом %d - Start вместе с STOP = 0",PilzSrv.PilzErrCodes[1],
+"Управление Прессом %d - Start в UDP Нет готовности к запуску",PilzSrv.PilzErrCodes[1],
+#684
+"Надежное сообщение : Получатель %d  Разрыв кабеля канал 1",PilzSrv.PilzErrCodes[1],
+"Надежное сообщение : Получатель %d  Разрыв кабеля канал 5",PilzSrv.PilzErrCodes[1],
+"Надежное сообщение : Получатель %d  Разрыв кабеля канал 2",PilzSrv.PilzErrCodes[1],
+"Надежное сообщение : Получатель %d  Разрыв кабеля канал 6",PilzSrv.PilzErrCodes[1],
+"Надежное сообщение : Получатель %d  Разрыв кабеля канал 3",PilzSrv.PilzErrCodes[1],
+"Надежное сообщение : Получатель %d  Разрыв кабеля канал 7",PilzSrv.PilzErrCodes[1],
+"Надежное сообщение : Получатель %d  Разрыв кабеля канал 4",PilzSrv.PilzErrCodes[1],
+"Надежное сообщение : Получатель %d  Разрыв кабеля канал 8",PilzSrv.PilzErrCodes[1],
+#698
+"Надежное сообщение : Получатель %d  Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+#708
+"Контроль Барьера защиты %d  не выполнен",PilzSrv.PilzErrCodes[1],
+"Барьер защиты %d  Время синхронизации S1-S2 превышено",PilzSrv.PilzErrCodes[1],
+"Барьер защиты %d  - барьер открыт, S1 открыт",PilzSrv.PilzErrCodes[1],
+"Барьер защиты %d  - барьер открыт, S2 открыт",PilzSrv.PilzErrCodes[1],
+"Барьер защиты %d  - барьер OK, S1 не был открыт",PilzSrv.PilzErrCodes[1],
+"Барьер защиты %d  - барьер OK, S2 не был открыт",PilzSrv.PilzErrCodes[1],
+"Барьер защиты %d  - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Барьер защиты %d  - барьер OK, Нажать Reset",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Время синхронизации BWS1 - BWS2 превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - BWS1 или BWS2  не был в 0",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - MS1 и MS2 одновременно в ON",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Toff = 1 MS1 или MS2 изменен",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Toff = 1 MP1 или MP2 изменен",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - MP1 или MP2 не был в GST",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Время синхронизации "TPSy" превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Макс. время "Tint" превышено",PilzSrv.PilzErrCodes[1],
+#725
+"Фотоэл. Барьер-MUTE %d - Макс. время  "TS12" превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d   Фотоэлектрический Барьер прерван",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Макс. время "TMut" превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Макс. время "TBWS" превышено",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - MS1= 1/0 без ранее MS2 = 0/1",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Фотоэл. Барьер-MUTE %d - Фотоэл. Барьер свободен подтвердить нажатием Reset",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - кулачок P 0/1 и proximity = 1",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - кулачок P 1/0 и proximity = 1",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - кулачок P 1/0 и proximity = 0",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - кулачок P Спереди 0/1 и UDP-0",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - кулачок P = 0 и OU-1",PilzSrv.PilzErrCodes[1],
+"CAM-ERR %d - кулачок P Спереди 0/1 и UDP-1",PilzSrv.PilzErrCodes[1],
+#740
+"CAM-ERR %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+#748
+"Клапан безопасности-MAN %d - Останов маховика не сработал",PilzSrv.PilzErrCodes[1],
+"Клапан безопасности-MAN %d - Пресс не в UU",PilzSrv.PilzErrCodes[1],
+#756
+"Клапан безопасности-MAN %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+#764
+"HPSV %d - ошибка манипуляции Y10n или Y20n",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S1 остается в 1 после ON",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S1 остается в 0 после OFF ",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S1 становится 1 при Y1= ON",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Включение Feedback S1 =0",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S2 остается 1 после ON",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S2 остается 0 после OFF",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Включение Feedback S2 = 0",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Reserte-1 или S1-0 / S2 -0 / ON = 1",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Feedback S2 становится 1 при Y2 = ON",PilzSrv.PilzErrCodes[1],
+"HPSV %d - нет статической готовности при запуске",PilzSrv.PilzErrCodes[1],
+"HPSV %d - управление Y1 и Y2",PilzSrv.PilzErrCodes[1],
+"HPSV %d - ON --> OFF : Y1 не коммутировал",PilzSrv.PilzErrCodes[1],
+"HPSV %d - ON --> OFF : Y2 не коммутировал",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Индикации времени ошибочны для TOn",PilzSrv.PilzErrCodes[1],
+"HPSV %d - Индикации времени ошибочны для TOff",PilzSrv.PilzErrCodes[1],
+"Кнопка подтверждения %d Останов",PilzSrv.PilzErrCodes[1],
+"Кнопка подтверждения %d Контакт n.a. дефективен",PilzSrv.PilzErrCodes[1],
+#788
+"Кнопка подтверждения %d Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Кнопка подтверждения %d Нажать Reset",PilzSrv.PilzErrCodes[1],
+#796
+"HYDR-UN %d - S2-1 фронт 0/1 в On",PilzSrv.PilzErrCodes[1],
+#798
+"HYDR-UN %d - STFG + 0 и фронт 0/1 в On",PilzSrv.PilzErrCodes[1],
+"HYDR-UN %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+#812
+"Контр. Пламя %d - Форсунка ON, но без пламени",PilzSrv.PilzErrCodes[1],
+"Контр. Пламя %d - Форсунка OFF, но пламя есть",PilzSrv.PilzErrCodes[1],
+"Контр. Пламя %d  - Форсунка ON Оба контроля пламени в 1",PilzSrv.PilzErrCodes[1],
+"Контр. Пламя %d  - Форсунка ON Оба контроля пламени в 0",PilzSrv.PilzErrCodes[1],
+"Контр. Пламя %d  - Форсунка OFF Оба контроля пламени в 1",PilzSrv.PilzErrCodes[1],
+"Контр. Пламя %d  - Форсунка OFF Оба контроля пламени в 0",PilzSrv.PilzErrCodes[1],
+#819
+"Контр. Пламя %d  - Reset не разрешен",PilzSrv.PilzErrCodes[1],
+"Контр. Пламя %d  - Reset только при контроле пламени в ON",PilzSrv.PilzErrCodes[1],
+#837
+"Подавление %d - Время просрочено и ошибочный сигнал",PilzSrv.PilzErrCodes[1],
+#842
+"Подавление %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+"Подавление %d - Сигнал OK, отсутствует Reset",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - последовательность сигналов пламени прервана",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - последовательность сигналов безопасности прервана",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - последовательность сигналов ошибки прервана",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - последовательность сигналов устройств контроля прервана",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - Давление воздуха ниже чем минимум при запуске",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - Давление воздуха ниже чем минимум при работе",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - STOP с кнопки Stop",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - последовательность сигналов пламени прервана",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d -Нет подтверждения для Reset",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - Start 0/1 и кнопка stop = 1",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - Stop 0/1 и кнопка Start = 1",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - Нет подтверждения для Start",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - Ожидание для запуска FG в процессе",PilzSrv.PilzErrCodes[1],
+"ФОРСУНКА %d - ошибка --> Нажать Quit или кнопку Start",PilzSrv.PilzErrCodes[1],
+#860
+"ЗАСЛОНКА %d - C : не соответствует желаемому направлению",PilzSrv.PilzErrCodes[1],
+"ЗАСЛОНКА %d - O : не соответствует желаемому направлению",PilzSrv.PilzErrCodes[1],
+"ЗАСЛОНКА %d - Время коммутации для изменения позиции превышено",PilzSrv.PilzErrCodes[1],
+"ЗАСЛОНКА %d - DirO и dirC  одновременно",PilzSrv.PilzErrCodes[1],
+"ЗАСЛОНКА %d - контроль пары Никакого датчика конца хода",PilzSrv.PilzErrCodes[1],
+"ЗАСЛОНКА %d - контроль пары Оба датчика конца хода",PilzSrv.PilzErrCodes[1],
+"ЗАСЛОНКА %d - нет подтверждения",PilzSrv.PilzErrCodes[1],
+"ЗАСЛОНКА %d - Выбор направления",PilzSrv.PilzErrCodes[1],
+#876
+"КЛАПАН %d - Позиция POS1 ошибочна",PilzSrv.PilzErrCodes[1],
+"КЛАПАН %d - Позиция POS2 ошибочна",PilzSrv.PilzErrCodes[1],
+"КЛАПАН %d - Время коммутации превышено",PilzSrv.PilzErrCodes[1],
+"КЛАПАН %d - Dir1 и  Dir2 одновременно",PilzSrv.PilzErrCodes[1],
+"КЛАПАН %d - Нет обоих датчиков конца хода",PilzSrv.PilzErrCodes[1],
+"КЛАПАН %d - Оба датчика конца хода задействованы",PilzSrv.PilzErrCodes[1],
+"КЛАПАН %d - Отсутствует Reset",PilzSrv.PilzErrCodes[1],
+"КЛАПАН %d - Нет положения клапана без нагрузки",PilzSrv.PilzErrCodes[1],
+#892
+"Мойка %d Отсутствует датчик конца хода для положения max или нагрузка меньше макс.",PilzSrv.PilzErrCodes[1],
+#908
+"Step %d - Последовательность не определена",PilzSrv.PilzErrCodes[1],
+"Step %d - Клапан безопасности VAV1 не герметичен",PilzSrv.PilzErrCodes[1],
+"Step %d - Клапан безопасности VAV3 не герметичен",PilzSrv.PilzErrCodes[1],
+"Step %d - период контроля просрочен",PilzSrv.PilzErrCodes[1],
+"Step %d - ошибочная последовательность шагов",PilzSrv.PilzErrCodes[1],
+"Step %d - Высокое давление Газа",PilzSrv.PilzErrCodes[1],
+"Step %d - Высокое давление Воздуха",PilzSrv.PilzErrCodes[1],
+#924
+"Зажигание %d - Шаг не определен",PilzSrv.PilzErrCodes[1],
+"Зажигание %d  - ошибочная последовательность шагов",PilzSrv.PilzErrCodes[1],
+#940
+"ХОД %d - Шаг не определен",PilzSrv.PilzErrCodes[1],
+"ХОД %d - ошибочная последовательность шагов ",PilzSrv.PilzErrCodes[1],
+#956
+"ВЕНТИЛЯТОР %d - Кнопка Start нажата непрерывно",PilzSrv.PilzErrCodes[1],
+"ВЕНТИЛЯТОР %d - Кнопка Stop нажата непрерывно",PilzSrv.PilzErrCodes[1],
+"ВЕНТИЛЯТОР %d - NEXT не дизактивирован",PilzSrv.PilzErrCodes[1],
+#972
+"Фотоэлектрич. Барьер %d - Контакты N.A. 1 и 2 не синхронизированы",PilzSrv.PilzErrCodes[1],
+#974
+"Фотоэлектрич. Барьер %d - Время теста превышено",PilzSrv.PilzErrCodes[1],
+#977
+"Фотоэлектрич. Барьер %d - Отсутствует reset",PilzSrv.PilzErrCodes[1],
+"Фотоэлектрич. Барьер %d - Reset нажат непрерывно или слишком рано",PilzSrv.PilzErrCodes[1],
+#980
+"Фотоэлектрич. Барьер %d  Прерван",PilzSrv.PilzErrCodes[1],
+"Фотоэлектрич. Барьер %d ",PilzSrv.PilzErrCodes[1],
+#9010
+Ошибка ! Ошибка конфигурации Синтаксическая ошибка в инструкции конфигурации !
+#9031
+Внимание ! Никакого теста в наличии ! Номер выбранной записи превышает максимальный существующий номер !
+#9035
+Ошибка ! Номер записи > 9999 ! Сделана попытка вызвать номер записи превышающий 999"9
+#9040
+Ошибка ! Номер BCD / синтаксис Послано слишком много номеров BCD или синтаксис инструкции MIN/MAX/NOTL ошибочен
+Ошибка ! При выборе номера текста послан номер BCD > "9
+Ошибка ! Двоичное число слишком велико ! Посланное значение превышает максимально допустимое !
+#9044
+Ошибка ! Номер записи отрицателен ! В режиме обработки текстов был указан отрицательный номер записи
+#9051
+Ошибка ! Переменная без резервированной позиции. Отредактирован сигнал управления для переменных, но без резервированной позиции для переменных !
+Внимание ! Слишком много резервированных позиций. Отредактированы более одиннадцати позиций резервированных под переменные !
+#9080
+Ошибка ! Специальный код ошибочен ! Выбранный код специальной функции недопустим !
+Ошибка ! Ошибочная команда ! В команде для переменных в последовательном режиме послана телеграмма с отсутствующими данными переменных
+Ошибка ! В команде для текстов в последовательном режиме послана телеграмма без номера текста
+#9100
+Ошибка ! Недопустимая инструкция ! В режиме "текстового экрана" послана недопустимая инструкция
+#9120
+Внимание ! Не хватает данных PLC ! Текстовая память не содержит данных PLC. Возможно текстовая память пуста !
+Ошибка ! Данные PLC ошибочны ! Данные PLC содержат информацию о недопустимой функции
+Ошибка ! Данные PLC ошибочны ! Записи данных PLC двойные
+Ошибка ! Данные PLC ошибочны ! Парамеризован недействительный адрес PLC
+Ошибка ! Нет соединения с PLC, Возможные причины: * неправильный кабель * Неправильный тип PLC * Дефект Hardware
+Ошибка ! Данные PLC ошибочны ! При присвоении переменных параметризован недопустимый номер текста
+Ошибка ! Данные PLC ошибочны ! При присвоении переменных указана недопустимая кодификация
+Ошибка ! При присвоении переменных указана неразрешенная длина
+Ошибка ! Данные PLC ошибочны ! При присвоении переменных указан недопустимый номер переменной 
+Ошибка ! Память недостаточна ! Текстовая память недостаточна. Текстовая память содержит слишком много данных PLC
+Ошибка ! Данные PLC ошибочны! Указан недопустимый идентификационный номер LED или неразрешенное количество Led
+Ошибка ! Данные PLC ошибочны ! Указана недопустимая величина Offset
+Ошибка ! Данные PLC ошибочны ! Указан недопустимый идентификационный номер или недопустимое количество номеров кнопок функции.
+#9140
+Внимание ! PLC в состоянии stop
+Ошибка ! Ошибка в номинальных значениях ! Ошибка в адресовании номинальных значений
+#9160
+Ошибка ! Ошибка в списке символов! Указанная таблица символов не найдена в текстовой памяти !
+Ошибка ! Ошибка в списке символов! Указанная таблица символов не полная
+#9170
+Ошибка !  Time-out последовательного интерфейса.
+#9120
+Ошибка !  Ошибка удаления Flash ! Память Flash-Eprom не была стерта. Проверить была ли действительно использована память Flash-Eprom
+#9201
+Ошибка! Flash: ID ошибочен ! При программировании выяснилось что текстовая память имеет неправильный ID
+Ошибка ! Flash: Ошибка записи ! При программировании памяти Flash-Eprom возникла ошибка записи Возможно что память Flash-Eprom не пуста
+Внимание !  Память недостаточна ! Программирование памяти превышает емкость текстовой памяти
+

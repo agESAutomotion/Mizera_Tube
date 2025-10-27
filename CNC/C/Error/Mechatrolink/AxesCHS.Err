@@ -1,0 +1,296 @@
+*Vedere [PhisErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+前进L.S.
+后退L.S.
+软件L.S.
+轴报警:外部要求
+尺寸错误
+轴未定义
+轴不存在
+公差错误
+跟踪错误
+偏置错误
+I/O控制警报要求
+DAC或编码器应用缺少
+缺少编码器计数脉冲
+轴碰撞
+范围不存在
+编码器未连接
+无效轴
+计数伺服驱动警报
+Gantry axes misalignment
+CanOpen Protocol Alarm
+Drive Fault
+Command error
+Reserved
+Reserved
+Reserved
+Reserved
+Reserved
+Digital drive not ready
+Invalid data
+Data packet corrupted - BCC error
+Noise on communication line with drive
+Communication Timeout with digital drive
+#32
+A.00: No errors
+A.01: <Ukn error>
+A.02: Parameters Error in Servopack
+A.03: Main Circuit Encoder Error
+A.04: Parameter Setting Error
+A.05: Combination Error
+A.06: <Ukn error>
+A.07: <Ukn error>
+A.08: <Ukn error>
+A.09: <Ukn error>
+A.0A: <Ukn error>
+A.0B: Canceled Servo ON Alarm
+A.0C: <Ukn error>
+A.0D: <Ukn error>
+A.0E: <Ukn error>
+A.0F: <Ukn error>
+A.10: Overcurrent or Heat Sink Overheated
+A.11: <Ukn error>
+A.12: <Ukn error>
+A.13: <Ukn error>
+A.14: <Ukn error>
+A.15: <Ukn error>
+A.16: <Ukn error>
+A.17: <Ukn error>
+A.18: <Ukn error>
+A.19: <Ukn error>
+A.1A: <Ukn error>
+A.1B: <Ukn error>
+A.1C: <Ukn error>
+A.1D: <Ukn error>
+A.1E: <Ukn error>
+A.1F: <Ukn error>
+A.20: <Ukn error>
+A.21: <Ukn error>
+A.22: <Ukn error>
+A.23: <Ukn error>
+A.24: <Ukn error>
+A.25: <Ukn error>
+A.26: <Ukn error>
+A.27: <Ukn error>
+A.28: <Ukn error>
+A.29: <Ukn error>
+A.2A: <Ukn error>
+A.2B: <Ukn error>
+A.2C: <Ukn error>
+A.2D: <Ukn error>
+A.2E: <Ukn error>
+A.2F: <Ukn error>
+A.30: Regeneration Error Detected
+A.31: <Ukn error>
+A.32: Regenerative Overload
+A.33: Main Power Supply Wiring Error
+A.34: <Ukn error>
+A.35: <Ukn error>
+A.36: <Ukn error>
+A.37: <Ukn error>
+A.38: <Ukn error>
+A.39: <Ukn error>
+A.3A: <Ukn error>
+A.3B: <Ukn error>
+A.3C: <Ukn error>
+A.3D: <Ukn error>
+A.3E: <Ukn error>
+A.3F: <Ukn error>
+A.40: Overvoltage
+A.41: Undervoltage
+A.42: <Ukn error>
+A.43: <Ukn error>
+A.44: <Ukn error>
+A.45: <Ukn error>
+A.46: <Ukn error>
+A.47: <Ukn error>
+A.48: <Ukn error>
+A.49: <Ukn error>
+A.4A: <Ukn error>
+A.4B: <Ukn error>
+A.4C: <Ukn error>
+A.4D: <Ukn error>
+A.4E: <Ukn error>
+A.4F: <Ukn error>
+A.50: <Ukn error>
+A.51: Overspeed
+A.52: Vibration Alarm
+A.53: <Ukn error>
+A.54: <Ukn error>
+A.55: <Ukn error>
+A.56: <Ukn error>
+A.57: <Ukn error>
+A.58: <Ukn error>
+A.59: <Ukn error>
+A.5A: <Ukn error>
+A.5B: <Ukn error>
+A.5C: <Ukn error>
+A.5D: <Ukn error>
+A.5E: <Ukn error>
+A.5F: <Ukn error>
+A.60: <Ukn error>
+A.61: <Ukn error>
+A.62: <Ukn error>
+A.63: <Ukn error>
+A.64: <Ukn error>
+A.65: <Ukn error>
+A.66: <Ukn error>
+A.67: <Ukn error>
+A.68: <Ukn error>
+A.69: <Ukn error>
+A.6A: <Ukn error>
+A.6B: <Ukn error>
+A.6C: <Ukn error>
+A.6D: <Ukn error>
+A.6E: <Ukn error>
+A.6F: <Ukn error>
+A.70: <Ukn error>
+A.71: Overload: High Load
+A.72: Overload: Low  Load
+A.73: Dynamic Brake Overload
+A.74: Overload of Surge Current Limit Resistor
+A.75: <Ukn error>
+A.76: <Ukn error>
+A.77: <Ukn error>
+A.78: <Ukn error>
+A.79: <Ukn error>
+A.7A: Heat Sink Overheated
+A.7B: <Ukn error>
+A.7C: <Ukn error>
+A.7D: <Ukn error>
+A.7E: <Ukn error>
+A.7F: <Ukn error>
+A.80: <Ukn error>
+A.81: Absolute Encoder Backup Error
+A.82: Encoder Checksum Error
+A.83: Absolute Encoder Battery Error
+A.84: Absolute Encoder Data Error
+A.85: Absolute Encoder Overspeed
+A.86: Encoder Overheated
+A.87: <Ukn error>
+A.88: <Ukn error>
+A.89: Encoder Module Error
+A.8A: External Encoder Error
+A.8B: <Ukn error>
+A.8C: <Ukn error>
+A.8D: <Ukn error>
+A.8E: <Ukn error>
+A.8F: <Ukn error>
+A.90: Position Error Pulse Overflow Warning
+A.91: Overload / Vibration Warning
+A.92: Regenerative Overload Warning
+A.93: Absolute Encoder Battery Warning
+A.94: Parameter Setting Warning
+A.95: MECHATROLINK Command Warning
+A.96: MECHATROLINK Communications Warning
+A.97: Undervoltage Warning
+A.98: <Ukn error>
+A.99: <Ukn error>
+A.9A: <Ukn error>
+A.9B: <Ukn error>
+A.9C: <Ukn error>
+A.9D: <Ukn error>
+A.9E: <Ukn error>
+A.9F: <Ukn error>
+A.A0: <Ukn error>
+A.A1: <Ukn error>
+A.A2: <Ukn error>
+A.A3: <Ukn error>
+A.A4: <Ukn error>
+A.A5: <Ukn error>
+A.A6: <Ukn error>
+A.A7: <Ukn error>
+A.A8: <Ukn error>
+A.A9: <Ukn error>
+A.AA: <Ukn error>
+A.AB: <Ukn error>
+A.AC: <Ukn error>
+A.AD: <Ukn error>
+A.AE: <Ukn error>
+A.AF: <Ukn error>
+A.B0: <Ukn error>
+A.B1: Reference Speed Input Read Error
+A.B2: Reference Torque Input Read Error
+A.B3: Current Detection Error
+A.B4: <Ukn error>
+A.B5: <Ukn error>
+A.B6: Mechatrolink Communications ASIC Error
+A.B7: <Ukn error>
+A.B8: <Ukn error>
+A.B9: <Ukn error>
+A.BA: <Ukn error>
+A.BB: <Ukn error>
+A.BC: <Ukn error>
+A.BD: <Ukn error>
+A.BE: <Ukn error>
+A.BF: System Alarm
+A.C0: <Ukn error>
+A.C1: Servo Overrun Detected
+A.C2: Phase Detection Error
+A.C3: <Ukn error>
+A.C4: <Ukn error>
+A.C5: Polarity Detection Error
+A.C6: Fully-closed Encoder A-,B- phase Disconnection
+A.C7: Fully-closed Encoder C- phase Disconnection
+A.C8: Absolute Encoder Clear Error
+A.C9: Encoder Communications Error
+A.CA: Encoder Parameter Error
+A.CB: Encoder Echoback Error
+A.CC: Multiturn Limit Disagreement
+A.CD: <Ukn error>
+A.CE: <Ukn error>
+A.CF: Feedback Option Card Error
+A.D0: Position Error Pulse Overflow
+A.D1: Motor-load Position Error Pulse Overflow
+A.D2: <Ukn error>
+A.D3: <Ukn error>
+A.D4: <Ukn error>
+A.D5: <Ukn error>
+A.D6: <Ukn error>
+A.D7: <Ukn error>
+A.D8: <Ukn error>
+A.D9: <Ukn error>
+A.DA: <Ukn error>
+A.DB: <Ukn error>
+A.DC: <Ukn error>
+A.DD: <Ukn error>
+A.DE: <Ukn error>
+A.DF: <Ukn error>
+A.E0: Option Unit No Response Alarm
+A.E1: Option Unit Time Out Alarm
+A.E2: Option Unit WDC Error
+A.E3: <Ukn error>
+A.E4: <Ukn error>
+A.E5: MECHATROLINK Synchronization Error
+A.E6: MECHATROLINK Communications Error ( Twice Consecutively )
+A.E7: <Ukn error>
+A.E8: <Ukn error>
+A.E9: <Ukn error>
+A.EA: SERVOPACK Malfunction
+A.EB: SERVOPACK Initial Access Error
+A.EC: SERVOPACK WDC Error
+A.ED: Command Execution Incomplete
+A.EE: <Ukn error>
+A.EF: <Ukn error>
+A.F0: <Ukn error>
+A.F1: Power Line Open Phase
+A.F2: <Ukn error>
+A.F3: <Ukn error>
+A.F4: <Ukn error>
+A.F5: <Ukn error>
+A.F6: <Ukn error>
+A.F7: <Ukn error>
+A.F8: <Ukn error>
+A.F9: <Ukn error>
+A.FA: <Ukn error>
+A.FB: (aux) Error transferring data to servodrive EEPROM
+A.FC: (aux) Error during Setpoint
+A.FD: (aux) Error during Torque Enable phase
+A.FE: (aux) CNC Shared memory/Servodrive EEPROM Parameters mismatch:  needs update?
+A.FF: (aux) Link is interrupted or malfunctioning
+
+#288
+#include "axnam?.err"
+

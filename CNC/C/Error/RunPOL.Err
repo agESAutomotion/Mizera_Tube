@@ -1,0 +1,775 @@
+*Vedere [RunErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+Oczekiwany zank [
+Zly numer rejestru
+Funkcja niewazna
+Parametry: znak niewazny
+IF: Oczekiwany zanak =
+JSR: Zly poziom zagniezdzenia podprogramu
+RET: Zle zagniezdzenie podprogramu
+Funkcja niosiagalna
+Zbyt wiele kolejnych funkcji M
+Promieñ bez G2/G3
+Niezgodny promieñ
+Blad formatowania kanalu
+Zablokowany kanal
+Nieistniejacy staly cykl
+Zbyt wiele poziomów nawiasu (
+Allocacja: oczekiwany znak =
+Oczekiwany znak CR
+Zmiana trybu pracy
+JMP: Nie znaleziono numeru bloku
+Nie znaleziono programu
+Blad z zewnêtrznej procedury
+Polozenie poza zakresem
+Os nieskonfigurowana
+Wrzeciono nieskonfigurowane
+Wbrana zla plaszczyzna
+Os niedostêpna
+Sok gwintowania zero
+Alarm osi
+Posów zero
+Promieñ narzêdzia zero
+Nie znaleziono znaku  % 
+Plaszczyzna lub bok zmienioy aktywacja CUT
+Wrzeciono bez enkodera
+Adres bez numumeru 
+SQRT: Ujemna zawartosc
+TAN: Nieokreslona wartosc
+ASIN, ACOS: Zawartosc poza zakresem
+Dzielenie przez zero
+Adres niestosowany
+Numer bez adresu
+Parametr w adresie G 
+Program bez M2-M30
+Interpolacja niewlasciwych osi
+Zbyt wysokie obroty wrzeciona RPM 
+Prêdkosc osi Z  > Max prêdkosc kanlu
+Korekcja G18 
+Nieobslugiwny typ geometri nrzêdzia
+Kolejka transmisji zkoñczona
+Kolejka wolnych pakietów zakonczona
+Promieñ profilu mniejszy promieñ narzêdzia
+Niezgodny koñcowy punkt luku
+Tor nie moze byc sledzony
+Zerowy odcinek
+Zerowy kat
+Operacja nielegalna
+Przeciêcie odcinków lub luków
+Zabroniony czlon profilu: uzyj G0
+Przeciêcie na odcinku liniowym
+Przeciêcie na luku
+Oczekiwany znak ]
+Zbtyt duza wartosc
+Blad dostêpu do pliku
+Zly opis narzêdzia
+Zbyt wiele parametrów
+Zbyt wiele znaków w powiazanych polach
+Oczekiwany obiekt po ^
+Alokacja do nieistniejcego rejestru.
+Obiekt nieistniejacy
+Nierozpoznany kod SPC
+Naruszenie skladni blpku APND
+Wyjasnienie w instrukcji obslugi
+CFC: Podprogram nieznaleziony
+CFC: Zle parmetry
+CFC: Blad zasobów negocjacji
+CFC: Brak zasobów 
+CFC: Blad zamkniêcia
+CFC: Niewyspecyfikowany 
+CFC: <DEBUG 1>
+CFC: (Wyjasnienie w instrukcji obslugi)
+CFC: Zadanie wykonane
+CVB: Nieznany kod operacji
+CVB: Blad zasobów negocjacji
+CVB: Brak zasobów
+CVB: Blad zamkniêcia
+CVB: Przerwany strumieñ
+CVB: Usuniêcie zakleszczenia/UnXpected EOF
+CVB: Niewyspecyfikowane 
+CVB: <DEBUG 1>
+CVB: (Wyjasnienia w instrukcji obslugi)
+CVB: Zadanie wykonane
+<niestosowane>
+<niestosowane>
+APIO: Brak zasobów
+APIO: Blad zamkniêcia
+APIO: Niewyspecyfikowane
+APIO: <DEBUG 1>
+APIO: (Wyjasnienia w instrukcji obslugi)
+APIO: Zadanie wykonane
+XCL: Nieznany kod operacji
+XCL: Blad uzbodnienia zasobów
+XCL: Brak zasobów
+XCL: Blad zamkniêcia
+XCL: Przerwany strumieñ danych 
+XCL: Usuniêcie zakleszczenia/UnXpected EOF
+XCL: Niewyspecyfikowane
+XCL: <DEBUG 1>
+XCL: (Wyjasnienia w instrukcji obslugi)
+XCL: Zadanie wykonane
+XAM: Nieznany kod operacji
+XAM: Blad negocjacji zasobów
+XAM: Brak zasobów
+XAM: Blad zamkniêcia
+XAM: Przerwany strumieñ
+XAM: Usuniêcie zakleszczenia/UnXpected EOF
+XAM: Niewyspecyfikowane
+XAM: <DEBUG 1>
+XAM: (Wyjasnienia w instrukcji obslugi)
+XAM: Zadanie wykonane
+RETR: Nieznany kod operacji
+RETR: Blad uzbodnienia zasobów
+RETR: Brak zasobów
+RETR: Blad zamkniêcia
+RETR: Przerwany strumieñ danych
+RETR: Usuniêcie zakleszczenia/UnXpected EOF
+RETR: Niewyspecyfikowane
+RETR: <DEBUG 1>
+RETR: (Wyjasnienia w instrukcji obslugi)
+RETR: Zadanie wykonane
+PG2: Nieznany kod operacji
+PG2: Blad uzbodnienia zasobów
+PG2: Brak zasobów
+PG2: Blad zamkniêcia
+PG2: Przerwany strumieñ danych
+PG2: Usuniêcie zakleszczenia/UnXpected EOF
+PG2: Niewyspecyfikowane
+PG2: <DEBUG 1>
+PG2:(Wyjasnienia w instrukcji obslugi)
+PG2: Zadanie wykonane
+WARP: Nieznany kod operacji
+WARP: Blad uzbodnienia zasobów
+WARP: Brak zasobów
+WARP: Blad zamkniêcia
+WARP: Przerwany strumieñ danych
+WARP: Usuniêcie zakleszczenia/UnXpected EOF
+WARP: Niewyspecyfikowane
+WARP: <DEBUG 1>
+WARP:(Wyjasnienia w instrukcji obslugi)
+WARP: Zadanie wykonane
+PAG: Nieznany kod operacji
+PAG: Blad uzbodnienia zasobów
+PAG: Brak zasobów
+PAG: Blad zamkniêcia
+PAG: Przerwany strumieñ danych
+PAG: Usuniêcie zakleszczenia/UnXpected EOF
+PAG: Niewyspecyfikowane
+PAG: <DEBUG 1>
+PAG:(Wyjasnienia w instrukcji obslugi)
+PAG: Zadanie wykonane
+Nieznany kod blêdu
+Polozenie w osi X poza zakresem
+Polozenie w osi Y poza zakresem
+Polozenie w osi Z poza zakresem
+Polozenie w osi U poza zakresem
+Polozenie w osi V poza zakresem
+Polozenie w osi W poza zakresem
+Polozenie w osi A poza zakresem
+Polozenie w osi B poza zakresem
+Polozenie w osi C poza zakresem
+<niestosowane>
+Blad zapisu definicji zmiennej [symbol]
+Blad zapisu definicji zmiennej [symbol]
+Blad zapisu definicji zmiennej [Defcn Var]
+Blad zapisu wlasnosci zmiennej [Defcn Var]
+Blad zapisu definicji zmiennej [INPUT]
+Brak przydzialu rejestru wejsciowego 
+Blad zapisu definicji zmiennej [OUT]
+Blad zapisu wlasnosci zmiennej [OUT]
+Blad zapisu definicji zmiennej [logical input]
+Blad zapisu definicji zmiennej [automatic variable]
+Oczekiwana wartosc przeniesiona do rejestru zmiennych
+Przekroczona maksymalna dlugosc szeregu
+Symbol zdefiniowany wiêcej niz raz
+Brak mozliwosci inicjalizacji obszaru
+Blad inicjalizacji zmiennej
+Blad skladni definicji parametru
+Niezgodny typ danych
+Brak wiêcej mozliwosci definiowania symboli 
+Niezdefiniowany symbol
+Blad przydzialu powiazañ
+Blad przydzialu wartosci
+Nieistniejacy symbol
+Blad zapisu definicji zmiennej [logical register]
+Oczekiwany symbol parametru
+Blad zgody rejestru Defcn
+Przekroczona maksymalna liczba zmiennych parametrówn
+<niestosowane>
+Poza pamiecia/Nieprzyznano pamiêci
+<niestosowane>
+Blad inicjacji
+<DEBUG: TCO: Nieznany kod operacji>
+<DEBUG: TCO: Blad uzbodnienia zasobów>
+<DEBUG: TCO: Brak zasobów>
+<DEBUG: TCO: Blad zamkniêcia>
+<DEBUG: TCO: Przerwany strumieñ danych>
+<DEBUG: TCO: Usuniêcie zakleszczenia/UnXpected EOF>
+<DEBUG: TCO: Niewyspecyfikowane>
+<DEBUG: TCO: <DEBUG: W celu uzyskania szczególowej informacji o blêdzie uzyj GetExtErr() >>
+<DEBUG: TCO:(Wyjasnienia w instrukcji obslugi)>
+<DEBUG: TCO: Zadanie wykonane>
+XCL: APND Naruszenie semantyki bloku
+XAM: APND Naruszenie semantyki bloku
+<DEBUG: PMI: Niewlasciwy kod operacji>
+<DEBUG: PMI: Zle I/O Prametry wektor>
+<DEBUG: PMI: Otrzymano sygnl koñcowy>
+<DEBUG: PMI: Blad inicjacji>
+<DEBUG: PMI: Blad zamkniêcia>
+<DEBUG: PMI: Niewyspecyfikowane>
+<DEBUG: PMI:(Wyjasnienia w instrukcji obslugi)>
+<DEBUG: PMI: Zadanie wykonane>
+Nie znaleziono Cut Edge Data
+Kinematyka nieobslugiwana
+Blad orientacji TWI
+Niezdefiniowana orientacja narzêdzia
+Niezlokalizowanay TCP
+Nieobslugiwana transformcja THD 
+Nie podano IJK, brak wyboru Cut Edge Data
+Naruszenie Cut Edge Data
+XCL: Wyjasnienia w instrukcji obslugi
+Niewlasciwa orientacja narzêdza
+Nieobslugiwany napêd ukladu osi biegunowych
+Niewlasciwa podzialka 
+Nielasciwe odchylenie
+Nieobslugiwane zachowanie ICDSID
+Nijdnoznaczne polozenie krawêdzi tnacej w stosunku do maszyny
+Po G00 potrzebny blok ruchu
+Zbyt wiele bloków niezawierajacych ruchu
+Nieobslugiwana sekwencja toru osi 
+XCL wewnêtrzny blad
+<niestosowane>
+DLE bufor przepelniony 
+Sprawdzane opóznienie: Zbyt wiele bloków bez przesuniecia
+DLE nierozpoznany fotmat
+DLE przerwny wewnêtrzny trumieñ 
+DLE wewnêtrzny blad
+DLE(Wyjasnienia w instrukcji obslugi)
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+TCO: APND Naruszenie semantyki bloku
+PG2: APND Naruszenie semantyki bloku
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+Niezdefiniowana orientacja narzêdzia z ICDSID
+Niezdefiniowany wektor powierzchni z  ICDSID
+Niewlasciwa podzialka narzêdzia do obróbki z PADSID
+Niezdefiniowane odchylenie narzêdzia z PADSID
+Nieobslugiwane zachowanie PADSID
+Nieobslugiwane zachowanie PADCHK
+Wykryta krawêdz powierzchni 
+Naruszenie toru obróbki 
+<niestosowane>
+Kod TWI poza zakresem
+Kod THD poza zakresem 
+Kod D poza zakresem
+<niestosowane>
+<niestosowane>
+Wymagana wlasciwa orientacja narzêdzia z xSCMOD
+Wymagany wlasciwy wektor powierzchni z xSCMOD
+Niezdefiniowana orientacja narzêdzia z xSCMOD
+Niezdefiniowany wektor powierzchni z xSCMOD
+Dozwolone tylko bloki G1 z xSCMOD
+Naruszenie dlugosci bloku prowadzacego ESCMOD
+Unikalne naruszenie dlugosci bloku z xSCMOD
+Naruszenie dlugosci bloku sledzacego z XSCMOD
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+PAG: Ogrniczenie zastosowania
+PAG: Brak danych 
+PAG: Wieloznaczne dne
+PAG: Nieokreslone rozwiazanie
+PAG: Nie znaleziono rozwiazania 
+PAG: Niewlasciwe polecenie posuwu 
+<niestosowane>
+<niestosowane>
+<DEBUG: PMI: Nieinicjalizowne rozszerzenie uzytkownika>
+<niestosowane>
+Prêdkosc wrzeciona < Prêdkosc min 
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+Przekroczona maksymalna liczba sterowanych struktur
+IF () i THEN musi byc w jednym bloku
+BREAK nie zostalo wyslane przez sterowna struktórê 
+ELSE bez IF/THEN
+Dwukrotnie uzyte ELSE 
+Blêdne ustawienie sterowanej struktóry 
+ENDW,ENDFOR,REPEAT nie moze  wystapic po zdaniu w tym samym bloku 
+UNTIL bez REPEAT
+FOR Bez wartosci zakresu 
+RPT/BREAK: próba skoku na zewnatrz struktóry 
+<niestosowane>
+<niestosowane>
+Nie odnaleziono informacji Block Search (DEFCN)
+Przetrzymana procedura:  niedozwolone bloki zawierajace przesuniecie
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+Przekroczenie wspóldzielenia pliku
+Brak mocy procesora do obslugi pliku
+Nieznany blad pliku
+<niestosowane>
+Zuzyte narzêdzie
+<niestosowane>
+<niestosowane>
+<niestosowane>
+Motion command error: see PLC Menu
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Nie odczytano danych granic osi>
+<DEBUG: Wewnêtrzny blad>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+Polozenie zadane osi X poza zakresem 
+Polozenie zadane osi Y poza zakresem
+Polozenie zadane osi Z poza zakresem
+Polozenie zadane osi U poza zakresem
+Polozenie zadane osi V poza zakresem
+Polozenie zadane osi W poza zakresem
+Polozenie zadane osi A poza zakresem
+Polozenie zadane osi B poza zakresem
+Polozenie zadane osi C poza zakresem
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Blad strumienia wyjsciowego dnych grafiki>
+<DEBUG: Niestosowane wywolanie TMAPI>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Polaczenie serwera grafiki nierozstrzygniête>
+<DEBUG: niewlasciwe haslo serwera graficznego>
+<DEBUG: Brak polaczenia serwera graficznego>
+<DEBUG: Niesprawny serwer graficzny>
+<niestosowane>
+<niestosowane>
+<DEBUG: Warunek sygnlizowany przez jadro>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Brak mocy procesora do inicjalizacji  TMAPI>
+<DEBUG: Niektóre zasoby nie sa dostêpne >
+<DEBUG: Niewyspecyfikowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Patrz instrukcja obslugi>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+SRCVB: brak synchronizacji SPC
+SRCVB: brak zapisów
+SRCVB: Zbyt wiele zapisów
+SRCVB: G0 nie jak w pierwszym bloku
+SRCVB: eop znaleziono podczas zapisu
+SRCVB: niewlascwe rozszezenie uzytkownika
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<SR: Baza blêdów>
+SR: Wewnêtrzny blad
+SR: Niewprowadzony blad
+SR: X posuw nieciagly
+SR: Y posuw nieciagly
+SR: Blad wywolania wyjscia
+SR: Argument niejednoznaczny
+SR: Nieprawidlowy argument
+SR: Blad parametru
+SR: Brak plaszczyzny przekroju bocznego
+SR: Blad zakresu stosu 
+SR: Osiagniête dno stosu 
+SR: Osiagniêto wierzcholek stosu
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Nieobslugiwane dopasowanie osi>
+<DEBUG: Nieobslugiwana funkcja>
+<niestosowane>
+<DEBUG: GRAPH ustawienie Multitoola ma niewlasciwe wolne pozycje>
+<DEBUG: GRAPHustawienie  Multitool nie ma wolnych pozycji>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Blad obliczen serwera graficznego>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Blad zapisu komprecji >
+<DEBUG: Blad przeznaczenia kompresji>
+<DEBUG: Blad zródla kompresji >
+<DEBUG: Nieznana wielkosc kompresji>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Blad zapisu dekompresji>
+<DEBUG: Blad adresu dekompresowanych danych>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Blad semantyczny>
+<DEBUG: Nieznane polecenie>
+Nierozpoznany kod SPC 
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Nieakceptowane dane CED, THD lub TWI>
+Brak mocy procesora do obslugi narzêdzi
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+Nieobslugiwana kinematyka
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+Kod TWI poza zakresem
+Kod THD poza zakresem
+Kod D poza zakreem
+Nieobslugiwany napêd biegunowego ukladu osi 
+TAB code out of range
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+Nieobslugiwana kinematyka
+Zla orientacja  TWI 
+Niezdefiniowana orientacja narzêdzi
+Niezlokalizowany TCP
+Nieobslugiwana transmisja THD 
+Nie podano IJK, nie wybrano krawêdzi przeciêcia
+Naruszenie krawêdzi przeciecia
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: patrz instrukcja obslugi>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Pominiêcie blêdu wejscia strumienia danych>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<DEBUG: Niesprawne obejscie serwera>
+<niestosowane>
+<niestosowane>
+<DEBUG: Obejscie ma zbyt wiele otwartych plików>
+<niestosowane>
+<niestosowane>
+Nie mozna znalezc etykiety obejscia
+<DEBUG: Blad configuracji odczytu kanalu obejscia>
+Przepelniony bufer obejscia
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+<niestosowane>
+#768
+#include "dll?.err"
+
+#1000
+#include "chnam.err"

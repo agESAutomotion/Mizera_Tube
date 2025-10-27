@@ -1,0 +1,299 @@
+*Vedere [PhisErr.Txt] per informazioni sulla mappatura degli errori                         
+                                                                                            
+#0                                                                                          
+Främre ändläge                                                                              
+Bakre ändläge                                                                               
+Mjukvaruändläge                                                                             
+Axellarm: Extern begäran                                                                    
+Kalibreringsfel                                                                             
+Axel ej definierad                                                                          
+Axel saknas och fly-instruktion                                                             
+Toleransfel                                                                                 
+Positioneringsfel                                                                           
+Offsetfel                                                                                   
+Larmbegäran I/O för kontroll                                                                
+DAC-gränssnitt eller encoder saknas                                                         
+Räkning saknas från encoder                                                                 
+Axel i kollision                                                                            
+Område saknas                                                                               
+Encoder ej ansluten                                                                         
+Axel ej tillgänglig                                                                         
+Larm från digital servodrivmodul                                                            
+Förskjutning gantry-axlar                                                                   
+CanOpen Protocol Alarm                                                                      
+Drive Fault                                                                                 
+Command error                                                                               
+Reserved                                                                                    
+Reserved                                                                                    
+Reserved                                                                                    
+Reserved                                                                                    
+Reserved                                                                                    
+Digital drive not ready                                                                     
+Invalid data                                                                                
+Data packet corrupted - BCC error                                                           
+Noise on communication line with drive                                                      
+Communication Timeout with digital drive                                                    
+#32                                                                                         
+Generic Error                                                                               
+Node guarding error                                                                         
+EMCY                                                                                        
+Drive Fault                                                                                 
+Node BootUp error                                                                           
+Device error                                                                                
+Config error                                                                                
+SDO error                                                                                   
+Node guarding error                                                                         
+Node status error                                                                           
+Max speed demand exceeded
+Generic Error                                                                               
+(2000) Current                                                                                     
+(2100) Current on device input size                                                                
+(2110) Short circuit/earth leakage                                                                 
+(2120) Earth leakage                                                                               
+(2130) Short circuit                                                                               
+(2200) Internal current                                                                            
+(2211) Current offset error                                                                        
+(2221) Continuous over-current No.1                                                                
+(2222) Continuous over-current No.2                                                                
+(2300) Over-current on device output size                                                          
+(2310) Overvoltage                                                                                 
+(3000) Voltage                                                                                     
+(3100) Mains voltage                                                                               
+(3110) Mains over-voltage                                                                          
+(3120) Mains under-voltage                                                                         
+(3130) Phase failure                                                                               
+(3140) Mains frequency                                                                             
+(3200) DC link voltage                                                                             
+(3210) DC link over-voltage                                                                        
+(3220) DC link under-voltage                                                                       
+(3300) Output voltage                                                                              
+(3310) Output over-voltage                                                                         
+(3320) Armature circuit                                                                            
+(3330) Field circuit                                                                               
+(4000) Temperature                                                                                 
+(4100) Ambient temperature                                                                         
+(4110) Excess ambient temperature                                                                  
+(4120) Too low ambient temperature                                                                 
+(4130) Temperature supply air                                                                      
+(4140) Temperature air outlet                                                                      
+(4200) Temperature device                                                                          
+(4210) Excess temperature device                                                                   
+(4220) Too low temperature device                                                                  
+(4300) Temperature drive                                                                           
+(4310) Excess temperature drive                                                                    
+(4320) Too low temperature drive                                                                   
+(4400) Temperature supply                                                                          
+(4410) Excess temperature supply                                                                   
+(4420) Too low temperature supply                                                                  
+(5000) Device hardware                                                                             
+(5100) Device hardware supply                                                                      
+(5110) Device hardware supply low voltage                                                          
+(5111) Auxiliary low voltage                                                                       
+(5118) Battery low voltage                                                                         
+(5120) Device hardware supply intermediate circuit                                                 
+(5200) Control measurement/computing circuit                                                       
+(5210) Control measurement circuit                                                                 
+(5220) Control computing circuit                                                                   
+(5300) Operating unit                                                                              
+(5400) Power section                                                                               
+(5410) Output stage                                                                                
+(5420) Chopper                                                                                     
+(5430) Input stages                                                                                
+(5440) Contacts                                                                                    
+(5450) Fuses                                                                                       
+(5500) Data storage RAM/EPROM/EEPROM                                                               
+(6000) Device software                                                                             
+(6110) Internal error                                                                              
+(6111) Computation overflow                                                                        
+(7000) Additional modules                                                                          
+(7100) Power                                                                                       
+(7110) Brake chopper                                                                               
+(7114) Clamp overload                                                                              
+(7115) Clamp overtime                                                                              
+(7120) Motor                                                                                       
+(7200) Measurement circuit                                                                         
+(7300) Sensor                                                                                      
+(7303) Resolver fault                                                                              
+(7305) Encoder fault                                                                               
+(7310) Speed                                                                                       
+(7320) Position                                                                                    
+(7400) Computation circuit                                                                         
+(7500) Communication                                                                               
+(7600) Data storage                                                                                
+(8000) Monitoring                                                                                  
+(8100) Communication                                                                               
+(8110) CAN Overrun (object lost)                                                                   
+(8120) CAN in error passive mode                                                                   
+(8130) Life guard error or HeartBeat error                                                         
+(8200) Control                                                                                     
+(8210) PDO not processed due length error                                                          
+(8220) PDO length exceed                                                                           
+(8300) Torque control                                                                              
+(8400) Velocity speed controller                                                                   
+(8410) Overspeed                                                                                   
+(8500) Position controller                                                                         
+(8600) Positioning controller                                                                      
+(8611) Following error                                                                             
+(8620) Hardware negative limit switch                                                              
+(8621) Hardware positive limit switch                                                              
+(8631) Max travel for zero                                                                         
+(8700) Sync controller                                                                             
+(9000) External controller                                                                         
+"EMCY error code (%X)",ra53,
+A.6A:
+Power failure                                                                               
+Heatsink temperature                                                                        
+Hall sensor/Feedback initialization                                                         
+Feedback                                                                                    
+I2t drive                                                                                   
+Motor thermal alarm                                                                         
+Regenerative resistence overload                                                            
+Under/Over voltage                                                                          
+Resolver                                                                                    
+Overvoltage                                                                                 
+Following error positioning                                                                 
+Board temperature                                                                           
+Overcurrent regenerative circuit                                                            
+Mechanical brake                                                                            
+Auxiliary voltage                                                                           
+Over/Under voltage 24V                                                                      
+Current over range                                                                          
+Flash alarm                                                                                 
+Sync Error                                                                                  
+Phase Loss                                                                                  
+StoA/B alarm                                                                                
+Loaded default parameters                                                                   
+Flash Loaded default param protected                                                        
+A.82:                                                                         
+F00 Flash failure	                                                                          
+F01 Loaded default param.	                                                                  
+F02 Loaded default protected	                                                              
+F03 N.A.	                                                                                  
+F04 I2t Drive	                                                                              
+F05 Over voltage	                                                                          
+F06 Under voltage	                                                                          
+F07 Power fail	                                                                          
+F08 Heatsink temperature	                                                                  
+F09 Motor temperature	                                                                      
+F10 Regenerative resistence overload	                                                      
+F11 Internal temperature	                                                                  
+F12 Overcurrent Regenerative Circuit	                                                      
+F13 Over Voltage 24V	                                                                      
+F14 Under Voltage 24V	                                                                      
+F15 N.A.	                                                                                  
+F16 Brake	                                                                                  
+F17 Fan	                                                                                  
+F18 Phase Loss	                                                                          
+F19 Feedback	                                                                              
+F20 Feedback initialization	                                                              
+F21 Current Over Range	                                                                  
+F22 error	                                                                                  
+F23 error	                                                                                  
+F24 error	                                                                                  
+F25 error                                                                                   
+F26 error	                                                                                  
+F27 error	                                                                                  
+F28 error	                                                                                  
+F29 error	                                                                                  
+F30 STO	                                                                                  
+F31 error	                                                                                  
+A.A3
+Current over range                                                                          
+EEPROM Alarm                                                                                
+Absolute sensor alarm                                                                       
+Power failure                                                                               
+App/Guarding alarm                                                                          
+Motor thermal alarm                                                                         
+Motor I2t thermal alarm                                                                     
+Auto-tuning test unfinished                                                                 
+External alarm                                                                              
+Speed sensor                                                                                
+Min. power circuit voltage                                                                  
+Power circuit overvoltage                                                                   
+Internal Alarm                                                                              
+Power soft start problem                                                                    
+Connection U,V,W error alarm                                                                
+Parameter setting error alarm                                                               
+A.B4
+F01 Heatsink overtemperature                                                                
+F02 DC-Link overvoltage                                                                     
+F03 Contouring error of the external trajectory                                             
+F04 Feedback error                                                                          
+F05 Undervoltage protection                                                                 
+F06 Motor overtemperature                                                                   
+F07 Internal electronic supply is faulty                                                    
+F08 Overspeed                                                                               
+F09 EEPROM Checksum error                                                                   
+F10 Signal failure digital encoder input                                                    
+F11 Brake error                                                                             
+F12 -----                                                                                   
+F13 Ambient overtemperature                                                                 
+F14 Output stage fault                                                                      
+F15 I2t max override.                                                                       
+F16 Mains BTB                                                                               
+F17 A/D converter error                                                                     
+F18 Regen error                                                                             
+F19 DC bus breakdown                                                                        
+F20 Slot error                                                                              
+F21 PROFIBUS handling error                                                                 
+F22 -----                                                                                   
+F23 CANopen Bus-Off                                                                         
+F24 Warning generates a error message                                                       
+F25 Commutation Error                                                                       
+F26 Hardware limit switch error at homing move                                              
+F27 "-AS-Option" error                                                                      
+F28 EtherCAT Error synchronisation                                                          
+F29 Slotcard Error                                                                          
+F30 Emergency stop time out                                                                 
+F31 -----                                                                                   
+F32 System error                                                                            
+A.D5                                                                          
+A.D6                                                                          
+A.D7                                                                          
+A.D8                                                                          
+A.D9                                                                          
+A.DA                                                                          
+A.DB                                                                          
+A.DC                                                                          
+A.DD                                                                          
+A.DE                                                                          
+A.DF                                                                          
+SDO Toggle bit not alternated                                                               
+SDO protocol timeout                                                                        
+SDO Client/Server command specifier not valid                                               
+SDO Invalid block size                                                                      
+SDO Invalid sequence number                                                                 
+SDO CRC error                                                                               
+SDO Out of memory                                                                           
+SDO Unsupported access to an object                                                         
+SDO Read a write only object                                                                
+SDO Write a read only object                                                                
+SDO Object does not exist in the object dictionary                                          
+SDO Object cannot be mapped to the PDO                                                      
+SDO Length object to be mapped exceed PDO length                                            
+SDO General parameter incompatibility reason                                                
+SDO General internal incompatibility in the device                                          
+SDO Access failed due to an hardware error                                                  
+SDO Length parameter does not match                                                         
+SDO Length parameter too high                                                               
+SDO Length parameter too low                                                                
+SDO Sub-Index does not exist                                                                
+SDO Value range exceeded                                                                    
+SDO Value written too high                                                                  
+SDO Value written too low                                                                   
+SDO Maximum value is less than minimum value                                                
+SDO General error                                                                           
+SDO Data cannot be transferred or stored                                                    
+SDO Data cannot be transferred or stored                                                    
+SDO Data cannot be transferred or stored                                                    
+SDO No object dictionary is present                                                         
+A.FD:                                                                                       
+A.FE:                                                                                       
+A.FF:                                                                         
+
+                                                                                            
+#288                                                                                        
+#include "axnam?.err"
+
+
+

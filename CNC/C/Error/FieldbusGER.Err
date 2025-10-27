@@ -1,0 +1,20 @@
+*Vedere [PhisErr.Txt] per informazioni sulla mappatura degli errori        
+                                                                              
+#1                                                                            
+"Node %d %s SDO Abort",CoENode,CanDName,
+"Node %d %s EMCY",CoENode,CanDName,
+"Node %d %s Guarding Node",CoENode,CanDName,
+"Node %d %s AL Status Error",CoENode,CanDName,
+"Node %d %s Node Guarding error",CoENode,CanDName,
+"Node %d %s Bootup Timeout",CoENode,CanDName,
+"Node %d %s Device Init Error",CoENode,CanDName,
+
+#10                                                                           
+"Node %d I/O Err: 24 VOLT NOT PRESENT",CoENode,
+"Node %d I/O Err: OUTPUT PROTECTED",CoENode,
+                                                                              
+
+                                                                              
+                                                                              
+                                                                              
+                                                                              

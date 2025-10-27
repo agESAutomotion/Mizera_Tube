@@ -1,0 +1,775 @@
+*Vedere [RunErr.Txt] per informazioni sulla mappatura degli errori
+
+#0
+Espera carácter[
+Número registro Erróneo
+Función no válida
+Paramétrica: carácter no válido
+IF: Espera carácter =
+JSR: Nivel Anidamiento Subrutina Erróneo
+RET: Anidamiento Subrutina Erróneo
+Función no disponible
+Demasiadas funciones M consecutivas
+Radio sin G2/G3
+Radio Inconsistente
+Error inicialización canal
+Canal en bloqueo
+Ciclo Fijo inexistente
+Demasiados niveles de paréntesis (
+Asignación = espera carácter =
+Espera carácter CR
+Modo operativo modificado
+JMP: Número Bloque no hallado
+Programa no hallado
+Error de procedimiento externo
+Cuota Excede Límite
+Eje no configurado
+Mandril no configurado
+Plano Seleccionado Erróneo
+Eje no Disponible
+Paso Aterrajado Nulo
+Eje en Alarma
+Feed nula
+Radio Herramienta Nulo
+Símbolo % no hallado
+Cambio Plano o Lado con CORTE (CUT) Activo
+Mandril sin Codificador
+Dirección sin número
+SQRT: Argumento negativo
+TAN: Valor Infinito
+ASIN, ACOS: Argumento fuera del rango
+División por cero
+Dirección no usada
+Número sin dirección
+Parámetro en dirección G
+Programa sin M2-M30
+Interpolación con ejes incompatibles
+Velocidad mandril demasiado elevada
+Vel. eje Z > Vel Max Canal
+Corrección torno G18
+Tipo Geometría Herramienta no controlada
+Final Transmisión Agotado
+Final Paquetes Libres Agotado
+Radio perfil menor Radio Herramienta
+Punto Final Arco inconsistente
+No es posible efectuar el Recorrido
+Segmento nulo
+Angulo nulo
+Operación ilegal
+Intersección entre segmentos o arcos
+Unión Perfil no permitida: usar G0
+Corte Superpuesto en Segmento Lineal
+Corte Superpuesto en Arco de Circunferencia
+Espera Carácter ]
+Valor demasiado elevado
+Error acceso archivo
+Descriptor Herramienta Erróneo
+Demasiados parámetros
+Demasiados caracteres en los campos cadena
+Espera objeto después de ^
+Asignación en registro inexistente
+Argumento inexistente
+Código SPC no reconocido
+Violación semántica bloque APND
+Para las explicaciones ver el Manual
+CFC: Subrutina no halada
+CFC: Parámetros erróneos
+CFC: Error de gestión recursos
+CFC: Ningún recurso
+CFC: Error de cierre
+CFC: No especificado
+CFC: <DEBUG 1>
+CFC: (Para las explicaciones ver el Manual)
+CFC: Tarea ejecutada correctamente
+CVB: Código operativo desconocido
+CVB: Error de gestión recursos
+CVB: Ningún recurso
+CVB: Error de cierre
+CVB: Pipe interrumpida
+CVB: Restaurado desde bloqueo/Fin archivo inesperado
+CVB: No especificado
+CVB: <DEBUG 1>
+CVB: (Para las explicaciones ver el Manual)
+CVB: Tarea ejecutada correctamente
+<unused>
+<unused>
+APIO: Ningún recurso
+APIO: Error de cierre
+APIO: No especificado
+APIO: <DEBUG 1>
+APIO: (Para las explicaciones ver el Manual)
+APIO: Tarea ejecutada correctamente
+XCL: Código operativo desconocido
+XCL: Error de gestión recursos
+XCL: Ningún recurso
+XCL: Error de cierre
+XCL: Pipe interrumpida
+XCL: Restaurado desde bloqueo/Fin archivo inesperado
+XCL: No especificado
+XCL: <DEBUG 1>
+XCL: (Para las explicaciones ver el Manual)
+XCL: Trabajo efectuado correctamente
+XAM: Código operativo desconocido
+XAM: Error de gestión recursos
+XAM: Ningún recurso
+XAM: Error de cierre
+XAM: Pipe interrumpida
+XAM: Restaurado desde bloqueo/Fin archivo inesperado
+XAM: No especificado
+XAM: <DEBUG 1>
+XAM: (Para las explicaciones ver el Manual)
+XAM: Tarea ejecutada correctamente
+RETR: Código operativo desconocido
+RETR: Error de gestión recursos
+RETR: Ningún recurso
+RETR: Error de cierre
+RETR: Pipe interrumpida
+RETR: Restaurado desde bloqueo/Fin archivo inesperado
+RETR: No especificado
+RETR: <DEBUG 1>
+RETR: (Para las explicaciones ver el Manual)
+RETR: Tarea ejecutada correctamente
+PG2: Código operativo desconocido
+PG2: Error de gestión recursos
+PG2: Ningún recurso
+PG2: Error de cierre
+PG2: Pipe interrumpida
+PG2: Restaurado desde bloqueo/Fin archivo inesperado
+PG2: No especificado
+PG2: <DEBUG 1>
+PG2: (Para las explicaciones ver el Manual)
+PG2: Tarea ejecutada correctamente
+WARP: Código operativo desconocido
+WARP: Error de gestión recursos
+WARP: Ningún recurso
+WARP: Error de cierre
+WARP: Pipe interrumpida
+WARP: Restaurado desde bloqueo/Fin archivo inesperado
+WARP: No especificado
+WARP: <DEBUG 1>
+WARP: (Para las explicaciones ver el Manual)
+WARP: Tarea ejecutada correctamente
+PAG: Código operativo desconocido
+PAG: Error de gestión recursos
+PAG: Ningún recurso
+PAG: Error de cierre
+PAG: Pipe interrumpida
+PAG: Restaurado desde bloqueo/Fin archivo inesperado
+PAG: No especificado
+PAG: <DEBUG 1>
+PAG: (Para las explicaciones ver el Manual)
+PAG: Tarea ejecutada correctamente
+Código de error desconocido
+Eje X Cuota Excede Límite
+Eje Y Cuota Excede Límite
+Eje Z Cuota Excede Límite
+Eje U Cuota Excede Límite
+Eje V Cuota Excede Límite
+Eje W Cuota Excede Límite
+Eje A Cuota Excede Límite
+Eje B Cuota Excede Límite
+Eje C Cuota Excede Límite
+<unused>
+Error definición variable record [símbolo]
+Error asignación variable record [símbolo]
+Error definición variable record [var defcn]
+Error asignación variable record [var defcn]
+Error definición variable record [INPUT]
+Imposible asignar registro de input
+Error definición variable record [OUT]
+Error asignación variable record [OUT]
+Error definición variable record [registro lógico]
+Error definición variable record [variable automática]
+Espera valor a asignar a variable record
+Matriz (array)supera el máximo consentido
+Símbolo ya definido
+Imposible inicializar los Array
+Error inicialización variable
+Error sintáctico definición paramétrica
+Tipo de dato incompatible
+Imposible definir otros símbolos
+Símbolo no definido
+Error asignación cadena
+Error asignación numérica
+Símbolo inexistente
+Error definición variable record [registro lógico]
+Espera símbolo paramétrica
+Error acceso registro en defcn
+Superado número máximo de variables simbólicas
+<unused>
+Out of memory/Memory not awarded
+<unused>
+Error de inicialización
+<DEBUG: TCO: Unknown opcode>
+<DEBUG: TCO: Error negotiating resources>
+<DEBUG: TCO: No resources>
+<DEBUG: TCO: Shutdown error>
+<DEBUG: TCO: Broken pipe>
+<DEBUG: TCO: Rescued from deadlock/UnXpected EOF>
+<DEBUG: TCO: Unspecified>
+<DEBUG: TCO: <DEBUG: should have used GetExtErr() to get extended error info>>
+<DEBUG: TCO: (See Manual for explanation)>
+<DEBUG: TCO: Task accomplished successfully>
+XCL: Violación Semántica Bloque APND
+XAM: Violación Semántica Bloque APND
+<DEBUG: PMI: Invalid op-code>
+<DEBUG: PMI: Bad I/O Vector Parameters>
+<DEBUG: PMI: Terminate Signal Received>
+<DEBUG: PMI: Init error>
+<DEBUG: PMI: Shutdown error>
+<DEBUG: PMI: Unspecified>
+<DEBUG: PMI: (See Manual for explanation)>
+<DEBUG: PMI: Task accomplished successfully>
+Datos Filo Cortante no hallados
+Cinemática no soportada
+Error orientación entidad TWI
+Orientación herramienta no definida
+TCP no hallado
+Transformación THD no soportada
+Imposible seleccionar filo cortante, IJK ausentes
+Violación filo cortante
+XCL: Ver manual
+Tool orientation violates constraints
+Driver ejes polares no admitido
+Cabeceo incoherente
+Virado incoherente
+Modalidad ICDSID so admitida
+Relación ambigua entre filo cortante y elaboración
+Requerido bloqueo de movimiento luego G00
+Demasiados bloqueos no de movimiento
+Secuencia ejes de recorrido no prevista
+Error interno XCL
+<unused>
+Desborde buffer DLE
+Deceleration Look-Ahead: Demasiados bloqueos no de movimiento
+Formato no reconocido por DLE
+La Pipe interna de DLE está interrumpida
+Error interno DLE
+DLE: (Para las explicaciones ver el Manual)
+<unused>
+<unused>
+<unused>
+<unused>
+TCO: Violación Semántica Bloque APND
+PG2: Violación Semántica Bloque APND
+<unused>
+<unused>
+<unused>
+<unused>
+Orientación herramienta no definida con ICDSID
+Vector de superficie no definido con ICDSID
+Cabeceo herramienta incompatible con la elaboración
+Derrape herramienta no determinado con PADSID activo
+Modalidad PADSID no soportada
+Modalidad PADCHK no soportada
+Discontinuidad superficie demasiado elevada
+Avance del material incompatible con el útil
+<unused>
+Código TWI demasiado elevado
+Código THD demasiado elevado
+Código D demasiado elevado
+Código TAB demasiado elevado
+<unused>
+Requerida idónea orientación herramienta con xSCMOD
+Requerido idóneo vector de superficie con xSCMOD
+Orientación herramienta no definida con xSCMOD
+Vector de superficie no definido con xSCMOD
+Sólo bloques G1 permitidos con xSCMOD
+Longitud bloque encabezador incompatible con ESCMOD
+Longitud único bloque incompatible con xSCMOD
+Longitud bloque final incompatible con XSCMOD
+<unused>
+<unused>
+<unused>
+<unused>
+PAG: Implementation restriction
+PAG: Not enough data
+PAG: Ambiguous data
+PAG: Undetermined solution
+PAG: No solution found
+PAG: Invalid feed command
+<unused>
+<unused>
+<DEBUG: PMI: Extensión usuario no inicializada>
+<unused>
+Speed Mandrino < Speed Min
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Superado número máximo estructuras de control
+IF () THEN no están en el mismo bloque
+BREAK no está dentro de estructura de control
+ELSE sin IF/THEN
+Dos ELSE consecutivos
+Desalineación estructuras de control
+ENDW,ENDFOR,REPEAT no deben estar seguidos por código
+UNTIL sin REPEAT
+FOR sin valor límite
+RPT/BREAK: error salto fuera del ciclo
+<unused>
+<unused>
+Error acceso datos búsqueda bloque en DEFCN
+Procedimiento Overstore: bloques de movimiento no admitidos
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+File sharing violation
+Not enough core to handle file
+Unknown file error
+<unused>
+Vida útil herramienta agotada
+<unused>
+<unused>
+<unused>
+Motion command error: see PLC Menu
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Could not read axes boundaries data>
+<DEBUG: Internal error>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Eje X Cuota Excede Límite
+Eje Y Cuota Excede Límite
+Eje Z Cuota Excede Límite
+Eje U Cuota Excede Límite
+Eje V Cuota Excede Límite
+Eje W Cuota Excede Límite
+Eje A Cuota Excede Límite
+Eje B Cuota Excede Límite
+Eje C Cuota Excede Límite
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics output pipe error>
+<DEBUG: Unimplemented TMAPI call>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics server connection pending>
+<DEBUG: Graphics server login failed>
+<DEBUG: Graphics server no pending connection>
+<DEBUG: Graphics server is down>
+<unused>
+<unused>
+<DEBUG: Term has been signaled by the Kernel>
+<unused>
+<unused>
+<unused>
+<DEBUG: Not enough core to initialize TMAPI>
+<DEBUG: Some resources could not be freed>
+<DEBUG: Unspecified>
+<unused>
+<unused>
+<DEBUG: See manual>
+<unused>
+<unused>
+<unused>
+<unused>
+SRCVB: SPC out of phase
+SRCVB: no records
+SRCVB: too many records
+SRCVB: G0 not as 1st block
+SRCVB: eop found while recording
+SRCVB: invalid user extension
+<unused>
+<unused>
+<unused>
+<unused>
+<SR: Errbase>
+SR: Internal error
+SR: Unimplemented feature
+SR: X feed not monotone
+SR: Y feed not monotone
+SR: Output Callback failed
+SR: Argument singularity
+SR: Invalid argument
+SR: Parameter error
+SR: Missing side face intersection
+SR: Stock ranging error
+SR: Stock bottom reached
+SR: Stock top reached
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Unhandled axes matching>
+<DEBUG: Unimplemented feature>
+<unused>
+<DEBUG: GRAPH Multitool setup has bad freecells>
+<DEBUG: GRAPH Multitool setup has NO freecells>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Graphics server config read error>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Packed write failed>
+<DEBUG: Packed dest type wrong>
+<DEBUG: Packed source type wrong>
+<DEBUG: Cannot round packed value>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Unpacked write failed>
+<DEBUG: Unpacked dest type wrong>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Bad semantics>
+<DEBUG: Unknown command>
+Unrecognized SPC code
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: Could not acceed CED, THD or TWI data>
+Memoria insuficiente para el tool caching
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Unsupported Kinematics
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Código TWI demasiado elevado
+Código THD demasiado elevado
+Código D demasiado elevado
+Driver ejes polares no soportado
+Código TAB demasiado elevado
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+Cinemática no soportada
+Error orientación entidad TWI
+Orientación herramienta no definida
+TCP no hallado
+Transformación THD no soportada
+Imposible seleccionar filo cortante, IJK ausentes
+Violación filo cortante
+<unused>
+<unused>
+<unused>
+<DEBUG: See manual>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: PassThru input pipe error>
+<unused>
+<unused>
+<unused>
+<unused>
+<DEBUG: PassThru server is down>
+<unused>
+<unused>
+<DEBUG: PassThru has too many locally open files>
+<unused>
+<unused>
+Salto con etiqueta imposible en ejecución pasante
+<DEBUG: PassThru channel config read error>
+Línea demasiado larga en ejecución pasante
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+<unused>
+#768
+#include "dll?.err"
+
+#1000
+#include "chnam.err"
