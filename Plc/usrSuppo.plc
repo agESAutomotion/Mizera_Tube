@@ -14,6 +14,11 @@ VAR
 #include "cnc.inc"
 
 F_TRIG_RES_FOLL:     F_TRIG;
+F_TRIG_SUP1_yReqGrant: F_TRIG;
+F_TRIG_SUP2_yReqGrant: F_TRIG;
+F_TRIG_SUP3_yReqGrant: F_TRIG;
+F_TRIG_SUP4_yReqGrant: F_TRIG;
+
 
 appoggio:              BOOL;
 
@@ -219,6 +224,9 @@ JMPCN no_support_1
      LD   SUP1.yCyComOft
      ST   CyComOftAx51
 
+     CAL F_TRIG_SUP1_yReqGrant(CLK:=SUP1.yReqGrant)
+     LD  F_TRIG_SUP1_yReqGrant.Q
+     ST  VertSup1MovCompleted
 no_support_1:
 
 * Support 2
@@ -258,6 +266,10 @@ JMPCN no_support_2
 
      LD   SUP2.yCyComOft
      ST   CyComOftAx52
+
+     CAL F_TRIG_SUP2_yReqGrant(CLK:=SUP2.yReqGrant)
+     LD  F_TRIG_SUP2_yReqGrant.Q
+     ST  VertSup2MovCompleted
 
 no_support_2:
 
@@ -299,6 +311,10 @@ JMPCN no_support_3
      LD   SUP3.yCyComOft
      ST   CyComOftAx53
 
+     CAL F_TRIG_SUP3_yReqGrant(CLK:=SUP3.yReqGrant)
+     LD  F_TRIG_SUP3_yReqGrant.Q
+     ST  VertSup3MovCompleted
+
 no_support_3:
 
 *  Support 4
@@ -338,6 +354,10 @@ JMPCN no_support_4
 
      LD   SUP4.yCyComOft
      ST   CyComOftAx54
+
+     CAL F_TRIG_SUP4_yReqGrant(CLK:=SUP4.yReqGrant)
+     LD  F_TRIG_SUP4_yReqGrant.Q
+     ST  VertSup4MovCompleted
 
 no_support_4:
 

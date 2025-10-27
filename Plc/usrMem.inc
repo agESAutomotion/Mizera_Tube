@@ -395,4 +395,9 @@ O_O_Ev_VShapeZ2_Dwn                 AT  %USR_M49.13;
 O_O_Ev_VShapeZ3_Dwn                 AT  %USR_M49.14;
 O_O_Ev_VShapeZ4_Dwn                 AT  %USR_M49.15;
 
+VertSup1MovCompleted                AT  %USR_M49.16;
+VertSup2MovCompleted                AT  %USR_M49.17;
+VertSup3MovCompleted                AT  %USR_M49.18;
+VertSup4MovCompleted                AT  %USR_M49.19;
+
 END_VAR

@@ -173,33 +173,34 @@ JMPCN no_support_1
 
 PATH  %ax81
 
-LD   SUPPORT_1_Quota          
-ST   SUP1.xLimitSuppDwn   
+    LD   SUPPORT_1_Quota          
+    ST   SUP1.xLimitSuppDwn   
 
-LD   ParkAllLoadSuppCmd_LAT
-OR   Fun_M725_Ch0   
-OR   ParkUn51Sup_ISO
-OR(
-LD   Force_Open_Center_1    
-ANDN %cn0.rc8.0
-AND  OptEnabAutoParkLoad
-)  
-ST   SUP1.xParkCmd
+    LD   ParkAllLoadSuppCmd_LAT
+    OR   Fun_M725_Ch0   
+    OR   ParkUn51Sup_ISO
+    OR (
+        LD   Force_Open_Center_1    
+        ANDN %cn0.rc8.0
+        AND  OptEnabAutoParkLoad
+        AND  VertSup1MovCompleted
+    )  
+    ST   SUP1.xParkCmd
 
-CAL  SUP1
+    CAL  SUP1
 
-LD   SUP1.yReqGrant
-ANDN ch9_in_ref
-ST   usrReqGrantSupLat1 
+    LD   SUP1.yReqGrant
+    ANDN ch9_in_ref
+    ST   usrReqGrantSupLat1 
 
-LD   SUP1.yHoldMovSupp
-ANDN ch9_in_ref
-ST   HoldO1SuppLoad_LAT
+    LD   SUP1.yHoldMovSupp
+    ANDN ch9_in_ref
+    ST   HoldO1SuppLoad_LAT
 
-LD   SUP1.yHoldMovSuperv
-ANDN ch9_in_ref
-ANDN %cn9.cc1.0
-ST   HoldO1Ax30_HOR
+    LD   SUP1.yHoldMovSuperv
+    ANDN ch9_in_ref
+    ANDN %cn9.cc1.0
+    ST   HoldO1Ax30_HOR
 
 no_support_1:
 
@@ -207,35 +208,36 @@ no_support_1:
 LD   %cn9.cc1.2
 JMPCN no_support_2
 
-PATH  %ax82
+    PATH  %ax82
 
-LD   SUPPORT_2_Quota          
-ST   SUP2.xLimitSuppDwn   
+    LD   SUPPORT_2_Quota          
+    ST   SUP2.xLimitSuppDwn   
 
-LD   ParkAllLoadSuppCmd_LAT
-OR   Fun_M725_Ch0   
-OR   ParkUn52Sup_ISO
-OR(
-LD   Force_Open_Center_2    
-ANDN %cn0.rc8.0
-AND  OptEnabAutoParkLoad
-)        
-ST   SUP2.xParkCmd
+    LD   ParkAllLoadSuppCmd_LAT
+    OR   Fun_M725_Ch0   
+    OR   ParkUn52Sup_ISO
+    OR (
+        LD   Force_Open_Center_2    
+        ANDN %cn0.rc8.0
+        AND  OptEnabAutoParkLoad
+        AND  VertSup2MovCompleted
+    )        
+    ST   SUP2.xParkCmd
 
-CAL  SUP2
+    CAL  SUP2
 
-LD   SUP2.yReqGrant
-ANDN ch9_in_ref
-ST   usrReqGrantSupLat2 
+    LD   SUP2.yReqGrant
+    ANDN ch9_in_ref
+    ST   usrReqGrantSupLat2 
 
-LD   SUP2.yHoldMovSupp
-ANDN ch9_in_ref
-ST   HoldO2SuppLoad_LAT
+    LD   SUP2.yHoldMovSupp
+    ANDN ch9_in_ref
+    ST   HoldO2SuppLoad_LAT
 
-LD   SUP2.yHoldMovSuperv
-ANDN ch9_in_ref
-ANDN %cn9.cc1.0
-ST   HoldO2Ax30_HOR
+    LD   SUP2.yHoldMovSuperv
+    ANDN ch9_in_ref
+    ANDN %cn9.cc1.0
+    ST   HoldO2Ax30_HOR
 
 no_support_2:
 
@@ -243,35 +245,36 @@ no_support_2:
 LD   %cn9.cc1.3
 JMPCN no_support_3
 
-PATH  %ax83
+    PATH  %ax83
 
-LD   SUPPORT_3_Quota          
-ST   SUP3.xLimitSuppDwn   
+    LD   SUPPORT_3_Quota          
+    ST   SUP3.xLimitSuppDwn   
 
-LD   ParkAllLoadSuppCmd_LAT
-OR   Fun_M725_Ch0   
-OR   ParkUn53Sup_ISO
-OR(
-LD   Force_Open_Center_3   
-ANDN %cn0.rc8.0
-AND  OptEnabAutoParkLoad
-)        
-ST   SUP3.xParkCmd
+    LD   ParkAllLoadSuppCmd_LAT
+    OR   Fun_M725_Ch0   
+    OR   ParkUn53Sup_ISO
+    OR (
+        LD   Force_Open_Center_3   
+        ANDN %cn0.rc8.0
+        AND  OptEnabAutoParkLoad
+        AND  VertSup3MovCompleted
+    )        
+    ST   SUP3.xParkCmd
 
-CAL  SUP3
+    CAL  SUP3
 
-LD   SUP3.yReqGrant
-ANDN ch9_in_ref
-ST   usrReqGrantSupLat3 
+    LD   SUP3.yReqGrant
+    ANDN ch9_in_ref
+    ST   usrReqGrantSupLat3 
 
-LD   SUP3.yHoldMovSupp
-ANDN ch9_in_ref
-ST   HoldO3SuppLoad_LAT
+    LD   SUP3.yHoldMovSupp
+    ANDN ch9_in_ref
+    ST   HoldO3SuppLoad_LAT
 
-LD   SUP3.yHoldMovSuperv
-ANDN ch9_in_ref
-ANDN %cn9.cc1.0
-ST   HoldO3Ax30_HOR
+    LD   SUP3.yHoldMovSuperv
+    ANDN ch9_in_ref
+    ANDN %cn9.cc1.0
+    ST   HoldO3Ax30_HOR
 
 no_support_3:
 
@@ -279,35 +282,36 @@ no_support_3:
 LD   %cn9.cc1.4
 JMPCN no_support_4
 
-PATH  %ax84
+    PATH  %ax84
 
-LD   SUPPORT_4_Quota          
-ST   SUP4.xLimitSuppDwn   
+    LD   SUPPORT_4_Quota          
+    ST   SUP4.xLimitSuppDwn   
 
-LD   ParkAllLoadSuppCmd_LAT
-OR   Fun_M725_Ch0   
-OR   ParkUn54Sup_ISO 
-OR(
-LD   Force_Open_Center_4    
-ANDN %cn0.rc8.0
-AND  OptEnabAutoParkLoad
-)        
-ST   SUP4.xParkCmd
+    LD   ParkAllLoadSuppCmd_LAT
+    OR   Fun_M725_Ch0   
+    OR   ParkUn54Sup_ISO 
+    OR (
+        LD   Force_Open_Center_4    
+        ANDN %cn0.rc8.0
+        AND  OptEnabAutoParkLoad
+        AND  VertSup4MovCompleted
+    )        
+    ST   SUP4.xParkCmd
 
-CAL  SUP4
+    CAL  SUP4
 
-LD   SUP4.yReqGrant
-ANDN ch9_in_ref
-ST   usrReqGrantSupLat4
+    LD   SUP4.yReqGrant
+    ANDN ch9_in_ref
+    ST   usrReqGrantSupLat4
 
-LD   SUP4.yHoldMovSupp
-ANDN ch9_in_ref
-ST   HoldO4SuppLoad_LAT
+    LD   SUP4.yHoldMovSupp
+    ANDN ch9_in_ref
+    ST   HoldO4SuppLoad_LAT
 
-LD   SUP4.yHoldMovSuperv
-ANDN ch9_in_ref
-ANDN %cn9.cc1.0
-ST   HoldO4Ax30_HOR
+    LD   SUP4.yHoldMovSuperv
+    ANDN ch9_in_ref
+    ANDN %cn9.cc1.0
+    ST   HoldO4Ax30_HOR
 
 no_support_4:
 
