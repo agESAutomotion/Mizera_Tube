@@ -4498,6 +4498,9 @@ ST   M30011_CN3                    ** M0.7 Sblocco Richiesta servizio (M10001_CN
 PATH %ax30
 PATH %ax_lsref30
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -4678,6 +4681,9 @@ no_u_real:
 *******************************************************************************
 PATH %ax28
 PATH %ax_lsref28
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -4877,6 +4883,9 @@ NOAX28:
 PATH %ax29
 PATH %ax_lsref29
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -5071,6 +5080,9 @@ NOAX29:
 *******************************************************************************
 PATH %ax27
 PATH %ax_lsref27
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -5271,6 +5283,9 @@ NOAX27:
 PATH %ax31
 PATH %ax_lsref31
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -5459,6 +5474,9 @@ no_v_real:
 *******************************************************************************
 PATH %ax36
 PATH %ax_lsref36
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -5824,6 +5842,9 @@ NOAX32:
 PATH %ax33
 PATH %ax_lsref33
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -6022,6 +6043,9 @@ NOAX33:
 *******************************************************************************
 PATH %ax34
 PATH %ax_lsref34
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -6432,6 +6456,9 @@ NOAX50:
 PATH %ax51
 PATH %ax_lsref51
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -6599,6 +6626,9 @@ NOAX51:
 
 PATH %ax52
 PATH %ax_lsref52
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -6768,6 +6798,9 @@ NOAX52:
 
 PATH %ax53
 PATH %ax_lsref53
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -6945,6 +6978,9 @@ NOAX53:
 PATH %ax54
 PATH %ax_lsref54
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -7118,6 +7154,9 @@ CAL  TP_PRGOFF_GEAR(IN=appoggio, PT=50)
 *******************************************************************************
 PATH %ax57
 PATH %ax_lsref57
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -7430,6 +7469,9 @@ ST   FBK_C_C1_UNLOCK               ** M201 Feedback gearing C-C1
 *******************************************************************************
 PATH %ax58
 PATH %ax_lsref58
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
