@@ -110,9 +110,9 @@ LD   ProbeThreshold
 ST   ProbeThrsTmp
 
 * Motor cylinder composite support type
-LD   xEnCyComSup
+LD   xEnCyComSup								** Enable motor cylinder composite support
 JMPCN _CYCOMEN
-	LD   xCyComOft
+	LD   xCyComOft								** Motor cylinder composite support blend switch offset
 	ADD  ProbeThreshold
 	ST   ProbeThrsTmp
 _CYCOMEN:
@@ -477,17 +477,17 @@ LD    CenterOpen
 OR    xM700_M704                        ** M700, M704 executing
 ST    yCenterOpen
 
-LD    xCyComOft
+LD    xCyComOft							** Motor cylinder composite support blend switch offset
 EQ    0
-AND   xEnCyComSup   
+AND   xEnCyComSup   					** Enable motor cylinder composite support
 ST    yCyComDwn
 
 LD    0
 ST    yCyComOft
 
-LD   xEnCyComSup
+LD   xEnCyComSup						** Enable motor cylinder composite support
 JMPCN _CYCOMENOFT
-	LD   xCyComOft
+	LD   xCyComOft						** Motor cylinder composite support blend switch offset
 	ST   yCyComOft
 _CYCOMENOFT:
 
