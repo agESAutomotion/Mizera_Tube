@@ -19,6 +19,11 @@ F_TRIG_SUP2_yReqGrant: F_TRIG;
 F_TRIG_SUP3_yReqGrant: F_TRIG;
 F_TRIG_SUP4_yReqGrant: F_TRIG;
 
+TOF_SUP1_yReqGrant: TOF;
+TOF_SUP2_yReqGrant: TOF;
+TOF_SUP3_yReqGrant: TOF;
+TOF_SUP4_yReqGrant: TOF;
+
 
 appoggio:              BOOL;
 
@@ -224,8 +229,9 @@ JMPCN no_support_1
      LD   SUP1.yCyComOft
      ST   CyComOftAx51
 
-     CAL F_TRIG_SUP1_yReqGrant(CLK:=SUP1.yReqGrant)
-     LD  F_TRIG_SUP1_yReqGrant.Q
+     CAL F_TRIG_SUP1_yReqGrant(CLK:=Force_Open_Center_1)
+     CAL TOF_SUP1_yReqGrant(IN:=F_TRIG_SUP1_yReqGrant.Q, PT:=20)
+     LD  TOF_SUP1_yReqGrant.Q
      ST  VertSup1MovCompleted
 no_support_1:
 
@@ -267,10 +273,10 @@ JMPCN no_support_2
      LD   SUP2.yCyComOft
      ST   CyComOftAx52
 
-     CAL F_TRIG_SUP2_yReqGrant(CLK:=SUP2.yReqGrant)
-     LD  F_TRIG_SUP2_yReqGrant.Q
+     CAL F_TRIG_SUP2_yReqGrant(CLK:=Force_Open_Center_2)
+     CAL TOF_SUP2_yReqGrant(IN:=F_TRIG_SUP2_yReqGrant.Q, PT:=20)
+     LD  TOF_SUP2_yReqGrant.Q
      ST  VertSup2MovCompleted
-
 no_support_2:
 
 *  Support 3
@@ -311,8 +317,9 @@ JMPCN no_support_3
      LD   SUP3.yCyComOft
      ST   CyComOftAx53
 
-     CAL F_TRIG_SUP3_yReqGrant(CLK:=SUP3.yReqGrant)
-     LD  F_TRIG_SUP3_yReqGrant.Q
+     CAL F_TRIG_SUP3_yReqGrant(CLK:=Force_Open_Center_3)
+     CAL TOF_SUP3_yReqGrant(IN:=F_TRIG_SUP3_yReqGrant.Q, PT:=20)
+     LD  TOF_SUP3_yReqGrant.Q
      ST  VertSup3MovCompleted
 
 no_support_3:
@@ -355,8 +362,9 @@ JMPCN no_support_4
      LD   SUP4.yCyComOft
      ST   CyComOftAx54
 
-     CAL F_TRIG_SUP4_yReqGrant(CLK:=SUP4.yReqGrant)
-     LD  F_TRIG_SUP4_yReqGrant.Q
+     CAL F_TRIG_SUP4_yReqGrant(CLK:=Force_Open_Center_4)
+     CAL TOF_SUP4_yReqGrant(IN:=F_TRIG_SUP4_yReqGrant.Q, PT:=20)
+     LD  TOF_SUP4_yReqGrant.Q
      ST  VertSup4MovCompleted
 
 no_support_4:
