@@ -392,6 +392,31 @@ ST  I_I_SUPPORT_75_Dwn
 LD  I_SUPPORT_75_Up   
 ST  I_I_SUPPORT_75_Up   
 
+** V-shapes
+LD I_Vshape1_Up
+ST I_I_VshapeZ1_Up
+
+LD I_Vshape2_Up
+ST I_I_VshapeZ2_Up
+
+LD I_Vshape3_Up
+ST I_I_VshapeZ3_Up
+
+LD I_Vshape4_Up
+ST I_I_VshapeZ4_Up
+
+LD I_Vshape1_Dwn
+ST I_I_VshapeZ1_Dwn
+
+LD I_Vshape2_Dwn
+ST I_I_VshapeZ2_Dwn
+
+LD I_Vshape3_Dwn
+ST I_I_VshapeZ3_Dwn
+
+LD I_Vshape4_Dwn
+ST I_I_VshapeZ4_Dwn
+
 END_FUNCTION
 
 FUNCTION  SHARED_MEMORY
@@ -783,5 +808,29 @@ ST   O_Ev_Support75_Up
 
 LD   O_O_Ev_Support75_Dwn    
 ST   O_Ev_Support75_Dwn    
+
+LD O_O_Ev_VShapeZ1_Up
+ST O_Ev_VShape1_Up
+
+LD O_O_Ev_VShapeZ2_Up
+ST O_Ev_VShape2_Up
+
+LD O_O_Ev_VShapeZ3_Up
+ST O_Ev_VShape3_Up
+
+LD O_O_Ev_VShapeZ4_Up
+ST O_Ev_VShape4_Up
+
+LD O_O_Ev_VShapeZ1_Dwn
+ST O_Ev_VShape1_Dwn
+
+LD O_O_Ev_VShapeZ2_Dwn
+ST O_Ev_VShape2_Dwn
+
+LD O_O_Ev_VShapeZ3_Dwn
+ST O_Ev_VShape3_Dwn
+
+LD O_O_Ev_VShapeZ4_Dwn
+ST O_Ev_VShape4_Dwn
 
 END_FUNCTION

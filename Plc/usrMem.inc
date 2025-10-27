@@ -376,4 +376,22 @@ O_O_Ev_Support75_Dwn                AT  %USR_M45.9;
 PosUMis                             AT  %USR_M47;
 SupervisePos_X1                     AT  %USR_M48;
 
+I_I_VshapeZ1_Up                     AT  %USR_M49.0;
+I_I_VshapeZ2_Up                     AT  %USR_M49.1;
+I_I_VshapeZ3_Up                     AT  %USR_M49.2;
+I_I_VshapeZ4_Up                     AT  %USR_M49.3;
+I_I_VshapeZ1_Dwn                    AT  %USR_M49.4;
+I_I_VshapeZ2_Dwn                    AT  %USR_M49.5;
+I_I_VshapeZ3_Dwn                    AT  %USR_M49.6;
+I_I_VshapeZ4_Dwn                    AT  %USR_M49.7;
+
+O_O_Ev_VShapeZ1_Up                  AT  %USR_M49.8;
+O_O_Ev_VShapeZ2_Up                  AT  %USR_M49.9;
+O_O_Ev_VShapeZ3_Up                  AT  %USR_M49.10;
+O_O_Ev_VShapeZ4_Up                  AT  %USR_M49.11;
+O_O_Ev_VShapeZ1_Dwn                 AT  %USR_M49.12;
+O_O_Ev_VShapeZ2_Dwn                 AT  %USR_M49.13;
+O_O_Ev_VShapeZ3_Dwn                 AT  %USR_M49.14;
+O_O_Ev_VShapeZ4_Dwn                 AT  %USR_M49.15;
+
 END_VAR 
