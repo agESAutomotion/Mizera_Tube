@@ -3,19 +3,19 @@
 //*********************************************************
 // I/O on CNC Board-1 (BRD.007.461 expansion board)
 //*********************************************************
-MDI,IW0,NONE,NONE,0,SIM  
-MDI,IW1,NONE,NONE,1,SIM  
-MDQ,QW2,NONE,NONE,0,SIM  
-MDQ,QW3,NONE,NONE,1,SIM  
+MDI,IW0,NONE,NONE,0  
+MDI,IW1,NONE,NONE,1  
+MDQ,QW2,NONE,NONE,0  
+MDQ,QW3,NONE,NONE,1  
 
 
 //*********************************************************
 // I/O on CNC Board-2 (BRD.007.461 expansion board)
 //*********************************************************
-MDI,IW4,NONE,NONE,2,SIM  
-MDI,IW5,NONE,NONE,3,SIM  
-MDQ,QW6,NONE,NONE,2,SIM  
-MDQ,QW7,NONE,NONE,3,SIM  
+MDI,IW4,NONE,NONE,2  
+MDI,IW5,NONE,NONE,3  
+MDQ,QW6,NONE,NONE,2  
+MDQ,QW7,NONE,NONE,3  
 
 //**********************************************************************************************
 // Node Board + 16 In 16 Out (digital) on RING - Scheda Nodo + 16 In 16 Out digitali su RING
@@ -46,21 +46,21 @@ MAQ,QW24,NONE,NONE,0,SIM           // Should be Gas proportional gas
 //*********************************************************
 // PWM BOARD FOR LASER (BRD.019.473)
 //*********************************************************
-MAQ,QW913,NONE,NONE,1,SIM         // Analog out: Laser power
-MAQ,QW926,NONE,NONE,3,SIM         // Analog out: Laser power
-MAQ,QW927,NONE,NONE,5,SIM         // Analog out: Laser power
-XBQ,QW908,NONE,4,0,SIM            // PWM
-XBQ,QW909,NONE,4,1,SIM            // D_FREQ	0xD3 ( 20Khz )
-XBQ,QW910,NONE,4,2,SIM            // PWM_RES	0xFF ( 8bit )
-XBQ,QW911,NONE,4,3,SIM            // PWM_CFG	0x01  enable
-MAI,IW930,NONE,NONE,4,SIM          //
-MAI,IW931,NONE,NONE,5,SIM          //
-MAI,IW932,NONE,NONE,6,SIM          //
-MAI,IW933,NONE,NONE,7,SIM          //
-MAI,IW934,NONE,NONE,8,SIM          //
-MAI,IW935,NONE,NONE,9,SIM          //
-MAI,IW936,NONE,NONE,10,SIM         //
-MAI,IW937,NONE,NONE,11,SIM         //
+MAQ,QW913,NONE,NONE,1            // Analog out: Laser power
+MAQ,QW926,NONE,NONE,3            // Analog out: Laser power
+MAQ,QW927,NONE,NONE,5            // Analog out: Laser power
+XBQ,QW908,NONE,4,0               // PWM
+XBQ,QW909,NONE,4,1               // D_FREQ	0xD3 ( 20Khz )
+XBQ,QW910,NONE,4,2               // PWM_RES	0xFF ( 8bit )
+XBQ,QW911,NONE,4,3               // PWM_CFG	0x01  enable
+MAI,IW930,NONE,NONE,4             //
+MAI,IW931,NONE,NONE,5             //
+MAI,IW932,NONE,NONE,6             //
+MAI,IW933,NONE,NONE,7             //
+MAI,IW934,NONE,NONE,8             //
+MAI,IW935,NONE,NONE,9             //
+MAI,IW936,NONE,NONE,10            //
+MAI,IW937,NONE,NONE,11            //
 
 // DEBUG REGISTER
 // XBI,IW950,NONE,6,0       // Comando tensione uscita analogica 
