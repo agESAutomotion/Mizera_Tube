@@ -129,6 +129,9 @@ ST   BCI_ACK_GET                                    ** rc0.29  ACK per GET resou
 PATH %ax85
 PATH %ax_lsref85
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -272,6 +275,9 @@ NOAX85:
 ********************************************************************************
 PATH %ax86
 PATH %ax_lsref86
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -418,6 +424,9 @@ NOAX86:
 PATH %ax87
 PATH %ax_lsref87
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -561,6 +570,9 @@ NOAX87:
 ********************************************************************************
 PATH %ax88
 PATH %ax_lsref88
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)

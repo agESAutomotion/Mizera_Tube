@@ -180,6 +180,9 @@ noAx70:
 PATH %ax71
 PATH %ax_lsref71
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -327,6 +330,9 @@ NOAX71:
 PATH %ax72
 PATH %ax_lsref72
 
+LD 3000             ** Special case for veichi drives
+ST %ra82
+
 ***************************************
 *   POWER ON (PON)
 ***************************************
@@ -472,6 +478,9 @@ NOAX72:
 ********************************************************************************
 PATH %ax73
 PATH %ax_lsref73
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
@@ -619,6 +628,9 @@ NOAX73:
 ********************************************************************************
 PATH %ax74
 PATH %ax_lsref74
+
+LD 3000             ** Special case for veichi drives
+ST %ra82
 
 ***************************************
 *   POWER ON (PON)
