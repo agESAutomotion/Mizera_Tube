@@ -90,6 +90,7 @@ SSource74=SupLdCy.plc
 SSource75=SuUnCy.plc
 SSource76=FBAux.plc
 SSource77=BLDFeed.plc
+SSource78=usrVshp.plc
 
 [Application]
 NumCharTrace=80

@@ -283,15 +283,16 @@ CyComLenUnloader         AT %SUPPORTS_SYSTEM.values24;
 EnCyComTubeDim           AT %SUPPORTS_SYSTEM.values25;
 EnCyComTubeDimUn         AT %SUPPORTS_SYSTEM.values26;
 
-*                        AT %SUPPORTS_SYSTEM.values27.0;
-*                        AT %SUPPORTS_SYSTEM.values27.1;
-*                        AT %SUPPORTS_SYSTEM.values27.2;
-*                        AT %SUPPORTS_SYSTEM.values27.3;
-*                        AT %SUPPORTS_SYSTEM.values27.4;
-*                        AT %SUPPORTS_SYSTEM.values27.5;
-*                        AT %SUPPORTS_SYSTEM.values27.6;
-*                        AT %SUPPORTS_SYSTEM.values27.7;
-*                        AT %SUPPORTS_SYSTEM.values27.8;
+BtnGuiVshapeZ1_UP        AT %SUPPORTS_SYSTEM.values27.0;
+BtnGuiVshapeZ2_UP        AT %SUPPORTS_SYSTEM.values27.1;
+BtnGuiVshapeZ3_UP        AT %SUPPORTS_SYSTEM.values27.2;
+BtnGuiVshapeZ4_UP        AT %SUPPORTS_SYSTEM.values27.3;
+BtnGuiVshapeZ1_Dwn       AT %SUPPORTS_SYSTEM.values27.4;
+BtnGuiVshapeZ2_Dwn       AT %SUPPORTS_SYSTEM.values27.5;
+BtnGuiVshapeZ3_Dwn       AT %SUPPORTS_SYSTEM.values27.6;
+BtnGuiVshapeZ4_Dwn       AT %SUPPORTS_SYSTEM.values27.7;
+BtnGuiVshapeAllZ_UP      AT %SUPPORTS_SYSTEM.values27.8;
+BtnGuiVshapeAllZ_Dwn     AT %SUPPORTS_SYSTEM.values27.9;
 
 SUPPORTS_Max_Measure     AT %SUPPORTS_SYSTEM.values31;
 
