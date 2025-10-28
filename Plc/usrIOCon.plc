@@ -666,7 +666,7 @@ ST   O_FlapL2_Incline
 LD   O_O_FlapL2_Home
 ST   O_FlapL2_Home    
 
-LD   I_Loader_Alarm
+LD   I_I_Loader_Alarm
 ST   %PLCerr21.18            ** Loader System Alarm    
 
 LD   O_O_Flap_Home
