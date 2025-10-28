@@ -349,5 +349,10 @@ no_loop:
     ST     %PLCerr22.3                      ** Timeout: Loader V piston support 4
 *}}}
 
+LD   I_I_VshapeZ1_Dwn
+AND  I_I_VshapeZ2_Dwn
+AND  I_I_VshapeZ3_Dwn
+AND  I_I_VshapeZ4_Dwn
+ST   All_Vshape_DWN
 
 END_FUNCTION
