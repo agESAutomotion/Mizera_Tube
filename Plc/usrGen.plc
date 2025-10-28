@@ -254,142 +254,142 @@ ST   safedisNegQta
 
 * Jog Mode to hold ****************************************** //
 
-	 LD   %ax36.ra92
-	 SUB (
-	 LD   %ax33.ra92
-	 SIN
-	 MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
-     )
-	 LT   safedisPosQta
-	 AND(
-	 LD   %ax33.ra4
-	 GE   0
-	 )
-	 OR(
-	      LD   %ax36.ra92
-		  LT   safedisPosQta  
-	 )
-	 AND(
-	 LD   %ax36.ra4
-	 GE   0
-	 )
-	 ANDN YZatParking
-	 ANDN ch0_in_ref
-	 ANDN %cn0.rc8.0
-	 ST   %PLCmsg8.9   * Stop W-, B+ 
-	 
-	 LD   %ax36.ra92
-	 SUB (
-	 LD   %ax33.ra92
-	 SIN
-	 MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
-     )
-	 GT   safedisNegQta
-	 AND(
-	 LD   %ax33.ra4
-	 LT   0
-	 )
-	 OR(
-	      LD   %ax36.ra92
-		  GT   safedisNegQta  
-	 )
-	 AND(
-	 LD   %ax36.ra4
-	 LT   0
-	 )
-	 ANDN YZatParking
-	 ANDN ch0_in_ref
-	 ANDN %cn0.rc8.0
-	 ST   %PLCmsg8.10  * Stop W+, B- 
+	LD   %ax36.ra92
+	SUB (
+		LD   %ax33.ra92
+		SIN
+		MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+	)
+	LT   safedisPosQta
+	AND (
+		LD %ax33.ra4
+		GE 0
+	)
+	OR (
+		LD %ax36.ra92
+		LT safedisPosQta  
+	)
+	AND (
+		LD %ax36.ra4
+		GE 0
+	)
+	ANDN YZatParking
+	ANDN ch0_in_ref
+	ANDN %cn0.rc8.0
+	ST   %PLCmsg8.9   * Stop W-, B+ 
+	
+	LD   %ax36.ra92
+	SUB (
+		LD  %ax33.ra92
+		SIN
+		MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+	)
+	GT   safedisNegQta
+	AND (
+		LD %ax33.ra4
+		LT 0
+	)
+	OR (
+		LD %ax36.ra92
+		GT safedisNegQta  
+	)
+	AND (
+		LD   %ax36.ra4
+		LT   0
+	)
+	ANDN YZatParking
+	ANDN ch0_in_ref
+	ANDN %cn0.rc8.0
+	ST   %PLCmsg8.10  * Stop W+, B- 
 	 
 * Aut Mode to Emer (3mm more) ******************************* //	 
 	 
-	 LD   %ax36.ra4
-	 SUB (
-	 LD   %ax33.ra4
-	 SIN
-	 MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
-     )
-	 ST   dynamicBsafe
+	LD  %ax36.ra4
+	SUB (
+		LD  %ax33.ra4
+		SIN
+		MULDIV(M=%twi1.htwi.oarh.dZ,D=1000)
+	)
+	ST   dynamicBsafe
+	
+	LD   dynamicBsafe
+	ADD  3000
+	LT   safedisPosQta
+	AND (
+		LD   %ax33.ra4
+		GE   0
+	)
+	OR (
+		LD   %ax36.ra4
+		ADD  3000
+		LT   safedisPosQta  
+	)
+	AND (
+		LD   %ax36.ra4
+		GE   0
+	)
+	ANDN YZatParking
+	ANDN ch0_in_ref
+	ST   emercaseA   
+	
+	LD   dynamicBsafe
+	SUB  3000
+	GT   safedisNegQta
+	AND (
+		LD   %ax33.ra4
+		LT   0
+	)
+	OR (
+		LD   %ax36.ra4
+		SUB  3000
+		GT   safedisNegQta  
+	)
+	AND (
+		LD   %ax36.ra4
+		LT   0
+	)
+	ANDN YZatParking
+	ANDN ch0_in_ref
+	ST   emercaseB  
 	 
-	 LD   dynamicBsafe
-	 ADD  3000
-	 LT   safedisPosQta
-	 AND(
-	 LD   %ax33.ra4
-	 GE   0
-	 )
-	 OR(
-	      LD   %ax36.ra4
-		  ADD  3000
-		  LT   safedisPosQta  
-	 )
-	 AND(
-	 LD   %ax36.ra4
-	 GE   0
-	 )
-	 ANDN YZatParking
-	 ANDN ch0_in_ref
-	 ST   emercaseA   
-	 
-	 LD   dynamicBsafe
-	 SUB  3000
-	 GT   safedisNegQta
-	 AND(
-	 LD   %ax33.ra4
-	 LT   0
-	 )
-	 OR(
-	      LD   %ax36.ra4
-		  SUB  3000
-		  GT   safedisNegQta  
-	 )
-	 AND(
-	 LD   %ax36.ra4
-	 LT   0
-	 )
-	 ANDN YZatParking
-	 ANDN ch0_in_ref
-	 ST   emercaseB  
-	 
-	 LD   emercaseA
-	 OR   emercaseB
-     AND  %cn0.rc8.0
-	 S    %PLCerr20.26  * Anticolision between B and W
-	 
-     LD   %ax29.ra0.9   * Z-
-     OR   %ax28.ra0.8   * Y+
-     OR   %ax36.ra0.9   * W-
-     AND( 
-     LD   safedisPosQta
-     SUB  %ax36.ra4 
-     GT   5000
-     ) 
-	 AND(
-	 LD   %ax36.ra4
-	 GE   0
-	 )
-     OR  (
-          LD   %ax29.ra0.9  * Z-
-          OR   %ax28.ra0.8  * Y+
-          OR   %ax36.ra0.8  * W+
-          AND(
-          LD   %ax36.ra4
-          SUB  safedisNegQta
-          GT   5000
-          )
-		  AND(
-	      LD   %ax36.ra4
-	      LT   0
-	      )
-     )      
-     ANDN YZatParking
-     ANDN ch0_in_ref
-     S    %PLCerr20.22  * Anticolision between Z and W
-	 
-	 LD   Pul_Reset
-     R    %PLCerr20.22
-     R    %PLCerr20.26
+	LD   emercaseA
+	OR   emercaseB
+	AND  %cn0.rc8.0
+	S    %PLCerr20.26  * Anticolision between B and W
+	
+	LD   %ax29.ra0.9   * Z-
+	OR   %ax28.ra0.8   * Y+
+	OR   %ax36.ra0.9   * W-
+	AND ( 
+		LD   safedisPosQta
+		SUB  %ax36.ra4 
+		GT   5000
+	) 
+	AND (
+		LD   %ax36.ra4
+		GE   0
+	)
+	OR  (
+		LD   %ax29.ra0.9  * Z-
+		OR   %ax28.ra0.8  * Y+
+		OR   %ax36.ra0.8  * W+
+		AND (
+			LD   %ax36.ra4
+			SUB  safedisNegQta
+			GT   5000
+		)
+		AND (
+			LD   %ax36.ra4
+			LT   0
+		)
+	)      
+	ANDN YZatParking
+	ANDN ch0_in_ref
+	S    %PLCerr20.22  * Anticolision between Z and W
+	
+	LD   Pul_Reset
+	R    %PLCerr20.22
+	R    %PLCerr20.26
 
 STATUSONLYBVL:
 

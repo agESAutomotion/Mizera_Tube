@@ -693,6 +693,16 @@ AND  O_O_SpindleFix_Close
 ST   MidSpdClosing
 ST   O_SpindleFix_Close
 
+
+****** TODO
+LD   O_O_Mobile_Spindle_Slave_Jaws_Open
+ST   O_Mobile_Spindle_Slave_Open_Jaws
+
+LD   O_O_Mobile_Spindle_Slave_Jaws_Close
+ST   O_Mobile_Spindle_Slave_Close_Jaws
+******
+
+
 LD   O_O_FlapL3_Home
 ST   O_FlapL3_Home
 

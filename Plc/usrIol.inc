@@ -39,6 +39,8 @@ MoveAx30GuiBtn           AT %SPINDLE_SYSTEM.boolean.16;
 MoveAx31GuiBtn           AT %SPINDLE_SYSTEM.boolean.17; 
 MoveAx36GuiBtn           AT %SPINDLE_SYSTEM.boolean.18; 
 Invert_Mob_Spin_Open     AT %SPINDLE_SYSTEM.boolean.19;
+SMobile_Open_Jaws_Button AT %SPINDLE_SYSTEM.boolean.20;     ** Open 3rd spindle jaws
+SMobile_Close_Jaws_Button AT %SPINDLE_SYSTEM.boolean.21;    ** Close 3rd spindle jaws
 
 Time_Out_Sp              AT %SPINDLE_SYSTEM.values5;       * Time out spindle
 

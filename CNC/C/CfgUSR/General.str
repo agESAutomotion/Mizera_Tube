@@ -86,8 +86,8 @@ GENERAL <0> {
     $,Button10,<0>,(1301,327,1461,372);
     $,Button19,<0>,(200,219,300,319);
     $,Button20,<0>,(90,219,190,319);
-    $,Button21,<0>,(1701,219,1801,319);
-    $,Button22,<0>,(1591,219,1691,319);
+    $,Button21,<0>,(1701,236,1801,336);
+    $,Button22,<0>,(1591,236,1691,336);
     $,Button23,<0>,(898,69,998,169);
     $,Button24,<0>,(788,69,888,169);
     $,CmdChan2,<0>,(472,745,542,787);
@@ -120,8 +120,8 @@ GENERAL <0> {
     Label1,<0>,(208,324,290,329);
     Label2,<0>,(798,174,880,179);
     Label3,<0>,(908,174,990,179);
-    Label5,<0>,(1601,324,1683,329);
-    Label6,<0>,(1711,324,1793,329);
+    Label5,<0>,(1601,341,1683,346);
+    Label6,<0>,(1711,341,1793,346);
     Label7,<0>,(368,230,372,255);
     Label8,<0>,(718,230,722,255);
     Label9,<0>,(1189,333,1193,358);
@@ -191,6 +191,10 @@ GENERAL <0> {
     Label44,<0>,(1216,562,1283,584);
     Label45,<0>,(1354,562,1421,584);
     Label46,<0>,(1489,562,1556,584);
+    $,Button38,<0>,(1701,756,1801,856);
+    $,Button39,<0>,(1591,756,1691,856);
+    Label47,<0>,(1601,861,1683,866);
+    Label48,<0>,(1711,861,1793,866);
 
 }
 
@@ -2668,3 +2672,89 @@ FRL=0
 CLR=RGB(0,0,0)
 STY=CENTER
 SHW=(Uipl.CurPsw == 0)
+
+
+[Button38]
+FNM=Arial
+FSZ=12
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(66,66,66)
+BKC=RGB(128,128,128)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=SPINDLE_SYSTEM.boolean
+MSK=20,1
+TBS=1
+FRM=BTN,1
+PIC=btnnull.png
+GRD=2
+LNK=-1
+STY=CENTER
+FBR=3
+DSV=0
+
+
+[Button39]
+FNM=Arial
+FSZ=12
+FBL=1
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+HGH=0
+LEN=0
+TXC=RGB(66,66,66)
+BKC=RGB(128,128,128)
+DTX=RGB(130,130,130)
+DBK=RGB(192,192,192)
+ADR=SPINDLE_SYSTEM.boolean
+MSK=21,1
+TBS=1
+FRM=BTN,1
+PIC=btnnull.png
+GRD=2
+LNK=-1
+STY=CENTER
+FBR=3
+DSV=0
+
+
+[Label47]
+FNM=Arial
+FSZ=10
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+FBR=1
+FBK=RGB(0,162,0)
+FSN=0
+FRL=0
+STY=LEFT
+SHW=(USR_M20.10 == 1)
+
+
+[Label48]
+FNM=Arial
+FSZ=10
+FBL=0
+FUL=0
+FIT=0
+FSN=0
+FRL=0
+CLR=RGB(0,0,0)
+FBR=1
+FBK=RGB(0,162,0)
+FSN=0
+FRL=0
+STY=LEFT
+SHW=(USR_M20.9 == 1)
