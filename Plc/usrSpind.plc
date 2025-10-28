@@ -246,6 +246,15 @@ ST   MobileSClosePressReq
 LD   SlaveSpindle.yActualPressFeedbk
 ST   PressMobileSClose
 
+***** TODO : Automatic cycle management
+LD SMobile_Open_Jaws_Button
+R  O_O_Mobile_Spindle_Slave_Jaws_Close
+S  O_O_Mobile_Spindle_Slave_Jaws_Open
+
+LD SMobile_Close_Jaws_Button
+R  O_O_Mobile_Spindle_Slave_Jaws_Open
+S  O_O_Mobile_Spindle_Slave_Jaws_Close
+
 *******************************************************************************
 * C1 and head emer safety
 *******************************************************************************
