@@ -117,6 +117,7 @@ SUPPORT_5_AlarmOpenCent  AT %SUPPORTS_SYSTEM.boolean.25;
 SUPPORT_6_AlarmOpenCent  AT %SUPPORTS_SYSTEM.boolean.26;
 SUPPORT_7_AlarmOpenCent  AT %SUPPORTS_SYSTEM.boolean.27;
 All_Sup_DWN              AT %SUPPORTS_SYSTEM.boolean.28;
+All_Vshape_DWN           AT %SUPPORTS_SYSTEM.boolean.29;
 
 ISO_SupLoader_Init       AT %SUPPORTS_SYSTEM.boolean.30;
 ISO_SupUn_Init           AT %SUPPORTS_SYSTEM.boolean.31;
