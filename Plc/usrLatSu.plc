@@ -180,12 +180,12 @@ PATH  %ax81
     OR   Fun_M725_Ch0   
     OR   ParkUn51Sup_ISO
     OR (
-        * LD   Force_Open_Center_1    
-        LD   VertSup1MovCompleted  
+        LD   Force_Open_Center_1    
+        * LD   VertSup1MovCompleted  
         ANDN %cn0.rc8.0
         AND  OptEnabAutoParkLoad
     )  
-    ST   SUP1.xParkCmd
+    ST   SUP1.xParkCmd              ** Only needs the rising edge
 
     CAL  SUP1
 
@@ -217,8 +217,8 @@ JMPCN no_support_2
     OR   Fun_M725_Ch0   
     OR   ParkUn52Sup_ISO
     OR (
-        * LD   Force_Open_Center_2    
-        LD   VertSup2MovCompleted    
+        LD   Force_Open_Center_2    
+        * LD   VertSup2MovCompleted    
         ANDN %cn0.rc8.0
         AND  OptEnabAutoParkLoad
    )        
@@ -254,8 +254,8 @@ JMPCN no_support_3
     OR   Fun_M725_Ch0   
     OR   ParkUn53Sup_ISO
     OR (
-        * LD   Force_Open_Center_3   
-        LD   VertSup3MovCompleted   
+        LD   Force_Open_Center_3   
+        * LD   VertSup3MovCompleted   
         ANDN %cn0.rc8.0
         AND  OptEnabAutoParkLoad
     )        
@@ -291,8 +291,8 @@ JMPCN no_support_4
     OR   Fun_M725_Ch0   
     OR   ParkUn54Sup_ISO 
     OR (
-        * LD   Force_Open_Center_4    
-        LD   VertSup4MovCompleted    
+        LD   Force_Open_Center_4    
+        * LD   VertSup4MovCompleted    
         ANDN %cn0.rc8.0
         AND  OptEnabAutoParkLoad
     )        
