@@ -14,7 +14,7 @@ I_CHILLER_ERR               AT %IW0.6;  ** Chiller OK (inverse logic)
 I_ASPIRATORE_OK             AT %IW0.7;  ** Dust collector
 I_EMERGENZA                 AT %IW0.8;  ** E-Stop 
 I_Photocell_Load            AT %IW0.9;  ** Loading barriers
-I_Photocell_Unload          AT %IW0.10; ** Unloading barriers
+I_Photocell_Unload          AT %PLCFLAGS.1;  ** %IW0.10; ** Unloading barriers
 I_SAFETY_DOOR               AT %IW0.11; ** Closed door
 * AT %IW0.12;   ** Tool raised
 * AT %IW0.13;   ** Abandoned tool
