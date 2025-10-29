@@ -10,5 +10,5 @@
                                             // ThinkvoI7 300
 											// EBS-ED 80
 
-#define         EC_MODULAR_DEVICE	   32	// Number of modular I/O  (min value = 32)
+#define         EC_MODULAR_DEVICE	   64	// Number of modular I/O  (min value = 32)
 
