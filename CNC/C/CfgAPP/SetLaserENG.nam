@@ -60,10 +60,10 @@ SL_DELAY_FDBACK = Delay feedback input gas control [s]
 SL_HEAD_FOCALTYPE = Focal type
 L_CLEAN_CALIB = Nozzle brush present, single plate calibration [LSRPlcOp1.5]
 
-SL_CAPACITIVE_TYPE = Precitec,LaserMech, Highyag, ECAT Cap, Precitec Similar (ECAT), Thermacut, Procon
+SL_CAPACITIVE_TYPE = Precitec,LaserMech, Highyag, ECAT Cap, Precitec Similar (ECAT), Thermacut, Procon,CutBox
 SL_GENERATOR_TYPE = YLS/Fuji,YLR/Max/Raycus,Raycus,Rofin,Trumpf,NLIGHT
 SL_PROP_OXYGEN_TYPE = Standard,only oxigen,Standard and oxiygen
-FOC_LIST = Precitec,WSX/OpenLaser,HighYag,Raytools,Procon
+FOC_LIST = Precitec,WSX/OpenLaser,HighYag,Raytools,Procon,CutBox
 LIST_CAP_RANGE = 10mm,20mm
 
 
