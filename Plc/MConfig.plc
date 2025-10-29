@@ -11,6 +11,7 @@
 #funcdec "Foc_Prec.plc"
 #funcdec "nLight.plc"
 #funcdec "CAP_EMP.plc"
+#funcdec "FBCutBox.plc"
 
 VAR
 #include "Cnc.inc"
@@ -258,6 +259,105 @@ JMPCN no_prec
     S    %PLCmsg5.2
 
 no_prec:
+
+
+***************************************
+*   CUTBOX FOCAL
+***************************************
+LD   %config_machine25
+EQ   5
+JMPCN no_cutbox
+
+    LD   %CutBox0.rGeneralPurpose0              ** HMI Node Ecat
+    ST   CUTBOX.xEcatNode
+
+    LD   PRGRUN_CN0
+    JMPCN no_autofoc
+
+        LD   %TabLsr0.L_CutFocal                ** Focal distance for the current cut
+        DIV  10        
+        ST   CUTBOX.xFocalPos
+
+    no_autofoc:
+
+    LD   ch0_InJOG                   * %cn0.rc0.9 CH0 en Modo JOG
+    JMPCN no_JOGfoc
+
+        LD   Val_Focale_ACT
+        DIV  10
+        ST   CUTBOX.xFocalPos
+
+    no_JOGfoc:
+
+    LD   %CutBox0.rGeneralPurpose1.0        ** HMI Reference Travel Button
+    ST   CUTBOX.xRefTravel
+
+    LD   CUTBOX.xFocalPos
+    NE   LastFocalValue
+    ST   PulseChangeFoc
+
+    CAL  TP_PULSE_FOC (IN:=PulseChangeFoc,PT:=150)
+
+    LD   TP_PULSE_FOC.Q
+    ST   CUTBOX.xApplyNewFoc
+
+    LD   Pul_Reset
+    ST   CUTBOX.xPulReset
+
+    PATH  %CutBox0
+    CAL  CUTBOX
+
+    LD   CUTBOX.xFocalPos
+    ST   LastFocalValue
+
+    *LD   AlarmTipTouch     
+    *LD    AlarmBodyTouch    
+    LD   AlarmCableCut     
+    OR   AlarmVoltageSupply
+    OR   AlarmTempDistSensorUni  
+    OR   AlarmNozzleLost        
+    OR   AlarmDistCalibGainError 
+    OR   AlarmDistCalibDeltaError
+    OR   AlarmCalibrationCanceled
+    OR   AlarmStrayLProteWColLens     
+    OR   AlarmGlobalErrorCuttingHead   
+    OR   AlarmMissingCartridgeProcess  
+    OR   AlarmMissProtWindowProc      
+    OR   AlarmTempProteWindowProc     
+    OR   AlarmTempCollimatingLens     
+    OR   AlarmTempFocusingLens        
+    OR   AlarmTempCuttingHead        
+    OR   AlarmStrayLBeamPath        
+    OR   AlarmAssistGasPressTooHigh  
+    OR   AlarmPresLeakageProtWProc   
+    OR   AlarmCutHeadError          
+    OR   AlarmMissingCartrColLens    
+    OR   AlarmHumidityCuttingHead    
+    OR   AlarmStrayLProtWindowProc   
+    OR   AlarmCuttHeadComLost 
+    OR   AlarmDriveError     
+    OR   AlarmEdgeTec        
+    OR   AlarmDriveOverload
+    OR   AlarmCommunicationDrive  
+    OR   AlarmReferenceTravelDrive 
+    OR   AlarmPSVoltageDrive      
+    S    %PLCerr9.4
+
+    LD   RESET_ALLARMI 		         ** M100.4  Cancellazione allarmi attiva
+    R    %PLCerr9.4
+
+
+
+no_cutbox:
+
+
+
+
+
+
+
+
+
 
 LD   RESET_ALLARMI    
 R    %PLCerr5.0       
