@@ -27,6 +27,7 @@ END_VAR
 **#include "LsrGest.inc"
 #include "Cap_Prec.inc"
 #include "foc_prec.inc"
+#include "IolCutBox.inc"
 
 VAR
 CAP_PROCON_0:           CAP_PREC;
@@ -46,6 +47,11 @@ TON1:                   TON;        * Attesa per emissione allarme
 LaserSim:               BOOL;
 TOF_REF_HEAD:           TOF;
 temp:                   DWORD;
+
+CUTBOX:                    PREC_CUTBOX;
+TP_PULSE_FOC:               TP;   
+PulseChangeFoc:             BOOL;
+LastFocalValue:             DWORD;
 END_VAR
 
 
@@ -346,7 +352,17 @@ JMPCN no_cutbox
     LD   RESET_ALLARMI 		         ** M100.4  Cancellazione allarmi attiva
     R    %PLCerr9.4
 
+    LD   AlarmTipTouch
+    ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
 
+    LD   AlarmBodyTouch
+    ST   %PLCerr5.5                 * PLC Err 165 Body touch (A11=1, A14=1, A15=0 in normal operation)
+
+    LD   AlarmNozzleLost
+    ST   %PLCerr5.6                 * PLC Err 166 Nozzle lost (A11=1, A14=0, A15=1 in normal operation)
+
+    LD   AlarmCableCut
+    ST   %PLCerr5.8                 * PLC Err 168 Cable cut da capacitivo
 
 no_cutbox:
 
