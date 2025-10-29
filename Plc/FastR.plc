@@ -102,7 +102,7 @@ no_em_sensor:
 *************************************** 
 
 LD   %config_machine26
-EQ   4
+EQ   7
 AND  %LSRPlcOp1.9
 JMPCN no_cutbox
 
@@ -123,7 +123,7 @@ JMP  HeadCom
 no_cutbox:
 
 LD   %config_machine26
-EQ   4
+EQ   7
 ANDN %LSRPlcOp1.9
 JMPCN no_cutbox1
 
