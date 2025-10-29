@@ -1,5 +1,15 @@
-
 #include "IolCutBox.inc"
+#include "Iol.inc"
+
+VAR
+#include "RemContr.inc"
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+BTN_START_CALIB         AT %Capacitive0.cButton0;    ** HMI
+END_VAR
+
 
 FUNCTION_BLOCK   PREC_CUTBOX
 
@@ -15,9 +25,33 @@ xPulReset:      BOOL;
 
 END_VAR
 
+VAR
+FT_PRGRUN:              F_TRIG;
+RTRIG_REQUEST:          R_TRIG;     ** HMI
+RTRIG_CALIB:            R_TRIG;     ** Remote Controller
+
+CalibRequest:           BOOL;   * Calib request
+END_VAR
+
 VAR_OUTPUT
 
 END_VAR
+
+CAL  FT_PRGRUN(CLK=PRGRUN_CN0)     ** M0.0 cn0.rc8.0  Programma in corso
+CAL  RTRIG_REQUEST(CLK=BTN_START_CALIB) ** Calibration START button
+CAL  RTRIG_CALIB(CLK:=RemContrCalib) ** Xhc_Puls.12 Execute calibration
+
+LD   RTRIG_REQUEST.Q
+OR   RTRIG_CALIB.Q                 ** Xhc_Puls.12 Execute calibration)
+AND  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   CalibRequest                  ** Calib request
+S    CalibRequest                  ** Calib request
+
+LD   M30_CN0                       ** M0.13 M30:EndProgram CN0
+OR   MACC_ALARM                    ** (gPlc0.10)Macchina in allarme
+OR   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+OR   FT_PRGRUN.Q
+R    CalibRequest                  ** Calib request
 
 PATH  %ecat_ring0
 PATH  %EcatNode[xEcatNode]
