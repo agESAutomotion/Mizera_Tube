@@ -98,6 +98,47 @@ no_em_sensor:
 
  
 ***************************************
+*   CUTBOX
+*************************************** 
+
+LD   %config_machine26
+EQ   4
+AND  %LSRPlcOp1.9
+JMPCN no_cutbox
+
+    LD   20000      
+    ST   MaxADCPoints
+
+    LD   %C121
+    ST   %C120 
+    ST   %C103
+
+    PATH %ecat_ring0
+    PATH %EcatNode[%CutBox0.rGeneralPurpose0]
+
+    LD   %EcMDPIn18
+    ST   %C120                         * calibration and linearization of capacitive sensor
+
+JMP  HeadCom
+no_cutbox:
+
+LD   %config_machine26
+EQ   4
+ANDN %LSRPlcOp1.9
+JMPCN no_cutbox1
+
+    PATH %ecat_ring0
+    PATH %EcatNode[%CutBox0.rGeneralPurpose0]
+
+    LD   %EcMDPIn18
+    ST   %C120                         * calibration and linearization of capacitive sensor
+    ST   %C121                         * calibration and linearization of capacitive sensor
+
+JMP  HeadCom
+no_cutbox1:
+
+
+***************************************
 HeadCom:
 
 
