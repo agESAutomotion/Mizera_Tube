@@ -114,3 +114,5 @@ ENDSECTION User
 
 // Modbus
 #include <defcn_PLCClientModbus.usr>
+
+#include <CutBoxPro.Defcn>
