@@ -31,10 +31,11 @@ RTRIG_REQUEST:          R_TRIG;     ** HMI
 RTRIG_CALIB:            R_TRIG;     ** Remote Controller
 
 CalibRequest:           BOOL;   * Calib request
+CALIBRAZIONE_RUN:       BOOL;   * Programma calibrazione in corso
 END_VAR
 
 VAR_OUTPUT
-
+yExeCalib:              BOOL;   ** Calibration requested
 END_VAR
 
 CAL  FT_PRGRUN(CLK=PRGRUN_CN0)     ** M0.0 cn0.rc8.0  Programma in corso
@@ -52,6 +53,11 @@ OR   MACC_ALARM                    ** (gPlc0.10)Macchina in allarme
 OR   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
 OR   FT_PRGRUN.Q
 R    CalibRequest                  ** Calib request
+
+LD   CalibRequest                  ** Calib request
+ST   CALIBRAZIONE_RUN              ** Programma calibrazione in corso
+ST   yExeCalib                     ** Calibration requested
+
 
 PATH  %ecat_ring0
 PATH  %EcatNode[xEcatNode]

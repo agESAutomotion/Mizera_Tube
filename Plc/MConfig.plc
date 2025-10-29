@@ -316,6 +316,9 @@ JMPCN no_cutbox
     LD   CUTBOX.xFocalPos
     ST   LastFocalValue
 
+    LD   CUTBOX.yExeCalib
+    ST   ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
+
     *LD   AlarmTipTouch     
     *LD    AlarmBodyTouch    
     LD   AlarmCableCut     
