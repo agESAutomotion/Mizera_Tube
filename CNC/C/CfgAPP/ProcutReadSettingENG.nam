@@ -1,0 +1,16 @@
+
+[KEYS]
+TITLE=ProCutter Read Settings
+
+[PROMPT]
+KEY_NODE=Node
+PROCUTREADICSETTING=Leaf
+LabelPerr1=ProCutter Type (1: ProCuter 2.0, 2: ProCutter2.0 Zoom)
+LabelPerr2=Straylight Sensor Protective Windows Gain (1: low, 2: medium, 3: high)
+LabelPerr4=Current Focal Position [mm]
+LabelPerr3=Actual Image Ratio
+LabelPerr6=Customer Focus Offset [mm]
+
+[STATUS]
+
+[HELP]
