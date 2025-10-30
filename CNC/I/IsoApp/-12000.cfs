@@ -81,7 +81,7 @@ ENDIF
 ;  CUTBOX
 ;*****************************************************************************************************
 
-IF( (%config_machine26 == 4) ) THEN
+IF( (%config_machine26 == 7) ) THEN
 
  JSR "calibCutbox.cfs"    ; precitec cutbox calibration
  
