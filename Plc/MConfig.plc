@@ -362,7 +362,8 @@ JMPCN no_cutbox
     ST   ISO_I_TIP_BODY_TOUCH_A11
 
     LD   CUTBOX.yTipTouch
-    ANDN DisabTipTouch
+    ANDN DisabTipTouch              ** (LsIso17.0) Disable tip touch
+    ANDN ISOTipTouchDisable         ** (C26.3) Disabilita tip touch da ISO
     ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
 
     LD   AlarmBodyTouch
