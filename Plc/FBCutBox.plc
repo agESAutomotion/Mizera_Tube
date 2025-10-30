@@ -300,7 +300,6 @@ LD  FarDistance
 ST  yFarDistance                         ** Distance sensor outside the measurement range
 
 LD   AlarmTipTouch
-ANDN DisabTipTouch
 ST   yTipTouch
 
 END_FUNCTION_BLOCK 
