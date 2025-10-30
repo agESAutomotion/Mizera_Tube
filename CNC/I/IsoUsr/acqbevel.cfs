@@ -1,0 +1,263 @@
+:        
+
+INCLUDE "var_usr.cfs"
+                                   
+DBL i = 0                           ;
+DBL Speed = 500                   ; Velocita' di discesa Z2
+DBL Attesa = 0.3                   ; Attesa tra un posiz e l'altro  
+DBL middleStep = 0 
+DBL feedB = 300
+DBL cost = 0  
+DBL sel                            ; offset calibration tables
+DBL angCoef
+          
+?%LsIso10.0 = 0                    ;ISO said Sensor Calibration OK
+
+SYN
+?%C26.0=1
+
+
+IF ( %UnitWork.uxh0.uxh_gTravT == 1 ) sel = 0
+IF ( %UnitWork.uxh1.uxh_gTravT == 2 ) sel = 7     
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; bevel acquire 0 degree
+
+ ?%pd_splines[41 + sel].pdh_nPoints = 20  
+
+;      G1 Z(z+(%LSRCostK[31]/1000)) F10000
+;      G1 X(x) Y(y) A0 B0 F(feedB)   
+  SYN
+  MSGOUT "z " z
+  
+  
+
+  G180 D1 Z(z)   ;TRASFORMA DA ASSOLUTA A RELATIVA
+  
+ ; IF ( %config_machine26 == 1 ) z = kine_z
+  z = kine_z
+  x = kine_x
+  y = kine_y
+  
+ ; SYN
+ ; MSGOUT "z " z
+ ; M0
+  
+   G1 Z(z+(%LSRCostK[31]/1000)) F200
+   
+   G1 X(x) Y(y) A0 B0 F(feedB)     
+
+
+      ?%pd_splines[41 + sel].pdh_X[0] = 0
+    ;  ?%pd_splines[41 + sel].pdh_Y[0] = 0    
+   
+ i = (%LSRCostK[31]/1000)
+ cost = 19 
+
+WHILE (cost > 0) 
+
+; 20 mm range
+
+ IF ((%LSRCostK[31]/1000) == 20 ) THEN 
+
+  SYN
+   IF ( cost == 19 ) middleStep = i  
+  
+   IF (( cost > 0) && ( cost <= 9 )) THEN   
+    i = i - 0.5
+    middleStep = i
+   ENDIF
+     
+   IF  (( cost > 9 ) && (cost < 13)) THEN
+    i = i - 1
+    middleStep = i   
+   ENDIF
+     
+   IF (( cost >= 13) && ( cost < 19 )) THEN     
+    
+     IF ( cost == 18) THEN 
+      i = 18
+     ELSE 
+      i = i - 2
+     ENDIF
+    
+    middleStep = i
+   ENDIF
+  
+ ENDIF  
+ 
+; 10mm range
+
+ IF ((%LSRCostK[31]/1000) == 10 ) THEN 
+
+  SYN  
+   IF ( cost == 18 ) i = i - 1    
+   middleStep = i 
+   
+   IF (( cost > 0) && ( cost < 18 )) THEN   
+    i = i - 0.5
+    middleStep = i
+   ENDIF
+       
+ ENDIF 
+
+    G1 X(x) Y(y) Z(z + middleStep) F(Speed)
+	
+    G4 F(Attesa)   
+    SYN
+   IF( sel == 0) ?%pd_splines[41 + sel].pdh_X[cost] = %C120 
+   IF( sel == 7) ?%pd_splines[41 + sel].pdh_X[cost] = %C132
+   ?%pd_splines[41 + sel].pdh_Y[cost] = middleStep
+   
+   cost = cost - 1
+
+ENDWHILE
+
+SYN
+angCoef = (%pd_splines[41 + sel].pdh_Y2 - %pd_splines[41 + sel].pdh_Y1) / (%pd_splines[41 + sel].pdh_X2 - %pd_splines[41 + sel].pdh_X1)
+?%pd_splines[41 + sel].pdh_Y0 = %pd_splines[41 + sel].pdh_Y1 - (angCoef * %pd_splines[41 + sel].pdh_X1) 
+
+
+IF ((!%LSRPlcOp1.29)) JMPF .noBevelCalib 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; bevel acquire 15 degree
+
+?%pd_splines[42 + sel].pdh_nPoints = 20  
+;;;;;;?%TabLsr1.L_Tickness = 399500          ; for debug
+
+      G1 Z(z+(%LSRCostK[31]/1000)) F300
+      G1 X(x) Y(y) B15 A0 F(feedB)      
+      
+      ?%pd_splines[42 + sel].pdh_X[0] = 0
+    ;  ?%pd_splines[42 + sel].pdh_Y[0] = 0                       
+   
+FOR cost = 19 TO 1        ; in this case i is same with mm  
+    
+    IF ((cost == 19) && ((%LSRCostK[31]/1000) == 20)) i = 20
+    IF ((cost == 18) && ((%LSRCostK[31]/1000) == 20)) i = i-2
+    IF ((cost < 18) && ((%LSRCostK[31]/1000) == 20))  i = i-1
+      
+    IF ((cost == 19) && ((%LSRCostK[31]/1000) == 10)) i = 10
+    IF ((cost < 19) && ((%LSRCostK[31]/1000) == 10))  i = i-0.5 
+
+    middleStep = i
+   
+   
+   G1 X(x) Y(y) Z(z + middleStep ) F(Speed)
+   
+    G4 F(Attesa)            
+   SYN
+   IF( sel == 0) ?%pd_splines[42 + sel].pdh_X[cost] =%C120 
+   IF( sel == 7) ?%pd_splines[42 + sel].pdh_X[cost] =%C132
+   ?%pd_splines[42 + sel].pdh_Y[cost] = i
+
+ENDFOR
+
+SYN
+angCoef = (%pd_splines[42 + sel].pdh_Y2 - %pd_splines[42 + sel].pdh_Y1) / (%pd_splines[42 + sel].pdh_X2 - %pd_splines[42 + sel].pdh_X1)
+?%pd_splines[42 + sel].pdh_Y0 = %pd_splines[42 + sel].pdh_Y1 - (angCoef * %pd_splines[42 + sel].pdh_X1) 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; bevel acquire 30 degree
+
+DBL attempts = 16
+
+?%pd_splines[43 + sel].pdh_nPoints = attempts+1 
+;;;;?%TabLsr1.L_Tickness = 368500           ; for debug
+
+     G1 Z(z+(%LSRCostK[31]/1000)) F300
+     G1 X(x) Y(y) B30 A0 F(feedB)
+
+     ?%pd_splines[43 + sel].pdh_X[0] = 0
+    ; ?%pd_splines[43 + sel].pdh_Y[0] = 0
+
+
+     
+FOR cost = attempts TO 1        ; in this case i is same with mm  
+  
+    IF ((cost == attempts) && ((%LSRCostK[31]/1000) == 20)) i = 20
+    IF ((cost == (attempts-1)) && ((%LSRCostK[31]/1000) == 20)) i = i-2
+    IF ((cost < (attempts-1)) && ((%LSRCostK[31]/1000) == 20))  i = i-1
+      
+    IF ((cost == (attempts)) && ((%LSRCostK[31]/1000) == 10)) i = 10
+    IF ((cost < (attempts)) && ((%LSRCostK[31]/1000) == 10))  i = i-0.5 
+    
+    middleStep = i
+	
+   G1 X(x) Y(y) Z(z + middleStep ) F(Speed)
+   
+    G4 F(Attesa) 
+   SYN           
+   IF( sel == 0) ?%pd_splines[43 + sel].pdh_X[cost] =%C120      
+   IF( sel == 7) ?%pd_splines[43 + sel].pdh_X[cost] =%C132
+   ?%pd_splines[43 + sel].pdh_Y[cost] = i
+
+ENDFOR
+
+SYN
+angCoef = (%pd_splines[43 + sel].pdh_Y2 - %pd_splines[43 + sel].pdh_Y1) / (%pd_splines[43 + sel].pdh_X2 - %pd_splines[43 + sel].pdh_X1)
+?%pd_splines[43 + sel].pdh_Y0 = %pd_splines[43 + sel].pdh_Y1 - (angCoef * %pd_splines[43 + sel].pdh_X1) 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; bevel acquire 45 degree
+attempts=15
+IF (%PlcOp0.30) THEN
+?%pd_splines[44 + sel].pdh_nPoints = attempts+1 
+;?%pd_splines[44 + sel].pdh_nPoints = 17
+;;;;;;;;;;;;?%TabLsr1.L_Tickness = 320500          ; for debug
+
+     G1 Z(z+(%LSRCostK[31]/1000)) F300
+     G1 X(x) Y(y) B45 A0 F(feedB)
+
+     ?%pd_splines[44 + sel].pdh_X[0] = 0
+  ;   ?%pd_splines[44 + sel].pdh_Y[0] = 0
+     
+FOR cost = (attempts) TO 1             ; in this case i is same with mm
+;FOR cost = 16 TO 1             ; in this case i is same with mm
+
+IF ((cost == (attempts)) && ((%LSRCostK[31]/1000) == 20)) i = 20
+;IF ((cost == 16) && ((%LSRCostK[31]/1000) == 20)) i = 20
+IF ((cost == (attempts-1)) && ((%LSRCostK[31]/1000) == 20)) i = i-2
+IF ((cost < (attempts-1)) && ((%LSRCostK[31]/1000) == 20))  i = i-1
+     
+IF ((cost == (attempts)) && ((%LSRCostK[31]/1000) == 10)) i = 10
+IF ((cost < (attempts)) && ((%LSRCostK[31]/1000) == 10))  i = i-0.5 
+
+middleStep = i
+
+G1 X(x) Y(y) Z(z + middleStep ) F(Speed)
+
+G4 F(Attesa) 
+SYN           
+IF( sel == 0) ?%pd_splines[44 + sel].pdh_X[cost] =%C120       
+IF( sel == 7) ?%pd_splines[44 + sel].pdh_X[cost] =%C132
+?%pd_splines[44 + sel].pdh_Y[cost] = i
+
+ENDFOR
+
+SYN
+angCoef = (%pd_splines[44 + sel].pdh_Y2 - %pd_splines[44 + sel].pdh_Y1) / (%pd_splines[44 + sel].pdh_X2 - %pd_splines[44 + sel].pdh_X1)
+?%pd_splines[44 + sel].pdh_Y0 = %pd_splines[44 + sel].pdh_Y1 - (angCoef * %pd_splines[44 + sel].pdh_X1) 
+ENDIF 
+
+
+
+.noBevelCalib
+;;;;;;?%TabLsr1.L_Tickness = 410000
+
+?%ui0.10 = 1            ; calculate the graph coefficients, command for the interface
+
+SYN 
+AWAIT(%ui33.11)         ; wait interface receive the commands
+
+?%ui0.10 = 0            ; calculate the graph coefficients, command for the interface
+
+?%C26.0=0       
+          
+G4 F0.1
+
+G1 Z(z+25) F10000
+G1 X(x) Y(y) A0 B0 F(feedB)
+
+RET
