@@ -83,6 +83,8 @@ ENDIF
 
 IF( (%config_machine26 == 7) ) THEN
 
+    ?%LsIso10.1 = 0              ; Iso said calibration control done
+    
     IF (%IndexORG != 19) G806 T3 N1 H1 D1
 
     IF (%IndexORG == 19) THEN           ; Case Tube machines
