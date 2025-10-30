@@ -319,6 +319,9 @@ JMPCN no_cutbox
     LD   CUTBOX.yExeCalib
     ST   ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
 
+    LD  CUTBOX.yFarDistance
+    ST  ISO_I_FAR_A10
+    
     *LD   AlarmTipTouch     
     *LD    AlarmBodyTouch    
     LD   AlarmCableCut     

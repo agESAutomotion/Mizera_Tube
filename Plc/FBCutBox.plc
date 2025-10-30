@@ -36,6 +36,7 @@ END_VAR
 
 VAR_OUTPUT
 yExeCalib:              BOOL;   ** Calibration requested
+yFarDistance:           BOOL;   ** Distance sensor outside the measurement range
 END_VAR
 
 CAL  FT_PRGRUN(CLK=PRGRUN_CN0)     ** M0.0 cn0.rc8.0  Programma in corso
@@ -294,6 +295,8 @@ ST   Ec_ControlDynamicBand                *   AT %EcMDPOut37;
 LD   PLC_MaxTemperatureSensorUnit      *    AT %MaxTempSensorUnit;
 ST   Ec_MaxTemperatureSensorUnit           *  AT %EcMDPOut38; 
 
+LD  FarDistance
+ST  yFarDistance                         ** Distance sensor outside the measurement range
 
 
 END_FUNCTION_BLOCK 
