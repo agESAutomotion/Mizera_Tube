@@ -76,6 +76,24 @@ ENDIF
 
 ENDIF 
 
+
+;******************************************************************************************************
+;  CUTBOX
+;*****************************************************************************************************
+
+IF( (%config_machine26 == 4) ) THEN
+
+ JSR "calibCutbox.cfs"    ; precitec cutbox calibration
+ 
+  IF(%LSRPlcOp1.9) JSR "acqbevel.cfs"       ; cycle for 0 degree linearizarion AND also bevel calibration
+  
+  ; Calibration Control
+  IF (%LSRPlcOp1.8) THEN
+	JSR "calibration_control.cfs"
+  ENDIF
+
+ENDIF
+
 ;****************************************************************************** 
 
 IF (AEXISTS(3,B)) THEN
@@ -83,7 +101,7 @@ IF (AEXISTS(3,B)) THEN
    DECTRJ = %cn[WHO()].pc7
    JRKTRJ = %cn[WHO()].pc16
 ENDIF 
- 
+
 G(200+sav_G70)
 
 RET
