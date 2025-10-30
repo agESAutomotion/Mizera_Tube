@@ -22,13 +22,9 @@ DBL NextCalPoint = 0
 DBL retry
 DBL Debug = 0
 
-?%LsIso10.0 = 0     ;ISO said Sensor Calibration OK
-
-
-?%C30.7 = 0              ;===>>> Reset segnale calibrazione
-?%C30.8 = 0              ;===>>> Reset segnale strobe
-
-;M0
+?%LsIso10.0 = 0     ; ISO said Sensor Calibration OK
+?%C26.0=1           ; Calibration control in run      
+?%LsIso17.0 = 1     ; Disable tip touch
 
 G153 G0 Z((%ax29.pa22 / 1000) - 10)      ;Posizione "Z" al finecorsa Software - 10 mm
 IF (AEXISTS(3,A)) G0 A0 B0
@@ -124,5 +120,6 @@ z= kine_z
 
 ; Calibration request
 ?%LsIso10.0 = 1     ;ISO said Sensor Calibration OK
-
+?%C26.0=0           ; Calibration control in run 
+?%LsIso17.0 = 0     ; Disable tip touch
 RET

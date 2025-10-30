@@ -358,7 +358,7 @@ JMPCN no_cutbox
     LD   RESET_ALLARMI 		         ** M100.4  Cancellazione allarmi attiva
     R    %PLCerr9.4
 
-    LD   AlarmTipTouch
+    LD   CUTBOX.yTipTouch
     ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
 
     LD   AlarmBodyTouch
