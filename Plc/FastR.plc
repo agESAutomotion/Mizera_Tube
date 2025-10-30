@@ -133,6 +133,7 @@ JMPCN no_cutbox1
     LD   %EcMDPIn18
     ST   %C120                         * calibration and linearization of capacitive sensor
     ST   %C121                         * calibration and linearization of capacitive sensor
+    ST   %C103
 
 JMP  HeadCom
 no_cutbox1:
