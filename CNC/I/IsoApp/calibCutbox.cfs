@@ -20,7 +20,7 @@ DBL Attesa = 0.5    ;%EBK44                 ; Attesa tra un posiz e l'altro
 DBL IncStep = 0
 DBL NextCalPoint = 0
 DBL retry
-DBL Debug = 0
+DBL Debug = 1
 
 ?%LsIso10.0 = 0     ; ISO said Sensor Calibration OK
 ?%C26.0=1           ; Calibration control in run      
@@ -47,18 +47,16 @@ G4 F0.02
 
 IF (Debug == 1 ) M0
 
-            _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%C31.0", LevelE ) ; Aspetta il segnale basso per uscire
+    _singfc( ( VMAX | VOUT0 ), Z, 2, VHIGH, 0, "%C31.0", LevelE ) ; Aspetta il segnale basso per uscire
 			
 IF (Debug == 1 ) M0
-;
-;
 
-            _singfc( ( VMAX | VOUT0 ), Z, 2, VLOW, 0, "%C31.1", LevelS )  ; Aspetta il segnale alto per uscire
-            _singfc( ( VMAX | VOUT0 ), Z, 1, VLOW/4, 0, "%C31.1", LevelE )  ; Aspetta il segnale basso per uscire
-            G4 F0.2
-            SYN
-            kine_z = GET(Z) 
-            G10 G0 Z(QCALC(Z)) 
+    _singfc( ( VMAX | VOUT0 ), Z, 2, VLOW, 0, "%C31.1", LevelS )  ; Aspetta il segnale alto per uscire
+    _singfc( ( VMAX | VOUT0 ), Z, 1, VLOW/4, 0, "%C31.1", LevelE )  ; Aspetta il segnale basso per uscire
+    G4 F0.2
+    SYN
+    kine_z = GET(Z) 
+    G10 G0 Z(QCALC(Z)) 
 
 IF (Debug == 1 ) M0
 
