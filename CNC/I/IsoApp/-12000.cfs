@@ -83,6 +83,17 @@ ENDIF
 
 IF( (%config_machine26 == 7) ) THEN
 
+IF (%IndexORG != 19) G806 T3 N1 H1 D1 
+  
+IF (%IndexORG == 19) THEN 
+	JSR "Sel_Y3Z3.cfs"
+    G153 G1 Z(MaxQta_Z - 10) F5000
+	G153 G1 Y0 F10000
+    IF (AEXISTS(3,B)) G153 G1 B0
+    G153 G1 C(calib_c_ang) F5000
+ENDIF
+
+
  JSR "calibCutbox.cfs"    ; precitec cutbox calibration
  
   IF(%LSRPlcOp1.9) JSR "acqbevel.cfs"       ; cycle for 0 degree linearizarion AND also bevel calibration
