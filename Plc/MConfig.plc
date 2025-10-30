@@ -359,6 +359,10 @@ JMPCN no_cutbox
     R    %PLCerr9.4
 
     LD   CUTBOX.yTipTouch
+    ST   ISO_I_TIP_BODY_TOUCH_A11
+
+    LD   CUTBOX.yTipTouch
+    ANDN DisabTipTouch
     ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
 
     LD   AlarmBodyTouch
