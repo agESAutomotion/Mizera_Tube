@@ -106,19 +106,27 @@ EQ   7
 AND  %LSRPlcOp1.9
 JMPCN no_cutbox
 
-    LD   20000      
-    ST   MaxADCPoints
-
-    LD   %C121
-    ST   %C120 
-    ST   %C103                  
-
     PATH %ecat_ring0
     PATH %EcatNode[%CutBox0.rGeneralPurpose0]
 
     LD   %EcMDPIn18
+    *ST   IA_A18_19_DIST_LINEAR          ** Capacitive sensor
     ST   TempCapacitiveSensorPoints
-    ST   %C120                         * calibration and linearization of capacitive sensor
+    ST   %C120                          * calibration and linearization of capacitive sensor
+
+    LD   %LSRCostK31                    ** Capacitive sensor range
+    DIV  10
+    ST   MaxVolt_x100
+
+    LD   AnalCapFeedback                * Capacitive analog resolution
+    ST   MaxADCPoints
+
+    LD   20000      
+    ST   MaxADCPoints
+
+    * LD   %EcMDPIn18
+    * ST   TempCapacitiveSensorPoints
+    * ST   %C120                         * calibration and linearization of capacitive sensor
 
 JMP  HeadCom
 no_cutbox:
@@ -185,13 +193,14 @@ no_calibration_bevel:
 LD   TempCapacitiveSensorPoints
 ST   %C121                         * VRTC VARIABLE
 
-* LD   TempCapacitiveSensorPoints
-* ST   Capacit_Anal                  ** (C102)Analogica Capacitivo
+LD   TempCapacitiveSensorPoints
+ST   Capacit_Anal                  ** (C102)Analogica Capacitivo
 
-* LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
-* MUL  MaxVolt_x100
-* DIV  MaxADCPoints
-* ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+*LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
+*MUL  MaxVolt_x100
+*DIV  MaxADCPoints
+*ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+
 
 
 ***LD   %UnitWork.gTravE 
