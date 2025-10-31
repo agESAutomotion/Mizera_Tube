@@ -10,7 +10,7 @@ DBL feedB = 300
 DBL cost = 0  
 DBL sel                            ; offset calibration tables
 DBL angCoef
-DBL Debug = 1
+DBL Debug = 0
           
 ?%LsIso10.0 = 0                    ;ISO said Sensor Calibration OK
 
