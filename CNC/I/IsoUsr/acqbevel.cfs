@@ -10,6 +10,7 @@ DBL feedB = 300
 DBL cost = 0  
 DBL sel                            ; offset calibration tables
 DBL angCoef
+DBL Debug = 1
           
 ?%LsIso10.0 = 0                    ;ISO said Sensor Calibration OK
 
@@ -56,26 +57,32 @@ IF ( %UnitWork.uxh1.uxh_gTravT == 2 ) sel = 7
 
 WHILE (cost > 0) 
 
+IF (Debug == 1 ) M0
+
 ; 20 mm range
 
  IF ((%LSRCostK[31]/1000) == 20 ) THEN 
-
+  IF (Debug == 1 ) M0
   SYN
    IF ( cost == 19 ) middleStep = i  
+   IF (Debug == 1 ) M0
   
    IF (( cost > 0) && ( cost <= 9 )) THEN   
+    IF (Debug == 1 ) M0
     i = i - 0.5
     middleStep = i
    ENDIF
      
    IF  (( cost > 9 ) && (cost < 13)) THEN
+    IF (Debug == 1 ) M0
     i = i - 1
     middleStep = i   
    ENDIF
      
    IF (( cost >= 13) && ( cost < 19 )) THEN     
-    
+    IF (Debug == 1 ) M0
      IF ( cost == 18) THEN 
+      IF (Debug == 1 ) M0
       i = 18
      ELSE 
       i = i - 2
@@ -101,6 +108,7 @@ WHILE (cost > 0)
        
  ENDIF 
 
+IF (Debug == 1 ) M0
     G1 X(x) Y(y) Z(z + middleStep) F(Speed)
 	
     G4 F(Attesa)   
@@ -133,7 +141,7 @@ IF ((!%LSRPlcOp1.29)) JMPF .noBevelCalib
     ;  ?%pd_splines[42 + sel].pdh_Y[0] = 0                       
    
 FOR cost = 19 TO 1        ; in this case i is same with mm  
-    
+IF (Debug == 1 ) M0    
     IF ((cost == 19) && ((%LSRCostK[31]/1000) == 20)) i = 20
     IF ((cost == 18) && ((%LSRCostK[31]/1000) == 20)) i = i-2
     IF ((cost < 18) && ((%LSRCostK[31]/1000) == 20))  i = i-1
@@ -173,8 +181,8 @@ DBL attempts = 16
     ; ?%pd_splines[43 + sel].pdh_Y[0] = 0
 
 
-     
 FOR cost = attempts TO 1        ; in this case i is same with mm  
+IF (Debug == 1 ) M0     
   
     IF ((cost == attempts) && ((%LSRCostK[31]/1000) == 20)) i = 20
     IF ((cost == (attempts-1)) && ((%LSRCostK[31]/1000) == 20)) i = i-2
@@ -214,6 +222,7 @@ IF (%PlcOp0.30) THEN
   ;   ?%pd_splines[44 + sel].pdh_Y[0] = 0
      
 FOR cost = (attempts) TO 1             ; in this case i is same with mm
+IF (Debug == 1 ) M0
 ;FOR cost = 16 TO 1             ; in this case i is same with mm
 
 IF ((cost == (attempts)) && ((%LSRCostK[31]/1000) == 20)) i = 20
