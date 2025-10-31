@@ -3,6 +3,9 @@
 
 VAR
 #include "RemContr.inc"
+
+CapacitiveSimulated     AT %cOpt0.0;        * Capacitive simulated
+IncStepQuota:            DWORD;  * Quota di incremento per controllo calibrazione
 END_VAR
 
 VAR_IN_OUT
