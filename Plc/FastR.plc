@@ -117,6 +117,8 @@ JMPCN no_cutbox
     PATH %EcatNode[%CutBox0.rGeneralPurpose0]
 
     LD   %EcMDPIn18
+    MULDIV(M=AnalCapFeedback,D=%LSRCostK31)
+    ST   TempCapacitiveSensorPoints
     ST   %C120                         * calibration and linearization of capacitive sensor
                     * calibration and linearization of capacitive sensor
 
@@ -133,6 +135,7 @@ JMPCN no_cutbox1
 
     LD   %EcMDPIn18
     ST   TempCapacitiveSensorPoints
+    MULDIV(M=AnalCapFeedback,D=%LSRCostK31)
     ST   %C120                          ** capacitivo (punti)
     ST   %C121                          ** capacitivo linearizzato (punti) per VRTC
     ST   %C103                          ** (Capacit_Anal_Mm) = capacitivo (mm o volt)
@@ -168,7 +171,8 @@ JMPCN no_calibration_bevel
     LD   47                               * table for the interpolation angle distance
     ST   BEVEL_INT.xIndexOutIntVal 
 
-    LD   TempCapacitiveSensorPoints       * input signal
+    *LD   TempCapacitiveSensorPoints       * input signal
+    LD   %C120
     ST   BEVEL_INT.xInput         
 
     LD   bevAngleHead1_calc1
@@ -177,16 +181,18 @@ JMPCN no_calibration_bevel
     CAL  BEVEL_INT                    ** for plc in simulation no external encoder head 1          
 
     LD   BEVEL_INT.yOutInterpVal
-    ST   TempCapacitiveSensorPoints
-    ST   %C120                         * calibration and linearization of capacitive sensor
+    ST   %C121
+    ST   Capacit_Anal
+    *ST   TempCapacitiveSensorPoints
+    *ST   %C120                         * calibration and linearization of capacitive sensor
 
 no_calibration_bevel:
 
-LD   TempCapacitiveSensorPoints
-ST   %C121                         * VRTC VARIABLE
+*LD   TempCapacitiveSensorPoints
+*ST   %C121                         * VRTC VARIABLE
 
-LD   TempCapacitiveSensorPoints
-ST   Capacit_Anal                  ** (C102)Analogica Capacitivo
+*LD   TempCapacitiveSensorPoints
+*ST   Capacit_Anal                  ** (C102)Analogica Capacitivo
 
 LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
 MUL  MaxVolt_x100
