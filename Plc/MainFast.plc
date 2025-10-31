@@ -47,7 +47,7 @@ FUNCTION MAIN
 LD   %LSRCostK31                   ** Capacitive sensor range
 DIV  10
 ST   MaxVolt_x100
-LD   4095
+LD   20000                         ** Forced value to make the cutbox work
 ST   MaxADCPoints
 
 **************************************************
@@ -307,7 +307,7 @@ JMPCN _AssignAng5x
      LD   bevAngleHead1_calc1
      COS  
      )
-     DIV  10                             * Per visualizzare due cifre decimali
+     *DIV  10                             * Per visualizzare due cifre decimali
      ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
 
 JMP _AssignAngCom	 
@@ -322,7 +322,7 @@ _AssignAng5x:
      MUL  MaxVolt_x100
      MULDIV (M=10000, D=MaxADCPoints)
      DIV  1000
-     DIV  10                             * Per visualizzare due cifre decimali
+     *DIV  10                             * Per visualizzare due cifre decimali
      ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
 
 _AssignAngCom:
