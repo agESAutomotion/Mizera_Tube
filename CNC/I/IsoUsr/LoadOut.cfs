@@ -4,13 +4,16 @@
 
 DBL Debug_Loader = 0
 DBL UpSupVoffset = 0
-DBL UpSupHgt = ABS(%gIso24) / 2.000
-DBL SkipStpTo = %PROG_ONE.values11
+DBL UpSupHgt = ABS(%gIso24) / 2.000		; gIso24 : (tube height) Measure of pipe along Z
+DBL SkipStpTo = %PROG_ONE.values11		; Last loader step (case external loader?)
+DBL MaxHeightSupport = %ax51.pa22
+DBL TubeHorizontalCenterShift = 0
+DBL TubeVerticalCenterShift = 0
 
 IF( %cn[WHO()].pc[14].25 ) RET
 
 SYN
-IF( ABS( %ax36.pa22 / 1000 - %ax36.ra4 / 1000 ) > 5000 ) THEN
+IF( ABS( %ax36.pa22 / 1000 - %ax36.ra4 / 1000 ) > 5000 ) THEN  ; ax36 : 2nd spindle / pa22 : max position / ra4 : current axis position
    RPT .Prk_WMax_Start, .Prk_WMax_End, 1
 ENDIF
 
@@ -20,14 +23,14 @@ IF( LstBreakPoint != 0 ) JMPF(SkipStpTo)
 
 SYN
 ; Tube Dimention Graph Level Protection
-IF( UpSupHgt < 1.0 ) THEN
-    ?%ui0.7 = 1
+IF( UpSupHgt < 1.0 ) THEN					; if tube height is less than 1mm
+    ?%ui0.7 = 1								; GRAPH_RFSH
 	SYN
-	G4 F1
+	G4 F1									; pause for 1 second
 	SYN
-	?%ui0.7 = 0
-    UpSupHgt = ABS(%gIso24) / 2.000
-	IF( UpSupHgt < 1.0 ) THEN
+	?%ui0.7 = 0								; GRAPH_RFSH
+    UpSupHgt = ABS(%gIso24) / 2.000			; Recalculate the tube height 
+	IF( UpSupHgt < 1.0 ) THEN				; if tube height is still less than 1mm
 	    MSGOUT "Tube Dimention Wrong, Please Reload the program"
 		M0
 		ERROR(55)
@@ -36,46 +39,52 @@ ENDIF
 
 ; MidSpdClosing  AT  %USR_M41.27;
 ; SlaveSpdClosing  AT  %USR_M41.29;
-WAITBIT("%USR_M41.27",0)
-WAITBIT("%USR_M41.29",0)
+WAITBIT("%USR_M41.27",0)	; 2nd spindle not closing???
+WAITBIT("%USR_M41.29",0)	; 3rd spindle not closing???
 
-; Open X
-IF( !%USR_M0.27 ) M720 
-; Open W
-IF( !%USR_M0.31 ) M981 
-; Open V
-IF( !%USR_M0.29 ) M722 
+; Open X (ax30)
+IF( !%USR_M0.27 ) M720 		; If 1st spindle is not open, open
+; Open W (ax36)
+IF( !%USR_M0.31 ) M981 		; If 2nd spindle is not open, open
+; Open V (ax31)
+IF( !%USR_M0.29 ) M722 		; If 3rd spindle is not open, open
 SYN      
-IF( (!%USR_M0.27) || (!%USR_M0.31) || (!%USR_M0.29) )  G4 F2                                                    
+IF( (!%USR_M0.27) || (!%USR_M0.31) || (!%USR_M0.29) )  G4 F2	; If one of the spinles is not open, pause for 2 sec                                           
+
+MSGOUT " Parking laser head and 1st chuck"
+IF( Debug_Loader ) M0
 
 G153
-G4005 S(AXIDX(3,Z))
-G4005 S(AXIDX(3,X))
-G4005 S(AXIDX(3,C))
+G4005 S(AXIDX(3,Z))		; ungear axis 29	- Z
+G4005 S(AXIDX(3,X))		; ungear axis 30	- 1st spindle
+G4005 S(AXIDX(3,Y))		; ungear axis 28	- Y
+G4005 S(AXIDX(3,C))		; ungear axis 34	- Cm
 G152
 G4099
  
 G153 
-G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
-G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1         
-G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1    
+G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1		; gear axis 30 (1st spindle) to 0
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1		; gear axis 28 (Y) to 1
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1		; gear axis 29 (Z) to 2
+G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1    	; gear axis 34 (Cm) to 5
 G152   
 G4099 
 
 IF ( Debug_Loader ) M0
-G153 G0 Z(MaxQta_Z-15)   ;;YANG
-G153 G1 X( %ax30.pa22/1000 ) C0 F30000  
+G153 G0 Z(MaxQta_Z-15)   ;;YANG			; raise the laser head to 15 mm from the max
+G153 G0 Y(MinQta_Y+15)					; Park Y to the minimum position
+G153 G1 X(MaxQta_X) C0 F3000  			; 
 
 ; Put all supports Centering Device suitable height
 G153
-G4005 S(AXIDX(3,X))
-G4005 S(AXIDX(3,Y))
-G4005 S(AXIDX(3,Z))
-IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
-IF (AEXISTS(3,V)) G4005 S(AXIDX(3,V))    
-IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
-IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
-IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+G4005 S(AXIDX(3,X))		; ungear axis 30
+G4005 S(AXIDX(3,Y))		; ungear axis 28
+G4005 S(AXIDX(3,Z))		; ungear axis 29
+IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))	; ungear axis 27
+IF (AEXISTS(3,V)) G4005 S(AXIDX(3,V))	; ungear axis 31
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))	; ungear axis 32
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))	; ungear axis 33
+IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))	; ungear axis 34
 G152
 G4099
 SYN
@@ -83,167 +92,242 @@ SYN
 IF(!SetupAidsDone) JSR "setup_aids_poly.cfs" 
 SetupAidsDone = 0
 
-IF( Debug_Loader ) M0
-M443   
-SYN
-MSGOUT "Chain Forward in process..."
-;I_I_TubeOnChain_D AT %USR_M13.14;
-AWAIT( (%USR_M13.14) || (%STORE.boolean.0) )
-IF( Debug_Loader ) M0
-SYN
-M443
-SYN
-;I_I_HomeChain_E AT %USR_M13.21;
-AWAIT( %USR_M13.21 )
-; Clear Bistate 
-M499        
 
-IF( %STORE.boolean.0 ) THEN	
-    SYN
-    MSGOUT "Loader empty, please put tubes in the loader"
+MSGOUT "Chain Forward in process..."
+IF( Debug_Loader ) M0
+
+.Retry_Chain
+RPT .Chain_Fwd_Start, .Chain_Fwd_End, 3
+; I_I_TubeOnChain     AT %USR_M12.14;   ** Tube ready to be loaded by the supports (end of loader chain)
+IF (!(%USR_M12.14)) THEN
+    MSGOUT "Loader empty. Please restock the loader"
     M0
     SYN
     MSGOUT "Press START to continue"
     M0
+	POP(0)
+	JMP .Retry_Loader
 ENDIF
+.Loader_End
 	
-%PROG_ONE.values11 = 1
+%PROG_ONE.values11 = 1			; set checkpoint
 N1
 
-IF( Debug_Loader ) M0
-M334
-SYN
-MSGOUT "Support G going up"
-;I_I_CylinderUp_G AT %USR_M13.15; 	
-WAITBIT("%USR_M13.15",1)
 
-%PROG_ONE.values11 = 2
+SYN
+MSGOUT " Raising V-shapes "
+IF ( Debug_Loader ) M0
+
+M452                        ; Open all centering (used to raise the v shapes)
+SYN 
+
+;I_I_VshapeZ1_Up              AT  %USR_M49.0;
+;I_I_VshapeZ2_Up              AT  %USR_M49.1;
+;I_I_VshapeZ3_Up              AT  %USR_M49.2;
+;I_I_VshapeZ4_Up              AT  %USR_M49.3;
+WAITBIT("%USR_M49.0",1)    	; V-shape 1 up
+WAITBIT("%USR_M49.1",1)    	; V-shape 2 up
+WAITBIT("%USR_M49.2",1)   	; V-shape 3 up
+WAITBIT("%USR_M49.3",1)   	; V-shape 4 up
+
+%PROG_ONE.values11 = 2			; set checkpoint
 N2
 
-IF( Debug_Loader ) M0
-M434
 SYN
-MSGOUT "Support G going forward (F)"		
-;I_I_CylinderForw_F AT %USR_M13.19;
-WAITBIT("%USR_M13.19",1)
+MSGOUT " Raising pneumatic supports "
+IF ( Debug_Loader ) M0
 
-%PROG_ONE.values11 = 3
+M724                        ; Auto Up command for supports
+SYN 
+
+; I_I_Support_1_Up	AT  %USR_M1.13;
+; I_I_Support_2_Up	AT  %USR_M1.14;
+; I_I_Support_3_Up	AT  %USR_M1.15;
+; I_I_Support_4_Up	AT  %USR_M1.16;
+WAITBIT("%USR_M1.13",1)    ; Vertical pneumatic support 1 up
+WAITBIT("%USR_M1.14",1)    ; Vertical pneumatic support 2 up
+WAITBIT("%USR_M1.15",1)    ; Vertical pneumatic support 3 up
+WAITBIT("%USR_M1.16",1)    ; Vertical pneumatic support 4 up
+
+%PROG_ONE.values11 = 3			; set checkpoint
 N3
 
-IF( Debug_Loader ) M0
-M335
 SYN
-MSGOUT "Support G going down"	 
-;I_I_CylinderDwn_G AT %USR_M13.16;	
-WAITBIT("%USR_M13.16",1)
-
-%PROG_ONE.values11 = 4
-N4
-
-SYN
-MSGOUT "Waiting Tube Detected On Support"
-;I_I_TubeOnSup_C AT %USR_M13.18;
-;DisAbleTubeOnC AT %STORE.boolean.2;
-IF( !%STORE.boolean.2 ) THEN
-    WAITBIT("%USR_M13.18",1)
-ELSE
-    G4 F2
-ENDIF	
-
-; Put M1 M2 M3 in machine
+MSGOUT " Raising servo motor supports "
 IF ( Debug_Loader ) M0
-M331
-SYN
-MSGOUT " Arm J Going In Machine Fast "
-; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
-; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
-AWAIT( (%USR_M13.11) && (!%USR_M13.10) )
-
-%PROG_ONE.values11 = 5
-N5
-
-G153 
-G4010 M(AXIDX(X)) S(AXIDX(5,Z)) I1
-IF (AEXISTS(5,Y)) G4010 M(AXIDX(Y)) S(AXIDX(5,Y)) I1
-IF (AEXISTS(5,U)) G4010 M(AXIDX(Z)) S(AXIDX(5,U)) I1         
-IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1 
-G152   
-G4099 
-
-; SUPPORT AT HOOKING POSITION (Related with tube diameter?)
-IF ( Debug_Loader ) M0
-G153 G1 X(UpSupHgt + UpSupVoffset) Y(UpSupHgt + UpSupVoffset) Z(UpSupHgt + UpSupVoffset) V(UpSupHgt + UpSupVoffset) F10000  
 
 G153
-G4005 S(AXIDX(5,Z))
-IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))
-IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))
-IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))
+G4005 S(AXIDX(5,Y))		; ungear axis 51
+G4005 S(AXIDX(5,Z))		; ungear axis 52
+G4005 S(AXIDX(5,U))		; ungear axis 53
+G4005 S(AXIDX(5,V))		; ungear axis 54
 G152
 G4099
 
-%PROG_ONE.values11 = 6
+G153 
+G4010 M(AXIDX(X)) S(AXIDX(5,Z)) I1						; gear axis 52 (Z2) to 0
+IF (AEXISTS(5,Y)) G4010 M(AXIDX(Y)) S(AXIDX(5,Y)) I1	; gear axis 51 (Z1) to 1
+IF (AEXISTS(5,U)) G4010 M(AXIDX(Z)) S(AXIDX(5,U)) I1    ; gear axis 53 (Z3) to 2
+IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1    ; gear axis 54 (Z4) to 7
+G152   
+G4099 
+
+G153 G1 X(MaxHeightSupport) Y(MaxHeightSupport) Z(MaxHeightSupport) V(MaxHeightSupport) F3000  
+
+G153
+G4005 S(AXIDX(5,Z))						; ungear axis 52
+IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))	; ungear axis 51
+IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))	; ungear axis 53
+IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))	; ungear axis 56
+G152
+G4099
+
+%PROG_ONE.values11 = 4			; set checkpoint
+N4
+
+; Calculate the horizontal position based on the tubes dimensions
+; In case of a tube with a rectangular profile, assume the largest 
+; dimension lies on the back of the V-shape
+
+
+; gIso26 == 0 -> square profile
+; gIso23 : tube width
+; gIso24 : tube height
+IF ( %gIso26 == 0 && ABS(%gIso23 - %gIso24) > 0.5 ) THEN
+	; case tube with a rectangular profile
+	; 
+	; take into account the dimensions of the tube and decide if
+	; the pistons are needed
+
+	TubeHorizontalCenterShift = SQRT(2) / 2 * ABS(%gIso23 - %gIso24) / 2 
+	TubeVerticalCenterShift = SQRT(2) / 2 * (%gIso23 + %gIso24) / 2
+
+ELSEIF (roundFlag) THEN 
+	; case round tube
+	TubeVerticalCenterShift = %gIso24 * (2.000 / (SQRT(3.000)) - 1)
+    
+ENDIF
+
+MSGOUT TubeHorizontalCenterShift "," TubeVerticalCenterShift
+
+IF ( Debug_Loader ) M0
+
+SYN
+MSGOUT " Moving the tube into the machine "
+IF ( Debug_Loader ) M0
+
+; Perform Horizontal Positioning
+G153
+G4005 S(AXIDX(9,Y))		; ungear axis 81
+G4005 S(AXIDX(9,Z))		; ungear axis 82
+G4005 S(AXIDX(9,U))		; ungear axis 83
+G4005 S(AXIDX(9,V))		; ungear axis 84
+G152
+G4099
+
+G153 
+G4010 M(AXIDX(X)) S(AXIDX(9,Z)) I1						; gear axis 82 (O2) to 0
+IF (AEXISTS(9,Y)) G4010 M(AXIDX(Y)) S(AXIDX(9,Y)) I1	; gear axis 81 (O1) to 1
+IF (AEXISTS(9,U)) G4010 M(AXIDX(Z)) S(AXIDX(9,U)) I1    ; gear axis 83 (O3) to 2
+IF (AEXISTS(9,V)) G4010 M(AXIDX(V)) S(AXIDX(9,V)) I1    ; gear axis 84 (O4) to 7
+G152   
+G4099 
+
+G153 G1 X(TubeHorizontalCenterShift) Y(TubeHorizontalCenterShift) Z(TubeHorizontalCenterShift) V(TubeHorizontalCenterShift) F3000  
+
+G153
+G4005 S(AXIDX(9,Z))						; ungear axis 52
+IF (AEXISTS(9,Y)) G4005 S(AXIDX(9,Y))	; ungear axis 51
+IF (AEXISTS(9,U)) G4005 S(AXIDX(9,U))	; ungear axis 53
+IF (AEXISTS(9,V)) G4005 S(AXIDX(9,V))	; ungear axis 56
+G152
+G4099
+
+%PROG_ONE.values11 = 5			; set checkpoint
+N5
+
+SYN
+MSGOUT " Moving the tube into the machine "
+IF ( Debug_Loader ) M0
+; Perform Vertical Positioning
+
+
+G153
+G4005 S(AXIDX(9,Y))		; ungear axis 81
+G4005 S(AXIDX(9,Z))		; ungear axis 82
+G4005 S(AXIDX(9,U))		; ungear axis 83
+G4005 S(AXIDX(9,V))		; ungear axis 84
+G152
+G4099
+
+G153 
+G4010 M(AXIDX(X)) S(AXIDX(9,Z)) I1						; gear axis 82 (O2) to 0
+IF (AEXISTS(9,Y)) G4010 M(AXIDX(Y)) S(AXIDX(9,Y)) I1	; gear axis 81 (O1) to 1
+IF (AEXISTS(9,U)) G4010 M(AXIDX(Z)) S(AXIDX(9,U)) I1    ; gear axis 83 (O3) to 2
+IF (AEXISTS(9,V)) G4010 M(AXIDX(V)) S(AXIDX(9,V)) I1    ; gear axis 84 (O4) to 7
+G152   
+G4099 
+
+G153 G1 X(TubeVerticalCenterShift) Y(TubeVerticalCenterShift) Z(TubeVerticalCenterShift) V(TubeVerticalCenterShift) F3000  
+
+G153
+IF (AEXISTS(9,Y)) G4005 S(AXIDX(9,Y))		; ungear axis 81
+IF (AEXISTS(9,U)) G4005 S(AXIDX(9,Z))		; ungear axis 82
+IF (AEXISTS(9,U)) G4005 S(AXIDX(9,U))		; ungear axis 83
+IF (AEXISTS(9,V)) G4005 S(AXIDX(9,V))		; ungear axis 84
+G152
+G4099
+
+%PROG_ONE.values11 = 6			; set checkpoint
 N6
 
-; Close All Cylinders for Centering Purpose
-SYN
-M455
-G4 F1
-
-%PROG_ONE.values11 = 7
-N7
-
-; Arms back to loader
-IF ( Debug_Loader ) M0
-; Park Loader Arms Back (Fast)
-M330
-SYN
-MSGOUT "Arm J Going Back Fast"	
-;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
-;I_I_Loader_Slow  AT %USR_M13.17; 
-AWAIT( (%USR_M13.10) || (%USR_M13.17) )
-
-%PROG_ONE.values11 = 8
-N8
-
-; Park Loader Arms Back (Slow)
-M431
-SYN
-MSGOUT "Arm J Going Back Slow"	
-; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
-; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
-AWAIT( (!%USR_M13.11) && (%USR_M13.10) )
-
-%PROG_ONE.values11 = 9
-N9
 
 RET
 
 .Prk_WMax_Start
 	G153
-    G4005 S(AXIDX(3,Z))
-    G4005 S(AXIDX(3,Y))
-    G4005 S(AXIDX(3,W))       
+    G4005 S(AXIDX(3,Z))		; ungear axis 29
+    G4005 S(AXIDX(3,Y))		; ungear axis 28
+    G4005 S(AXIDX(3,W))		; ungear axis 36
 	G152
 	G4099
 
 	G153
-	G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
-    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
-	G4010 M(AXIDX(V)) S(AXIDX(3,W)) I1
+	G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1	; gear axis 28 to 1
+    G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1	; gear axis 29 to 2
+	G4010 M(AXIDX(V)) S(AXIDX(3,W)) I1	; gear axis 36 to 7
 	G152
 	G4099
 	
-	G153 G0 Z(MaxQta_Z)
-	G153 G1 Y(MinQta_Y) F30000
-	G153 G1 V(%ax36.pa22/1000) F30000
-	
+	G153 G0 Z(MaxQta_Z)					; Move the laser head all the way up at full speed
+	G153 G1 Y(MinQta_Y) F30000			; move the laser head all the way to the front at 30000
+	G153 G1 V(%ax36.pa22/1000) F30000	; Move 2nd spindle to max position at F30000
+	; change parking position of ax36
+
+
 	G153
-	G4005 S(AXIDX(3,X))
-    G4005 S(AXIDX(3,Z))
-    G4005 S(AXIDX(3,Y))
-    G4005 S(AXIDX(3,W))     
-    G4005 S(AXIDX(3,V))    
+	G4005 S(AXIDX(3,X))		; ungear axis 30
+    G4005 S(AXIDX(3,Z))		; ungear axis 29
+    G4005 S(AXIDX(3,Y))		; ungear axis 28
+    G4005 S(AXIDX(3,W))		; ungear axis 36
+    G4005 S(AXIDX(3,V))		; ungear axis 31
 	G152
 	G4099
 .Prk_WMax_End
+
+
+.Chain_Fwd_Start 
+
+	IF ( Debug_Loader ) M0
+	M443   ; chain forward command (non blocking)
+	SYN
+	; I_I_ChainAligned AT %USR_M12.16        ; Chain has done one step (inductor sensor)
+	; the sensor will be active until the tube support on the chain passes
+	; so first it has to detect the absence of the current support in order 
+	; for it to detect the next chain support 
+	WAITBIT("%USR_M12.16",0)                 
+	WAITBIT("%USR_M12.16",1)
+
+	; I_I_TubeOnChain     AT %USR_M12.14;   ** Tube ready to be loaded by the supports (end of loader chain)
+	IF (%USR_M12.14) JMP .Loader_End
+.Chain_Fwd_End

@@ -53,122 +53,51 @@ IF( LstBreakPoint != 0 ) JMPF .skiploadinit
 ; Park all loader supports
 SYN
 IF ( Debug_Loader ) M0
-M725  
+; M725  ** Auto Down Command - Force parking from autocycle
+        ; WARNING: this command triggers simultaneous parking
+        ; of vertical and horizonal components of loader supports
 G4 F0.1
 
-; Loader Supports Center needs to be open
-M452
-SYN
-;I_I_Centering_Open_1 AT %USR_M13.24;  
-;I_I_Centering_Open_2 AT %USR_M13.25;  
-;I_I_Centering_Open_3 AT %USR_M13.26;  
-;I_I_Centering_Open_4 AT %USR_M13.27; 
-WAITBIT("%USR_M13.24",1)
-WAITBIT("%USR_M13.25",1)
-WAITBIT("%USR_M13.26",1)
-WAITBIT("%USR_M13.27",1)
+
+; M455                ; Close centering (v-shapes down)
+; SYN
+; ; I_I_VshapeZ1_Dwn AT  %USR_M49.4;
+; ; I_I_VshapeZ2_Dwn AT  %USR_M49.5;
+; ; I_I_VshapeZ3_Dwn AT  %USR_M49.6;
+; ; I_I_VshapeZ4_Dwn AT  %USR_M49.7;
+; WAITBIT("%%USR_M49.4",0)
+; WAITBIT("%%USR_M49.5",0)
+; WAITBIT("%%USR_M49.6",0)
+; WAITBIT("%%USR_M49.7",0)
 
 ; Here needs to check also if tube exsists signals ------------------->
 
+
+
+
+
+
+
+
+
 ; ParkAllLoadSuppCmd AT %SUPPORTS_SYSTEM.values13.5;
 IF ( Debug_Loader ) M0
-?%SUPPORTS_SYSTEM.values13.5 = 1 
+?%SUPPORTS_SYSTEM.values13.5 = 1       ; This should take care ov everything 
 SYN
+; ParkingPositionLoad      AT %LOADER.values15;
 AWAIT( ABS((%ax51.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 AWAIT( ABS((%ax52.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 AWAIT( ABS((%ax53.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 AWAIT( ABS((%ax54.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 SYN
+
+; ParkingPosLoad_lat       AT %LOADER.values16;
+AWAIT( ABS((%ax81.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
+AWAIT( ABS((%ax82.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
+AWAIT( ABS((%ax83.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
+AWAIT( ABS((%ax84.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
 ?%SUPPORTS_SYSTEM.values13.5 = 0 
 
-IF( SelfLockSLoader == 1 ) JMPF .skiploadinit
-
-; Support G not fully down 
-
-; I_I_CylinderDwn_G AT %USR_M13.16;
-IF( !%USR_M13.16 ) THEN
-
-    IF( Debug_Loader ) M0
-    M334
-    SYN
-    MSGOUT "Support G going up"
-    ;I_I_CylinderUp_G AT %USR_M13.15; 	
-	WAITBIT("%USR_M13.15",1)
-    
-	IF( Debug_Loader ) M0	
-    M435
-    SYN
-    MSGOUT "Support G going back (F)"	
-    ;I_I_CylinderBack_F AT %USR_M13.20;
-	WAITBIT("%USR_M13.20",1)
-    
-    IF( Debug_Loader ) M0
-    M335
-    SYN
-    MSGOUT "Support G going down"	 
-    ;I_I_CylinderDwn_G AT %USR_M13.16;	
-    WAITBIT("%USR_M13.16",1)
-  
-	IF( Debug_Loader ) M0   
-    ; Park Loader Arms Back (Fast)
-    M330
-    SYN
-    MSGOUT "Arm J Going Back Fast"	
-    ;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
-    ;I_I_Loader_Slow  AT %USR_M13.17; 
-    AWAIT( (%USR_M13.10) || (%USR_M13.17) )
-    
-    ; Park Loader Arms Back (Slow)
-    M431
-    SYN
-    MSGOUT "Arm J Going Back Slow"	
-    ; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
-    ; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
-    AWAIT( (!%USR_M13.11) && (%USR_M13.10) )
-	
-ELSE
-
-    ;Arm J Going Back Fast
-	IF( Debug_Loader ) M0
-    ; Park Loader Arms Back (Fast)
-    M330
-    SYN
-    MSGOUT "Arm J Going Back Fast"	
-    ;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
-    ;I_I_Loader_Slow  AT %USR_M13.17; 
-    AWAIT( (%USR_M13.10) || (%USR_M13.17) )
-    
-    ; Park Loader Arms Back (Slow)
-    M431
-    SYN
-    MSGOUT "Arm J Going Back Slow"	
-    ; I_I_M1_M2_M3_OPEN  AT  %USR_M13.10;
-    ; I_I_M1_M2_M3_CLOSE AT  %USR_M13.11;
-    AWAIT( (!%USR_M13.11) && (%USR_M13.10) )
-	
-    ;The whole loader returns to the origin (Except the chain)
-    IF( Debug_Loader ) M0
-	M445
-    SYN
-    MSGOUT "The whole loader homing in process ..."
-    ;I_I_CylinderBack_F AT %USR_M13.20;
-	WAITBIT("%USR_M13.20",1)
-	;I_I_CylinderDwn_G AT %USR_M13.16;
-	WAITBIT("%USR_M13.16",1)
-	;I_I_M1_M2_M3_OPEN AT %USR_M13.10;	
-    WAITBIT("%USR_M13.10",1)
-	
-ENDIF
-
-SYN
-IF( %USR_M13.18 ) THEN
-    ;I_I_TubeOnSup_C AT %USR_M13.18;  
-    SYN 
-    MSGOUT "Tube detected On Arms M, Safe? START to continue"	      	
-    M0	
-ENDIF
-
-.skiploadinit
 SelfLockSLoader = 1
 
 RET

@@ -213,6 +213,13 @@ DBL MinQta_Y = %ax28.pa21 / 1000
 DBL MaxQta_Y = %ax28.pa22 / 1000 
 DBL MaxQta_Z = %ax29.pa22 / 1000 
 
+DBL Ldr_Comp_Sup = %config_machine0.7                       ; Enable Motor Cylinder Composite Support (loading side)
+DBL Unldr_Comp_Sup = %config_machine0.8                     ; Enable Motor Cylinder Composite Support (unloading side)
+DBL Ldr_Cylinder_Sup_length = %SUPPORTS_SYSTEM.values23     ; Loading Support Cylinder [mm]
+DBL Unldr_Cylinder_Sup_length = %SUPPORTS_SYSTEM.values24   ; Unloading Support Cylinder [mm]
+DBL Ldr_TubeDiameterThreshold = %SUPPORTS_SYSTEM.values25   ; Tube Diameter Threshold [mm]  (loading side)
+DBL Unldr_TubeDiameterThreshold = %SUPPORTS_SYSTEM.values26 ; Tube Diameter Threshold [mm]  (unloading side)
+
 CALL phGraphInitialize()
 
 ;//XXX Multiutensile non disponibile con grafica (manca istanza grafica)
