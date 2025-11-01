@@ -21,7 +21,7 @@ DBL IncStep = 0
 DBL NextCalPoint = 0
 DBL retry
 DBL Debug = 0
-DBL Debug2 = 1
+DBL Debug2 = 0
 
 ?%LsIso10.0 = 0     ; ISO said Sensor Calibration OK
 ?%C26.0=1           ; Calibration control in run      
