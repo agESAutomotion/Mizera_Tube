@@ -313,8 +313,6 @@ JMPCN _AssignAng5x
 JMP _AssignAngCom	 
 _AssignAng5x:
      LD   Capacit_Anal
-     MUL  4095
-     DIV  %LSRCostK31
      ST   %C121               * (C121) Logical resource VRTC1 (surface)
      
      LD   Capacit_Anal
