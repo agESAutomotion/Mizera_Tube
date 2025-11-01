@@ -102,7 +102,7 @@ LD   %PLCFLAGS.0                                    ** Condizioni richiesta hold
 OR(                                                 
 LD   Pul_Stop_Req                                   
 AND  BCI_MDI                                        ** rc0.11  Selettore modi operativi su MDI (semiautom)
-)                                                   
+)                                                  
 ST   GESTCH9.xHold                                  * comando Hold al canale (esterno)
 								                    
 LD   Ch0Alarm                                       
@@ -288,11 +288,7 @@ LD   CMD_HOLDMOVING_CH9.1                           ** M203 Hold moving command 
 *AND  UnSupp_81_GoUp 
 )
 OR   usrReqGrantSupL1                               ** Moving Z1
-OR (
-    LD    HoldWhileVertMove
-    ANDN  I_I_VshapeZ1_Dwn
-    ANDN  I_I_Support_1_Dwn
-)
+OR   HoldWhileVertMove
 ST   GESTAX81.xHoldMoving                           * Richiesta blocco avanzamento
 
 LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
@@ -448,11 +444,7 @@ LD   CMD_HOLDMOVING_CH9.2          ** M203 Hold moving command axis CH5 (bit0=X,
 *AND  UnSupp_82_GoUp 
 )
 OR   usrReqGrantSupL2                               ** Moving Z2
-OR (
-    LD    HoldWhileVertMove
-    ANDN  I_I_VshapeZ1_Dwn
-    ANDN  I_I_Support_1_Dwn
-)
+OR   HoldWhileVertMove
 ST   GESTAX82.xHoldMoving          * Richiesta blocco avanzamento
 
 LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
@@ -607,11 +599,7 @@ LD   CMD_HOLDMOVING_CH9.3                           ** M203 Hold moving command 
 *AND  UnSupp_83_GoUp 
 )
 OR   usrReqGrantSupL3                               ** Moving Z3
-OR (
-    LD    HoldWhileVertMove
-    ANDN  I_I_VshapeZ1_Dwn
-    ANDN  I_I_Support_1_Dwn
-)
+OR   HoldWhileVertMove
 ST   GESTAX83.xHoldMoving                           * Richiesta blocco avanzamento
 
 LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
@@ -766,11 +754,7 @@ LD   CMD_HOLDMOVING_CH9.4                           ** M203 Hold moving command 
 *AND  UnSupp_84_GoUp 
 )
 OR   usrReqGrantSupL4                               ** Moving Z4 
-OR (
-    LD    HoldWhileVertMove
-    ANDN  I_I_VshapeZ1_Dwn
-    ANDN  I_I_Support_1_Dwn
-)
+OR   HoldWhileVertMove
 ST   GESTAX84.xHoldMoving                           * Richiesta blocco avanzamento
 
 LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
