@@ -11,6 +11,9 @@ VShapeVertSup2:     SINGLE_PISTON;    ** V shape for loading tube
 VShapeVertSup3:     SINGLE_PISTON;    ** V shape for loading tube
 VShapeVertSup4:     SINGLE_PISTON;    ** V shape for loading tube
 
+RT_ParkAllSupZBtn:          R_TRIG;
+ParkAllSupZBtn:             BOOL;
+
 #include "iof.inc"
 #include "usrIof.inc"
 END_VAR
@@ -25,6 +28,17 @@ END_VAR
 
 
 FUNCTION V_SHAPE
+
+CAL RT_ParkAllSupZBtn(CLK:=ParkAllLoadSuppCmd)
+LD  RT_ParkAllSupZBtn.Q
+S   ParkAllSupZBtn
+
+LD  I_I_VshapeZ1_Dwn
+AND I_I_VshapeZ2_Dwn
+AND I_I_VshapeZ3_Dwn
+AND I_I_VshapeZ4_Dwn
+OR  Pul_Reset
+R   ParkAllSupZBtn
 *******************************************************
 *         Staggered avoidance position                *
 *******************************************************
@@ -60,7 +74,7 @@ no_loop:
     LD     BtnGuiVshapeZ1_Dwn                ** (%SUPPORTS_SYSTEM.GUI.6)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
     OR (
-        LD  Force_Open_Center_1
+        LD  ParkAllSupZBtn
         AND I_I_Support_1_Dwn
     )
     OR (
@@ -140,7 +154,7 @@ no_loop:
     LD     BtnGuiVshapeZ2_Dwn                ** (%SUPPORTS_SYSTEM.GUI.7)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
     OR (
-        LD  Force_Open_Center_2
+        LD  ParkAllSupZBtn
         AND I_I_Support_2_Dwn
     )    
     OR (
@@ -220,7 +234,7 @@ no_loop:
     LD     BtnGuiVshapeZ3_Dwn                ** (%SUPPORTS_SYSTEM.GUI.8)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
     OR (
-        LD  Force_Open_Center_3
+        LD  ParkAllSupZBtn
         AND I_I_Support_3_Dwn
     )    
     OR (
@@ -300,7 +314,7 @@ no_loop:
     LD     BtnGuiVshapeZ4_Dwn                ** (%SUPPORTS_SYSTEM.GUI.9)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
     OR (
-        LD  Force_Open_Center_4
+        LD  ParkAllSupZBtn
         AND I_I_Support_4_Dwn
     )    
     OR (
