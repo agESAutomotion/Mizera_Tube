@@ -1,0 +1,21 @@
+
+[KEYS]
+TITLE=ProCut 2.0 Control Settings
+
+[PROMPT]
+KEY_NODE=Node
+PROCUT2_0_CONTR_SETTINGS=Leaf
+LabelPerr1=StrayLight Gain Factor (1:low,2:medium,3:high)
+LabelPerr2=Max Straylight Top Collimating Lens [%] (defaut 80%)
+LabelPerr3=Max Temperature Protective Window Process [°C]  (default 90°)
+LabelPerr4=Max Straylight Bottom Protective Window Process [%] ( default 80%)
+LabelPerr5=Max Temperature Cutting Head [°C] (default 55°C)
+LabelPerr6=Max Pressure Assistance Gas [bar](default 30 Bar]
+LabelPerr7=Max Pressure Leakage Protection Window Process []bar] (default 30 bar)
+LabelPerr9=Max Straylight Cutting Head [%]
+LabelPerr11=Max Humidity Cutting Head [%] (default value 100%)
+LabelPerr12=Max Temperature Collimating Lens [°C] (default value 100*C)
+
+[STATUS]
+
+[HELP]

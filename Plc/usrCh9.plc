@@ -41,6 +41,10 @@ UnSupp_83_GoUp:    BOOL;
 UnSupp_84_GoUp:    BOOL;
 UnSupp_85_GoUp:    BOOL;
 
+R_TRIG_ParkAxisButton:  R_TRIG;
+HoldWhileVertMove:        BOOL;             ** Aux variable set when the parking button is presser
+                                            ** from HMI. It's used to hold the horizontal movement 
+                                            ** of the supports until the vertical pistons have gone down
 END_VAR
 
 #include "iol.inc"
@@ -53,6 +57,14 @@ QtaRefAbsSet        AT %LsPlc50;                    * Absolute homing quota sett
 END_VAR
 
 FUNCTION CH9 
+
+CAL R_TRIG_ParkAxisButton(CLK:=ParkAllLoadSuppCmd)
+LD R_TRIG_ParkAxisButton.Q
+S  HoldWhileVertMove
+
+LD   All_Sup_DWN                                    ** All piston supports are down
+AND  All_Vshape_DWN                                 ** All auxiliary V-Shapes are down
+R    HoldWhileVertMove
 
 PATH %cn9
 
@@ -275,6 +287,12 @@ OR(
 LD   CMD_HOLDMOVING_CH9.1                           ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
 *AND  UnSupp_81_GoUp 
 )
+OR   usrReqGrantSupL1                               ** Moving Z1
+OR (
+    LD    HoldWhileVertMove
+    ANDN  I_I_VshapeZ1_Dwn
+    ANDN  I_I_Support_1_Dwn
+)
 ST   GESTAX81.xHoldMoving                           * Richiesta blocco avanzamento
 
 LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
@@ -429,6 +447,12 @@ OR(
 LD   CMD_HOLDMOVING_CH9.2          ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
 *AND  UnSupp_82_GoUp 
 )
+OR   usrReqGrantSupL2                               ** Moving Z2
+OR (
+    LD    HoldWhileVertMove
+    ANDN  I_I_VshapeZ1_Dwn
+    ANDN  I_I_Support_1_Dwn
+)
 ST   GESTAX82.xHoldMoving          * Richiesta blocco avanzamento
 
 LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
@@ -582,6 +606,12 @@ OR(
 LD   CMD_HOLDMOVING_CH9.3                           ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
 *AND  UnSupp_83_GoUp 
 )
+OR   usrReqGrantSupL3                               ** Moving Z3
+OR (
+    LD    HoldWhileVertMove
+    ANDN  I_I_VshapeZ1_Dwn
+    ANDN  I_I_Support_1_Dwn
+)
 ST   GESTAX83.xHoldMoving                           * Richiesta blocco avanzamento
 
 LD   Res_Axes                                       ** (gPlc25.1) reset axes disable electric shaft
@@ -734,6 +764,12 @@ LD   GESTAX2_xHoldMoving                            * Richiesta blocco avanzamen
 OR(
 LD   CMD_HOLDMOVING_CH9.4                           ** M203 Hold moving command axis CH5 (bit0=X, bit1=Y...)
 *AND  UnSupp_84_GoUp 
+)
+OR   usrReqGrantSupL4                               ** Moving Z4 
+OR (
+    LD    HoldWhileVertMove
+    ANDN  I_I_VshapeZ1_Dwn
+    ANDN  I_I_Support_1_Dwn
 )
 ST   GESTAX84.xHoldMoving                           * Richiesta blocco avanzamento
 

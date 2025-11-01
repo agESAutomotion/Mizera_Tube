@@ -1,0 +1,37 @@
+
+[KEYS]
+TITLE=
+
+[PROMPT]
+KEY_NODE=Node
+PRECITECCUTBOX=Leaf
+GroupBox=Precitec CutBox Information
+Button1=CutBox Diagnostic State
+GroupBox1=Head Fast Info
+LabelPerr1=Tip Touch
+LabelPerr3=Cable Cut
+LabelPerr4=Workpiece Distance [mm]
+LabelPerr6=Humidity In Cutting Head [%]
+LabelPerr7=Actual Cuttig Gas Pression [Bar]
+GroupBox2=Command
+Button2=Run Calibration
+Calibration page2=Follow calibration
+Calibration page1=Height control
+ButtonCleanHead2=Cleaning settings
+Label2=Focal distance [mm]
+LabelPerr5=Current Focal [mm]
+LabelPerr8=Node Ecat
+LabelPerr2=Body Touch
+Button12=Control Settings
+Button13=Read Settings
+Button14=Distance Functions
+Button15=Sensor Values
+Button16=Distance Function Control Settings
+Button17=Reference Travel
+LabelPerr9=Reference Travel Active
+LabelPerr10=Far
+Button18=Nozzle Lost
+
+[STATUS]
+
+[HELP]

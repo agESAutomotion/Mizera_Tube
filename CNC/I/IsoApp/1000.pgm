@@ -282,7 +282,9 @@ JMP .ExitFrom1000
 .PrkSpindle
 
 ; Fixed spindle or Mobile command open
-IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797)
+; O_O_SpindleFix_Open     AT  %USR_M21.21;
+; O_O_SpindleFix_Close    AT  %USR_M21.22;
+IF((%USR_M21.21) || (%USR_M20.2)) ERROR(797) ;Frobid parking if suspect of tube inside the machine
 
 RPT .S_Prk_Follower, .E_Prk_Follower, 1
 
@@ -403,12 +405,13 @@ JMP .ExitFrom1000
 
 ;******************************************************************************
 .S_Prk_Follower
+    ;%config_machine0.6 Enable supports
    IF( %config_machine0.6 ) THEN   
        ;ParkAll Loader Supports
 	   M725
 	  
 	   ;AllFlapsHome AT %UNLOADER.boolean.21;
-	   ?%UNLOADER.boolean.21 = 1
+	   ?%UNLOADER.boolean.21 = 1        ; pneumatic
 	   
 	   ;I_I_Flap_Home   AT %USR_M12.9;
 	   ;I_I_FlapL2_Home AT %USR_M1.29; 

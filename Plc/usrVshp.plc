@@ -54,12 +54,12 @@ no_loop:
             
     LD     BtnGuiVshapeZ1_UP                 ** (%SUPPORTS_SYSTEM.GUI.2)
     OR     BtnGuiVshapeAllZ_UP               ** (%SUPPORTS_SYSTEM.GUI.0)
-    OR     Force_Open_Center_1
+    ANDN   Force_Open_Center_1
     ST     VShapeVertSup1.xManualPlus	  
         
     LD     BtnGuiVshapeZ1_Dwn                ** (%SUPPORTS_SYSTEM.GUI.6)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
-    ANDN   Force_Open_Center_1
+    OR     Force_Open_Center_1
     OR (
         LD PosUMis
         LT SUPPORT_1_Quota
@@ -131,12 +131,12 @@ no_loop:
             
     LD     BtnGuiVshapeZ2_UP                 ** (%SUPPORTS_SYSTEM.GUI.3)
     OR     BtnGuiVshapeAllZ_UP               ** (%SUPPORTS_SYSTEM.GUI.0)
-    OR     Force_Open_Center_2
+    ANDN   Force_Open_Center_2
     ST     VShapeVertSup2.xManualPlus	  
         
     LD     BtnGuiVshapeZ2_Dwn                ** (%SUPPORTS_SYSTEM.GUI.7)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
-    ANDN   Force_Open_Center_2
+    OR     Force_Open_Center_2
     OR (
         LD PosUMis
         LT SUPPORT_2_Quota
@@ -208,12 +208,12 @@ no_loop:
             
     LD     BtnGuiVshapeZ3_UP                 ** (%SUPPORTS_SYSTEM.GUI.4)
     OR     BtnGuiVshapeAllZ_UP               ** (%SUPPORTS_SYSTEM.GUI.0)
-    OR     Force_Open_Center_3
+    ANDN   Force_Open_Center_3
     ST     VShapeVertSup3.xManualPlus	  
         
     LD     BtnGuiVshapeZ3_Dwn                ** (%SUPPORTS_SYSTEM.GUI.8)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
-    ANDN   Force_Open_Center_3
+    OR     Force_Open_Center_3
     OR (
         LD PosUMis
         LT SUPPORT_3_Quota
@@ -285,12 +285,12 @@ no_loop:
             
     LD     BtnGuiVshapeZ4_UP                 ** (%SUPPORTS_SYSTEM.GUI.5)
     OR     BtnGuiVshapeAllZ_UP               ** (%SUPPORTS_SYSTEM.GUI.0)
-    OR     Force_Open_Center_4
+    ANDN   Force_Open_Center_4
     ST     VShapeVertSup4.xManualPlus	  
         
     LD     BtnGuiVshapeZ4_Dwn                ** (%SUPPORTS_SYSTEM.GUI.9)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
-    ANDN   Force_Open_Center_4
+    OR     Force_Open_Center_4
     OR (
         LD PosUMis
         LT SUPPORT_4_Quota
@@ -349,5 +349,10 @@ no_loop:
     ST     %PLCerr22.3                      ** Timeout: Loader V piston support 4
 *}}}
 
+LD   I_I_VshapeZ1_Dwn
+AND  I_I_VshapeZ2_Dwn
+AND  I_I_VshapeZ3_Dwn
+AND  I_I_VshapeZ4_Dwn
+ST   All_Vshape_DWN
 
 END_FUNCTION

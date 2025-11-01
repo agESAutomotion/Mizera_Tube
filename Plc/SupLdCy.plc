@@ -102,6 +102,7 @@ ST   SUPPORT_1.xManualUp
 
 LD   SUPPORTS_S1_Selected
 AND  SUPPORTS_JogMinus
+OR   ParkAllLoadSuppCmd
 ST   SUPPORT_1.xManualDwn	
 
 LD   Fun_M724_Ch0                 ** Auto Up command for supports
@@ -146,6 +147,7 @@ ST   SUPPORT_2.xManualUp
 
 LD   SUPPORTS_S2_Selected
 AND  SUPPORTS_JogMinus
+OR   ParkAllLoadSuppCmd
 ST   SUPPORT_2.xManualDwn
 	
 LD   Fun_M724_Ch0                  ** Auto Up command for supports
@@ -190,6 +192,7 @@ ST   SUPPORT_3.xManualUp
 
 LD   SUPPORTS_S3_Selected
 AND  SUPPORTS_JogMinus
+OR   ParkAllLoadSuppCmd
 ST   SUPPORT_3.xManualDwn	
 
 LD   Fun_M724_Ch0                  ** Auto Up command for supports
@@ -234,6 +237,7 @@ ST   SUPPORT_4.xManualUp
 
 LD   SUPPORTS_S4_Selected
 AND  SUPPORTS_JogMinus
+OR   ParkAllLoadSuppCmd
 ST   SUPPORT_4.xManualDwn	
 
 LD   Fun_M724_Ch0                  ** Auto Up command for supports

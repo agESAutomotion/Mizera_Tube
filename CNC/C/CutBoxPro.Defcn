@@ -1,0 +1,91 @@
+
+SECTION CUTBOX
+//*****************************************************************************
+//  Precitec Cutbox
+//*****************************************************************************
+
+typedef struct {
+
+// Cutbox to PLC
+
+         word  CutBoxST_ONE;
+         word  CutBoxST_TWO;
+		 word  CutHeadST_ONE; 
+		 word  CutHeadST_TWO;
+		 word  CutHeadSerST_ONE;
+		 word  CutHeadSerST_TWO;
+		 
+// ProCutter 2 settings
+ 
+		 word  ProCutterType;
+		 word  StraylSProtWGain;
+        dword  ActualImageRatio;
+        dword  CurFocalPosition; 
+        dword  CustFocusOffset;
+		
+// Distance functions
+		 
+	    dword  WorkingDistance;
+	    dword  NextCalibPosition;
+		dword  PIDSpeedSetpoint;
+		
+// Sensor values		
+		
+	    dword  TempProtWindow;
+	    dword  TempFocusingLens;
+	    dword  TempCollimatingLens; 
+	    dword  TempCuttingHead;
+	    dword  TempDistanceSensor;
+	    dword  StraylightBeamPath;
+        dword  StrayLProtectWProc;
+	    dword  StrayLProtectWCol;
+	    dword  PresLeakPrWinProc;
+	    dword  ActualCutGasPres;
+	    dword  HumInCutHead;	
+        dword  Plasma;		
+		 
+// Plc to Cutbox		
+ 
+         word  CutBoxControl_ONE;
+         word  CutBoxControl_TWO;
+		 word  CuttHeadContr_ONE; 
+		 word  CuttHeadContr_TWO;	
+		 
+// ProCutter 2.0 control settings 
+ 
+         word  StrayLGainFactor;
+        dword  MaxStrayLColLens;
+		 word  MaxStrayLProtWProc;
+		dword  MaxHumCuttingHead;
+		dword  MaxTempProtWProc;
+		dword  MaxTempColLens;
+		dword  MaxTempCuttingHead; 
+		dword  MaxPresAssistGas;
+		dword  MaxPrLeakProtWProc;
+		dword  MaxStrayLCutHead;
+		dword  ImageRatio;
+		dword  FocalPosition;
+		
+// Distance function control settings
+ 
+         word  SelectCharCurve;
+         word  DistFiltWindSize;
+		 word  P_Parameter;
+		 word  I_Parameter;
+		 word  D_Parameter;
+		dword  DistStandoffValue;
+		dword  SpatterfilterTime;
+		dword  TipTouchLevel;
+		dword  MeasRangeLimit;
+        dword  CollisionDelay;
+		dword  SetPointBand;
+        dword  ControlDynBand;
+        dword  MaxTempSensorUnit;
+
+RETAIN   dword  rGeneralPurpose[10];
+
+} CUT_BOX;
+
+CUT_BOX    CutBox;                      // Cutbox precitec ethercats
+
+ENDSECTION CUTBOX

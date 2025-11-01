@@ -1,0 +1,498 @@
+#include "IolCutBox.inc"
+#include "Iol.inc"
+
+VAR
+#include "RemContr.inc"
+
+CapacitiveSimulated     AT %cOpt0.0;        * Capacitive simulated
+IncStepQuota:            DWORD;  * Quota di incremento per controllo calibrazione
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+BTN_START_CALIB         AT %Capacitive0.cButton0;    ** HMI
+
+CURVE_Y_P0              AT %rPlc10;
+CURVE_Y_P1              AT %rPlc11;
+CURVE_Y_P2              AT %rPlc12;
+CURVE_Y_P3              AT %rPlc13;
+CURVE_Y_P4              AT %rPlc14;
+CURVE_Y_P5              AT %rPlc15;
+CURVE_Y_P6              AT %rPlc16;
+CURVE_Y_P7              AT %rPlc17;
+CURVE_Y_P8              AT %rPlc18;
+CURVE_Y_P9              AT %rPlc19;
+CURVE_Y_P10             AT %rPlc20;
+
+CURVE_X_P0              AT %rPlc21;
+CURVE_X_P1              AT %rPlc22;
+CURVE_X_P2              AT %rPlc23;
+CURVE_X_P3              AT %rPlc24;
+CURVE_X_P4              AT %rPlc25;
+CURVE_X_P5              AT %rPlc26;
+CURVE_X_P6              AT %rPlc27;
+CURVE_X_P7              AT %rPlc28;
+CURVE_X_P8              AT %rPlc29;
+CURVE_X_P9              AT %rPlc30;
+CURVE_X_P10             AT %rPlc31;
+
+END_VAR
+
+
+FUNCTION_BLOCK   PREC_CUTBOX
+
+VAR_INPUT 
+
+xEcatNode:      DWORD;      * Ecat node where the cutbox is connected
+xFocalPos:      DWORD;
+
+
+xRefTravel:      BOOL;
+xApplyNewFoc:    BOOL;
+xPulReset:      BOOL;
+
+END_VAR
+
+VAR
+FT_PRGRUN:              F_TRIG;
+RTRIG_REQUEST:          R_TRIG;     ** HMI
+RTRIG_CALIB:            R_TRIG;     ** Remote Controller
+
+CalibRequest:           BOOL;   * Calib request
+CALIBRAZIONE_RUN:       BOOL;   * Programma calibrazione in corso
+END_VAR
+
+VAR_OUTPUT
+yExeCalib:              BOOL;   ** Calibration requested
+yFarDistance:           BOOL;   ** Distance sensor outside the measurement range
+yTipTouch:              BOOL;   ** Tip Touch error
+END_VAR
+
+CAL  FT_PRGRUN(CLK=PRGRUN_CN0)     ** M0.0 cn0.rc8.0  Programma in corso
+CAL  RTRIG_REQUEST(CLK=BTN_START_CALIB) ** Calibration START button
+CAL  RTRIG_CALIB(CLK:=RemContrCalib) ** Xhc_Puls.12 Execute calibration
+
+LD   RTRIG_REQUEST.Q
+OR   RTRIG_CALIB.Q                 ** Xhc_Puls.12 Execute calibration)
+AND  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   CalibRequest                  ** Calib request
+S    CalibRequest                  ** Calib request
+
+LD   M30_CN0                       ** M0.13 M30:EndProgram CN0
+OR   MACC_ALARM                    ** (gPlc0.10)Macchina in allarme
+OR   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+OR   FT_PRGRUN.Q
+R    CalibRequest                  ** Calib request
+
+LD   CalibRequest                  ** Calib request
+ST   CALIBRAZIONE_RUN              ** Programma calibrazione in corso
+ST   yExeCalib                     ** Calibration requested
+
+
+PATH  %ecat_ring0
+PATH  %EcatNode[xEcatNode]
+
+* FB Input Data
+
+LD   xFocalPos
+ST   PLC_FocalPosition
+
+LD   xRefTravel
+ST   DistanceReferenceTravel
+
+LD   xApplyNewFoc
+ST   FocusNewSetpoint
+
+*
+
+* // Cutbox to PLC ( INPUT )
+
+LD   Ec_CutBoxST_ONE  
+ST   PLC_CutBoxST_ONE   
+
+LD   Ec_CutBoxST_TWO     
+ST   PLC_CutBoxST_TWO
+
+LD   Ec_CutHeadST_ONE    
+ST   PLC_CutHeadST_ONE
+
+LD   Ec_CutHeadST_TWO    
+ST   PLC_CutHeadST_TWO
+
+LD   Ec_CutHeadSerST_ONE 
+ST   PLC_CutHeadSerST_ONE
+
+LD   Ec_CutHeadSerST_TWO 
+ST   PLC_CutHeadSerST_TWO
+   
+* // ProCutter 2 settings
+    
+LD   Ec_ProCutterType 
+ST   PLC_ProCutterType
+        
+LD   Ec_StraylSensoProtWindGain
+ST   PLC_StraylSensoProtWindGain
+
+LD   Ec_ActualImageRatio    
+ST   PLC_ActualImageRatio
+
+LD   Ec_CurrentFocalPosition.15   **YANG 241028 it is WORD
+JMPC Focal_LT_ZERO
+    LD   Ec_CurrentFocalPosition
+    ST   PLC_CurrentFocalPosition
+    JMP  Focal_GT_ZERO
+Focal_LT_ZERO:
+    LD  Ec_CurrentFocalPosition
+    SUB  65536
+    ST   PLC_CurrentFocalPosition
+Focal_GT_ZERO:
+   
+LD   Ec_CustomerFocusOffset     
+ST   PLC_CustomerFocusOffset
+
+*  // Distance functions     
+
+LD   Ec_WorkingDistance 
+ST   PLC_WorkingDistance
+   
+LD   Ec_NextCalibPosition   
+ST   PLC_NextCalibPosition
+      
+LD   Ec_PIDSpeedSetpoint      
+ST   PLC_PIDSpeedSetpoint
+
+* // Sensor values	
+   
+LD   Ec_TempProtectiveWindow 
+ST   PLC_TempProtWindow
+         
+LD   Ec_TemperatureFocusingLens     
+ST   PLC_TempFocusingLens 
+  
+LD   Ec_TemperatureCollimatingLens   
+ST   PLC_TempCollimatingLens 
+  
+LD   Ec_TemperatureCuttingHead     
+ST   PLC_TempCuttingHead 
+  
+LD   Ec_TemperatureDistanceSensor   
+ST   PLC_TempDistanceSensor 
+  
+LD   Ec_StraylightBeamPath       
+ST   PLC_StraylightBeamPath  
+    
+LD   Ec_StraylightProtectWindowProc    
+ST   PLC_StraylProtectWindowProc
+
+LD   Ec_StraylightProtectWindowCollima 
+ST   PLC_StrayLProtectWindowCol
+
+LD   Ec_PresLeakProtectWindowProcess   
+ST   PLC_PresLeakProtectWindowProc 
+
+LD   Ec_ActualCuttingGasPres         
+ST   PLC_ActualCuttingGasPres 
+ 
+LD   Ec_HumidityInCuttingHead         
+ST   PLC_HumidityInCuttingHead
+
+LD   Ec_Plasma
+ST   PLC_Plasma
+
+ 
+* Plc to Cutbox  (Output)	
+
+LD   xPulReset
+R    DistanceCalibrateCharCurve
+
+LD   DistanceCalibrateCharCurve
+ST   Ec_CutBoxControl_ONE.0
+ 
+LD   0
+ST   Ec_CutBoxControl_ONE.1                 * SensorController 
+
+LD   NozzelLostCalibration                  * AT %CutBoxControl_ONE.3;	                    
+ST   Ec_CutBoxControl_ONE.3
+					
+LD   DistanceStrobeSignal                   * AT %CutBoxControl_ONE.4;	
+ST   Ec_CutBoxControl_ONE.4
+
+LD   DistanceResetError                     *     AT %CutBoxControl_ONE.5;	
+ST   Ec_CutBoxControl_ONE.5
+
+LD   ManualMode                            *    AT %CutBoxControl_ONE.6;
+ST   Ec_CutBoxControl_ONE.6
+
+LD   SyncToFieldbus                         *    AT %CutBoxControl_ONE.7;
+ST   Ec_CutBoxControl_ONE.7
+  
+LD   CuttingHeadPower
+ST   Ec_CutBoxControl_TWO.0
+
+LD   SaveOutputData
+ST   Ec_CutBoxControl_TWO.7
+
+LD   DistanceReferenceTravel                 * AT %CuttHeadContr_ONE.0;
+ST   Ec_CuttHeadContr_ONE.0                    
+						                  
+LD   FocusNewSetpoint                       
+ST   Ec_CuttHeadContr_ONE.5                    * AT %CuttHeadContr_ONE.5;
+						                  
+LD   ResetPbus                             * AT %CuttHeadContr_ONE.7;
+ST   Ec_CuttHeadContr_ONE.7
+
+LD   ProcessDataSend
+ST   PLC_CutHeadSerST_TWO.0  
+
+* ProCutter 2.0 control settings
+
+LD   PLC_StraylightGainFactor
+ST   Ec_StraylightGainFactor               *   AT %EcMDPOut7;
+
+LD   PLC_MaxStrayLColLens 
+ST   Ec_MaxStraylightColLens               *   AT %EcMDPOut20;
+
+LD   PLC_MaxStrayLProtWindowProc  
+ST   Ec_MaxStraylightProtWindowProcess      *   AT %EcMDPOut21;
+
+LD   PLC_MaxHumidityCuttingHead 
+ST   Ec_MaxHumidityCuttingHead             *   AT %EcMDPOut22;
+
+LD   PLC_MaxTempProtWindowProcess 
+ST   Ec_MaxTempProtWindowProcess           *   AT %EcMDPOut23;
+
+LD   PLC_MaxTempCollimatingLens  
+ST   Ec_MaxTempCollimatingLens             *   AT %EcMDPOut24;
+
+LD   PLC_MaxTempCuttingHead  
+ST   Ec_MaxTempCuttingHead                 *   AT %EcMDPOut26;
+
+LD   PLC_MaxPresAssistGas 
+ST   Ec_MaxPressureAssistGas               *   AT %EcMDPOut27;
+
+LD   PLC_MaxPresLeakProtWProc
+ST   Ec_MaxPresLeakProtWProc               *   AT %EcMDPOut28;
+
+LD   PLC_MaxStrayLCutHead  
+ST   Ec_MaxStrayLCutHead                   *    AT %EcMDPOut29;
+
+
+LD   PLC_ImageRatio   
+ST   Ec_ImageRatio                        *    AT %EcMDPOut32;
+
+LD   PLC_FocalPosition 
+ST   Ec_FocalPosition                     *    AT %EcMDPOut48;
+
+* Distance function control settings
+ 
+LD   PLC_SelectCharacteristicCurve     *   AT %SelectCharCurve;
+ST   Ec_SelectCharacteristicCurve          *  AT %EcMDPOut6;
+
+LD   PLC_DistanceFilterWindowSize      *   AT %DistFiltWindSize;
+ST   Ec_DistanceFilterWindowSize           *  AT %EcMDPOut8;
+
+LD   PLC_P_Parameter                  *   AT %P_Parameter;
+ST   Ec_P_Parameter                       *  AT %EcMDPOut9;
+
+LD   PLC_I_Parameter                  *   AT %I_Parameter;
+ST   Ec_I_Parameter                       *  AT %EcMDPOut10;
+
+LD   PLC_D_Parameter                  *   AT %D_Parameter;
+ST   Ec_D_Parameter                       *  AT %EcMDPOut11;
+
+LD   PLC_DistanceStandoffValue         *   AT %DistStandoffValue;
+ST   Ec_DistanceStandoffValue              *  AT %EcMDPOut30;
+
+LD   PLC_SpatterfilterTime            *    AT %SpatterfilterTime;
+ST   Ec_SpatterfilterTime                 *  AT %EcMDPOut31;
+
+LD   PLC_TipTouchLevel                *   AT %TipTouchLevel;
+ST   Ec_TipTouchLevel                     *  AT %EcMDPOut33;
+
+LD   PLC_MeasuringRangeLimit          *   AT %MeasRangeLimit;
+ST   Ec_MeasuringRangeLimit               *  AT %EcMDPOut34;
+
+LD   PLC_CollisionDelay               *   AT %CollisionDelay;
+ST   Ec_CollisionDelay                    *  AT %EcMDPOut35;
+
+LD   PLC_SetPointBand                 *   AT %SetPointBand;
+ST   Ec_SetPointBand                      *  AT %EcMDPOut36;
+
+LD   PLC_ControlDynamicBand           *    AT %ControlDynBand;
+ST   Ec_ControlDynamicBand                *   AT %EcMDPOut37;
+
+LD   PLC_MaxTemperatureSensorUnit      *    AT %MaxTempSensorUnit;
+ST   Ec_MaxTemperatureSensorUnit           *  AT %EcMDPOut38; 
+
+LD  FarDistance
+ST  yFarDistance                         ** Distance sensor outside the measurement range
+
+LD   AlarmTipTouch
+ST   yTipTouch
+
+
+
+
+*****************************************************************************
+* Calibration Control
+*****************************************************************************
+
+LD   %SoftBtn0.20
+JMPCN NoInitCurveCap
+
+    LD   0
+    ST   CURVE_Y_P0
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    DIV  10000
+    ST   CURVE_Y_P1
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  2
+    DIV  10000
+    ST   CURVE_Y_P2
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  3
+    DIV  10000
+    ST   CURVE_Y_P3
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  4
+    DIV  10000
+    ST   CURVE_Y_P4
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  5
+    DIV  10000
+    ST   CURVE_Y_P5
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  6
+    DIV  10000
+    ST   CURVE_Y_P6
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  7
+    DIV  10000
+    ST   CURVE_Y_P7
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  8
+    DIV  10000
+    ST   CURVE_Y_P8
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  9
+    DIV  10000
+    ST   CURVE_Y_P9
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  10
+    DIV  10000
+    ST   CURVE_Y_P10
+
+NoInitCurveCap:
+
+LD   1000
+ST   IncStepQuota
+
+LD   %LSRCostK31
+EQ   20000
+JMPCN SetTenMM
+
+    LD   2000
+    ST   IncStepQuota
+
+SetTenMM:
+
+LD   0
+ST   CURVE_X_P0
+
+LD   CURVE_X_P0
+ADD  IncStepQuota
+ST   CURVE_X_P1
+
+LD   CURVE_X_P1
+ADD  IncStepQuota
+ST   CURVE_X_P2
+
+LD   CURVE_X_P2
+ADD  IncStepQuota
+ST   CURVE_X_P3
+
+LD   CURVE_X_P3
+ADD  IncStepQuota
+ST   CURVE_X_P4
+
+LD   CURVE_X_P4
+ADD  IncStepQuota
+ST   CURVE_X_P5
+
+LD   CURVE_X_P5
+ADD  IncStepQuota
+ST   CURVE_X_P6
+
+LD   CURVE_X_P6
+ADD  IncStepQuota
+ST   CURVE_X_P7
+
+LD   CURVE_X_P7
+ADD  IncStepQuota
+ST   CURVE_X_P8
+
+LD   CURVE_X_P8
+ADD  IncStepQuota
+ST   CURVE_X_P9
+
+LD   CURVE_X_P9
+ADD  IncStepQuota
+ST   CURVE_X_P10
+
+* Questo per evitare di modificare la curva trovata
+
+LD   0
+ST   %rPlc32
+LD   %LsIso90
+ST   %rPlc33
+LD   %LsIso91
+ST   %rPlc34
+LD   %LsIso92
+ST   %rPlc35
+LD   %LsIso93
+ST   %rPlc36
+LD   %LsIso94
+ST   %rPlc37
+LD   %LsIso95
+ST   %rPlc38
+LD   %LsIso96
+ST   %rPlc39
+LD   %LsIso97
+ST   %rPlc40
+LD   %LsIso98
+ST   %rPlc41
+LD   %LsIso99
+ST   %rPlc42
+
+
+END_FUNCTION_BLOCK 

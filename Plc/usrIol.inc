@@ -39,6 +39,8 @@ MoveAx30GuiBtn           AT %SPINDLE_SYSTEM.boolean.16;
 MoveAx31GuiBtn           AT %SPINDLE_SYSTEM.boolean.17; 
 MoveAx36GuiBtn           AT %SPINDLE_SYSTEM.boolean.18; 
 Invert_Mob_Spin_Open     AT %SPINDLE_SYSTEM.boolean.19;
+SMobile_Open_Jaws_Button AT %SPINDLE_SYSTEM.boolean.20;     ** Open 3rd spindle jaws
+SMobile_Close_Jaws_Button AT %SPINDLE_SYSTEM.boolean.21;    ** Close 3rd spindle jaws
 
 Time_Out_Sp              AT %SPINDLE_SYSTEM.values5;       * Time out spindle
 
@@ -117,6 +119,7 @@ SUPPORT_5_AlarmOpenCent  AT %SUPPORTS_SYSTEM.boolean.25;
 SUPPORT_6_AlarmOpenCent  AT %SUPPORTS_SYSTEM.boolean.26;
 SUPPORT_7_AlarmOpenCent  AT %SUPPORTS_SYSTEM.boolean.27;
 All_Sup_DWN              AT %SUPPORTS_SYSTEM.boolean.28;
+All_Vshape_DWN           AT %SUPPORTS_SYSTEM.boolean.29;
 
 ISO_SupLoader_Init       AT %SUPPORTS_SYSTEM.boolean.30;
 ISO_SupUn_Init           AT %SUPPORTS_SYSTEM.boolean.31;

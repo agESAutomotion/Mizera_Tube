@@ -21,13 +21,13 @@ IF (AEXISTS(3,B)) THEN
 ENDIF
 
 ;******************************************************************************
-;   PROCON 
+;   PROCON
 ;******************************************************************************
 IF( %config_machine26 == 0 ) THEN
 
-?%LsIso10.1 = 0              ; Iso said calibration control done 
+?%LsIso10.1 = 0              ; Iso said calibration control done
 
-IF (%IndexORG != 19) G806 T3 N1 H1 D1 
+IF (%IndexORG != 19) G806 T3 N1 H1 D1
 
 IF( %IndexORG == 19 ) THEN
     ;G806 T3 N1 H1 D1 E1 A11
@@ -43,7 +43,7 @@ IF( %config_machine31 == 1 ) THEN
 ELSE
     JSR "calib.cfs"
 ENDIF
-   	
+
 ; Linearization by CNC
 IF( %LSRPlcOp1.9 )  JSR "calib_cnc_linear.cfs"
 
@@ -54,36 +54,67 @@ ENDIF
 ;*****************************************************************************************************
 
 IF( %config_machine26 == 3 ) THEN
- 
-?%LsIso10.1 = 0              ; Iso said calibration control done  
- 
-IF (%IndexORG != 19) G806 T3 N1 H1 D1 
-  
-IF (%IndexORG == 19) THEN 
-	    JSR "Sel_Y3Z3.cfs"
+
+?%LsIso10.1 = 0              ; Iso said calibration control done
+
+IF (%IndexORG != 19) G806 T3 N1 H1 D1
+
+IF (%IndexORG == 19) THEN
+	JSR "Sel_Y3Z3.cfs"
     G153 G1 Z(MaxQta_Z - 10) F5000
 	G153 G1 Y0 F10000
     IF (AEXISTS(3,B)) G153 G1 B0
     G153 G1 C(calib_c_ang) F5000
 ENDIF
- 
+
    JSR "Empower_calib.cfs"
 
    JSR "Emp_calib_cnc_linear.cfs"
-   
+
 ; Calibration Control
    IF( %LSRPlcOp1.9 ) JSR "calibration_control.cfs"
 
-ENDIF 
+ENDIF
 
-;****************************************************************************** 
+
+;******************************************************************************************************
+;  CUTBOX
+;*****************************************************************************************************
+
+IF( (%config_machine26 == 7) ) THEN
+
+    ?%LsIso10.1 = 0              ; Iso said calibration control done
+    
+    IF (%IndexORG != 19) G806 T3 N1 H1 D1
+
+    IF (%IndexORG == 19) THEN           ; Case Tube machines
+        JSR "Sel_Y3Z3.cfs"              ; Gear Y and Z from CH3 to CH0
+        G153 G1 Z(MaxQta_Z - 10) F5000  ; Park Z axis to almost the max position
+        G153 G1 Y0 F10000               ; Move the Y axis to the center of the tube
+        IF (AEXISTS(3,B)) G153 G1 B0    ; Park B axis (Bevel)
+        G153 G1 C(calib_c_ang) F5000    ; Rotate the spindle to the calibration angle
+    ENDIF
+
+
+    JSR "calibCutbox.cfs"    ; precitec cutbox calibration
+
+    IF(%LSRPlcOp1.9) JSR "acqbevel.cfs"       ; cycle for 0 degree linearizarion AND also bevel calibration
+
+    ; Calibration Control
+    IF (%LSRPlcOp1.8) THEN
+        JSR "calibration_control.cfs"
+    ENDIF
+
+ENDIF
+
+;******************************************************************************
 
 IF (AEXISTS(3,B)) THEN
    ACCTRJ = %cn[WHO()].pc6
    DECTRJ = %cn[WHO()].pc7
    JRKTRJ = %cn[WHO()].pc16
-ENDIF 
- 
+ENDIF
+
 G(200+sav_G70)
 
 RET

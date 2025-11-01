@@ -1,0 +1,14 @@
+
+[KEYS]
+TITLE=ProCut Distance Function
+
+[PROMPT]
+KEY_NODE=Node
+PROCUTDISTANCEFUNC=Leaf
+LabelPerr1=Working Distance [mm]
+LabelPerr2=Next Calibration Position [mm]
+LabelPerr3=PID Speed Setpoint
+
+[STATUS]
+
+[HELP]

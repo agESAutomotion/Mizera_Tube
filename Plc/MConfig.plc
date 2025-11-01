@@ -11,6 +11,7 @@
 #funcdec "Foc_Prec.plc"
 #funcdec "nLight.plc"
 #funcdec "CAP_EMP.plc"
+#funcdec "FBCutBox.plc"
 
 VAR
 #include "Cnc.inc"
@@ -26,6 +27,7 @@ END_VAR
 **#include "LsrGest.inc"
 #include "Cap_Prec.inc"
 #include "foc_prec.inc"
+#include "IolCutBox.inc"
 
 VAR
 CAP_PROCON_0:           CAP_PREC;
@@ -45,6 +47,11 @@ TON1:                   TON;        * Attesa per emissione allarme
 LaserSim:               BOOL;
 TOF_REF_HEAD:           TOF;
 temp:                   DWORD;
+
+CUTBOX:                    PREC_CUTBOX;
+TP_PULSE_FOC:               TP;   
+PulseChangeFoc:             BOOL;
+LastFocalValue:             DWORD;
 END_VAR
 
 
@@ -61,66 +68,66 @@ PATH %Capacitive[0]
 
 LD   %config_machine26
 EQ   0
-OR(
-LD   %config_machine26
-EQ   4
+OR (
+    LD   %config_machine26
+    EQ   4
 )
 JMPCN no_prec_cap
 
-LD   Memo_Emission_ON_da_Funz_M    ** M107.25 Memoria Emission ON da Funzione M
-ST   CAP_PROCON_0.xEmission
+    LD   Memo_Emission_ON_da_Funz_M    ** M107.25 Memoria Emission ON da Funzione M
+    ST   CAP_PROCON_0.xEmission
 
-CAL  CAP_PROCON_0
+    CAL  CAP_PROCON_0
 
-LD   CAP_PROCON_0.yMsg.0
-ST   %PLCmsg4.0                 * PLC Msg 128 Calibrazione in corso
+    LD   CAP_PROCON_0.yMsg.0
+    ST   %PLCmsg4.0                 * PLC Msg 128 Calibrazione in corso
 
-LD   CAP_PROCON_0.yMsg.1
-ST   %PLCmsg7.0
+    LD   CAP_PROCON_0.yMsg.1
+    ST   %PLCmsg7.0
 
-LD   CAP_PROCON_0.yErr.0
-ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
+    LD   CAP_PROCON_0.yErr.0
+    ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
 
-LD   CAP_PROCON_0.yErr.1
-ST   %PLCerr5.5                 * PLC Err 165 Body touch (A11=1, A14=1, A15=0 in normal operation)
+    LD   CAP_PROCON_0.yErr.1
+    ST   %PLCerr5.5                 * PLC Err 165 Body touch (A11=1, A14=1, A15=0 in normal operation)
 
-LD   CAP_PROCON_0.yErr.2
-ST   %PLCerr5.6                 * PLC Err 166 Nozzle lost (A11=1, A14=0, A15=1 in normal operation)
+    LD   CAP_PROCON_0.yErr.2
+    ST   %PLCerr5.6                 * PLC Err 166 Nozzle lost (A11=1, A14=0, A15=1 in normal operation)
 
-LD   CAP_PROCON_0.yErr.3
-ST   %PLCerr5.7                 * PLC Err 167 Tempo massimo calibrazione sensore capacitivo
+    LD   CAP_PROCON_0.yErr.3
+    ST   %PLCerr5.7                 * PLC Err 167 Tempo massimo calibrazione sensore capacitivo
 
-LD   CAP_PROCON_0.yErr.4
-ST   %PLCerr5.8                 * PLC Err 168 Cable cut da capacitivo
+    LD   CAP_PROCON_0.yErr.4
+    ST   %PLCerr5.8                 * PLC Err 168 Cable cut da capacitivo
 
-LD   CAP_PROCON_0.yErr.5
-ST   %PLCmsg7.13                * Check FAR e/o CAPACITIVE
+    LD   CAP_PROCON_0.yErr.5
+    ST   %PLCmsg7.13                * Check FAR e/o CAPACITIVE
 
-LD   CAP_PROCON_0.yExeCalib
-ST   ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
+    LD   CAP_PROCON_0.yExeCalib
+    ST   ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
 
-LD   CAP_PROCON_0.yTipTouch
-ST   TipTouchNotFiltered
+    LD   CAP_PROCON_0.yTipTouch
+    ST   TipTouchNotFiltered
 
-***************************************
-*** Signal from inputs managed in ISO fixed cycle
-LD   I_FAR_A10                     ** Far away
-ST   ISO_I_FAR_A10                 ** (C31.0) FAR input (used in ISO, into calibration fun)
-LD   I_TIP_BODY_TOUCH_A11          ** Tip\Body Touch or Nozzle_Lost (TIP TOUCH:A11=1,A14=0,A15=0)      
-ST   ISO_I_TIP_BODY_TOUCH_A11      ** (C31.1) Tip-Body Touch o Nozzle_Lost (used in ISO, into calibration fun)
-LD   I_READY_A13                   ** Ready                                                            
-ST   ISO_I_READY_A13               ** (C31.2) READY (used in ISO, into calibration fun)
-LD   I_NOZZLE_LOST_A15             ** Nozzle Lost/Pos reached (NOZZLE LOST:A11=1,A14=0,A15=1)
-ST   ISO_I_NOZZLE_LOST_A15         ** (C31.3) POS reached (used in ISO, into calibration fun)
+    ***************************************
+    *** Signal from inputs managed in ISO fixed cycle
+    LD   I_FAR_A10                     ** Far away
+    ST   ISO_I_FAR_A10                 ** (C31.0) FAR input (used in ISO, into calibration fun)
+    LD   I_TIP_BODY_TOUCH_A11          ** Tip\Body Touch or Nozzle_Lost (TIP TOUCH:A11=1,A14=0,A15=0)      
+    ST   ISO_I_TIP_BODY_TOUCH_A11      ** (C31.1) Tip-Body Touch o Nozzle_Lost (used in ISO, into calibration fun)
+    LD   I_READY_A13                   ** Ready                                                            
+    ST   ISO_I_READY_A13               ** (C31.2) READY (used in ISO, into calibration fun)
+    LD   I_NOZZLE_LOST_A15             ** Nozzle Lost/Pos reached (NOZZLE LOST:A11=1,A14=0,A15=1)
+    ST   ISO_I_NOZZLE_LOST_A15         ** (C31.3) POS reached (used in ISO, into calibration fun)
 
-*** Command to manage output from ISO fixed cycle
-LD   ISO_O_CALIB_REQ               ** (C30.7) Calibration request from ISO
-AND  ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
-ST   O_CALIBRA_REQ_A3              ** Calibration request 
+    *** Command to manage output from ISO fixed cycle
+    LD   ISO_O_CALIB_REQ               ** (C30.7) Calibration request from ISO
+    AND  ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
+    ST   O_CALIBRA_REQ_A3              ** Calibration request 
 
-LD   ISO_O_CALIB_STROBE            ** (C30.8) Calibration strobe from ISO
-AND  ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
-ST   O_STROBE_A7                   ** Strobe
+    LD   ISO_O_CALIB_STROBE            ** (C30.8) Calibration strobe from ISO
+    AND  ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
+    ST   O_STROBE_A7                   ** Strobe
 
 no_prec_cap:
 
@@ -131,40 +138,40 @@ LD   %config_machine26
 EQ   3
 JMPCN no_empower_cap
 
-LD   Memo_Emission_ON_da_Funz_M    ** M107.25 Memoria Emission ON da Funzione M
-ST   CAP_EMP_0.xEmission
+    LD   Memo_Emission_ON_da_Funz_M    ** M107.25 Memoria Emission ON da Funzione M
+    ST   CAP_EMP_0.xEmission
 
-LD   IA_Emower_cap
-ST   CAP_EMP_0.xEmp_sensor
+    LD   IA_Emower_cap
+    ST   CAP_EMP_0.xEmp_sensor
 
-CAL  CAP_EMP_0
+    CAL  CAP_EMP_0
 
-LD   CAP_EMP_0.yMsg.0
-ST   %PLCmsg4.0                 * PLC Msg 128 Calibrazione in corso
+    LD   CAP_EMP_0.yMsg.0
+    ST   %PLCmsg4.0                 * PLC Msg 128 Calibrazione in corso
 
-LD   CAP_EMP_0.yErr.0
-ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
+    LD   CAP_EMP_0.yErr.0
+    ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
 
-LD   CAP_EMP_0.yErr.3
-ST   %PLCerr5.7                 * PLC Err 167 Tempo massimo calibrazione sensore capacitivo
+    LD   CAP_EMP_0.yErr.3
+    ST   %PLCerr5.7                 * PLC Err 167 Tempo massimo calibrazione sensore capacitivo
 
-LD   CAP_EMP_0.yErr.4
-ST   %PLCerr5.8                 * PLC Err 168 Cable cut da capacitivo
+    LD   CAP_EMP_0.yErr.4
+    ST   %PLCerr5.8                 * PLC Err 168 Cable cut da capacitivo
 
-LD   CAP_EMP_0.yExeCalib
-ST   ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
+    LD   CAP_EMP_0.yExeCalib
+    ST   ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
 
-LD   CAP_EMP_0.yTipTouch
-ST   TipTouchNotFiltered
+    LD   CAP_EMP_0.yTipTouch
+    ST   TipTouchNotFiltered
 
-LD   CAP_EMP_0.yFar
-ST   %EmConfig.Far_signal.0
+    LD   CAP_EMP_0.yFar
+    ST   %EmConfig.Far_signal.0
 
-***************************************
-*** Signal from inputs managed in ISO fixed cycle
+    ***************************************
+    *** Signal from inputs managed in ISO fixed cycle
 
-LD   CAP_EMP_0.yTipTouch   
-ST   ISO_I_TIP_BODY_TOUCH_A11      ** (C31.1) Tip-Body Touch o Nozzle_Lost (used in ISO, into calibration fun)
+    LD   CAP_EMP_0.yTipTouch   
+    ST   ISO_I_TIP_BODY_TOUCH_A11      ** (C31.1) Tip-Body Touch o Nozzle_Lost (used in ISO, into calibration fun)
 
 no_empower_cap:
 
@@ -174,7 +181,7 @@ no_empower_cap:
 LD   %config_machine25
 EQ   4
 JMPCN no_procon
-     PROCON_FOCAL    * not used
+    PROCON_FOCAL    * not used
 no_procon:
 
 ***************************************
@@ -184,80 +191,200 @@ LD   %config_machine25
 EQ   0
 JMPCN no_prec
 
-PATH %Head_Laser[0]
+    PATH %Head_Laser[0]
 
-LD   %TabLsr0.L_CutFocal             ** Valore focale passato da tabelle
-ST   temp
+    LD   %TabLsr0.L_CutFocal             ** Valore focale passato da tabelle
+    ST   temp
 
-***************************************
-*   Focal=funz(angle)
-*   #CDL
-***************************************
-LD   PRGRUN_CN0
-ANDN PRGSTOP_CN0
-AND (
-LD   %uvHeads0.uvhCommand1
-EQ   4                              * Cutting phase
-)
-AND  %LSRPlcOp0.3
-JMPCN no_corr_focal
+    ***************************************
+    *   Focal=funz(angle)
+    *   #CDL
+    ***************************************
+    LD   PRGRUN_CN0
+    ANDN PRGSTOP_CN0
+    AND (
+        LD   %uvHeads0.uvhCommand1
+        EQ   4                              * Cutting phase
+    )
+    AND  %LSRPlcOp0.3
+    JMPCN no_corr_focal
 
-LD   temp
-ADD (
-LD   temp
-MULDIV(M=%TsCutDataLinear.CDL_Focal,D=100000) * 100 %             
-)
-ST   temp
+        LD   temp
+        ADD (
+            LD   temp
+            MULDIV(M=%TsCutDataLinear.CDL_Focal,D=100000) * 100 %             
+        )
+        ST   temp
 
-no_corr_focal:
-*
-***************************************
+    no_corr_focal:
+    *
+    ***************************************
 
-LD   temp
-ST   Focal_Precitec.xCutFoc
+    LD   temp
+    ST   Focal_Precitec.xCutFoc
 
-LD   Val_Focale_ACT                 ** Valore Focale da\a GUI
-ST   Focal_Precitec.xVal_Focale_ACT
+    LD   Val_Focale_ACT                 ** Valore Focale da\a GUI
+    ST   Focal_Precitec.xVal_Focale_ACT
 
-LD   %config_machine30
-ST   Focal_Precitec.xAnRes
+    LD   %config_machine30
+    ST   Focal_Precitec.xAnRes
 
-LD   Focal_Type            
-ST   Focal_Precitec.xFocal_Type
+    LD   Focal_Type            
+    ST   Focal_Precitec.xFocal_Type
 
-CAL  Focal_Precitec
+    CAL  Focal_Precitec
 
-LD   Focal_Precitec.yFocAn
-ST   OA_FOCALE
+    LD   Focal_Precitec.yFocAn
+    ST   OA_FOCALE
 
-LD   Focal_Precitec.yPrec_Pos_Run              
-ST   Prec_Pos_Run                  ** Focal positioning in run (Used Piercing ISO)
+    LD   Focal_Precitec.yPrec_Pos_Run              
+    ST   Prec_Pos_Run                  ** Focal positioning in run (Used Piercing ISO)
 
-LD   Focal_Precitec.yError.0       * Precitec: reference error 
-S    %PLCerr5.1                   
+    LD   Focal_Precitec.yError.0       * Precitec: reference error 
+    S    %PLCerr5.1                   
 
-LD   Focal_Precitec.yError.1       * Precitec: reference timeout
-S    %PLCerr5.3                   
+    LD   Focal_Precitec.yError.1       * Precitec: reference timeout
+    S    %PLCerr5.3                   
 
-LD   Focal_Precitec.yError.2       * General Precitec Error
-S    %PLCerr7.7                    
+    LD   Focal_Precitec.yError.2       * General Precitec Error
+    S    %PLCerr7.7                    
 
-LD   Focal_Precitec.yError.3       * Precitec: lens/prot. not present
-S    %PLCerr5.0  
- 
-LD   Focal_Precitec.yError.4       * Precitec: automatic error
-S    %PLCerr5.2                   
+    LD   Focal_Precitec.yError.3       * Precitec: lens/prot. not present
+    S    %PLCerr5.0  
+    
+    LD   Focal_Precitec.yError.4       * Precitec: automatic error
+    S    %PLCerr5.2                   
 
-LD   Focal_Precitec.yMsg.0         * Precitec: lens not present (SW1)
-S    %PLCmsg5.0
+    LD   Focal_Precitec.yMsg.0         * Precitec: lens not present (SW1)
+    S    %PLCmsg5.0
 
-LD   Focal_Precitec.yMsg.1         * Precitec: protective lens not present (SW4)
-S    %PLCmsg5.1
+    LD   Focal_Precitec.yMsg.1         * Precitec: protective lens not present (SW4)
+    S    %PLCmsg5.1
 
-LD   Focal_Precitec.yMsg.2         * Precitec: reference completed
-S    %PLCmsg5.2
+    LD   Focal_Precitec.yMsg.2         * Precitec: reference completed
+    S    %PLCmsg5.2
 
 no_prec:
+
+
+***************************************
+*   CUTBOX FOCAL
+***************************************
+LD   %config_machine25
+EQ   5
+JMPCN no_cutbox
+
+    LD   %CutBox0.rGeneralPurpose0              ** HMI Node Ecat
+    ST   CUTBOX.xEcatNode
+
+    LD   PRGRUN_CN0
+    JMPCN no_autofoc
+
+        LD   %TabLsr0.L_CutFocal                ** Focal distance for the current cut
+        DIV  10        
+        ST   CUTBOX.xFocalPos
+
+    no_autofoc:
+
+    LD   ch0_InJOG                   * %cn0.rc0.9 CH0 en Modo JOG
+    JMPCN no_JOGfoc
+
+        LD   Val_Focale_ACT
+        DIV  10
+        ST   CUTBOX.xFocalPos
+
+    no_JOGfoc:
+
+    LD   %CutBox0.rGeneralPurpose1.0        ** HMI Reference Travel Button
+    ST   CUTBOX.xRefTravel
+
+    LD   CUTBOX.xFocalPos
+    NE   LastFocalValue
+    ST   PulseChangeFoc
+
+    CAL  TP_PULSE_FOC (IN:=PulseChangeFoc,PT:=150)
+
+    LD   TP_PULSE_FOC.Q
+    ST   CUTBOX.xApplyNewFoc
+
+    LD   Pul_Reset
+    ST   CUTBOX.xPulReset
+
+    PATH  %CutBox0
+    CAL  CUTBOX
+
+    LD   CUTBOX.xFocalPos
+    ST   LastFocalValue
+
+    LD   CUTBOX.yExeCalib
+    ST   ExeCalibraz                   ** (LsPlc11.0) Richiesta esecuzione Calibrazione
+
+    LD  CUTBOX.yFarDistance
+    ST  ISO_I_FAR_A10
+    
+    *LD   AlarmTipTouch     
+    *LD    AlarmBodyTouch    
+    LD   AlarmCableCut     
+    OR   AlarmVoltageSupply
+    OR   AlarmTempDistSensorUni  
+    OR   AlarmNozzleLost        
+    OR   AlarmDistCalibGainError 
+    OR   AlarmDistCalibDeltaError
+    OR   AlarmCalibrationCanceled
+    OR   AlarmStrayLProteWColLens     
+    OR   AlarmGlobalErrorCuttingHead   
+    OR   AlarmMissingCartridgeProcess  
+    OR   AlarmMissProtWindowProc      
+    OR   AlarmTempProteWindowProc     
+    OR   AlarmTempCollimatingLens     
+    OR   AlarmTempFocusingLens        
+    OR   AlarmTempCuttingHead        
+    OR   AlarmStrayLBeamPath        
+    OR   AlarmAssistGasPressTooHigh  
+    OR   AlarmPresLeakageProtWProc   
+    OR   AlarmCutHeadError          
+    OR   AlarmMissingCartrColLens    
+    OR   AlarmHumidityCuttingHead    
+    OR   AlarmStrayLProtWindowProc   
+    OR   AlarmCuttHeadComLost 
+    OR   AlarmDriveError     
+    OR   AlarmEdgeTec        
+    OR   AlarmDriveOverload
+    OR   AlarmCommunicationDrive  
+    OR   AlarmReferenceTravelDrive 
+    OR   AlarmPSVoltageDrive      
+    S    %PLCerr9.4
+
+    LD   RESET_ALLARMI 		         ** M100.4  Cancellazione allarmi attiva
+    R    %PLCerr9.4
+
+    LD   CUTBOX.yTipTouch
+    ST   ISO_I_TIP_BODY_TOUCH_A11
+
+    LD   CUTBOX.yTipTouch
+    ANDN DisabTipTouch              ** (LsIso17.0) Disable tip touch
+    ANDN ISOTipTouchDisable         ** (C26.3) Disabilita tip touch da ISO
+    ST   %PLCerr5.4                 * PLC Err 164 Tip touch (A11=1, A14=0, A15=0 in normal operation)
+
+    LD   AlarmBodyTouch
+    ST   %PLCerr5.5                 * PLC Err 165 Body touch (A11=1, A14=1, A15=0 in normal operation)
+
+    LD   AlarmNozzleLost
+    ST   %PLCerr5.6                 * PLC Err 166 Nozzle lost (A11=1, A14=0, A15=1 in normal operation)
+
+    LD   AlarmCableCut
+    ST   %PLCerr5.8                 * PLC Err 168 Cable cut da capacitivo
+
+no_cutbox:
+
+
+
+
+
+
+
+
+
 
 LD   RESET_ALLARMI    
 R    %PLCerr5.0       
@@ -303,8 +430,8 @@ ST   IPG_0.xType
 
 LD   LaserSim
 OR (
-LD   CMD_RESONATOR_OFF
-EQ   1
+    LD   CMD_RESONATOR_OFF
+    EQ   1
 )   
 ST   IPG_0.xSIM
 
@@ -325,8 +452,8 @@ CAL  TOF_Restart_Laser(IN=Hold_Emission_ON,PT=500) ** Ritardo accensione Laser d
 LD   TOF_Restart_Laser.Q            ** Ritardo accensione Laser dopo OVR=0 o NC_STOP
 ***OR   TP_HOLD.Q                       * Tempo inibiz.Uscita Emissione dopo Hold (Per stabil.Pressioni Gas)
 ANDN (                            
-LD   RetrPlusReq                   ** (LsPlc47.9) Request of positive retrace
-OR   RetrMinusReq                  ** (LsPlc47.10) Request of negative retrace
+    LD   RetrPlusReq                   ** (LsPlc47.9) Request of positive retrace
+    OR   RetrMinusReq                  ** (LsPlc47.10) Request of negative retrace
 )                                 
 ST  BL_AV_ASSI_X_OVR               ** M74.8 Blocco avanzamento assi dopo Override=0 o NC_STOP
 
@@ -391,12 +518,12 @@ R    %PLCerr5.21                    *IPG Comandata emissione laser con valvole c
 LD   %config_machine28 
 EQ   5       
 JMPCN NLIGHTSEL                     *nlight
-PATH %Resonator[1]
+    PATH %Resonator[1]
 
-LDN  I_I_EMERGENZA
-ST   NLIGHT0.xEmer
+    LDN  I_I_EMERGENZA
+    ST   NLIGHT0.xEmer
 
-CAL  NLIGHT0
+    CAL  NLIGHT0
 NLIGHTSEL:
 
 ***************************************

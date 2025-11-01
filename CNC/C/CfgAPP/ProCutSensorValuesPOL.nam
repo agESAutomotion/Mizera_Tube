@@ -1,0 +1,23 @@
+
+[KEYS]
+TITLE=ProCut Sensor Values
+
+[PROMPT]
+KEY_NODE=Node
+PROCUTSENSORVALUES=Leaf
+LabelPerr1=Temperature Focusing Lens [°C]
+LabelPerr2=Temperature Protective Window Process [°C]
+LabelPerr3=Temperature Cutting Head [°C]
+LabelPerr4=Temperature Distance Sensor [°C]
+LabelPerr5=Straylight Beam Path [%]
+LabelPerr6=Straylight Protective Window Coll. Lens [%]
+LabelPerr7=Straylight Protective Window Process [%]
+LabelPerr8=Pressure Leak  Protective Window Process [mbar]
+LabelPerr9=Actual Cuttig Gas Pressure [mbar]
+LabelPerr10=Humidity Inside Cutting Head [%]
+LabelPerr11=Temperature Collimating Lens [°C]
+LabelPerr12=Plasma
+
+[STATUS]
+
+[HELP]

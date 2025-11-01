@@ -18,16 +18,7 @@ I_Mobile_Spindle_Slave_Open2   AT %PLCFLAGS.0;
 I_Loader_Back_Pos              AT %PLCFLAGS.1;
 I_Loader_Reach_Pos             AT %PLCFLAGS.1;
 
-I_SUPPORT_72_Dwn               AT %PLCFLAGS.1;
-I_SUPPORT_72_Up                AT %PLCFLAGS.1;
-I_SUPPORT_71_Dwn               AT %PLCFLAGS.1;
-I_SUPPORT_71_Up                AT %PLCFLAGS.1;
-I_SUPPORT_73_Dwn               AT %PLCFLAGS.1;
-I_SUPPORT_73_Up                AT %PLCFLAGS.1;
-I_SUPPORT_74_Dwn               AT %PLCFLAGS.1;
-I_SUPPORT_74_Up                AT %PLCFLAGS.1;
-I_SUPPORT_75_Dwn               AT %PLCFLAGS.1;
-I_SUPPORT_75_Up                AT %PLCFLAGS.1;
+
 
 I_DistSens_Y                   AT %M6;
 I_DistSens_Z                   AT %M6;
@@ -120,6 +111,62 @@ I_Support_5_Up                 AT %PLCFLAGS.0;
 I_Support_6_Up                 AT %PLCFLAGS.0;
 I_Support_7_Up                 AT %PLCFLAGS.0;
 
+
+*******************************************************
+*               UNLOADER PISTON SUPPORTS              *
+*******************************************************
+
+** Inputs 
+I_SUPPORT_72_Up      AT %IW5.0;        ** Support 5 – raised position
+I_SUPPORT_72_Dwn     AT %IW5.1;        ** Support 5 – lowered position
+* AT %IW5.2;        ** Support 5 – clamp opened
+* AT %IW5.3;        ** Support 5 – clamp closed
+I_SUPPORT_73_Up      AT %IW5.4;        ** Support 6 – raised position
+I_SUPPORT_73_Dwn     AT %IW5.5;        ** Support 6 – lowered position
+* AT %IW5.6;        ** Support 6 – clamp opened
+* AT %IW5.7;        ** Support 6 – clamp closed
+I_SUPPORT_74_Up      AT %IW5.8;        ** Support 7 – raised position
+I_SUPPORT_74_Dwn     AT %IW5.9;        ** Support 7 – lowered position
+* I_VertPistonSupL1_1_Up    AT %IW5.10;       ** Support 8 – raised position 1
+* I_VertPistonSupL1_1_Dwn   AT %IW5.11;       ** Support 8 – lowered position 1
+* I_VertPistonSupL1_2_Up    AT %IW5.12;       ** Support 8 – raised position 2
+* I_VertPistonSupL1_2_Dwn   AT %IW5.13;       ** Support 8 – lowered position 2
+* AT %IW5.14;       ** Table raised
+* AT %IW5.15;       ** Table lowered
+
+** Outputs
+O_Ev_Support72_Up       AT %QW7.0;        ** Support 5 – Lift 
+O_Ev_Support72_Dwn      AT %QW7.1;        ** Support 5 – Lower 
+* AT %QW7.2;        ** Support 5 – open
+* AT %QW7.3;        ** Support 5 – close
+O_Ev_Support73_Up       AT %QW7.4;        ** Support 6 – Lift 
+O_Ev_Support73_Dwn      AT %QW7.5;        ** Support 6 – Lower 
+* AT %QW7.6;        ** Support 6 – open
+* AT %QW7.7;        ** Support 6 – close
+O_Ev_Support74_Up       AT %QW7.8;        ** Support 7 – lift
+O_Ev_Support74_Dwn      AT %QW7.9;        ** Support 7 – lower
+* O_Ev_VertPistonSupL1_1_Up     AT %QW7.10;       ** Support 8 – Table – slide-in 1
+* O_Ev_VertPistonSupL1_1_Dwn    AT %QW7.11;       ** Support 8 – Table – pull-out 1
+* O_Ev_VertPistonSupL1_2_Up     AT %QW7.12;       ** Support 8 – Table – slide-in 2
+* O_Ev_VertPistonSupL1_2_Dwn    AT %QW7.13;       ** Support 8 – Table – pull-out 2
+* AT %QW7.14;       ** Table - raise
+* AT %QW7.15;       ** Table - lean
+
+
+
+I_SUPPORT_71_Dwn               AT %PLCFLAGS.1;
+I_SUPPORT_71_Up                AT %PLCFLAGS.1;
+I_SUPPORT_75_Dwn               AT %PLCFLAGS.1;
+I_SUPPORT_75_Up                AT %PLCFLAGS.1;
+
+
+O_Ev_Support71_Up              AT %M5.0;
+O_Ev_Support71_Dwn             AT %M5.0;
+O_Ev_Support75_Up              AT %M5.0;
+O_Ev_Support75_Dwn             AT %M5.0;
+
+
+
 I_Support_1_Dwn_Un             AT %PLCFLAGS.0;
 I_Support_2_Dwn_Un             AT %PLCFLAGS.0;
 I_Support_3_Dwn_Un             AT %PLCFLAGS.0;
@@ -191,14 +238,4 @@ O_FlapL4_Incline               AT %M5.0;
 O_FlapL5_Home                  AT %M5.0;
 O_FlapL5_Incline               AT %M5.0;
 
-O_Ev_Support72_Up              AT %M5.0;
-O_Ev_Support72_Dwn             AT %M5.0;
-O_Ev_Support71_Up              AT %M5.0;
-O_Ev_Support71_Dwn             AT %M5.0;
-O_Ev_Support73_Up              AT %M5.0;
-O_Ev_Support73_Dwn             AT %M5.0;
-O_Ev_Support74_Up              AT %M5.0;
-O_Ev_Support74_Dwn             AT %M5.0;
-O_Ev_Support75_Up              AT %M5.0;
-O_Ev_Support75_Dwn             AT %M5.0;
 

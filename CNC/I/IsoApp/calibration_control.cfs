@@ -28,6 +28,7 @@ DBL j,i,i_err,i_quota,i_calc
 DBL ValSamp
 DBL CalibOK
 DBL ErrorFound
+DBL Debug = 0
 
 SYN
 ?%LsIso10.1 = 0             ; Iso said calibration control done 
@@ -102,6 +103,8 @@ RET
 ;   SUBROUTINE
 ;--------------------------------------------
 .StartCheck
+
+    IF (Debug == 1) M0
 
     G153 G1 Z(kine_z+(%rPlc[i_quota]/1000)) F(2000)
     SYN 

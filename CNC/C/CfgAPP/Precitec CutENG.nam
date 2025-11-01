@@ -1,0 +1,60 @@
+
+[KEYS]
+TITLE=Precitec CutBox
+
+[PROMPT]
+KEY_NODE=Node
+PRECITEC_CUT=Leaf
+LabelPerr2=Distance Control Ready
+LabelPerr1=Distance Position Reached
+LabelPerr3=Alarm distance control internal Error
+LabelPerr4=Far Distance
+LabelPerr5=Alarm Tip Touch
+LabelPerr6=Alarm Body Touch
+LabelPerr7=Alarm Cable Cut
+LabelPerr8=Alarm Voltage Supply
+LabelPerr9=Allarme Temp Dist Sensor Uni
+LabelPerr10=Alarm Nozzle Lost
+LabelPerr11=FieldBus Synched
+LabelPerr12=Alarm Distance Calibration Gain Error
+LabelPerr13=Alarm Distance Calibration Delta Error
+LabelPerr14=Alarm Calibration Canceled
+LabelPerr15=Sensorized Cutting Head Detected
+LabelPerr16=AlarmStrayLProteWColLens
+LabelPerr17=Alarm Global Error Cutting Head
+LabelPerr18=Alarm Missing Cartridge Process
+LabelPerr19=Alarm Missing Protection Window Process
+LabelPerr20=Alarm Temp Protection Window Process
+LabelPerr21=Alarm Temp Collimating Lens
+LabelPerr22=Alarm Temp Focusing Lens
+LabelPerr23=Drive Detected
+LabelPerr24=Alarm Cut Head Comunication Lost
+LabelPerr25=Alarm Drive Error
+LabelPerr26=Alarm Edge Tech
+LabelPerr27=Drive Busy
+LabelPerr28=Focus Upper Limit Switch
+LabelPerr29=Focus Lower Limited Reached
+LabelPerr30=Alarm Drive Overload
+LabelPerr31=AlarmStrayLProteWColLens
+LabelPerr32=Alarm Global Error Cutting Head
+LabelPerr33=Alarm Missing Cartridge Process
+LabelPerr34=Alarm Missing Protection Window Process
+LabelPerr35=Alarm Temp Protection Window Process
+LabelPerr36=Alarm Temp Collimating Lens
+LabelPerr37=Distance Calibrate Char Curve
+LabelPerr38=Sensor Controller
+LabelPerr39=Nozzle Lost Calibration
+LabelPerr40=Distance Strobe Signal
+LabelPerr41=Distance Reset Error
+LabelPerr42=Manual Mode
+LabelPerr43=Synched to FieldBus
+LabelPerr44=Cutting Head Power
+LabelPerr45=Save Output Data
+LabelPerr46=Distance Reference travel
+LabelPerr47=Focus New Setpoint
+LabelPerr48=Reset P Bus
+LabelPerr49=Process Data Send
+
+[STATUS]
+
+[HELP]

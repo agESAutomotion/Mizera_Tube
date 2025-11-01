@@ -47,7 +47,7 @@ SL_GAS_SIM = Simulazione gas
 
 
 L_JUMP_GAS = Apri/chiudi gas in funzione della distanza [LSRPlcOp1.20] 
-L_CORN_RADIUS=Abilita gestione cambio velocità spigoli e raggi[LSRPlcOp1.21]
+L_CORN_RADIUS=Abilita gestione cambio velocitï¿½ spigoli e raggi[LSRPlcOp1.21]
 L_COOL_PT = Cooling point [LSRPlcOp1.22]
 
 SL_ALARM_TOLL = Allarme tolleranza [bar]
@@ -58,10 +58,10 @@ SL_DELAY_FDBACK = Ritardo per controllo feedback gas [s]
 SL_HEAD_FOCALTYPE = Tipo focale
 L_CLEAN_CALIB = Pulizia nozzle [LSRPlcOp1.5]
 
-SL_CAPACITIVE_TYPE = Precitec,LaserMech, Highyag, ECAT Cap, Precitec Similar (ECAT), Thermacut, Procon
+SL_CAPACITIVE_TYPE = Precitec,LaserMech, Highyag, ECAT Cap, Precitec Similar (ECAT), Thermacut, Procon,CutBox
 SL_GENERATOR_TYPE = YLS/Fuji,YLR/Max/Raycus,Raycus,Rofin,Trumpf,NLIGHT
 SL_PROP_OXYGEN_TYPE = Standard,solo oxy
-FOC_LIST = Precitec,WSX/OpenLaser,HighYag,Raytools,Procon
+FOC_LIST = Precitec,WSX/OpenLaser,HighYag,Raytools,Procon,CutBox
 LIST_CAP_RANGE = 10mm,20mm
 
 
@@ -88,9 +88,9 @@ SL_EMPOWER_CAPTOUCH = EMPOWER 88C1 Capacitance Tip-touch
 // Resonator
 RES_LAB1 = .
 RES_MAXPOWER = Potenza massima [watt]
-RES_INTSPEEDFILTER = Filtro FIR sulla velocità interpolata calcolata (per POTENZA) [msec]
-RES_INTSPEEDFILTER_DUTY = Filtro FIR sulla velocità interpolata calcolata (per DUTY) [msec]
-RES_INTSPEEDFILTER_FREQ = Filtro FIR sulla velocità interpolata calcolata (per FREQ.) [msec]
+RES_INTSPEEDFILTER = Filtro FIR sulla velocitï¿½ interpolata calcolata (per POTENZA) [msec]
+RES_INTSPEEDFILTER_DUTY = Filtro FIR sulla velocitï¿½ interpolata calcolata (per DUTY) [msec]
+RES_INTSPEEDFILTER_FREQ = Filtro FIR sulla velocitï¿½ interpolata calcolata (per FREQ.) [msec]
 RES_SYNC_DELAY = Tempo di sincronismo per allineamento taglio in accelerazione/decelerazione [msec]
 RES_DELAY_LASER_OFF = Ritardo spegnimento laser [msec]
 RES_XREF_FREQ = Freq utilizzata per gestione tempo sincronismo tra vel. e DUTY

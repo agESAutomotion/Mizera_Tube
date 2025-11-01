@@ -126,8 +126,8 @@ O_O_Mobile_Spindle_Open             AT  %USR_M20.2;
 O_O_Mobile_Spindle_Close            AT  %USR_M20.3;
 O_O_Mobile_Spindle_Slave_Brake      AT  %USR_M20.4;
 O_Pump                              AT  %USR_M20.8;
-*                                   AT  %USR_M20.9;
-*                                   AT  %USR_M20.10;
+O_O_Mobile_Spindle_Slave_Jaws_Open  AT  %USR_M20.9;
+O_O_Mobile_Spindle_Slave_Jaws_Close AT  %USR_M20.10;
 *                                   AT  %USR_M20.11;
 O_O_Ev_Support1_Up		            AT  %USR_M20.12;
 O_O_Ev_Support2_Up	                AT  %USR_M20.13;
@@ -394,5 +394,10 @@ O_O_Ev_VShapeZ1_Dwn                 AT  %USR_M49.12;
 O_O_Ev_VShapeZ2_Dwn                 AT  %USR_M49.13;
 O_O_Ev_VShapeZ3_Dwn                 AT  %USR_M49.14;
 O_O_Ev_VShapeZ4_Dwn                 AT  %USR_M49.15;
+
+VertSup1MovCompleted                AT  %USR_M49.16;
+VertSup2MovCompleted                AT  %USR_M49.17;
+VertSup3MovCompleted                AT  %USR_M49.18;
+VertSup4MovCompleted                AT  %USR_M49.19;
 
 END_VAR

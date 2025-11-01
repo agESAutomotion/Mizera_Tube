@@ -1,0 +1,26 @@
+
+[KEYS]
+TITLE=Distance Function Control Settings
+
+[PROMPT]
+KEY_NODE=Node
+PROCUTFUNCTIONCONTRSETTINGS=Leaf
+LabelPerr1=Select Char Curve (default 0)
+LabelPerr2=Distance Filter Window Size (default value: 6)
+LabelPerr3=D_Parameter (default: 0)
+LabelPerr4=P_Parameter (default:150)
+LabelPerr5=Spatter Filter Time [ms]
+LabelPerr6=Tip Touch Level [mm]
+LabelPerr7=Measuring Range Limit [mm] (default:30)
+LabelPerr8=Set-Point Band [mm]
+LabelPerr9=Collision Delay [ms] (default: 20ms)
+LabelPerr10=Control Dynamic Band [mV/ms]
+LabelPerr11=PLC Max Temperature Sensor  Unit [NOT USED]
+LabelPerr12=I_Parameter (default: 0)
+LabelPerr13=Distance Standoff Value [mm]
+LabelPerr14=Image Ratio
+LabelPerr15=Focal Position
+
+[STATUS]
+
+[HELP]
