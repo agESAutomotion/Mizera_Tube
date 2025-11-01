@@ -290,19 +290,19 @@ VAR_OUTPUT
 yModeCode:         DWORD;
 END_VAR
 
-LD     xLenCy
+LD     xLenCy                      ** The stroke of cylinder [mm]
 MUL    1000
-ST     temLenCy 
+ST     temLenCy                    ** The stroke of cylinder [um]
 
-LD     xEnCyTubeSiz
+LD     xEnCyTubeSiz                ** > Qta to disable cylinder [mm] (not the trave of servo because which could be different)
 MUL    1000
-ST     CyTubeSiz
+ST     CyTubeSiz                   ** > Qta to disable cylinder [um] (not the trave of servo because which could be different)
 
-LD     %gIso23
+LD     %gIso23                     ** Tube's width [mm]
 MUL    1000
 ST     X
 
-LD     %gIso24
+LD     %gIso24                     ** Tube's height [mm]
 MUL    1000
 ST     Y
 
@@ -322,26 +322,26 @@ ST     Radius
 LD     %gIso26
 EQ     0
 JMPCN  _RECT
-       LD  X
-	   SUB Radius
-	   ST  X
-	   
-	   LD  Y
-	   SUB Radius
-	   ST  Y
+    LD  X
+    SUB Radius
+    ST  X
+    
+    LD  Y
+    SUB Radius
+    ST  Y
 
-       LD  0
-       HYPOT(X=X,Y=Y)
-	   DIV 2
-       ADD Radius
-	   ST  outter	 
+    LD  0
+    HYPOT(X=X,Y=Y)
+    DIV 2
+    ADD Radius
+    ST  outter	 
 _RECT:
 
 LD     %gIso26
 EQ     1
 JMPCN  _ROUND
-       LD  inner
-	   ST  outter
+    LD  inner
+    ST  outter
 _ROUND:
 
 * Output
@@ -357,17 +357,17 @@ ST     temAxtra
 
 LD     outter
 SUB    inner
-GT(
-LD     temAxtra
-SUB    temLenCy
+GT (
+    LD     temAxtra
+    SUB    temLenCy
 )    
-AND(
-LD     temLenCy
-GT     inner
+AND (
+    LD     temLenCy
+    GT     inner
 )
-AND(
-LD     temLenCy
-LT     outter
+AND (
+    LD     temLenCy
+    LT     outter
 )
 ST     OutofRng    
 

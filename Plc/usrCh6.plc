@@ -108,68 +108,68 @@ PATH %ax60
 LD   %cc1.0                        * Maschera assi associata al canale 0
 JMPCN NOAX60
                                        
-LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
-ST   GESTAX60.xZeroForced          * Forzamento asse tarato
-ST   GESTAX60.xLockRef             * Blocco avvio ciclo REF da canale
-ST   GESTAX60.xEnFIR               * Abilita filtri FIR     
-ST   GESTAX60.xEnFrComp            ** Abilita friction compensation
-ST   GESTAX60.xDisLimiter
+     LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+     ST   GESTAX60.xZeroForced          * Forzamento asse tarato
+     ST   GESTAX60.xLockRef             * Blocco avvio ciclo REF da canale
+     ST   GESTAX60.xEnFIR               * Abilita filtri FIR     
+     ST   GESTAX60.xEnFrComp            ** Abilita friction compensation
+     ST   GESTAX60.xDisLimiter
 
-LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
-ST   GESTAX60.xUnlock                                                                  
+     LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
+     ST   GESTAX60.xUnlock                                                                  
 
-* LD   %rc8.3                        * Current channel in alarm
-* OR   %cn0.rc8.3                    * ch0 in alarm 
-* OR   %cn3.rc8.3                    * ch3 in alarm 
-* ST   GESTAX60.xSetAlarm            ** Forzamento allarme asse 
+     * LD   %rc8.3                        * Current channel in alarm
+     * OR   %cn0.rc8.3                    * ch0 in alarm 
+     * OR   %cn3.rc8.3                    * ch3 in alarm 
+     * ST   GESTAX60.xSetAlarm            ** Forzamento allarme asse 
 
-*   Virtual X Quota Preset
+     *   Virtual X Quota Preset
 
-LDN  Ax60PosEnd
-ANDN Pul_Reset
-ST   PRS_AX60.xax_ENABLE
-ST   GESTAX60.xFromPlc
+     LDN  Ax60PosEnd
+     ANDN Pul_Reset
+     ST   PRS_AX60.xax_ENABLE
+     ST   GESTAX60.xFromPlc
 
-LDN  PRS_AX60.xax_ENABLE
-OR   Pul_Reset
-ST   PRS_AX60.xax_CLEAR
+     LDN  PRS_AX60.xax_ENABLE
+     OR   Pul_Reset
+     ST   PRS_AX60.xax_CLEAR
 
-LD   PRS_AX60.xax_ENABLE
-AND  PRS_AX60.yax_READY
-ANDN PRS_AX60.yax_ENDERR
-ST   PRS_AX60.xax_START
+     LD   PRS_AX60.xax_ENABLE
+     AND  PRS_AX60.yax_READY
+     ANDN PRS_AX60.yax_ENDERR
+     ST   PRS_AX60.xax_START
 
-*LD   %pa9
-*ST   PRS_AX60.xax_VEL
+     *LD   %pa9
+     *ST   PRS_AX60.xax_VEL
 
-CAL  CYCOMSUP(xLenCy:=CyComLenLoader, xEnCyTubeSiz:=EnCyComTubeDim, xAxNum:=60)
+     CAL  CYCOMSUP(xLenCy:=CyComLenLoader, xEnCyTubeSiz:=EnCyComTubeDim, xAxNum:=60)
 
-LD   CYCOMSUP.yModeCode.1
-JMPCN _OFTLOADER
-     LD   CyComLenLoader
-	 MUL  1000
-     ST   PRS_AX60.xax_QUOTA  
-_OFTLOADER:
+     LD   CYCOMSUP.yModeCode.1
+     JMPCN _OFTLOADER
+          LD   CyComLenLoader
+          MUL  1000
+          ST   PRS_AX60.xax_QUOTA  
+     _OFTLOADER:
 
-LD   CYCOMSUP.yModeCode.0
-ORN  %config_machine0.7
-JMPCN _NO_OFTLOADER
-     LD   0
-     ST   PRS_AX60.xax_QUOTA  
-_NO_OFTLOADER:
+     LD   CYCOMSUP.yModeCode.0
+     ORN  %config_machine0.7
+     JMPCN _NO_OFTLOADER
+          LD   0
+          ST   PRS_AX60.xax_QUOTA  
+     _NO_OFTLOADER:
 
-LD   CYCOMSUP.yModeCode.2
-AND  %config_machine0.7
-ST   %PLCerr20.27	 
-	 
-LD   %ra24
-SUB  PRS_AX60.xax_QUOTA
-ABS                    
-LT   100  
-ST   Ax60PosEnd	 
+     LD   CYCOMSUP.yModeCode.2
+     AND  %config_machine0.7
+     ST   %PLCerr20.27	 
+          
+     LD   %ra24
+     SUB  PRS_AX60.xax_QUOTA
+     ABS                    
+     LT   100  
+     ST   Ax60PosEnd	 
 
-CAL  GESTAX60
-CAL  PRS_AX60
+     CAL  GESTAX60
+     CAL  PRS_AX60
 
 NOAX60:
 
@@ -181,73 +181,73 @@ PATH %ax61
 LD   %cc1.1                        * Maschera assi associata al canale 0
 JMPCN NOAX61
                                        
-LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
-ST   GESTAX61.xZeroForced          * Forzamento asse tarato
-ST   GESTAX61.xLockRef             * Blocco avvio ciclo REF da canale
-ST   GESTAX61.xEnFIR               * Abilita filtri FIR     
-ST   GESTAX61.xEnFrComp            ** Abilita friction compensation
-ST   GESTAX61.xDisLimiter
+     LD   ALWAYS_ONE                    ** PLCFLAGS.1  Flag sempre stato on
+     ST   GESTAX61.xZeroForced          * Forzamento asse tarato
+     ST   GESTAX61.xLockRef             * Blocco avvio ciclo REF da canale
+     ST   GESTAX61.xEnFIR               * Abilita filtri FIR     
+     ST   GESTAX61.xEnFrComp            ** Abilita friction compensation
+     ST   GESTAX61.xDisLimiter
 
-LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
-ST   GESTAX61.xUnlock                                                                  
+     LD   Res_Axes                      ** (gPlc25.1) reset axes disable electric shaft
+     ST   GESTAX61.xUnlock                                                                  
 
-* LD   %rc8.3                        * Current channel in alarm
-* OR   %cn0.rc8.3                    * ch0 in alarm 
-* OR   %cn3.rc8.3                    * ch3 in alarm 
-* ST   GESTAX61.xSetAlarm            ** Forzamento allarme asse 
+     * LD   %rc8.3                        * Current channel in alarm
+     * OR   %cn0.rc8.3                    * ch0 in alarm 
+     * OR   %cn3.rc8.3                    * ch3 in alarm 
+     * ST   GESTAX61.xSetAlarm            ** Forzamento allarme asse 
 
-*   Virtual Y Quota Preset
+     *   Virtual Y Quota Preset
 
-LDN  Ax61PosEnd
-ANDN Pul_Reset
-ST   PRS_AX61.xax_ENABLE
-ST   GESTAX61.xFromPlc
+     LDN  Ax61PosEnd
+     ANDN Pul_Reset
+     ST   PRS_AX61.xax_ENABLE
+     ST   GESTAX61.xFromPlc
 
-LDN  PRS_AX61.xax_ENABLE
-OR   Pul_Reset
-ST   PRS_AX61.xax_CLEAR
+     LDN  PRS_AX61.xax_ENABLE
+     OR   Pul_Reset
+     ST   PRS_AX61.xax_CLEAR
 
-LD   PRS_AX61.xax_ENABLE
-AND  PRS_AX61.yax_READY
-ANDN PRS_AX61.yax_ENDERR
-ST   PRS_AX61.xax_START
+     LD   PRS_AX61.xax_ENABLE
+     AND  PRS_AX61.yax_READY
+     ANDN PRS_AX61.yax_ENDERR
+     ST   PRS_AX61.xax_START
 
-*LD   %pa9
-*ST   PRS_AX61.xax_VEL
+     *LD   %pa9
+     *ST   PRS_AX61.xax_VEL
 
-CAL  CYCOMSUP_UN(xLenCy:=CyComLenUnloader, xEnCyTubeSiz:=EnCyComTubeDimUn, xAxNum:=61)
+     CAL  CYCOMSUP_UN(xLenCy:=CyComLenUnloader, xEnCyTubeSiz:=EnCyComTubeDimUn, xAxNum:=61)
 
-LD   CYCOMSUP_UN.yModeCode.1
-JMPCN _OFTUNLOADER
-     LD   CyComLenUnloader
-	 MUL  1000
-     ST   PRS_AX61.xax_QUOTA  
-_OFTUNLOADER:
+     LD   CYCOMSUP_UN.yModeCode.1
+     JMPCN _OFTUNLOADER
+          LD   CyComLenUnloader
+          MUL  1000
+          ST   PRS_AX61.xax_QUOTA  
+     _OFTUNLOADER:
 
-LD   CYCOMSUP_UN.yModeCode.0  
-ORN  %config_machine0.8   
-JMPCN _NO_OFTUNLOADER
-     LD   0
-     ST   PRS_AX61.xax_QUOTA  
-_NO_OFTUNLOADER:
+     LD   CYCOMSUP_UN.yModeCode.0  
+     ORN  %config_machine0.8   
+     JMPCN _NO_OFTUNLOADER
+          LD   0
+          ST   PRS_AX61.xax_QUOTA  
+     _NO_OFTUNLOADER:
 
-LD   CYCOMSUP_UN.yModeCode.2
-AND  %config_machine0.8
-ST   %PLCerr20.28	
+     LD   CYCOMSUP_UN.yModeCode.2
+     AND  %config_machine0.8
+     ST   %PLCerr20.28	
 
-LD   %ra24
-SUB  PRS_AX61.xax_QUOTA
-ABS                    
-LT   100  
-ST   Ax61PosEnd	 
+     LD   %ra24
+     SUB  PRS_AX61.xax_QUOTA
+     ABS                    
+     LT   100  
+     ST   Ax61PosEnd	 
 
-CAL  GESTAX61
-CAL  PRS_AX61
+     CAL  GESTAX61
+     CAL  PRS_AX61
 
 NOAX61:
 
 **************************
-* Acknowledg funzioni "M"
+* Acknowledge funzioni "M"
 **************************
 *
 LD   %PLCFLAGS.0
