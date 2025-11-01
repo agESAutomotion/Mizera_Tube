@@ -1,5 +1,43 @@
-
 #include "IolCutBox.inc"
+#include "Iol.inc"
+
+VAR
+#include "RemContr.inc"
+
+CapacitiveSimulated     AT %cOpt0.0;        * Capacitive simulated
+IncStepQuota:            DWORD;  * Quota di incremento per controllo calibrazione
+END_VAR
+
+VAR_IN_OUT
+#include "mem.inc"
+BTN_START_CALIB         AT %Capacitive0.cButton0;    ** HMI
+
+CURVE_Y_P0              AT %rPlc10;
+CURVE_Y_P1              AT %rPlc11;
+CURVE_Y_P2              AT %rPlc12;
+CURVE_Y_P3              AT %rPlc13;
+CURVE_Y_P4              AT %rPlc14;
+CURVE_Y_P5              AT %rPlc15;
+CURVE_Y_P6              AT %rPlc16;
+CURVE_Y_P7              AT %rPlc17;
+CURVE_Y_P8              AT %rPlc18;
+CURVE_Y_P9              AT %rPlc19;
+CURVE_Y_P10             AT %rPlc20;
+
+CURVE_X_P0              AT %rPlc21;
+CURVE_X_P1              AT %rPlc22;
+CURVE_X_P2              AT %rPlc23;
+CURVE_X_P3              AT %rPlc24;
+CURVE_X_P4              AT %rPlc25;
+CURVE_X_P5              AT %rPlc26;
+CURVE_X_P6              AT %rPlc27;
+CURVE_X_P7              AT %rPlc28;
+CURVE_X_P8              AT %rPlc29;
+CURVE_X_P9              AT %rPlc30;
+CURVE_X_P10             AT %rPlc31;
+
+END_VAR
+
 
 FUNCTION_BLOCK   PREC_CUTBOX
 
@@ -15,9 +53,41 @@ xPulReset:      BOOL;
 
 END_VAR
 
-VAR_OUTPUT
+VAR
+FT_PRGRUN:              F_TRIG;
+RTRIG_REQUEST:          R_TRIG;     ** HMI
+RTRIG_CALIB:            R_TRIG;     ** Remote Controller
 
+CalibRequest:           BOOL;   * Calib request
+CALIBRAZIONE_RUN:       BOOL;   * Programma calibrazione in corso
 END_VAR
+
+VAR_OUTPUT
+yExeCalib:              BOOL;   ** Calibration requested
+yFarDistance:           BOOL;   ** Distance sensor outside the measurement range
+yTipTouch:              BOOL;   ** Tip Touch error
+END_VAR
+
+CAL  FT_PRGRUN(CLK=PRGRUN_CN0)     ** M0.0 cn0.rc8.0  Programma in corso
+CAL  RTRIG_REQUEST(CLK=BTN_START_CALIB) ** Calibration START button
+CAL  RTRIG_CALIB(CLK:=RemContrCalib) ** Xhc_Puls.12 Execute calibration
+
+LD   RTRIG_REQUEST.Q
+OR   RTRIG_CALIB.Q                 ** Xhc_Puls.12 Execute calibration)
+AND  MACC_TARATA                   ** (gPlc0.9)Assi tarati
+OR   CalibRequest                  ** Calib request
+S    CalibRequest                  ** Calib request
+
+LD   M30_CN0                       ** M0.13 M30:EndProgram CN0
+OR   MACC_ALARM                    ** (gPlc0.10)Macchina in allarme
+OR   RESET_ALLARMI                 ** M100.4  Cancellazione allarmi attiva
+OR   FT_PRGRUN.Q
+R    CalibRequest                  ** Calib request
+
+LD   CalibRequest                  ** Calib request
+ST   CALIBRAZIONE_RUN              ** Programma calibrazione in corso
+ST   yExeCalib                     ** Calibration requested
+
 
 PATH  %ecat_ring0
 PATH  %EcatNode[xEcatNode]
@@ -254,6 +324,175 @@ ST   Ec_ControlDynamicBand                *   AT %EcMDPOut37;
 LD   PLC_MaxTemperatureSensorUnit      *    AT %MaxTempSensorUnit;
 ST   Ec_MaxTemperatureSensorUnit           *  AT %EcMDPOut38; 
 
+LD  FarDistance
+ST  yFarDistance                         ** Distance sensor outside the measurement range
+
+LD   AlarmTipTouch
+ST   yTipTouch
+
+
+
+
+*****************************************************************************
+* Calibration Control
+*****************************************************************************
+
+LD   %SoftBtn0.20
+JMPCN NoInitCurveCap
+
+    LD   0
+    ST   CURVE_Y_P0
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    DIV  10000
+    ST   CURVE_Y_P1
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  2
+    DIV  10000
+    ST   CURVE_Y_P2
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  3
+    DIV  10000
+    ST   CURVE_Y_P3
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  4
+    DIV  10000
+    ST   CURVE_Y_P4
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  5
+    DIV  10000
+    ST   CURVE_Y_P5
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  6
+    DIV  10000
+    ST   CURVE_Y_P6
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  7
+    DIV  10000
+    ST   CURVE_Y_P7
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  8
+    DIV  10000
+    ST   CURVE_Y_P8
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  9
+    DIV  10000
+    ST   CURVE_Y_P9
+
+    *LD   409500                           * Capacitive sensor resolution 1mm
+    LD   AnalCapFeedback       *Capacitive analog resolution
+    MUL  1000
+    MUL  10
+    DIV  10000
+    ST   CURVE_Y_P10
+
+NoInitCurveCap:
+
+LD   1000
+ST   IncStepQuota
+
+LD   %LSRCostK31
+EQ   20000
+JMPCN SetTenMM
+
+    LD   2000
+    ST   IncStepQuota
+
+SetTenMM:
+
+LD   0
+ST   CURVE_X_P0
+
+LD   CURVE_X_P0
+ADD  IncStepQuota
+ST   CURVE_X_P1
+
+LD   CURVE_X_P1
+ADD  IncStepQuota
+ST   CURVE_X_P2
+
+LD   CURVE_X_P2
+ADD  IncStepQuota
+ST   CURVE_X_P3
+
+LD   CURVE_X_P3
+ADD  IncStepQuota
+ST   CURVE_X_P4
+
+LD   CURVE_X_P4
+ADD  IncStepQuota
+ST   CURVE_X_P5
+
+LD   CURVE_X_P5
+ADD  IncStepQuota
+ST   CURVE_X_P6
+
+LD   CURVE_X_P6
+ADD  IncStepQuota
+ST   CURVE_X_P7
+
+LD   CURVE_X_P7
+ADD  IncStepQuota
+ST   CURVE_X_P8
+
+LD   CURVE_X_P8
+ADD  IncStepQuota
+ST   CURVE_X_P9
+
+LD   CURVE_X_P9
+ADD  IncStepQuota
+ST   CURVE_X_P10
+
+* Questo per evitare di modificare la curva trovata
+
+LD   0
+ST   %rPlc32
+LD   %LsIso90
+ST   %rPlc33
+LD   %LsIso91
+ST   %rPlc34
+LD   %LsIso92
+ST   %rPlc35
+LD   %LsIso93
+ST   %rPlc36
+LD   %LsIso94
+ST   %rPlc37
+LD   %LsIso95
+ST   %rPlc38
+LD   %LsIso96
+ST   %rPlc39
+LD   %LsIso97
+ST   %rPlc40
+LD   %LsIso98
+ST   %rPlc41
+LD   %LsIso99
+ST   %rPlc42
 
 
 END_FUNCTION_BLOCK 
