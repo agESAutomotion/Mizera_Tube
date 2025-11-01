@@ -194,9 +194,15 @@ no_calibration_bevel:
 *LD   TempCapacitiveSensorPoints
 *ST   Capacit_Anal                  ** (C102)Analogica Capacitivo
 
+*LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
+*MUL  MaxVolt_x100
+*DIV  MaxADCPoints
+*ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
+
 LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
-MUL  MaxVolt_x100
-DIV  MaxADCPoints
+MUL  20000
+DIV  4095
+DIV  10
 ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
 
 
