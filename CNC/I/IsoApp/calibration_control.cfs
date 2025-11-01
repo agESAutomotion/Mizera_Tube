@@ -28,7 +28,7 @@ DBL j,i,i_err,i_quota,i_calc
 DBL ValSamp
 DBL CalibOK
 DBL ErrorFound
-DBL Debug = 1
+DBL Debug = 0
 
 SYN
 ?%LsIso10.1 = 0             ; Iso said calibration control done 
