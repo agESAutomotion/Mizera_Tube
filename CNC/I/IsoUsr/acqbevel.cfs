@@ -25,6 +25,7 @@ DBL StepZ = 0
 DBL lstLowVal = 0
 DBL indloop = 0
 DBL Z_FEED = 1000
+DBL pdsel = 41  
 
 DBL Debug = 0
 
