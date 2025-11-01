@@ -28,7 +28,7 @@ DBL Debug2 = 1
 ?%LsIso17.0 = 1     ; Disable tip touch
 
 IF (Debug2 == 1) THEN
-    G153 G0 Z(200)      ;Posizione "Z" al finecorsa Software - 10 mm
+    G153 G0 Z(200)
 ELSE
     G153 G0 Z((%ax29.pa22 / 1000) - 10)      ;Posizione "Z" al finecorsa Software - 10 mm
 ENDIF
@@ -62,6 +62,7 @@ IF (Debug == 1 ) M0
     SYN
     kine_z = GET(Z) 
     G10 G0 Z(QCALC(Z)) 
+    touch_pos = kine_z      ; Used in the bevel linearization routine
 
 IF (Debug == 1 ) M0
 
