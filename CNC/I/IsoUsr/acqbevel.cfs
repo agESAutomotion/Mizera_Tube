@@ -79,7 +79,7 @@ ENDIF
 SYN
 IF( %TsCalib[2].enab == 1 ) THEN
     angle = %TsCalib[2].targ_b_axis
-    RPT .FUN_PROBING_S, .FUN_PROBING_E, 11       ; Redo the probing in order to set the the nozzle at proper height
+    RPT .FUN_PROBING_S, .FUN_PROBING_E, 1       ; Redo the probing in order to set the the nozzle at proper height
     z = z_touch
     pdsel = 43  
     RPT .FUN_ACQ_START, .FUN_ACQ_END, 1
@@ -91,7 +91,7 @@ ENDIF
 SYN
 IF( %TsCalib[3].enab == 1 ) THEN
     angle = %TsCalib[3].targ_b_axis
-    RPT .FUN_PROBING_S, .FUN_PROBING_E, 11       ; Redo the probing in order to set the the nozzle at proper height
+    RPT .FUN_PROBING_S, .FUN_PROBING_E, 1       ; Redo the probing in order to set the the nozzle at proper height
     z = z_touch
     pdsel = 44
     RPT .FUN_ACQ_START, .FUN_ACQ_END, 1
