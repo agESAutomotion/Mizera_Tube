@@ -59,7 +59,10 @@ no_loop:
         
     LD     BtnGuiVshapeZ1_Dwn                ** (%SUPPORTS_SYSTEM.GUI.6)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
-    OR     Force_Open_Center_1
+    OR (
+        LD  Force_Open_Center_1
+        AND I_I_Support_1_Dwn
+    )
     OR (
         LD PosUMis
         LT SUPPORT_1_Quota
@@ -136,7 +139,10 @@ no_loop:
         
     LD     BtnGuiVshapeZ2_Dwn                ** (%SUPPORTS_SYSTEM.GUI.7)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
-    OR     Force_Open_Center_2
+    OR (
+        LD  Force_Open_Center_2
+        AND I_I_Support_2_Dwn
+    )    
     OR (
         LD PosUMis
         LT SUPPORT_2_Quota
@@ -213,7 +219,10 @@ no_loop:
         
     LD     BtnGuiVshapeZ3_Dwn                ** (%SUPPORTS_SYSTEM.GUI.8)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
-    OR     Force_Open_Center_3
+    OR (
+        LD  Force_Open_Center_3
+        AND I_I_Support_3_Dwn
+    )    
     OR (
         LD PosUMis
         LT SUPPORT_3_Quota
@@ -290,7 +299,10 @@ no_loop:
         
     LD     BtnGuiVshapeZ4_Dwn                ** (%SUPPORTS_SYSTEM.GUI.9)
     OR     BtnGuiVshapeAllZ_Dwn              ** (%SUPPORTS_SYSTEM.GUI.1)
-    OR     Force_Open_Center_4
+    OR (
+        LD  Force_Open_Center_4
+        AND I_I_Support_4_Dwn
+    )    
     OR (
         LD PosUMis
         LT SUPPORT_4_Quota
