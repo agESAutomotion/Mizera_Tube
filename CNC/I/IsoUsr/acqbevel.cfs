@@ -18,6 +18,8 @@ DBL ABSINC  = 0x01
 DBL VOUT0   = 0x04
 DBL VOUT    = 0x08
 DBL VMAX    = 0x10
+DBL LevelE = 0                     ; [(Normale close)  Aspetta il segnale a 0 per uscire dal comando]
+DBL LevelS = 1                     ; [(Normale open)   Aspetta il segnale a 1 per uscire dal comando]
 DBL VHIGH  = 2000
 DBL VLOW   = 200
 DBL z_touch, zz
