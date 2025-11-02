@@ -119,16 +119,16 @@ ST   I_I_Support_6_Dwn_Un
 LD   I_Support_7_Dwn_Un
 ST   I_I_Support_7_Dwn_Un
 
-LDN   I_Support_1_Up
+LD   I_Support_1_Up
 ST   I_I_Support_1_Up
 
-LDN   I_Support_2_Up         
+LD   I_Support_2_Up         
 ST   I_I_Support_2_Up
 
-LDN   I_Support_3_Up
+LD   I_Support_3_Up
 ST   I_I_Support_3_Up
 
-LDN   I_Support_4_Up
+LD   I_Support_4_Up
 ST   I_I_Support_4_Up
 
 LDN   I_Support_5_Up
