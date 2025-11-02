@@ -276,28 +276,28 @@ IF ( Debug_Loader ) M0
 
 
 G153
-G4005 S(AXIDX(9,Y))		; ungear axis 81
-G4005 S(AXIDX(9,Z))		; ungear axis 82
-G4005 S(AXIDX(9,U))		; ungear axis 83
-G4005 S(AXIDX(9,V))		; ungear axis 84
+G4005 S(AXIDX(5,Y))		; ungear axis 51
+G4005 S(AXIDX(5,Z))		; ungear axis 52
+G4005 S(AXIDX(5,U))		; ungear axis 53
+G4005 S(AXIDX(5,V))		; ungear axis 54
 G152
 G4099
 
 G153 
-G4010 M(AXIDX(X)) S(AXIDX(9,Z)) I1						; gear axis 82 (O2) to 0
-IF (AEXISTS(9,Y)) G4010 M(AXIDX(Y)) S(AXIDX(9,Y)) I1	; gear axis 81 (O1) to 1
-IF (AEXISTS(9,U)) G4010 M(AXIDX(Z)) S(AXIDX(9,U)) I1    ; gear axis 83 (O3) to 2
-IF (AEXISTS(9,V)) G4010 M(AXIDX(V)) S(AXIDX(9,V)) I1    ; gear axis 84 (O4) to 7
+G4010 M(AXIDX(X)) S(AXIDX(5,Z)) I1						; gear axis 52 (Z2) to 0
+IF (AEXISTS(5,Y)) G4010 M(AXIDX(Y)) S(AXIDX(5,Y)) I1	; gear axis 51 (Z1) to 1
+IF (AEXISTS(5,U)) G4010 M(AXIDX(Z)) S(AXIDX(5,U)) I1    ; gear axis 53 (Z3) to 2
+IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1    ; gear axis 54 (Z4) to 7
 G152   
 G4099 
 
 G153 G1 X(TubeVerticalCenterShift) Y(TubeVerticalCenterShift) Z(TubeVerticalCenterShift) V(TubeVerticalCenterShift) F3000  
 
 G153
-IF (AEXISTS(9,Y)) G4005 S(AXIDX(9,Y))		; ungear axis 81
-IF (AEXISTS(9,U)) G4005 S(AXIDX(9,Z))		; ungear axis 82
-IF (AEXISTS(9,U)) G4005 S(AXIDX(9,U))		; ungear axis 83
-IF (AEXISTS(9,V)) G4005 S(AXIDX(9,V))		; ungear axis 84
+G4005 S(AXIDX(5,Z))						; ungear axis 52
+IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))	; ungear axis 51
+IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))	; ungear axis 53
+IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))	; ungear axis 56
 G152
 G4099
 
