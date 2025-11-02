@@ -177,6 +177,7 @@ PATH  %ax81
     ST   SUP1.xLimitSuppDwn   
 
     LD   ParkAllLoadSuppCmd_LAT
+    OR   ParkAllLoadSuppCmd
     OR   Fun_M725_Ch0   
     OR   ParkUn51Sup_ISO
     OR (
@@ -214,6 +215,7 @@ JMPCN no_support_2
     ST   SUP2.xLimitSuppDwn   
 
     LD   ParkAllLoadSuppCmd_LAT
+    OR   ParkAllLoadSuppCmd
     OR   Fun_M725_Ch0   
     OR   ParkUn52Sup_ISO
     OR (
@@ -251,6 +253,7 @@ JMPCN no_support_3
     ST   SUP3.xLimitSuppDwn   
 
     LD   ParkAllLoadSuppCmd_LAT
+    OR   ParkAllLoadSuppCmd
     OR   Fun_M725_Ch0   
     OR   ParkUn53Sup_ISO
     OR (
@@ -288,6 +291,7 @@ JMPCN no_support_4
     ST   SUP4.xLimitSuppDwn   
 
     LD   ParkAllLoadSuppCmd_LAT
+    OR   ParkAllLoadSuppCmd
     OR   Fun_M725_Ch0   
     OR   ParkUn54Sup_ISO 
     OR (
