@@ -88,10 +88,24 @@ G4 F0.1
 
 
 
-; ParkAllLoadSuppCmd AT %SUPPORTS_SYSTEM.values13.5;
 IF ( Debug_Loader ) M0
-?%SUPPORTS_SYSTEM.values13.5 = 1       ; This command triggers a chain reaction  
 
+; ParkAllLoadSuppCmd AT %SUPPORTS_SYSTEM.values13.5;
+?%SUPPORTS_SYSTEM.values13.5 = 1  
+
+
+M725                ; Supports down command in automatic mode
+; I_I_Support_1_Dwn   AT  %USR_M0.13;   ; Piston support down
+; I_I_Support_2_Dwn   AT  %USR_M0.14;   ; Piston support down
+; I_I_Support_3_Dwn   AT  %USR_M0.15;   ; Piston support down
+; I_I_Support_4_Dwn   AT  %USR_M0.16;   ; Piston support down
+WAITBIT("%USR_M0.13",1)
+WAITBIT("%USR_M0.14",1)
+WAITBIT("%USR_M0.15",1)
+WAITBIT("%USR_M0.16",1)
+
+
+M455  ;Close centerings (v-shapes down)
 ; I_I_VshapeZ1_Dwn AT  %USR_M49.4;
 ; I_I_VshapeZ2_Dwn AT  %USR_M49.5;
 ; I_I_VshapeZ3_Dwn AT  %USR_M49.6;
@@ -101,14 +115,6 @@ WAITBIT("%USR_M49.5",1)
 WAITBIT("%USR_M49.6",1)
 WAITBIT("%USR_M49.7",1)
 
-;I_I_Support_1_Up    AT  %USR_M1.13;
-;I_I_Support_2_Up    AT  %USR_M1.14;
-;I_I_Support_3_Up    AT  %USR_M1.15;
-;I_I_Support_4_Up    AT  %USR_M1.16;
-WAITBIT("%USR_M1.13",1)
-WAITBIT("%USR_M1.14",1)
-WAITBIT("%USR_M1.15",1)
-WAITBIT("%USR_M1.16",1)
 
 
 SYN
