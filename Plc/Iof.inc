@@ -36,7 +36,7 @@ I_Loader_Alarm                  AT %IW1.5;    ** Ok loading inverter
 I_FixedSpindle_Open             AT %IW1.9;    ** Chuck 2 open 
 I_Mobile_Spindle_Slave_Open_Jaws AT %IW1.10;   ** Chuck 3 open Jaws
 I_Mobile_Spindle_Slave_Open     AT %IW1.11;   ** Chuck 3 open Rollers
-I_TubeDetected                  AT %IW1.12;   ** Edge detection
+I_TubeMobile_Spindle            AT %IW1.12;   ** Edge detection
 I_Mobile_Spindle_Close          AT %IW1.13;   ** Chuck 1 origin - closed?
 I_FixedSpindle_Close            AT %IW1.14;   ** Chuck 2 origin - closed?
 I_Mobile_Spindle_Slave_Close    AT %IW1.15;   ** Chuck 3 origin - closed?
@@ -228,7 +228,7 @@ I_SAFETY_CabDoor             AT %PLCFLAGS.1;
 * I_PRESSIONE_N2               AT %IW4.15;
 
 ** 16 input - On CNC board position 2 - 2 
-I_TubeMobile_Spindle            AT %PLCFLAGS.0;
+* I_TubeMobile_Spindle            AT %PLCFLAGS.0;
 I_TubeFix_Spindle               AT %PLCFLAGS.1;
 I_Detec_Weld                    AT %PLCFLAGS.0;
 I_Pic_Weld                      AT %PLCFLAGS.0;
