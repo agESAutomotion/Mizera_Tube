@@ -59,35 +59,11 @@ ENDIF
 IF( LstBreakPoint != 0 ) JMPF .skiploadinit
 
 ; Park all loader supports
-SYN
-IF ( Debug_Loader ) M0
-; M725  ** Auto Down Command - Force parking from autocycle
-        ; WARNING: this command triggers simultaneous parking
-        ; of vertical and horizonal components of loader supports
-G4 F0.1
-
-
-; M455                ; Close centering (v-shapes down)
-; SYN
-; ; I_I_VshapeZ1_Dwn AT  %USR_M49.4;
-; ; I_I_VshapeZ2_Dwn AT  %USR_M49.5;
-; ; I_I_VshapeZ3_Dwn AT  %USR_M49.6;
-; ; I_I_VshapeZ4_Dwn AT  %USR_M49.7;
-; WAITBIT("%%USR_M49.4",0)
-; WAITBIT("%%USR_M49.5",0)
-; WAITBIT("%%USR_M49.6",0)
-; WAITBIT("%%USR_M49.7",0)
 
 ; Here needs to check also if tube exsists signals ------------------->
 
 
-
-
-
-
-
-
-
+MSGOUT " Parking vertical supports "
 IF ( Debug_Loader ) M0
 
 ; ParkAllLoadSuppCmd AT %SUPPORTS_SYSTEM.values13.5;
@@ -105,7 +81,7 @@ WAITBIT("%USR_M0.15",1)
 WAITBIT("%USR_M0.16",1)
 
 
-M455  ;Close centerings (v-shapes down)
+M455                ; Close centerings (v-shapes down)
 ; I_I_VshapeZ1_Dwn AT  %USR_M49.4;
 ; I_I_VshapeZ2_Dwn AT  %USR_M49.5;
 ; I_I_VshapeZ3_Dwn AT  %USR_M49.6;
@@ -123,11 +99,16 @@ AWAIT( ABS((%ax51.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 AWAIT( ABS((%ax52.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 AWAIT( ABS((%ax53.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 AWAIT( ABS((%ax54.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
-SYN
+
+
+MSGOUT " Parking horizontal supports "
+IF ( Debug_Loader ) M0
+
 ?%SUPPORTS_SYSTEM.values13.5 = 0        ; Reset here in order for the SUPx.yReqGrant
                                         ; to reset and allow the movement of the  
                                         ; horizontal supports
 
+SYN
 ; ParkingPosLoad_lat       AT %LOADER.values16;
 AWAIT( ABS((%ax81.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
 AWAIT( ABS((%ax82.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
