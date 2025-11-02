@@ -2,7 +2,7 @@
 
 ; Semi-Loader Part 1: Park all components, allow the operator to load the pipe
 
-DBL Debug_Loader = 0
+DBL Debug_Loader = 1
 DBL UpSupVoffset = 0
 DBL UpSupHgt = ABS(%gIso24) / 2.000		; gIso24 : (tube height) Measure of pipe along Z
 DBL SkipStpTo = %PROG_ONE.values11		; Last loader step (case external loader?)
@@ -39,8 +39,8 @@ ENDIF
 
 ; MidSpdClosing  AT  %USR_M41.27;
 ; SlaveSpdClosing  AT  %USR_M41.29;
-WAITBIT("%USR_M41.27",0)	; 2nd spindle not closing???
-WAITBIT("%USR_M41.29",0)	; 3rd spindle not closing???
+WAITBIT("%USR_M41.27",0)	; 2nd spindle close command not active
+WAITBIT("%USR_M41.29",0)	; 3rd spindle close command not active
 
 ; Open X (ax30)
 IF( !%USR_M0.27 ) M720 		; If 1st spindle is not open, open
@@ -96,7 +96,7 @@ SetupAidsDone = 0
 MSGOUT "Chain Forward in process..."
 IF( Debug_Loader ) M0
 
-.Retry_Chain
+.Retry_Loader
 RPT .Chain_Fwd_Start, .Chain_Fwd_End, 3
 ; I_I_TubeOnChain     AT %USR_M12.14;   ** Tube ready to be loaded by the supports (end of loader chain)
 IF (!(%USR_M12.14)) THEN
@@ -328,6 +328,7 @@ RET
 	WAITBIT("%USR_M12.16",0)                 
 	WAITBIT("%USR_M12.16",1)
 
+	IF ( Debug_Loader ) M0
 	; I_I_TubeOnChain     AT %USR_M12.14;   ** Tube ready to be loaded by the supports (end of loader chain)
 	IF (%USR_M12.14) JMP .Loader_End
 .Chain_Fwd_End
