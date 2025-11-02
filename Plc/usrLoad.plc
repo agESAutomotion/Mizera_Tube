@@ -46,7 +46,7 @@ LD     ch0_ValFunM
 EQ     443
 AND    PRGRUN_CN0 
 ANDN   PRGSTOP_CN0
-ANDN   Chain_Aligned
+*ANDN   Chain_Aligned
 OR (
     LD     BtnGuiChainForw
     ANDN   PRGRUN_CN0
