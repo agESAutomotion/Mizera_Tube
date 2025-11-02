@@ -124,13 +124,15 @@ AWAIT( ABS((%ax52.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 AWAIT( ABS((%ax53.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 AWAIT( ABS((%ax54.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
 SYN
+?%SUPPORTS_SYSTEM.values13.5 = 0        ; Reset here in order for the SUPx.yReqGrant
+                                        ; to reset and allow the movement of the  
+                                        ; horizontal supports
 
 ; ParkingPosLoad_lat       AT %LOADER.values16;
 AWAIT( ABS((%ax81.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
 AWAIT( ABS((%ax82.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
 AWAIT( ABS((%ax83.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
 AWAIT( ABS((%ax84.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
-?%SUPPORTS_SYSTEM.values13.5 = 0 
 
 SelfLockSLoader = 1
 
