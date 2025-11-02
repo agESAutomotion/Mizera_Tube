@@ -64,6 +64,7 @@ S  HoldWhileVertMove
 
 LD   All_Sup_DWN                                    ** All piston supports are down
 AND  All_Vshape_DWN                                 ** All auxiliary V-Shapes are down
+OR   Pul_Reset
 R    HoldWhileVertMove
 
 PATH %cn9
