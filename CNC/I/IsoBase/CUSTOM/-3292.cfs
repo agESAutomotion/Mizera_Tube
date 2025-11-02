@@ -277,7 +277,8 @@ JSR "DynSet_pipe.cfs"
 IF( start_track == 0 ) tube_len = ABS(xs-xe)
 
 IF( subpart == 0 ) THEN 
-   
+
+    M0
     ; Not 1000.pgm, Not disable loader, Not tube calibration, Not user function with START
     IF( (!%gPlc0.29) && (!%PlcOp0.18) && (!%CalPipe.General.3) && (%ServiceMillePGM == 0) && (!%LSRPlcOp0.21) ) JSR "LoadTube.cfs"
  
