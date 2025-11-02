@@ -56,7 +56,7 @@ IF( SelfLockSLoader == 0 ) THEN
     ?%LsGui71.4 = 0
 ENDIF
 
-IF( LstBreakPoint != 0 ) JMPF .skiploadinit
+IF( LstBreakPoint != 0 ) RET
 
 ; Park all loader supports
 
