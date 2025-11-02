@@ -10,6 +10,7 @@ DBL MaxHeightSupport = %ax51.pa22 / 1000
 DBL MinHeightSupport = %ax51.pa21 / 1000
 DBL TubeHorizontalCenterShift = 0
 DBL TubeVerticalCenterShift = 0
+DBL PistonStroke = %SUPPORTS_SYSTEM.values23		; the amount of mm that the cylinder extends
 
 IF( %cn[WHO()].pc[14].25 ) RET
 
@@ -203,8 +204,29 @@ IF ( %gIso26 == 0 && ABS(%gIso23 - %gIso24) > 0.5 ) THEN
 	TubeHorizontalCenterShift = SQRT(2) / 2 * ABS(%gIso23 - %gIso24) / 2 
 	TubeVerticalCenterShift = SQRT(2) / 2 * (%gIso23 + %gIso24) / 2
 
+	IF (TubeVerticalCenterShift > MaxHeightSupport) THEN
+		; if the vertical offset is greater than the maximum that the support
+		; can go down, then the cylinders have to go down and the height 
+		; difference between the cylinders and the vertical shift will be 
+		; compensated by the axis support
+
+		M725                ; Supports down command in automatic mode
+		; I_I_Support_1_Dwn   AT  %USR_M0.13;   ; Piston support down
+		; I_I_Support_2_Dwn   AT  %USR_M0.14;   ; Piston support down
+		; I_I_Support_3_Dwn   AT  %USR_M0.15;   ; Piston support down
+		; I_I_Support_4_Dwn   AT  %USR_M0.16;   ; Piston support down
+		WAITBIT("%USR_M0.13",1)
+		WAITBIT("%USR_M0.14",1)
+		WAITBIT("%USR_M0.15",1)
+		WAITBIT("%USR_M0.16",1)
+
+		TubeVerticalCenterShift = TubeVerticalCenterShift - PistonStroke
+
+	ENDIF
+
 ELSEIF (roundFlag) THEN 
 	; case round tube
+	TubeHorizontalCenterShift = 0							; just for the sake of completeness
 	TubeVerticalCenterShift = %gIso24 * (2.000 / (SQRT(3.000)) - 1)
     
 ENDIF
