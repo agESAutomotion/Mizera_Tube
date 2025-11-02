@@ -12,7 +12,7 @@ L_COM_PrkPos = %LOADER.values15 / 1000;
 DBL lifter_A[10], lifter_D[10]
 WAITBIT("%ax60.ra3.28",0) 
 
-DBL velAxisx = %ax[AXIDX(5,X)].pa9
+DBL velAxisx = %ax[AXIDX(5,X)].pa9           ; max speed ax50 (Lu) mm/min
 DBL innerRadius = MIN(ABS( %gIso[24] ), ABS( %gIso[23] )) / 2
 DBL outerRadiusPlusone = optimized_lift - 19
 DBL filterT1Rate = velAxisx / (outerRadiusPlusone - innerRadius) 
@@ -97,16 +97,16 @@ SYN
 ;// Check Following Condition from PLC
 G153
 IF ((QCALC(AXIDX(3,X)) - 200) > ldPos[4]) THEN 
-   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = lifter_A[3]  POS[V] = lifter_A[4]  FA[X] = 15000 FA[Y] = 15000 FA[Z] = 15000 FA[V] = 15000
+   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = lifter_A[3]  POS[V] = lifter_A[4]  FA[X] = velAxisx FA[Y] = velAxisx FA[Z] = velAxisx FA[V] = velAxisx
    EnFollowStatus = 4
 ELSEIF (((QCALC(AXIDX(3,X))- 200)  <= (ldPos[4])) && ((QCALC(AXIDX(3,X)) -200) > ldPos[3])) THEN 
-   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = lifter_A[3]  POS[V] = L_COM_PrkPos  FA[X] = 15000 FA[Y] = 15000 FA[Z] = 15000 FA[V] = 15000
+   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = lifter_A[3]  POS[V] = L_COM_PrkPos  FA[X] = velAxisx FA[Y] = velAxisx FA[Z] = velAxisx FA[V] = velAxisx
    EnFollowStatus = 3
 ELSEIF (((QCALC(AXIDX(3,X))-200) <= ldPos[3]) && ((QCALC(AXIDX(3,X))- 200) > ldPos[2])) THEN 
-   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = L_COM_PrkPos  POS[V] = L_COM_PrkPos  FA[X] = 15000 FA[Y] = 15000 FA[Z] = 15000 FA[V] = 15000
+   POS[X] = lifter_A[1]  POS[Y] = lifter_A[2] POS[Z] = L_COM_PrkPos  POS[V] = L_COM_PrkPos  FA[X] = velAxisx FA[Y] = velAxisx FA[Z] = velAxisx FA[V] = velAxisx
    EnFollowStatus = 2
 ELSEIF (((QCALC(AXIDX(3,X))-200) <= ldPos[2]) && ((QCALC(AXIDX(3,X))- 200) > ldPos[1])) THEN  
-   POS[X] = lifter_A[1]  POS[Y] = L_COM_PrkPos POS[Z] = L_COM_PrkPos  POS[V] = L_COM_PrkPos  FA[X] = 15000 FA[Y] = 15000 FA[Z] = 15000 FA[V] = 15000
+   POS[X] = lifter_A[1]  POS[Y] = L_COM_PrkPos POS[Z] = L_COM_PrkPos  POS[V] = L_COM_PrkPos  FA[X] = velAxisx FA[Y] = velAxisx FA[Z] = velAxisx FA[V] = velAxisx
    EnFollowStatus = 1
 ENDIF
 
