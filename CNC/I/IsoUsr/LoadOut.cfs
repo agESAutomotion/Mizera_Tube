@@ -6,7 +6,8 @@ DBL Debug_Loader = 1
 DBL UpSupVoffset = 0
 DBL UpSupHgt = ABS(%gIso24) / 2.000		; gIso24 : (tube height) Measure of pipe along Z
 DBL SkipStpTo = %PROG_ONE.values11		; Last loader step (case external loader?)
-DBL MaxHeightSupport = %ax51.pa22
+DBL MaxHeightSupport = %ax51.pa22 / 1000
+DBL MinHeightSupport = %ax51.pa21 / 1000
 DBL TubeHorizontalCenterShift = 0
 DBL TubeVerticalCenterShift = 0
 
@@ -172,7 +173,7 @@ IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1    ; gear axis 54 (Z4) to 7
 G152   
 G4099 
 
-G153 G1 X(MaxHeightSupport) Y(MaxHeightSupport) Z(MaxHeightSupport) V(MaxHeightSupport) F3000  
+G153 G1 X(MinHeightSupport) Y(MinHeightSupport) Z(MinHeightSupport) V(MinHeightSupport) F3000  
 
 G153
 G4005 S(AXIDX(5,Z))						; ungear axis 52
