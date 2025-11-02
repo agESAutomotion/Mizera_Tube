@@ -154,7 +154,7 @@ WAITBIT("%USR_M1.16",1)    ; Vertical pneumatic support 4 up
 N3
 
 SYN
-MSGOUT " Raising servo motor supports to " MaxHeightSupport
+MSGOUT " Raising servo motor supports to " MinHeightSupport
 IF ( Debug_Loader ) M0
 
 G153
