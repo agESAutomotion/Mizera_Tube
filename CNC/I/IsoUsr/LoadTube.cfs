@@ -136,9 +136,9 @@ IF( start_track == 0 ) THEN
 	   
 	   ; Ensure photocells working well (Middle Spindle)
 	   ; I_I_TubeFix_Spindle    AT  %USR_M1.28; 
-	   SYN
-	   MSGOUT " Photocell(Tube on spindles Detecting ... ) " 
-	   AWAIT( (%USR_M1.27) && (%USR_M1.28) )
+	   ; SYN
+	   ; MSGOUT " Photocell(Tube on spindles Detecting ... ) " 
+	   ; AWAIT( (%USR_M1.27) && (%USR_M1.28) )
         
       ; Close Fixed spindle
       IF ( Debug_LoadTube ) M0
