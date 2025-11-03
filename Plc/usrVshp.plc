@@ -100,6 +100,7 @@ no_loop:
         EQ     333
     )
     OR     Fun_M455_Ch0
+    OR     Fun_M456_Ch0
     ST     VShapeVertSup1.xAutoMinus    
         
     LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
@@ -181,6 +182,7 @@ no_loop:
         EQ     333
     )
     OR     Fun_M455_Ch0
+    OR     Fun_M457_Ch0
     ST     VShapeVertSup2.xAutoMinus    
         
     LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
@@ -262,6 +264,7 @@ no_loop:
         EQ     333
     )
     OR     Fun_M455_Ch0
+    OR     Fun_M458_Ch0
     ST     VShapeVertSup3.xAutoMinus    
         
     LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
@@ -343,6 +346,7 @@ no_loop:
         EQ     333
     )
     OR     Fun_M455_Ch0
+    OR     Fun_M459_Ch0
     ST     VShapeVertSup4.xAutoMinus    
         
     LD     I_I_PRESSIONE_ARIA_IMPIANTO    ** **(Common for all pistons) %USR_M0
