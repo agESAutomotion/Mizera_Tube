@@ -19,6 +19,11 @@ AdvOpen:              DWORD;
 
 F_TRIG_RES_FOLL:     F_TRIG;  
 
+ParkO1FromIso        AT %M254.4;
+ParkO2FromIso        AT %M254.5;
+ParkO3FromIso        AT %M254.6;
+ParkO4FromIso        AT %M254.7;
+
 #include "iof.inc"
 #include "usrIof.inc"
 #include "cnc.inc"
@@ -91,6 +96,7 @@ ST   SUP3.xBlendSwitchEn
 ST   SUP4.xBlendSwitchEn
 
 LD   OptEnabAutoParkLoad
+ANDN LoadinInProgres
 ST   SUP1.xEnabAutoDwn
 ST   SUP2.xEnabAutoDwn
 ST   SUP3.xEnabAutoDwn
@@ -102,6 +108,7 @@ OR   M700_BLEND
 AND  %cn0.rc8.0 
 AND  O_O_Mobile_Spindle_Close
 ANDN IN_M4_MODE
+ANDN LoadinInProgres
 ST   SUP1.xEnabAutoUp
 ST   SUP2.xEnabAutoUp
 ST   SUP3.xEnabAutoUp
@@ -185,7 +192,8 @@ PATH  %ax81
         * LD   VertSup1MovCompleted  
         ANDN %cn0.rc8.0
         AND  OptEnabAutoParkLoad
-    )  
+    )
+    OR   ParkO1FromIso
     ST   SUP1.xParkCmd              ** Only needs the rising edge
 
     CAL  SUP1
@@ -223,7 +231,8 @@ JMPCN no_support_2
         * LD   VertSup2MovCompleted    
         ANDN %cn0.rc8.0
         AND  OptEnabAutoParkLoad
-   )        
+    )
+    OR   ParkO2FromIso        
     ST   SUP2.xParkCmd
 
     CAL  SUP2
@@ -261,7 +270,8 @@ JMPCN no_support_3
         * LD   VertSup3MovCompleted   
         ANDN %cn0.rc8.0
         AND  OptEnabAutoParkLoad
-    )        
+    )
+    OR   ParkO3FromIso        
     ST   SUP3.xParkCmd
 
     CAL  SUP3
@@ -299,7 +309,8 @@ JMPCN no_support_4
         * LD   VertSup4MovCompleted    
         ANDN %cn0.rc8.0
         AND  OptEnabAutoParkLoad
-    )        
+    )       
+    OR   ParkO4FromIso 
     ST   SUP4.xParkCmd
 
     CAL  SUP4

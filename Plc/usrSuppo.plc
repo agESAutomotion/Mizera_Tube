@@ -31,6 +31,12 @@ SUP1:               SUPPORT;
 SUP2:               SUPPORT;
 SUP3:               SUPPORT;
 SUP4:               SUPPORT;
+
+ParkZ1FromIso        AT %M254.0;
+ParkZ2FromIso        AT %M254.1;
+ParkZ3FromIso        AT %M254.2;
+ParkZ4FromIso        AT %M254.3;
+
 END_VAR
 
 VAR_IN_OUT
@@ -204,6 +210,7 @@ JMPCN no_support_1
      LD   ParkAllLoadSuppCmd
      OR   Fun_M725_Ch0
      OR   ParkUn51Sup_ISO
+     OR   ParkZ1FromIso
      ST   SUP1.xParkCmd
 
      CAL  SUP1
@@ -248,6 +255,7 @@ JMPCN no_support_2
      LD   ParkAllLoadSuppCmd
      OR   Fun_M725_Ch0           * M force parking from autocycle
      OR   ParkUn52Sup_ISO
+     OR   ParkZ2FromIso
      ST   SUP2.xParkCmd
 
      CAL  SUP2
@@ -292,6 +300,7 @@ JMPCN no_support_3
      LD   ParkAllLoadSuppCmd
      OR   Fun_M725_Ch0           * M force parking from autocycle
      OR   ParkUn53Sup_ISO
+     OR   ParkZ3FromIso
      ST   SUP3.xParkCmd
 
      CAL  SUP3
@@ -337,6 +346,7 @@ JMPCN no_support_4
      LD   ParkAllLoadSuppCmd
      OR   Fun_M725_Ch0           * M force parking from autocycle
      OR   ParkUn54Sup_ISO
+     OR   ParkZ4FromIso
      ST   SUP4.xParkCmd
 
      CAL  SUP4

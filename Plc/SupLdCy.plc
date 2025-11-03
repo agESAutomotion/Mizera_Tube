@@ -20,6 +20,11 @@ SUPPORT_4:     TUBE_SUPPORT;
 SUPPORT_5:     TUBE_SUPPORT;
 SUPPORT_6:     TUBE_SUPPORT;
 SUPPORT_7:     TUBE_SUPPORT;
+
+ParkPistonZ1FromIso        AT %M254.8;
+ParkPistonZ2FromIso        AT %M254.9;
+ParkPistonZ3FromIso        AT %M254.10;
+ParkPistonZ4FromIso        AT %M254.11;
 END_VAR
 
 VAR_IN_OUT
@@ -112,6 +117,7 @@ ST   SUPPORT_1.xAutoUp
 
 LD   Fun_M725_Ch0                 ** Auto Up command for supports
 OR   yActivatedCyCom_51
+OR   ParkPistonZ1FromIso
 ST   SUPPORT_1.xAutoDwn 
 
 LD   SUPPORT_1_AutoEnable
@@ -157,6 +163,7 @@ ST   SUPPORT_2.xAutoUp
 
 LD   Fun_M725_Ch0                  ** Auto Up command for supports
 OR   yActivatedCyCom_52
+OR   ParkPistonZ2FromIso
 ST   SUPPORT_2.xAutoDwn 
 
 LD   SUPPORT_2_AutoEnable
@@ -202,6 +209,7 @@ ST   SUPPORT_3.xAutoUp
 
 LD   Fun_M725_Ch0                  ** Auto Up command for supports
 OR   yActivatedCyCom_53
+OR   ParkPistonZ3FromIso
 ST   SUPPORT_3.xAutoDwn 
 
 LD   SUPPORT_3_AutoEnable
@@ -247,6 +255,7 @@ ST   SUPPORT_4.xAutoUp
 
 LD   Fun_M725_Ch0                  ** Auto Up command for supports
 OR   yActivatedCyCom_54
+OR   ParkPistonZ4FromIso
 ST   SUPPORT_4.xAutoDwn  
 
 LD   SUPPORT_4_AutoEnable
