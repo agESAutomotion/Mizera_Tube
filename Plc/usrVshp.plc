@@ -79,6 +79,7 @@ no_loop:
     )
     OR (
         LD PosUMis
+        SUB 200000                          ** value used inside SUPPORT function block (added to have syncronism)
         LT SUPPORT_1_Quota
     )
     ST     VShapeVertSup1.xManualMinus    
@@ -159,6 +160,7 @@ no_loop:
     )    
     OR (
         LD PosUMis
+        SUB 200000                          ** value used inside SUPPORT function block (added to have syncronism)
         LT SUPPORT_2_Quota
     )
     ST     VShapeVertSup2.xManualMinus    
@@ -239,6 +241,7 @@ no_loop:
     )    
     OR (
         LD PosUMis
+        SUB 200000                          ** value used inside SUPPORT function block (added to have syncronism)
         LT SUPPORT_3_Quota
     )
     ST     VShapeVertSup3.xManualMinus    
@@ -319,6 +322,7 @@ no_loop:
     )    
     OR (
         LD PosUMis
+        SUB 200000                          ** value used inside SUPPORT function block (added to have syncronism)
         LT SUPPORT_4_Quota
     )
     ST     VShapeVertSup4.xManualMinus    
