@@ -10,6 +10,7 @@ DBL VHIGH = 5000
 DBL VLOW  = 1000
 
 DBL ax30CurrPos               ; auxiliary varaible to hold the 1st spindle current position
+DBL TheoreticalTubeLength = ABS(xe-xs)
 
 ;[mm] Tube head position in loader with respect to the head (where to catch)
 DBL AcqPosX
@@ -20,8 +21,6 @@ IF( %cn[WHO()].rc[0].21 ) RET
 IF( %cn[WHO()].pc[14].25 ) RET
 IF( %LSRPlcOp0.21 ) RET
 
-; LoadinInProgres          AT %GENERAL_SETUP.values0;
-?%GENERAL_SETUP.values0 = 1
 
 IF( %STORE.boolean.0 ) THEN	
    SYN
@@ -59,6 +58,9 @@ IF( start_track == 0 ) THEN
 
       ; IF ((%PROG_ONE.values11) > 6) JMPF((%PROG_ONE.values11))  ; > 6 because 6 is the last checkpoint in LoadOut.cfs
 	   
+      ; LoadinInProgres          AT %GENERAL_SETUP.values0;
+      ?%GENERAL_SETUP.values0 = 1
+      
       ; // Part 3: CN8 Request to prepare next tube ***************************************//
       SYN
 	   
@@ -91,13 +93,72 @@ IF( start_track == 0 ) THEN
 	   MSGOUT "Photocell tube detected on spindles" 
 	   AWAIT( (!%USR_M1.27) && (!%USR_M1.28) )
        
-      ; ; Catch the tube until (tube length + Tube_PaddlePos)
-      ; IF ( Debug_LoadTube ) M0
-      ; G153 G1 X(tube_len + Tube_PaddlePos + CatchVLessZone) F8000  
-      ; G153 G1 X(tube_len + Tube_PaddlePos) F2000  
 
-      ; %PROG_ONE.values11 = 7
-      ; N7
+      ; Based on the theoretical length given by PGM, park unnecessary supports
+      ; and move the 1st chuck closer to the tube (assuming it is placed near 
+      ; the paddle)
+
+      IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values3)) THEN
+      ; Park Support Z4
+
+         IF ( Debug_LoadTube ) M0
+         M459                 ; lower v-shape on Z4   
+         ;I_I_VshapeZ4_Up     AT  %USR_M49.3;
+         ;I_I_VshapeZ4_Dwn    AT  %USR_M49.7;
+         WAITBIT("%USR_M49.3",0) 
+         WAITBIT("%USR_M49.7",1) 
+         
+         IF ( Debug_LoadTube ) M0
+         ?%M254.11 = 1        ; ParkPistonZ4FromIso
+         ; I_I_Support_4_Up   AT  %USR_M1.16;
+         ; I_I_Support_4_Dwn  AT  %USR_M0.16;
+         WAITBIT("%USR_M1.16",1) 
+         WAITBIT("%USR_M0.16",1) 
+
+         IF ( Debug_LoadTube ) M0
+         ?%M254.3 = 1      ; ParkZ4FromIso
+         AWAIT( ABS((%ax54.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
+         ?%M254.3 = 0      ; ParkZ4FromIso
+
+         IF ( Debug_LoadTube ) M0
+         ?%M254.7 = 1        ; ParkO4FromIso
+         AWAIT( ABS((%ax84.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
+         ?%M254.7 = 0        ; ParkO4FromIso
+
+      ENDIF
+      IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values2)) THEN
+      ; Park Support Z3
+         
+         ?%M254.2 = 1      ; ParkZ3FromIso
+         AWAIT( ABS((%ax53.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
+         ?%M254.2 = 0      ; ParkZ3FromIso
+
+         IF ( Debug_LoadTube ) M0
+         M458                 ; lower v-shape on Z3   
+         ;I_I_VshapeZ3_Up     AT  %USR_M49.2;
+         ;I_I_VshapeZ3_Dwn    AT  %USR_M49.6;
+         WAITBIT("%USR_M49.2",0) 
+         WAITBIT("%USR_M49.6",1) 
+         
+         IF ( Debug_LoadTube ) M0
+         ?%M254.10 = 1        ; ParkPistonZ3FromIso
+         ; I_I_Support_3_Up   AT  %USR_M1.15;
+         ; I_I_Support_3_Dwn  AT  %USR_M0.15;
+         WAITBIT("%USR_M1.15",1) 
+         WAITBIT("%USR_M0.15",1) 
+         
+         IF ( Debug_LoadTube ) M0
+         ?%M254.6 = 1        ; ParkO3FromIso
+         AWAIT( ABS((%ax84.ra4 / 1000) - (%LOADER.values16 / 1000)) < 0.1 )
+         ?%M254.6 = 0        ; ParkO3FromIso
+      ENDIF
+
+      IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values1)) ERROR(793)   ; too short
+
+      IF ( Debug_LoadTube ) M0
+      G153 G1 X(TheoreticalTubeLength + %LOADER.values4 / 1000 + 1000) F10000  
+
+
 	   ; Catch the tube with sensor
 	   IF ( Debug_LoadTube ) M0
       SYN
@@ -139,8 +200,6 @@ IF( start_track == 0 ) THEN
       M721                             ; Close first spindle 
       G4 F2
        	   
-
-
       ; Based on the length of the tube and/or the current position of ax30, 
       ; determine a sequence for switching v-shapes to rollers 
 
@@ -321,5 +380,6 @@ IF( start_track == 0 ) THEN
 ENDIF  
 	   
 %PROG_ONE.values11 = 0
+; LoadinInProgres          AT %GENERAL_SETUP.values0;
 ?%GENERAL_SETUP.values0 = 0
 RET
