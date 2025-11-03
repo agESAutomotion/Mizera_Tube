@@ -20,6 +20,9 @@ IF( %cn[WHO()].rc[0].21 ) RET
 IF( %cn[WHO()].pc[14].25 ) RET
 IF( %LSRPlcOp0.21 ) RET
 
+; LoadinInProgres          AT %GENERAL_SETUP.values0;
+?%GENERAL_SETUP.values0 = 1
+
 IF( %STORE.boolean.0 ) THEN	
    SYN
    MSGOUT "Loader empty, please put tubes in the loader"
@@ -257,6 +260,9 @@ IF( start_track == 0 ) THEN
 
       ENDIF
 
+      ; TODO 
+      ; ROTATE THE TUBE TO 0 DEGREES AND MAKE SUPPORTS TO FOLLOW
+
       ; Extra Offset Push Tube More Inside the Machine
       IF ( Debug_LoadTube ) M0 
       G153 G1 X(tube_len - %LOADER.values3) F15000
@@ -315,5 +321,5 @@ IF( start_track == 0 ) THEN
 ENDIF  
 	   
 %PROG_ONE.values11 = 0
-
+?%GENERAL_SETUP.values0 = 0
 RET
