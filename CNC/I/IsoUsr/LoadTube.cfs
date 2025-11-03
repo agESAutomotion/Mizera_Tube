@@ -9,6 +9,8 @@ DBL Vmax = 0x10
 DBL VHIGH = 5000
 DBL VLOW  = 1000
 
+DBL ax30CurrPos               ; auxiliary varaible to hold the 1st spindle current position
+
 ;[mm] Tube head position in loader with respect to the head (where to catch)
 DBL AcqPosX
 DBL Tube_PaddlePos = 850 
@@ -51,7 +53,7 @@ IF( start_track == 0 ) THEN
   
       ; // Part 2: Positioning Spindles ***************************************************// 
 	   JSR "LoadOut.cfs"
-	   
+
       ; IF ((%PROG_ONE.values11) > 6) JMPF((%PROG_ONE.values11))  ; > 6 because 6 is the last checkpoint in LoadOut.cfs
 	   
       ; // Part 3: CN8 Request to prepare next tube ***************************************//
@@ -90,7 +92,7 @@ IF( start_track == 0 ) THEN
       ; IF ( Debug_LoadTube ) M0
       ; G153 G1 X(tube_len + Tube_PaddlePos + CatchVLessZone) F8000  
       ; G153 G1 X(tube_len + Tube_PaddlePos) F2000  
-   
+
       ; %PROG_ONE.values11 = 7
       ; N7
 	   ; Catch the tube with sensor
@@ -109,7 +111,7 @@ IF( start_track == 0 ) THEN
 	   AcqPosX = GET(X)
 	   G10 G0 X(QCALC(X))			
 	   G152	
-	     
+	   
 	   SYN	
 	   ; Close Spindle Position
 	   IF ( Debug_LoadTube ) M0
@@ -134,6 +136,127 @@ IF( start_track == 0 ) THEN
       M721                             ; Close first spindle 
       G4 F2
        	   
+
+
+      ; Based on the length of the tube and/or the current position of ax30, 
+      ; determine a sequence for switching v-shapes to rollers 
+
+      ax30CurrPos = QCALC(X)
+      ; SUPPORT_1_Quota AT %SUPPORTS_SYSTEM.values0;
+      ; SUPPORT_2_Quota AT %SUPPORTS_SYSTEM.values1;
+      ; SUPPORT_3_Quota AT %SUPPORTS_SYSTEM.values2;
+      ; SUPPORT_4_Quota AT %SUPPORTS_SYSTEM.values3;
+      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values3)) THEN
+      ; Support Z4
+
+         G153
+         G4005 S(AXIDX(5,V))		; ungear axis 54
+         G152
+         G4099
+
+         G153 
+         G4010 M(AXIDX(Y)) S(AXIDX(5,V)) I1    ; gear axis 54 (Z4) to 1
+         G152   
+         G4099 
+
+         IF ( Debug_LoadTube ) M0
+         G152 G0 Y(50)        ; lower the support 50mm
+         
+         M459                 ; lower v-shape on Z4   
+         ;I_I_VshapeZ4_Dwn    AT  %USR_M49.7;
+         WAITBIT("USR_M49.7",1) 
+         
+         IF ( Debug_LoadTube ) M0
+         G152 G0 Y(-50)       ; raise the support 50mm
+
+         G153
+         G4005 S(AXIDX(5,V))		; ungear axis 54
+         G152
+         G4099
+      ENDIF
+      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values2)) THEN
+      ; Support Z3
+         G153
+         G4005 S(AXIDX(5,U))		; ungear axis 53
+         G152
+         G4099
+
+         G153 
+         G4010 M(AXIDX(Y)) S(AXIDX(5,U)) I1    ; gear axis 53 (Z3) to 1
+         G152   
+         G4099 
+
+         IF ( Debug_LoadTube ) M0
+         G152 G0 Y(50)        ; lower the support 50mm
+         
+         M458                 ; lower v-shape on Z3   
+         ;I_I_VshapeZ3_Dwn    AT  %USR_M49.6;
+         WAITBIT("USR_M49.6",1) 
+         
+         IF ( Debug_LoadTube ) M0
+         G152 G0 Y(-50)       ; raise the support 50mm
+
+         G153
+         G4005 S(AXIDX(5,U))		; ungear axis 53
+         G152
+         G4099
+      ENDIF
+      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values1)) THEN
+      ; Support Z2
+         G153
+         G4005 S(AXIDX(5,Z))		; ungear axis 52
+         G152
+         G4099
+
+         G153 
+         G4010 M(AXIDX(Y)) S(AXIDX(5,Z)) I1    ; gear axis 52 (Z2) to 1
+         G152   
+         G4099 
+
+         IF ( Debug_LoadTube ) M0
+         G152 G0 Y(50)        ; lower the support 50mm
+         
+         M457                 ; lower v-shape on Z2  
+         ;I_I_VshapeZ2_Dwn    AT  %USR_M49.5;
+         WAITBIT("USR_M49.5",1) 
+         
+         IF ( Debug_LoadTube ) M0
+         G152 G0 Y(-50)       ; raise the support 50mm
+
+         G153
+         G4005 S(AXIDX(5,Z))		; ungear axis 52
+         G152
+         G4099
+      ENDIF
+      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values0)) THEN
+      ; Support Z1
+         G153
+         G4005 S(AXIDX(5,Y))		; ungear axis 51
+         G152
+         G4099
+
+         G153 
+         G4010 M(AXIDX(Y)) S(AXIDX(5,Y)) I1    ; gear axis 51 (Z1) to 1
+         G152   
+         G4099 
+
+         IF ( Debug_LoadTube ) M0   
+         G152 G0 Y(50)        ; lower the support 50mm
+         
+         M456                 ; lower v-shape on Z1   
+         ;I_I_VshapeZ1_Dwn    AT  %USR_M49.1;
+         WAITBIT("USR_M49.1",1) 
+         
+         IF ( Debug_LoadTube ) M0
+         G152 G0 Y(-50)       ; raise the support 50mm
+
+         G153
+         G4005 S(AXIDX(5,Y))		; ungear axis 51
+         G152
+         G4099
+
+      ENDIF
+
       ; Extra Offset Push Tube More Inside the Machine
       IF ( Debug_LoadTube ) M0 
       G153 G1 X(tube_len - %LOADER.values3) F15000
