@@ -186,6 +186,26 @@ EQ   455
 AND  Strobe_M_Ch0
 ST   Fun_M455_Ch0
 
+LD   Register_M_Ch0
+EQ   456
+AND  Strobe_M_Ch0
+ST   Fun_M455_Ch0
+
+LD   Register_M_Ch0
+EQ   457
+AND  Strobe_M_Ch0
+ST   Fun_M455_Ch0
+
+LD   Register_M_Ch0
+EQ   458
+AND  Strobe_M_Ch0
+ST   Fun_M455_Ch0
+
+LD   Register_M_Ch0
+EQ   459
+AND  Strobe_M_Ch0
+ST   Fun_M455_Ch0
+
 **
 
 LD   Register_M_Ch0

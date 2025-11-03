@@ -212,6 +212,11 @@ Fun_M988_Ch0                        AT  %USR_M22.29;            * Flap L3 Inclin
 Fun_M989_Ch0                        AT  %USR_M22.30;            * Flap L4 Home (3 spindles + Saw)
 Fun_M990_Ch0                        AT  %USR_M22.31;            * Flap L4 Incline (3 spindles + Saw)
 
+Fun_M456_Ch0                        AT  %USR_M15.0;             ** V-Shape 1 Down
+Fun_M457_Ch0                        AT  %USR_M15.1;             ** V-Shape 2 Down
+Fun_M458_Ch0                        AT  %USR_M15.2;             ** V-Shape 3 Down
+Fun_M459_Ch0                        AT  %USR_M15.3;             ** V-Shape 4 Down
+
 MainChFeedrate                      AT  %USR_M23;               * feedrate for channel
 
 Reset                               AT  %USR_M24.0;             * Reset Command
