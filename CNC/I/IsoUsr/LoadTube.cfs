@@ -132,7 +132,7 @@ IF( start_track == 0 ) THEN
        	   
       ; Extra Offset Push Tube More Inside the Machine
       IF ( Debug_LoadTube ) M0 
-      G153 G1 X(tube_len-150) F15000
+      G153 G1 X(tube_len - %LOADER.values3) F15000
 	   
 	   ; Ensure photocells working well (Middle Spindle)
 	   ; I_I_TubeFix_Spindle    AT  %USR_M1.28; 
