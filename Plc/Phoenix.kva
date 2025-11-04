@@ -91,6 +91,7 @@ SSource75=SuUnCy.plc
 SSource76=FBAux.plc
 SSource77=BLDFeed.plc
 SSource78=usrVshp.plc
+SSource79=FBCutBox.plc
 
 [Application]
 NumCharTrace=80
