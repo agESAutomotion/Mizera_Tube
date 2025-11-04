@@ -75,10 +75,10 @@ M725                ; Supports down command in automatic mode
 ; I_I_Support_2_Dwn   AT  %USR_M0.14;   ; Piston support down
 ; I_I_Support_3_Dwn   AT  %USR_M0.15;   ; Piston support down
 ; I_I_Support_4_Dwn   AT  %USR_M0.16;   ; Piston support down
-WAITBIT("%USR_M0.13",1)
-WAITBIT("%USR_M0.14",1)
-WAITBIT("%USR_M0.15",1)
-WAITBIT("%USR_M0.16",1)
+; WAITBIT("%USR_M0.13",1)
+; WAITBIT("%USR_M0.14",1)
+; WAITBIT("%USR_M0.15",1)
+; WAITBIT("%USR_M0.16",1)
 
 SYN
 
@@ -87,10 +87,10 @@ M455                ; Close centerings (v-shapes down)
 ; I_I_VshapeZ2_Dwn AT  %USR_M49.5;
 ; I_I_VshapeZ3_Dwn AT  %USR_M49.6;
 ; I_I_VshapeZ4_Dwn AT  %USR_M49.7;
-WAITBIT("%USR_M49.4",1)
-WAITBIT("%USR_M49.5",1)
-WAITBIT("%USR_M49.6",1)
-WAITBIT("%USR_M49.7",1)
+; WAITBIT("%USR_M49.4",1)
+; WAITBIT("%USR_M49.5",1)
+; WAITBIT("%USR_M49.6",1)
+; WAITBIT("%USR_M49.7",1)
 
 
 
