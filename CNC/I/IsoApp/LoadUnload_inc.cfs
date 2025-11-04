@@ -3,7 +3,7 @@
 ; Loader Parameters
 DBL tube_len
 DBL SupOffset = 0
-DBL CatchLoadOft = %LOADER.values10 / 1000;
+DBL CatchLoadOft = %LOADER.values10 / 1000;							; Loader.str: Loading X Tube Catching Offset [mm]
                 
 ; Unload Parameters
 DBL DisUnloadCon_V  = %UNLOADER.values1.9;  
