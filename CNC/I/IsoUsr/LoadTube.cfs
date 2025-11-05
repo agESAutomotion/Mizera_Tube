@@ -107,6 +107,7 @@ IF( start_track == 0 ) THEN
          ; I_I_Support_4_Dwn  AT  %USR_M0.16;
          WAITBIT("%USR_M1.16",1) 
          WAITBIT("%USR_M0.16",1) 
+         ?%M254.11 = 0        ; ParkPistonZ4FromIso
 
          IF ( Debug_LoadTube ) M0
          ?%M254.3 = 1      ; ParkZ4FromIso
@@ -129,16 +130,17 @@ IF( start_track == 0 ) THEN
       IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values2)) THEN
       ; Park Support Z3
          
-         ?%M254.2 = 1      ; ParkZ3FromIso
-         AWAIT( ABS((%ax53.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
-         ?%M254.2 = 0      ; ParkZ3FromIso
-
          IF ( Debug_LoadTube ) M0
          ?%M254.10 = 1        ; ParkPistonZ3FromIso
          ; I_I_Support_3_Up   AT  %USR_M1.15;
          ; I_I_Support_3_Dwn  AT  %USR_M0.15;
          WAITBIT("%USR_M1.15",1) 
          WAITBIT("%USR_M0.15",1) 
+         ?%M254.10 = 0        ; ParkPistonZ3FromIso
+
+         ?%M254.2 = 1      ; ParkZ3FromIso
+         AWAIT( ABS((%ax53.ra4 / 1000) - (%LOADER.values15 / 1000)) < 0.1 )
+         ?%M254.2 = 0      ; ParkZ3FromIso
 
          IF ( Debug_LoadTube ) M0
          M458                 ; lower v-shape on Z3   
