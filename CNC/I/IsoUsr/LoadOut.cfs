@@ -208,7 +208,7 @@ IF ( %gIso26 == 0 && ABS(%gIso23 - %gIso24) > 0.5 ) THEN
 	TubeHorizontalCenterShift = SQRT(2) / 2 * ABS(%gIso23 - %gIso24) / 2 
 	TubeVerticalCenterShift = SQRT(2) / 2 * (%gIso23 + %gIso24) / 2
 
-	IF (TubeVerticalCenterShift > MaxHeightSupport) THEN
+	IF (TubeVerticalCenterShift > (MaxHeightSupport - PistonStroke)) THEN
 		; if the vertical offset is greater than the maximum that the support
 		; can go down, then the cylinders have to go down and the height 
 		; difference between the cylinders and the vertical shift will be 
@@ -224,7 +224,7 @@ IF ( %gIso26 == 0 && ABS(%gIso23 - %gIso24) > 0.5 ) THEN
 		WAITBIT("%USR_M0.15",1)
 		WAITBIT("%USR_M0.16",1)
 
-		TubeVerticalCenterShift = TubeVerticalCenterShift - PistonStroke
+		;TubeVerticalCenterShift = TubeVerticalCenterShift + PistonStroke
 
 	ENDIF
 
@@ -298,8 +298,8 @@ G152
 G4099 
 IF ( Debug_Loader ) MSGOUT TubeVerticalCenterShift
 IF ( Debug_Loader ) M0
-G153 G1 X(TubeVerticalCenterShift) Y(TubeVerticalCenterShift) Z(TubeVerticalCenterShift) V(TubeVerticalCenterShift) F3000  
-
+G91 G1 X(TubeVerticalCenterShift) Y(TubeVerticalCenterShift) Z(TubeVerticalCenterShift) V(TubeVerticalCenterShift) F3000  
+G90
 G153
 G4005 S(AXIDX(5,Z))						; ungear axis 52
 IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))	; ungear axis 51

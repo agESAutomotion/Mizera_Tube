@@ -18,6 +18,9 @@ IF( !SetupAidsDone ) JSR "setup_aids_poly.cfs"
 ;============================================================================
 IF( !CouplingFollowEn ) THEN
     SYN
+    ; Different Loader side Support Travel 
+    L_COM_PrkPos = %UNLOADER.values5 / 1000;
+
 	Z_Geared = %ax[AXIDX(3,Z)].ra8.14
     IF( Z_Geared ) THEN
         G4005 S(AXIDX(3,Z))
