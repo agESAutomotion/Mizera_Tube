@@ -56,7 +56,10 @@ IF( start_track == 0 ) THEN
       ; // Part 2: Positioning Spindles ***************************************************// 
 	   JSR "LoadOut.cfs"
 
-      ; IF ((%PROG_ONE.values11) > 6) JMPF((%PROG_ONE.values11))  ; > 6 because 6 is the last checkpoint in LoadOut.cfs
+      SYN
+      IF ((%PROG_ONE.values11) > 6) JMPF((%PROG_ONE.values11))  ; > 6 because 6 is the last checkpoint in LoadOut.cfs
+	   
+N6
 	   
       ; LoadinInProgres          AT %GENERAL_SETUP.values0;
       ?%GENERAL_SETUP.values0 = 1
@@ -168,6 +171,8 @@ IF( start_track == 0 ) THEN
       IF ( Debug_LoadTube ) M0
       G153 G1 X(TheoreticalTubeLength + %LOADER.values4 / 1000 + 1000) F10000  
 
+      %PROG_ONE.values11 = 7
+N7
 
 	   ; Catch the tube with sensor
 	   IF ( Debug_LoadTube ) M0
@@ -185,6 +190,9 @@ IF( start_track == 0 ) THEN
 	   AcqPosX = GET(X)
 	   G10 G0 X(QCALC(X))			
 	   G152	
+	   
+      %PROG_ONE.values11 = 8
+N8
 	   
 	   SYN	
 	   ; Close Spindle Position
@@ -212,6 +220,9 @@ IF( start_track == 0 ) THEN
        	   
       ; Based on the length of the tube and/or the current position of ax30, 
       ; determine a sequence for switching v-shapes to rollers 
+
+      %PROG_ONE.values11 = 9
+N9
 
       ax30CurrPos = QCALC(X)
       ; SUPPORT_1_Quota AT %SUPPORTS_SYSTEM.values0;
@@ -328,6 +339,9 @@ IF( start_track == 0 ) THEN
          G4099
 
       ENDIF
+
+      %PROG_ONE.values11 = 10
+N10
 
       ; TODO 
       ; ROTATE THE TUBE TO 0 DEGREES AND MAKE SUPPORTS TO FOLLOW
