@@ -75,7 +75,8 @@ G4099
 IF ( Debug_Loader ) M0
 G153 G0 Z(MaxQta_Z-15)   ;;YANG			; raise the laser head to 15 mm from the max
 G153 G0 Y(MinQta_Y+15)					; Park Y to the minimum position
-G153 G1 X(MaxQta_X) C45 F3000  			; Rotate spindles to 45 degrees as default in order to be able
+G153 G1 X(MaxQta_X) F30000 	 			
+G153 G1 C45 F2000  						; Rotate spindles to 45 degrees as default in order to be able
 										; to load non-circular-profile tubes since they are rotated 45
 										; degrees due to the v-shapes
 
