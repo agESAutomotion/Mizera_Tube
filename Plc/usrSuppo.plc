@@ -103,10 +103,10 @@ ST   SUP1.xReset
 ST   SUP2.xReset
 ST   SUP3.xReset
 ST   SUP4.xReset
-ST   ParkZ1FromIso
-ST   ParkZ2FromIso
-ST   ParkZ3FromIso
-ST   ParkZ4FromIso
+R    ParkZ1FromIso
+R    ParkZ2FromIso
+R    ParkZ3FromIso
+R    ParkZ4FromIso
 
 LD   EnWriteBlendSwitch1
 ST   SUP1.xBlendSwitchEn

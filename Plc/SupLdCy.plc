@@ -85,10 +85,10 @@ ST   SUPPORT_1.xReset
 ST   SUPPORT_2.xReset  
 ST   SUPPORT_3.xReset  
 ST   SUPPORT_4.xReset
-ST   ParkPistonZ1FromIso
-ST   ParkPistonZ2FromIso
-ST   ParkPistonZ3FromIso
-ST   ParkPistonZ4FromIso  
+R    ParkPistonZ1FromIso
+R    ParkPistonZ2FromIso
+R    ParkPistonZ3FromIso
+R    ParkPistonZ4FromIso  
 
 LD   TimeOutPistonDown
 ST   SUPPORT_1.xTimeOut  
