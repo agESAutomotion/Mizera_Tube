@@ -216,6 +216,10 @@ Fun_M456_Ch0                        AT  %USR_M15.0;             ** V-Shape 1 Dow
 Fun_M457_Ch0                        AT  %USR_M15.1;             ** V-Shape 2 Down
 Fun_M458_Ch0                        AT  %USR_M15.2;             ** V-Shape 3 Down
 Fun_M459_Ch0                        AT  %USR_M15.3;             ** V-Shape 4 Down
+Fun_M460_Ch0                        AT  %USR_M15.4;             ** Vertical Piston 1 Down
+Fun_M461_Ch0                        AT  %USR_M15.5;             ** Vertical Piston 2 Down
+Fun_M462_Ch0                        AT  %USR_M15.6;             ** Vertical Piston 3 Down
+Fun_M463_Ch0                        AT  %USR_M15.7;             ** Vertical Piston 4 Down
 
 MainChFeedrate                      AT  %USR_M23;               * feedrate for channel
 

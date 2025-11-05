@@ -71,6 +71,7 @@ IF ( Debug_Loader ) M0
 
 
 M725                ; Supports down command in automatic mode
+SYN
 ; I_I_Support_1_Dwn   AT  %USR_M0.13;   ; Piston support down
 ; I_I_Support_2_Dwn   AT  %USR_M0.14;   ; Piston support down
 ; I_I_Support_3_Dwn   AT  %USR_M0.15;   ; Piston support down
@@ -83,6 +84,7 @@ WAITBIT("%USR_M0.16",1)
 SYN
 
 M455                ; Close centerings (v-shapes down)
+SYN
 ; I_I_VshapeZ1_Dwn AT  %USR_M49.4;
 ; I_I_VshapeZ2_Dwn AT  %USR_M49.5;
 ; I_I_VshapeZ3_Dwn AT  %USR_M49.6;

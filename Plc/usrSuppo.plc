@@ -32,16 +32,17 @@ SUP2:               SUPPORT;
 SUP3:               SUPPORT;
 SUP4:               SUPPORT;
 
-ParkZ1FromIso        AT %M254.0;
-ParkZ2FromIso        AT %M254.1;
-ParkZ3FromIso        AT %M254.2;
-ParkZ4FromIso        AT %M254.3;
 
 END_VAR
 
 VAR_IN_OUT
 #include "usrIol.inc"
 #include "mem.inc"
+
+ParkZ1FromIso        AT %M254.0;
+ParkZ2FromIso        AT %M254.1;
+ParkZ3FromIso        AT %M254.2;
+ParkZ4FromIso        AT %M254.3;
 END_VAR
 
 FUNCTION LOAD_SUPPORTS

@@ -19,10 +19,6 @@ AdvOpen:              DWORD;
 
 F_TRIG_RES_FOLL:     F_TRIG;  
 
-ParkO1FromIso        AT %M254.4;
-ParkO2FromIso        AT %M254.5;
-ParkO3FromIso        AT %M254.6;
-ParkO4FromIso        AT %M254.7;
 
 #include "iof.inc"
 #include "usrIof.inc"
@@ -32,6 +28,11 @@ END_VAR
 VAR_IN_OUT
 #include "usrIol.inc"
 #include "mem.inc"              
+
+ParkO1FromIso        AT %M254.4;
+ParkO2FromIso        AT %M254.5;
+ParkO3FromIso        AT %M254.6;
+ParkO4FromIso        AT %M254.7;
 END_VAR
 
 #include "Iol.inc"
