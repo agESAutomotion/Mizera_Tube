@@ -110,7 +110,7 @@ N6
          SYN
          ; I_I_Support_4_Up   AT  %USR_M1.16;
          ; I_I_Support_4_Dwn  AT  %USR_M0.16;
-         ;WAITBIT("%USR_M1.16",1) 
+         WAITBIT("%USR_M1.16",0) 
          WAITBIT("%USR_M0.16",1) 
          ?%M254.11 = 0        ; ParkPistonZ4FromIso
 
