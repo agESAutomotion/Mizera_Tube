@@ -163,7 +163,7 @@ IF( start_track == 0 ) THEN
          ?%M254.6 = 0        ; ParkO3FromIso
       ENDIF
 
-      IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values1)) ERROR(793)   ; too short
+      IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values1 / 1000 - %LOADER.values4 / 1000 )) ERROR(793)   ; too short
 
       IF ( Debug_LoadTube ) M0
       G153 G1 X(TheoreticalTubeLength + %LOADER.values4 / 1000 + 1000) F10000  
