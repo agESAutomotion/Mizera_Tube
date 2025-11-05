@@ -8,9 +8,9 @@ DBL UpSupHgt = ABS(%gIso24) / 2.000		; gIso24 : (tube height) Measure of pipe al
 DBL SkipStpTo = %PROG_ONE.values11		; Last loader step (case external loader?)
 DBL MaxHeightSupport = %ax51.pa22 / 1000
 DBL MinHeightSupport = %ax51.pa21 / 1000
-DBL TubeHorizontalCenterShift = 0
-DBL TubeVerticalCenterShift = 0
-DBL PistonStroke = %SUPPORTS_SYSTEM.values23		; the amount of mm that the cylinder extends
+;DBL TubeHorizontalCenterShift = 0
+;DBL TubeVerticalCenterShift = 0
+;DBL PistonStroke = %SUPPORTS_SYSTEM.values23		; the amount of mm that the cylinder extends
 
 IF( %cn[WHO()].pc[14].25 ) RET
 
@@ -234,6 +234,8 @@ ELSEIF (roundFlag) THEN
 	TubeVerticalCenterShift = %gIso24 * (2.000 / (SQRT(3.000)) - 1)
     
 ENDIF
+
+?%PROG_ONE.values12 = TubeVerticalCenterShift * 1000			; save this value in case of loading interrupted
 
 MSGOUT TubeHorizontalCenterShift "," TubeVerticalCenterShift
 

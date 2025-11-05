@@ -4,6 +4,9 @@
 DBL tube_len
 DBL SupOffset = 0
 DBL CatchLoadOft = %LOADER.values10 / 1000;							; Loader.str: Loading X Tube Catching Offset [mm]
+DBL TubeHorizontalCenterShift = 0
+DBL TubeVerticalCenterShift = 0
+DBL PistonStroke = %SUPPORTS_SYSTEM.values23		; the amount of mm that the cylinder extends
                 
 ; Unload Parameters
 DBL DisUnloadCon_V  = %UNLOADER.values1.9;  
