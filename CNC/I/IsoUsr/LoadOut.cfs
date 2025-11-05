@@ -21,6 +21,7 @@ ENDIF
 
 SYN
 ; Break Point Selector
+IF( LstBreakPoint > 6 ) RET
 IF( LstBreakPoint != 0 ) JMPF(SkipStpTo)
 
 SYN
