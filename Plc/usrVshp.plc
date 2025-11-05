@@ -90,7 +90,7 @@ no_loop:
         EQ     332
     )
     OR     Fun_M445_Ch0    
-    OR     Force_Open_Center_1
+    * OR     Force_Open_Center_1
     OR     Fun_M452_Ch0                      ** Open all centering                               
     ST     VShapeVertSup1.xAutoPlus
         
@@ -172,7 +172,7 @@ no_loop:
         EQ     332
     )
     OR     Fun_M445_Ch0    
-    OR     Force_Open_Center_2
+    * OR     Force_Open_Center_2
     OR     Fun_M452_Ch0                     ** Open all centering                               
     ST     VShapeVertSup2.xAutoPlus
         
@@ -254,7 +254,7 @@ no_loop:
         EQ     332
     )
     OR     Fun_M445_Ch0    
-    OR     Force_Open_Center_3
+    * OR     Force_Open_Center_3
     OR     Fun_M452_Ch0                     ** Open all centering                               
     ST     VShapeVertSup3.xAutoPlus
         
@@ -336,7 +336,7 @@ no_loop:
         EQ     332
     )
     OR     Fun_M445_Ch0    
-    OR     Force_Open_Center_4
+    * OR     Force_Open_Center_4
     OR     Fun_M452_Ch0                     ** Open all centering                               
     ST     VShapeVertSup4.xAutoPlus
         
