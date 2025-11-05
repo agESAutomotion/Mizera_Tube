@@ -226,6 +226,8 @@ N8
 N9
 
       ax30CurrPos = QCALC(X)
+      MSGOUT ax30CurrPos
+      IF ( Debug_LoadTube ) M0
       ; SUPPORT_1_Quota AT %SUPPORTS_SYSTEM.values0;
       ; SUPPORT_2_Quota AT %SUPPORTS_SYSTEM.values1;
       ; SUPPORT_3_Quota AT %SUPPORTS_SYSTEM.values2;
