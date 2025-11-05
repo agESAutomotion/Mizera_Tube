@@ -189,7 +189,7 @@ IF( start_track == 0 ) THEN
 	   SYN	
 	   ; Close Spindle Position
 	   IF ( Debug_LoadTube ) M0
-	   G153 G1 X(QCALC(X) - CatchLoadOft) F10000  	 
+	   G153 G1 X(QCALC(X) - CatchLoadOft) F10000  	 ; CatchLoadOft: offset between the sensor and the base of the clamps
 		 
 	   SYN
 	   ; New Tube Length = paddle pos + QCALC(X)
@@ -218,7 +218,7 @@ IF( start_track == 0 ) THEN
       ; SUPPORT_2_Quota AT %SUPPORTS_SYSTEM.values1;
       ; SUPPORT_3_Quota AT %SUPPORTS_SYSTEM.values2;
       ; SUPPORT_4_Quota AT %SUPPORTS_SYSTEM.values3;
-      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values3)) THEN
+      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values3) / 1000) THEN
       ; Support Z4
 
          G153
@@ -246,7 +246,7 @@ IF( start_track == 0 ) THEN
          G152
          G4099
       ENDIF
-      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values2)) THEN
+      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values2) / 1000) THEN
       ; Support Z3
          G153
          G4005 S(AXIDX(5,U))		; ungear axis 53
@@ -273,7 +273,7 @@ IF( start_track == 0 ) THEN
          G152
          G4099
       ENDIF
-      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values1)) THEN
+      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values1) / 1000) THEN
       ; Support Z2
          G153
          G4005 S(AXIDX(5,Z))		; ungear axis 52
@@ -300,7 +300,7 @@ IF( start_track == 0 ) THEN
          G152
          G4099
       ENDIF
-      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values0)) THEN
+      IF (ax30CurrPos > (%SUPPORTS_SYSTEM.values0) / 1000) THEN
       ; Support Z1
          G153
          G4005 S(AXIDX(5,Y))		; ungear axis 51
@@ -334,7 +334,7 @@ IF( start_track == 0 ) THEN
 
       ; Extra Offset Push Tube More Inside the Machine
       IF ( Debug_LoadTube ) M0 
-      G153 G1 X(tube_len - %LOADER.values3) F15000
+      G153 G1 X(tube_len - %LOADER.values3) F15000       ; %LOADER.values3 : Push Tube More In Machine After Loading [mm]
 	   
 	   ; Ensure photocells working well (Middle Spindle)
 	   ; I_I_TubeFix_Spindle    AT  %USR_M1.28; 
