@@ -8,14 +8,12 @@ DBL UpSupHgt = ABS(%gIso24) / 2.000		; gIso24 : (tube height) Measure of pipe al
 DBL SkipStpTo = %PROG_ONE.values11		; Last loader step (case external loader?)
 DBL MaxHeightSupport = %ax51.pa22 / 1000
 DBL MinHeightSupport = %ax51.pa21 / 1000
-;DBL TubeHorizontalCenterShift = 0
-;DBL TubeVerticalCenterShift = 0
-;DBL PistonStroke = %SUPPORTS_SYSTEM.values23		; the amount of mm that the cylinder extends
 
 IF( %cn[WHO()].pc[14].25 ) RET
 
 SYN
-IF( ABS( %ax36.pa22 / 1000 - %ax36.ra4 / 1000 ) > 5000 ) THEN  ; ax36 : 2nd spindle / pa22 : max position / ra4 : current axis position
+; ax36 : 2nd spindle / pa22 : max position / ra4 : current axis position
+IF( ABS( %ax36.pa22 / 1000 - %ax36.ra4 / 1000 ) > 5000 ) THEN  
    RPT .Prk_WMax_Start, .Prk_WMax_End, 1
 ENDIF
 
@@ -195,7 +193,6 @@ N4
 ; In case of a tube with a rectangular profile, assume the largest 
 ; dimension lies on the back of the V-shape
 
-
 ; gIso26 == 0 -> square profile
 ; gIso23 : tube width
 ; gIso24 : tube height
@@ -208,26 +205,6 @@ IF ( %gIso26 == 0 && ABS(%gIso23 - %gIso24) > 0.5 ) THEN
 	TubeHorizontalCenterShift = SQRT(2) / 2 * ABS(%gIso23 - %gIso24) / 2 
 	TubeVerticalCenterShift = SQRT(2) / 2 * (%gIso23 + %gIso24) / 2
 
-	IF (TubeVerticalCenterShift > (MaxHeightSupport - PistonStroke)) THEN
-		; if the vertical offset is greater than the maximum that the support
-		; can go down, then the cylinders have to go down and the height 
-		; difference between the cylinders and the vertical shift will be 
-		; compensated by the axis support
-
-		M725                ; Supports down command in automatic mode
-		; I_I_Support_1_Dwn   AT  %USR_M0.13;   ; Piston support down
-		; I_I_Support_2_Dwn   AT  %USR_M0.14;   ; Piston support down
-		; I_I_Support_3_Dwn   AT  %USR_M0.15;   ; Piston support down
-		; I_I_Support_4_Dwn   AT  %USR_M0.16;   ; Piston support down
-		WAITBIT("%USR_M0.13",1)
-		WAITBIT("%USR_M0.14",1)
-		WAITBIT("%USR_M0.15",1)
-		WAITBIT("%USR_M0.16",1)
-
-		;TubeVerticalCenterShift = TubeVerticalCenterShift + PistonStroke
-
-	ENDIF
-
 ELSEIF (roundFlag) THEN 
 	; case round tube
 	TubeHorizontalCenterShift = 0							; just for the sake of completeness
@@ -237,12 +214,12 @@ ENDIF
 
 ?%PROG_ONE.values12 = TubeVerticalCenterShift * 1000			; save this value in case of loading interrupted
 
-MSGOUT TubeHorizontalCenterShift "," TubeVerticalCenterShift
-
+IF ( Debug_Loader ) MSGOUT TubeHorizontalCenterShift "," TubeVerticalCenterShift
 IF ( Debug_Loader ) M0
 
 SYN
 MSGOUT " Moving the tube into the machine "
+IF ( Debug_Loader ) MSGOUT " Moving the tube into the machine O = " TubeHorizontalCenterShift
 IF ( Debug_Loader ) M0
 
 ; Perform Horizontal Positioning
@@ -275,8 +252,31 @@ G4099
 %PROG_ONE.values11 = 5			; set checkpoint
 N5
 
+IF ( Debug_Loader ) MSGOUT " Moving the tube into the machine Z = " TubeVerticalCenterShift
+IF (TubeVerticalCenterShift > (MaxHeightSupport - PistonStroke)) THEN
+	; if the vertical offset is greater than the maximum that the support
+	; can go down, then the cylinders have to go down and the height 
+	; difference between the cylinders and the vertical shift will be 
+	; compensated by the axis support
+
+	M725                ; Supports down command in automatic mode
+	; I_I_Support_1_Dwn   AT  %USR_M0.13;   ; Piston support down
+	; I_I_Support_2_Dwn   AT  %USR_M0.14;   ; Piston support down
+	; I_I_Support_3_Dwn   AT  %USR_M0.15;   ; Piston support down
+	; I_I_Support_4_Dwn   AT  %USR_M0.16;   ; Piston support down
+	WAITBIT("%USR_M0.13",1)
+	WAITBIT("%USR_M0.14",1)
+	WAITBIT("%USR_M0.15",1)
+	WAITBIT("%USR_M0.16",1)
+
+	TubeVerticalCenterShift = TubeVerticalCenterShift + PistonStroke
+
+ENDIF
+
+
 SYN
 MSGOUT " Moving the tube into the machine "
+IF ( Debug_Loader ) MSGOUT " Moving the tube into the machine Z = " TubeVerticalCenterShift
 IF ( Debug_Loader ) M0
 ; Perform Vertical Positioning
 
@@ -296,9 +296,9 @@ IF (AEXISTS(5,U)) G4010 M(AXIDX(Z)) S(AXIDX(5,U)) I1    ; gear axis 53 (Z3) to 2
 IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1    ; gear axis 54 (Z4) to 7
 G152   
 G4099 
-IF ( Debug_Loader ) MSGOUT TubeVerticalCenterShift
-IF ( Debug_Loader ) M0
+
 G91 G1 X(TubeVerticalCenterShift) Y(TubeVerticalCenterShift) Z(TubeVerticalCenterShift) V(TubeVerticalCenterShift) F3000  
+
 G90
 G153
 G4005 S(AXIDX(5,Z))						; ungear axis 52
