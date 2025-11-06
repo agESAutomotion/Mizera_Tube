@@ -188,12 +188,12 @@ PATH  %ax81
     OR   ParkAllLoadSuppCmd
     OR   Fun_M725_Ch0   
     OR   ParkUn51Sup_ISO
-    OR (
-        LD   Force_Open_Center_1    
-        * LD   VertSup1MovCompleted  
-        ANDN %cn0.rc8.0
-        AND  OptEnabAutoParkLoad
-    )
+    * OR (
+    *     LD   Force_Open_Center_1    
+    *     * LD   VertSup1MovCompleted  
+    *     ANDN %cn0.rc8.0
+    *     AND  OptEnabAutoParkLoad
+    * )
     OR   ParkO1FromIso
     ST   SUP1.xParkCmd              ** Only needs the rising edge
 
@@ -227,12 +227,12 @@ JMPCN no_support_2
     OR   ParkAllLoadSuppCmd
     OR   Fun_M725_Ch0   
     OR   ParkUn52Sup_ISO
-    OR (
-        LD   Force_Open_Center_2    
-        * LD   VertSup2MovCompleted    
-        ANDN %cn0.rc8.0
-        AND  OptEnabAutoParkLoad
-    )
+    * OR (
+    *     LD   Force_Open_Center_2    
+    *     * LD   VertSup2MovCompleted    
+    *     ANDN %cn0.rc8.0
+    *     AND  OptEnabAutoParkLoad
+    * )
     OR   ParkO2FromIso        
     ST   SUP2.xParkCmd
 
@@ -266,12 +266,12 @@ JMPCN no_support_3
     OR   ParkAllLoadSuppCmd
     OR   Fun_M725_Ch0   
     OR   ParkUn53Sup_ISO
-    OR (
-        LD   Force_Open_Center_3   
-        * LD   VertSup3MovCompleted   
-        ANDN %cn0.rc8.0
-        AND  OptEnabAutoParkLoad
-    )
+    * OR (
+    *     LD   Force_Open_Center_3   
+    *     * LD   VertSup3MovCompleted   
+    *     ANDN %cn0.rc8.0
+    *     AND  OptEnabAutoParkLoad
+    * )
     OR   ParkO3FromIso        
     ST   SUP3.xParkCmd
 
@@ -305,12 +305,12 @@ JMPCN no_support_4
     OR   ParkAllLoadSuppCmd
     OR   Fun_M725_Ch0   
     OR   ParkUn54Sup_ISO 
-    OR (
-        LD   Force_Open_Center_4    
-        * LD   VertSup4MovCompleted    
-        ANDN %cn0.rc8.0
-        AND  OptEnabAutoParkLoad
-    )       
+    * OR (
+    *     LD   Force_Open_Center_4    
+    *     * LD   VertSup4MovCompleted    
+    *     ANDN %cn0.rc8.0
+    *     AND  OptEnabAutoParkLoad
+    * )       
     OR   ParkO4FromIso 
     ST   SUP4.xParkCmd
 
