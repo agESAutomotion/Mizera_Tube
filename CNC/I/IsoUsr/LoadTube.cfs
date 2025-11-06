@@ -107,14 +107,12 @@ N6
       ; Park Support Z4
          
          IF ( Debug_LoadTube ) M0
-         ;?%M254.11 = 1        ; ParkPistonZ4FromIso
          M463
          SYN
          ; I_I_Support_4_Up   AT  %USR_M1.16;
          ; I_I_Support_4_Dwn  AT  %USR_M0.16;
          WAITBIT("%USR_M1.16",0) 
          WAITBIT("%USR_M0.16",1) 
-         ?%M254.11 = 0        ; ParkPistonZ4FromIso
 
          IF ( Debug_LoadTube ) M0
          ?%M254.3 = 1      ; ParkZ4FromIso
@@ -140,14 +138,12 @@ N6
       ; Park Support Z3
          
          IF ( Debug_LoadTube ) M0
-         ;?%M254.10 = 1        ; ParkPistonZ3FromIso
          M462
          SYN
          ; I_I_Support_3_Up   AT  %USR_M1.15;
          ; I_I_Support_3_Dwn  AT  %USR_M0.15;
          WAITBIT("%USR_M1.15",0) 
          WAITBIT("%USR_M0.15",1) 
-         ;?%M254.10 = 0        ; ParkPistonZ3FromIso
 
          ?%M254.2 = 1      ; ParkZ3FromIso
          SYN
@@ -267,6 +263,7 @@ N9
             ; I_I_Support_4_Up                    AT  %USR_M1.16;
             WAITBIT("%USR_M1.16",1) 
          ENDIF
+
          G90 
          G153
          G4005 S(AXIDX(5,V))		; ungear axis 54
@@ -303,6 +300,7 @@ N9
             ; I_I_Support_3_Up                    AT  %USR_M1.15;
             WAITBIT("%USR_M1.15",1)
          ENDIF
+            
          G90
          G153
          G4005 S(AXIDX(5,U))		; ungear axis 53
@@ -339,6 +337,7 @@ N9
             ; I_I_Support_2_Up                    AT  %USR_M1.14;
             WAITBIT("%USR_M1.14",1) 
          ENDIF
+            
          G90
          G153
          G4005 S(AXIDX(5,Z))		; ungear axis 52
@@ -401,14 +400,12 @@ N10
       ; Park Support Z4
          
          IF ( Debug_LoadTube ) M0
-         ;?%M254.11 = 1        ; ParkPistonZ4FromIso
          M463
          SYN
          ; I_I_Support_4_Up   AT  %USR_M1.16;
          ; I_I_Support_4_Dwn  AT  %USR_M0.16;
          WAITBIT("%USR_M1.16",0) 
          WAITBIT("%USR_M0.16",1) 
-         ?%M254.11 = 0        ; ParkPistonZ4FromIso
 
          IF ( Debug_LoadTube ) M0
          ?%M254.3 = 1      ; ParkZ4FromIso
@@ -510,13 +507,7 @@ N10
       G4005 S(AXIDX(3,X))
       G152   
       G4099  
-
-
-	   ; Ensure photocells working well (Middle Spindle)
-	   ; I_I_TubeFix_Spindle    AT  %USR_M1.28; 
-	   ; SYN
-	   ; MSGOUT " Photocell(Tube on spindles Detecting ... ) " 
-	   ; AWAIT( (%USR_M1.27) && (%USR_M1.28) )
+      SYN
         
       ; Close Fixed spindle
       IF ( Debug_LoadTube ) M0
@@ -527,20 +518,6 @@ N10
       ; I_I_FixedSpindle_Close   AT  %USR_M1.31; 
       M982   
       G4 F2
-	   
-	   ; Open All Centering Clamps
-      IF ( Debug_LoadTube ) M0
-	   ; Loader Supports Center needs to be open
-      ;M452
-      SYN
-      ;;I_I_Centering_Open_1 AT %USR_M13.24;  
-      ;;I_I_Centering_Open_2 AT %USR_M13.25;  
-      ;;I_I_Centering_Open_3 AT %USR_M13.26;  
-      ;;I_I_Centering_Open_4 AT %USR_M13.27; 
-      ;WAITBIT("%USR_M13.24",1)
-      ;WAITBIT("%USR_M13.25",1)
-      ;WAITBIT("%USR_M13.26",1)
-      ;WAITBIT("%USR_M13.27",1)
        
       ; Graphic Tube Length Info
       %funz[%IndexORG].origprgX = tube_len
