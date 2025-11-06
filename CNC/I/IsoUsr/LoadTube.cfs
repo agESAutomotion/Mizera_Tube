@@ -105,7 +105,7 @@ N6
       
       IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values3/1000 - %LOADER.values4/1000) ) THEN
       ; Park Support Z4
-         
+         IF ( Debug_LoadTube == 1) MSGOUT TheoreticalTubeLength " < " (%SUPPORTS_SYSTEM.values3/1000 - %LOADER.values4/1000)
          IF ( Debug_LoadTube ) M0
          M463
          SYN
@@ -136,7 +136,7 @@ N6
       ENDIF
       IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values2/1000 - %LOADER.values4/1000) ) THEN
       ; Park Support Z3
-         
+         IF ( Debug_LoadTube == 1) MSGOUT TheoreticalTubeLength " < " (%SUPPORTS_SYSTEM.values2/1000 - %LOADER.values4/1000)
          IF ( Debug_LoadTube ) M0
          M462
          SYN
@@ -242,26 +242,35 @@ N9
          G152   
          G4099 
 
-         TubeVerticalCenterShift = %PROG_ONE.values12 / 1000
+         IF ( Debug_LoadTube ) M0
+         IF ((QCALC(Y) + 50) < (%ax54.pa22/1000))  THEN
+         ; Lower axis in order to lower v-shape
 
-         MSGOUT TubeVerticalCenterShift
-         IF ( Debug_LoadTube ) M0
-         IF (TubeVerticalCenterShift < 150)  G91 G1 Y(50) F3000       ; lower the support 50mm
-         IF (TubeVerticalCenterShift >= 150) THEN
-            M463                     ; piston Z4 down
-            ; I_I_Support_4_Dwn                   AT  %USR_M0.16;
-            WAITBIT("%USR_M0.16",1)
-         ENDIF
-         M459                 ; lower v-shape on Z4   
-         ;I_I_VshapeZ4_Dwn    AT  %USR_M49.7;
-         WAITBIT("%USR_M49.7",1) 
-         
-         IF ( Debug_LoadTube ) M0
-         IF (TubeVerticalCenterShift < 150)   G91 G1 Y(-50) F3000       ; raise the support 50mm
-         IF (TubeVerticalCenterShift >= 150) THEN 
+            G91 G1 Y(50) F3000         ; lower the support 50mm
+
+            M459                       ; lower v-shape on Z4
+            ;I_I_VshapeZ4_Dwn          AT  %USR_M49.7;
+            WAITBIT("%USR_M49.7",1) 
+
+            G91 G1 Y(-50) F3000        ; raise the support 50mm
+
+         ELSEIF ((%USR_M1.16) == 1 ) THEN
+         ; Lower piston in order to lower v-shape
+
+            M464                       ; piston Z4 down
+            ; I_I_Support_4_Dwn        AT  %USR_M0.16;
+            WAITBIT("%USR_M0.16",1) 
+            
+            M459                       ; lower v-shape on Z4
+            ;I_I_VshapeZ4_Dwn          AT  %USR_M49.7;
+            WAITBIT("%USR_M49.7",1) 
+
             M736                       ; piston Z4 up
-            ; I_I_Support_4_Up                    AT  %USR_M1.16;
+            ; I_I_Support_4_Up         AT  %USR_M1.16;
             WAITBIT("%USR_M1.16",1) 
+
+         ELSE 
+            ERROR()     ; Impossible to lower Z4's V-Shape
          ENDIF
 
          G90 
@@ -283,22 +292,34 @@ N9
          G4099 
 
          IF ( Debug_LoadTube ) M0
-         IF (TubeVerticalCenterShift < 150)  G91 G1 Y(50) F3000        ; lower the support 50mm
-         IF (TubeVerticalCenterShift >= 150) THEN 
-            M462                     ; piston Z3 down
-            ;I_I_Support_3_Dwn                   AT  %USR_M0.15;
-            WAITBIT("%USR_M0.15",1)
-         ENDIF
-         M458                 ; lower v-shape on Z3   
-         ;I_I_VshapeZ3_Dwn    AT  %USR_M49.6;
-         WAITBIT("%USR_M49.6",1) 
+         IF ((QCALC(Y) + 50) < (%ax53.pa22/1000))  THEN
+         ; Lower axis in order to lower v-shape
 
-         IF ( Debug_LoadTube ) M0
-         IF (TubeVerticalCenterShift < 150)   G91 G1 Y(-50) F3000       ; raise the support 50mm
-         IF (TubeVerticalCenterShift >= 150) THEN
+            G91 G1 Y(50) F3000         ; lower the support 50mm
+
+            M458                       ; lower v-shape on Z3
+            ;I_I_VshapeZ3_Dwn          AT  %USR_M49.6;
+            WAITBIT("%USR_M49.6",1) 
+
+            G91 G1 Y(-50) F3000        ; raise the support 50mm
+
+         ELSEIF ((%USR_M1.15) == 1 ) THEN
+         ; Lower piston in order to lower v-shape
+
+            M462                       ; piston Z3 down
+            ; I_I_Support_3_Dwn        AT  %USR_M0.15;
+            WAITBIT("%USR_M0.15",1) 
+            
+            M458                       ; lower v-shape on Z3
+            ;I_I_VshapeZ3_Dwn          AT  %USR_M49.6;
+            WAITBIT("%USR_M49.6",1) 
+
             M735                       ; piston Z3 up
-            ; I_I_Support_3_Up                    AT  %USR_M1.15;
-            WAITBIT("%USR_M1.15",1)
+            ; I_I_Support_3_Up         AT  %USR_M1.15;
+            WAITBIT("%USR_M1.15",1) 
+
+         ELSE 
+            ERROR()     ; Impossible to lower Z3's V-Shape
          ENDIF
             
          G90
@@ -319,23 +340,36 @@ N9
          G152   
          G4099 
 
+         MSGOUT QCALC(Y)
          IF ( Debug_LoadTube ) M0
-         IF (TubeVerticalCenterShift < 150)  G91 G1 Y(50) F3000        ; lower the support 50mm
-         IF (TubeVerticalCenterShift >= 150) THEN
-            M461                     ; piston Z2 down
-            ; I_I_Support_2_Dwn                   AT  %USR_M0.14;
+         IF ((QCALC(Y) + 50) < (%ax52.pa22/1000))  THEN
+         ; Lower axis in order to lower v-shape
+
+            G91 G1 Y(50) F3000         ; lower the support 50mm
+
+            M457                       ; lower v-shape on Z2  
+            ;I_I_VshapeZ2_Dwn          AT  %USR_M49.5;
+            WAITBIT("%USR_M49.5",1) 
+
+            G91 G1 Y(-50) F3000        ; raise the support 50mm
+
+         ELSEIF ((%USR_M1.14) == 1 ) THEN
+         ; Lower piston in order to lower v-shape
+
+            M461                       ; piston Z2 down
+            ; I_I_Support_2_Dwn        AT  %USR_M0.14;
             WAITBIT("%USR_M0.14",1) 
-         ENDIF
-         M457                 ; lower v-shape on Z2  
-         ;I_I_VshapeZ2_Dwn    AT  %USR_M49.5;
-         WAITBIT("%USR_M49.5",1) 
-         
-         IF ( Debug_LoadTube ) M0
-         IF (TubeVerticalCenterShift < 150)   G91 G1 Y(-50) F3000       ; raise the support 50mm
-         IF (TubeVerticalCenterShift >= 150) THEN
+            
+            M457                       ; lower v-shape on Z2  
+            ;I_I_VshapeZ2_Dwn          AT  %USR_M49.5;
+            WAITBIT("%USR_M49.5",1) 
+
             M734                       ; piston Z2 up
-            ; I_I_Support_2_Up                    AT  %USR_M1.14;
+            ; I_I_Support_2_Up         AT  %USR_M1.14;
             WAITBIT("%USR_M1.14",1) 
+
+         ELSE 
+            ERROR()     ; Impossible to lower Z2's V-Shape
          ENDIF
             
          G90
@@ -356,25 +390,36 @@ N9
          G152   
          G4099 
 
-         IF ( Debug_LoadTube ) M0
-         IF (TubeVerticalCenterShift < 150)  G91 G1 Y(50) F3000        ; lower the support 50mm
-         IF (TubeVerticalCenterShift >= 150) THEN
-            M460                     ; piston Z1 down
-            ; I_I_Support_1_Dwn                   AT  %USR_M0.13;            * %USR_M0.13
+         IF ((QCALC(Y) + 50) < (%ax51.pa22/1000))  THEN
+         ; Lower axis in order to lower v-shape
+
+            G91 G1 Y(50) F3000         ; lower the support 50mm
+
+            M456                       ; lower v-shape on Z1  
+            ;I_I_VshapeZ1_Dwn          AT  %USR_M49.5;
+            WAITBIT("%USR_M49.4",1) 
+
+            G91 G1 Y(-50) F3000        ; raise the support 50mm
+
+         ELSEIF ((%USR_M1.13) == 1 ) THEN
+         ; Lower piston in order to lower v-shape
+
+            M460                       ; piston Z1 down
+            ; I_I_Support_1_Dwn        AT  %USR_M0.13;
             WAITBIT("%USR_M0.13",1) 
+            
+            M456                       ; lower v-shape on Z1  
+            ;I_I_VshapeZ1_Dwn          AT  %USR_M49.4;
+            WAITBIT("%USR_M49.4",1) 
+
+            M734                       ; piston Z2 up
+            ; I_I_Support_1_Up         AT  %USR_M1.13;
+            WAITBIT("%USR_M1.13",1) 
+
+         ELSE 
+            ERROR()     ; Impossible to lower Z1's V-Shape 
          ENDIF
 
-         M456                 ; lower v-shape on Z1   
-         ;I_I_VshapeZ1_Dwn    AT  %USR_M49.4;
-         WAITBIT("%USR_M49.4",1) 
-         
-         IF ( Debug_LoadTube ) M0
-         IF (TubeVerticalCenterShift < 150)   G91 G1 Y(-50) F3000       ; raise the support 50mm
-         IF (TubeVerticalCenterShift >= 150) THEN 
-            M733                       ; piston Z1 up
-            ;I_I_Support_1_Up                    AT  %USR_M1.13;
-            WAITBIT("%USR_M1.13",1) 
-         ENDIF
          G90
          G153
          G4005 S(AXIDX(5,Y))		; ungear axis 51
@@ -385,9 +430,6 @@ N9
 
       %PROG_ONE.values11 = 10
 N10
-
-      ; TODO 
-      ; ROTATE THE TUBE TO 0 DEGREES AND MAKE SUPPORTS TO FOLLOW
 
       MSGOUT "tube_len = " tube_len
       IF ( Debug_LoadTube ) M0
@@ -492,19 +534,27 @@ N10
          ?%M254.5 = 0        ; ParkO2FromIso
       ENDIF
 
-
-
+      G153
+      G4005 S(AXIDX(3,X))		; ungear axis 30	- X
+      G4005 S(AXIDX(3,C))		; ungear axis 34	- Cm
+      G152
+      G4099
+      
       G153 
-      G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+      G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1    	; gear axis 30 (X) to 0
+      G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1    	; gear axis 34 (Cm) to 5
       G152   
       G4099 
 
+      IF ( Debug_Loader ) M0 	 			
+      G153 G1 C0 F2000  					
       ; Extra Offset Push Tube More Inside the Machine
       IF ( Debug_LoadTube ) M0 
       G153 G1 X(new_target) F15000       ; %LOADER.values3 : Push Tube More In Machine After Loading [mm]
 
       G153 
       G4005 S(AXIDX(3,X))
+      G4005 S(AXIDX(3,C))	; ungear axis 34
       G152   
       G4099  
       SYN
