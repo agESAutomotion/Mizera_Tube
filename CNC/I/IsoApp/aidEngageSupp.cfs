@@ -21,8 +21,8 @@ DBL velAddValue = velAxisx
 ;//Blending filter time constants               
 DBL max_q0 = ABS(L_COM_PrkPos)                  ;//max slave displacement [mm]
 DBL max_q1 = velAddValue/60                     ;//max slave velocity [mm/min]
-DBL max_q2 = 5500                               ;//max slave acceleration [mm/s^2]
-DBL max_q3 = 120000                             ;//max slave jerk [mm/s^3]
+DBL max_q2 = 5000                               ;//max slave acceleration [mm/s^2]
+DBL max_q3 = 50000                              ;//max slave jerk [mm/s^3]
                 
 DBL filterT2 = max_q1/max_q2                    ;//TODO: add 2x for direction change
 DBL filterT3 = max_q2/max_q3                    ;//2x added for triangular velocity
