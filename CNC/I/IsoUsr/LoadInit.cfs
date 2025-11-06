@@ -23,11 +23,6 @@ IF( SelfLockSLoader == 0 ) THEN
 	; [1] Before homing the chain then load the tube
     IF( %LsGui71.2 ) THEN 
 	    IF( Debug_Loader ) M0
-	    ; M444   
-        ; SYN
-        ; MSGOUT "Chain Homming in process..."
-        ; ;I_I_HomeChain_E AT %USR_M13.21;  
-        ; WAITBIT("%USR_M13.21",1)
 		
         ; TODO : Create an M function to make the tube's sensor piston
         ;        go out
