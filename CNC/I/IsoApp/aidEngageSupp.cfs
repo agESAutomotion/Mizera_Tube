@@ -53,18 +53,6 @@ IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1
 G152   
 G4099 
 
-; Loader Supports Center needs to be open
-M452
-
-;I_I_Centering_Open_1 AT %USR_M13.24;  
-;I_I_Centering_Open_2 AT %USR_M13.25;  
-;I_I_Centering_Open_3 AT %USR_M13.26;  
-;I_I_Centering_Open_4 AT %USR_M13.27; 
-WAITBIT("%USR_M13.24",1)
-WAITBIT("%USR_M13.25",1)
-WAITBIT("%USR_M13.26",1)
-WAITBIT("%USR_M13.27",1)
-
 ; BlendSwitch Para Init
 iter=1
 WHILE( iter <= 4 )
