@@ -534,6 +534,8 @@ N10
          ?%M254.5 = 0        ; ParkO2FromIso
       ENDIF
 
+      %PROG_ONE.values11 = 11
+N11
       G153
       G4005 S(AXIDX(3,X))		; ungear axis 30	- X
       G4005 S(AXIDX(3,C))		; ungear axis 34	- Cm
@@ -546,7 +548,7 @@ N10
       G152   
       G4099 
 
-      IF ( Debug_Loader ) M0 	 			
+      IF ( Debug_LoadTube ) M0  			
       G153 G1 C0 F2000  					
       ; Extra Offset Push Tube More Inside the Machine
       IF ( Debug_LoadTube ) M0 
