@@ -84,22 +84,21 @@ no_loop:
     )
     ST     VShapeVertSup1.xManualMinus    
         
-    LD     Fun_M332_Ch0   
+    LD     Fun_M332_Ch0                     ** not used
     OR (
-        LD     ch8_ValFunM
+        LD     ch8_ValFunM                  ** not used
         EQ     332
     )
-    OR     Fun_M445_Ch0    
-    * OR     Force_Open_Center_1
+    OR     Fun_M445_Ch0                     ** Not used
     OR     Fun_M452_Ch0                      ** Open all centering                               
     ST     VShapeVertSup1.xAutoPlus
         
-    LD     Fun_M333_Ch0
+    LD     Fun_M333_Ch0                     ** not used
     OR(
-        LD     ch8_ValFunM
+        LD     ch8_ValFunM                  ** not used
         EQ     333
     )
-    OR     Fun_M455_Ch0
+    OR     Fun_M455_Ch0                     ** not used
     OR     Fun_M456_Ch0
     ST     VShapeVertSup1.xAutoMinus    
         
@@ -118,7 +117,6 @@ no_loop:
     LD     %PLCFLAGS.0                      ** UP & DOWN managment
     ST     VShapeVertSup1.xSingleEffect
         
-    * LD     10000                            ** 10 sec
     LD     TimeOutPistonDown                ** (%SUPPORTS_SYSTEM.values21)
     ST     VShapeVertSup1.xTimeOut     
         
@@ -172,7 +170,6 @@ no_loop:
         EQ     332
     )
     OR     Fun_M445_Ch0    
-    * OR     Force_Open_Center_2
     OR     Fun_M452_Ch0                     ** Open all centering                               
     ST     VShapeVertSup2.xAutoPlus
         
@@ -200,7 +197,6 @@ no_loop:
     LD     %PLCFLAGS.0                      ** UP & DOWN managment
     ST     VShapeVertSup2.xSingleEffect
         
-    * LD     10000                            ** 10 sec
     LD     TimeOutPistonDown                ** (%SUPPORTS_SYSTEM.values21)
     ST     VShapeVertSup2.xTimeOut     
         
@@ -254,7 +250,6 @@ no_loop:
         EQ     332
     )
     OR     Fun_M445_Ch0    
-    * OR     Force_Open_Center_3
     OR     Fun_M452_Ch0                     ** Open all centering                               
     ST     VShapeVertSup3.xAutoPlus
         
@@ -282,7 +277,6 @@ no_loop:
     LD     %PLCFLAGS.0                      ** UP & DOWN managment
     ST     VShapeVertSup3.xSingleEffect
         
-    * LD     10000                            ** 10 sec
     LD     TimeOutPistonDown                ** (%SUPPORTS_SYSTEM.values21)
     ST     VShapeVertSup3.xTimeOut     
         
@@ -336,7 +330,6 @@ no_loop:
         EQ     332
     )
     OR     Fun_M445_Ch0    
-    * OR     Force_Open_Center_4
     OR     Fun_M452_Ch0                     ** Open all centering                               
     ST     VShapeVertSup4.xAutoPlus
         
