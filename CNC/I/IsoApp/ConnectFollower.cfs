@@ -20,9 +20,12 @@ WAITBIT("%ax61.ra3.28",0)
 ; CyComOftAx75  AT %UNLOADER.values43;
 
 iter=1 
+SYN
 WHILE( iter <= 5 )
      lifter[iter] = %UNLOADER.values[33+iter] 
 	 ulifter[iter] = %UNLOADER.values[38+iter] 
+	 pCyID[iter] = IFEXP( lifter[iter] > 0, AXIDX(6,X), QNAN() )
+	 upCyID[iter] = IFEXP( ulifter[iter] > 0, AXIDX(6,Y), QNAN() )
 	 iter = iter + 1
 ENDW
 

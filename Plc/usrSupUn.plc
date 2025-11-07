@@ -341,14 +341,14 @@ ST   SUP74.xBlendId
 ST   SUP75.xBlendId
 
 LD   %config_machine0.8
-*ST   SUP71.xEnCyComSup
+ST   SUP71.xEnCyComSup
 ST   SUP72.xEnCyComSup
 ST   SUP73.xEnCyComSup
 ST   SUP74.xEnCyComSup
 ST   SUP75.xEnCyComSup
 JMPCN _CYCOMOFT
 LD   %ax61.ra24
-*ST   SUP71.xCyComOft
+ST   SUP71.xCyComOft
 ST   SUP72.xCyComOft
 ST   SUP73.xCyComOft
 ST   SUP74.xCyComOft

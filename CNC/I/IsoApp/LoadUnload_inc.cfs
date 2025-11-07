@@ -78,8 +78,8 @@ WHILE( iter <= 5 )
 	 iter = iter + 1
 ENDW
 
-;//CyComOftAx
-DBL lifter[10], ulifter[10]
+;;//CyComOftAx
+DBL lifter[10], ulifter[10], pCyID[10], upCyID[10]
 
 ;//Mid Quota Between Two Unloaders
 DBL Mid_L1_L2 = ( uldPos[1] + uldPos[2] ) / 2;

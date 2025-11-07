@@ -128,10 +128,10 @@ IF( %SUPPORTS_SYSTEM.values13.17 ) M455
 
 SYN
 G153
-IF( AEXISTS(5,Y) && (EnFollowStatus >= 1) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[1]) N(AXIDX(5,X)) P(AXIDX(6,X)) S(AXIDX(5,Y)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
-IF( AEXISTS(5,Z) && (EnFollowStatus >= 2) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[2]) N(AXIDX(5,X)) P(AXIDX(6,X)) S(AXIDX(5,Z)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
-IF( AEXISTS(5,U) && (EnFollowStatus >= 3) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[3]) N(AXIDX(5,X)) P(AXIDX(6,X)) S(AXIDX(5,U)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
-IF( AEXISTS(5,V) && (EnFollowStatus >= 4) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[4]) N(AXIDX(5,X)) P(AXIDX(6,X)) S(AXIDX(5,V)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
+IF( AEXISTS(5,Y) && (EnFollowStatus >= 1) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[1]) N(AXIDX(5,X)) P(pCyID[1]) S(AXIDX(5,Y)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
+IF( AEXISTS(5,Z) && (EnFollowStatus >= 2) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[2]) N(AXIDX(5,X)) P(pCyID[2]) S(AXIDX(5,Z)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
+IF( AEXISTS(5,U) && (EnFollowStatus >= 3) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[3]) N(AXIDX(5,X)) P(pCyID[3]) S(AXIDX(5,U)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
+IF( AEXISTS(5,V) && (EnFollowStatus >= 4) ) G4011 T36 A(-filterT1Rate) B(filterT2) C(filterT3) F(1) M(-1) D(lifter_D[4]) N(AXIDX(5,X)) P(pCyID[4]) S(AXIDX(5,V)) G(velAddValue) H(filterT2) I(filterT3) J(velAddValue) K(filterT2) L(filterT3)       
 G152	
 G4099
 
