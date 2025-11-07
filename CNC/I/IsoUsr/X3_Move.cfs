@@ -7,7 +7,7 @@ DBL Slave_2_W_Pos = VA0
 IF( Slave_2_W_Pos < 0 ) THEN 
     ?%gIso29.2 = 1
 	SYN
-	AWAIT( ABS( %ax72.ra4 - %UNLOADER.values5 ) < 1000 )
+	AWAIT( ABS( %ax71.ra24 - %UNLOADER.values5 ) < 1000 )
     M339
 ENDIF
 

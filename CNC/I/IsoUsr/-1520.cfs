@@ -210,7 +210,8 @@ IF (tubeStateSelY3Z3U == 3) THEN
 	
 	SYN
 	;Wait support to reach position
-	AWAIT( ABS( %ax72.ra4 - %ax50.ra4 ) < 1000 )
+	; CyComOftAx71  AT %UNLOADER.values39;
+	AWAIT( ABS( %ax71.ra4 - %ax50.ra4 - %UNLOADER.values39) < 1000 )
 	AWAIT(!%SPINDLE_SYSTEM.values24.1)   
 				
 	;V to open clamp position
