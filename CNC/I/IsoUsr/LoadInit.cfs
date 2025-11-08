@@ -20,12 +20,8 @@ IF( SelfLockSLoader == 0 ) THEN
     SYN
     MSGOUT""
 	
-	; [1] Before homing the chain then load the tube
     IF( %LsGui71.2 ) THEN 
 	    IF( Debug_Loader ) M0
-		
-        ; TODO : Create an M function to make the tube's sensor piston
-        ;        go out
 
         ; I_I_TubeMobile_Spindle      AT  %USR_M1.27;
         ; I_I_TubeFix_Spindle         AT  %USR_M1.28;
@@ -39,8 +35,7 @@ IF( SelfLockSLoader == 0 ) THEN
 		
 		%PROG_ONE.values11 = 0
 	ENDIF
-	
-	; [2] Continue mode, jump directly to the last step of loader
+
     IF( %LsGui71.3 ) THEN         
 	    LstBreakPoint = %PROG_ONE.values11
 	ENDIF
