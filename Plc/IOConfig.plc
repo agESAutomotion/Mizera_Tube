@@ -837,39 +837,39 @@ LD   %config_machine29             ** Proportional valve manage only with OXYGEN
 EQ   2
 JMPCN AIRO2_O2_SMCS
   
-LD   0
-ST   O_OA_GAS_2
-ST   O_OA_GAS
+     LD   0
+     ST   O_OA_GAS_2
+     ST   O_OA_GAS
 
-LD   819
-ST   IA_Feedback_GAS_OUT
+     LD   819
+     ST   IA_Feedback_GAS_OUT
 
-LD   O_O_EV_OPEN_ARIA
-OR   O_O_EV_OPEN_N2
-JMPCN NO_HP_VALVE
+     LD   O_O_EV_OPEN_ARIA
+     OR   O_O_EV_OPEN_N2
+     JMPCN NO_HP_VALVE
 
-LD   OA_GAS
-ST   O_OA_GAS                    
-LD   0                     
-ST   O_OA_GAS_2     
+          LD   OA_GAS
+          ST   O_OA_GAS                    
+          LD   0                     
+          ST   O_OA_GAS_2     
 
-LD   I_IA_Feedback_GAS_OUT 
-ST   IA_Feedback_GAS_OUT
-          
-NO_HP_VALVE:
+          LD   I_IA_Feedback_GAS_OUT 
+          ST   IA_Feedback_GAS_OUT
+               
+     NO_HP_VALVE:
 
-LD   O_O_EV_OPEN_O2
-JMPCN NO_LP_VALVE
+     LD   O_O_EV_OPEN_O2
+     JMPCN NO_LP_VALVE
 
-LD   0                      
-ST   O_OA_GAS                    
-LD   OA_GAS
-ST   O_OA_GAS_2    
+          LD   0                      
+          ST   O_OA_GAS                    
+          LD   OA_GAS
+          ST   O_OA_GAS_2    
 
-LD   I_IA_Feedback_GAS_OUT_O2               
-ST   IA_Feedback_GAS_OUT
+          LD   I_IA_Feedback_GAS_OUT_O2               
+          ST   IA_Feedback_GAS_OUT
 
-NO_LP_VALVE:
+     NO_LP_VALVE:
 
 AIRO2_O2_SMCS:
 
