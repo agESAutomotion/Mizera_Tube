@@ -23,13 +23,14 @@ IF( SelfLockSLoader == 0 ) THEN
     IF( %LsGui71.2 ) THEN 
 	    IF( Debug_Loader ) M0
 
+        M464                ; extend tube detector mounted on top of the 1st spindle
+        ;I_I_TubeDetector_Out                AT  %USR_M49.20;
+        AWAIT(%USR_M49.20)
+        
         ; I_I_TubeMobile_Spindle      AT  %USR_M1.27;
         ; I_I_TubeFix_Spindle         AT  %USR_M1.28;
 		IF( (%USR_M1.27) || (%USR_M1.28)) THEN 
 
-            M464                ; extend tube detector mounted on top of the 1st spindle
-            ;I_I_TubeDetector_Out                AT  %USR_M49.20;
-            AWAIT(%USR_M49.20)
 
             .FAULT_STATE_LOADER_0
             SYN 
