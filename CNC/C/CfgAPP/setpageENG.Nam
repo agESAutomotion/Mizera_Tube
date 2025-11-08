@@ -22,7 +22,7 @@ Label2=Oxygen max pressure [bar]
 Label3=Nitrogen max pressure [bar]
 Label4=Air max pressure [bar]
 Label5=TEST gas pressure [bar]
-LabelPresReaded=Pressure readed [bar]
+LabelPresReaded=Pressure feadback [bar]
 LabelTollPresAlarm=Alarm tollerance (=0 disabled) [%]
 Label9=Alarm  delay time [s]
 Label12=EV Cut Assist
@@ -36,7 +36,7 @@ LabelAit2=Air
 LabelN2=N2
 LabelO2=O2
 LabelTesting=Test is running...
-LabelPresCommanded=Pressure setted [bar]
+LabelPresCommanded=Pressure Setpoint [bar]
 LabelExtraEv=Aux EV.
 LabelExtraEv_ON=Aux EV.
 LabelTrack2=Track Num
