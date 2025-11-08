@@ -390,6 +390,7 @@ I_IA_Feedback_GAS_OUT       AT %IW931;   ** (ADC2) Gas pressure feedback
 
  
 I_IA_Feedback_GAS_OUT_O2     AT %IW22; 
+O_OA_GAS_2                   AT %QW927; *Gas pro. valve for N2
 
 
 ****************************************************************************************************
