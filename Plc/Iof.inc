@@ -368,11 +368,29 @@ O_Centering_Open_4           AT %M5.0;
 *******************************************************************************
 *   PWM BOARD I/O
 ******************************************************************************* 
-I_IA_Feedback_GAS_OUT        AT %IW21;  
+
+
+
+* HW_PWM_DUTY               AT %QW908;   ** (LsrGest.inc) (PWM) Laser Duty Cycle
+* HW_FREQ                   AT %QW909;   ** (LsrGest.inc) (PWM) Laser frequency 
+* HW_PWM_RES                AT %QW910;   ** (LsrGest.inc) (PWM) Laser PWM resolution setting
+* HW_PWM_CFG                AT %QW911;   ** (LsrGest.inc) (PWM) Laser I/F board PWM_CFG register
+* HW_PWM_POWER              AT %QW913;   ** (LsrGest.inc) (DAC1) Laser power 
+O_OA_GAS                    AT %QW926;   ** (DAC2) Gas pressure output 
+*                           AT %QW927;   ** (DAC3) Free
+
+*                           AT %IW930;   ** (ADC1) Analog capacitive sensor (Not used, taken from ethercat)
+I_IA_Feedback_GAS_OUT       AT %IW931;   ** (ADC2) Gas pressure feedback 
+                            * AT %IW932;   ** (ADC3) Free
+                            * AT %IW933;   ** (ADC4) Laser power feedback
+                            * AT %IW934;   ** (ADC5) Free
+                            * AT %IW935;   ** (ADC6) Free
+                            * AT %IW936;   ** (ADC7) Free
+                            * AT %IW937;   ** (ADC8) Free
+
+ 
 I_IA_Feedback_GAS_OUT_O2     AT %IW22; 
 
-O_OA_GAS                     AT %QW926;
-O_OA_GAS_2                   AT %QW927; *Gas pro. valve for N2
 
 ****************************************************************************************************
 ****************************************************************************************************
