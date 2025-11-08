@@ -349,6 +349,13 @@ RET
 .Chain_Fwd_Start 
 
 	IF ( Debug_Loader ) M0
+	SYN
+	; I_I_TubeOnChain     AT %USR_M12.14;   ** Tube ready to be loaded by the supports (end of loader chain)
+	IF (%USR_M12.14) THEN
+		POP (2)
+		JMP .Loader_End
+	ENDIF
+	
 	M443   ; chain forward command (non blocking)
 	SYN
 	; I_I_ChainAligned AT %USR_M12.16        ; Chain has done one step (inductor sensor)
@@ -358,11 +365,4 @@ RET
 	WAITBIT("%USR_M12.16",0)                 
 	WAITBIT("%USR_M12.16",1)
 
-	IF ( Debug_Loader ) M0
-	SYN
-	; I_I_TubeOnChain     AT %USR_M12.14;   ** Tube ready to be loaded by the supports (end of loader chain)
-	IF (%USR_M12.14) THEN
-		POP (2)
-		JMP .Loader_End
-	ENDIF
 .Chain_Fwd_End
