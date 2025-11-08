@@ -221,6 +221,9 @@ Fun_M461_Ch0                        AT  %USR_M15.5;             ** Vertical Pist
 Fun_M462_Ch0                        AT  %USR_M15.6;             ** Vertical Piston 3 Down
 Fun_M463_Ch0                        AT  %USR_M15.7;             ** Vertical Piston 4 Down
 
+Fun_M464_Ch0                        AT  %USR_M15.8;             ** 1st spindle tube sensor out
+Fun_M465_Ch0                        AT  %USR_M15.9;             ** 1st spindle tube sensor in
+
 MainChFeedrate                      AT  %USR_M23;               * feedrate for channel
 
 Reset                               AT  %USR_M24.0;             * Reset Command
@@ -408,5 +411,10 @@ VertSup1MovCompleted                AT  %USR_M49.16;
 VertSup2MovCompleted                AT  %USR_M49.17;
 VertSup3MovCompleted                AT  %USR_M49.18;
 VertSup4MovCompleted                AT  %USR_M49.19;
+
+I_I_TubeDetector_Out                AT  %USR_M49.20;
+I_I_TubeDetector_In                 AT  %USR_M49.21;
+O_O_TubeDetector_Out                AT  %USR_M49.22;
+O_O_TubeDetector_In                 AT  %USR_M49.23;
 
 END_VAR

@@ -56,6 +56,10 @@ IF( start_track == 0 ) THEN
   
       ; // Part 2: Positioning Spindles ***************************************************// 
 	   JSR "LoadOut.cfs"
+      
+      M464
+      ;I_I_TubeDetector_Out                AT  %USR_M49.20;
+      AWAIT(%USR_M49.20)
 
       SYN
       IF ((%PROG_ONE.values11) > 6) JMPF((%PROG_ONE.values11))  ; > 6 because 6 is the last checkpoint in LoadOut.cfs
@@ -590,7 +594,10 @@ N11
       IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))
       G152
       G4099
-  
+
+      M465
+      ;I_I_TubeDetector_In                 AT  %USR_M49.21;
+      AWAIT(%USR_M49.21)  
    ENDIF
 ENDIF  
 	   

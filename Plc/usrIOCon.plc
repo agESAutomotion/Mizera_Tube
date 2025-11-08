@@ -430,6 +430,11 @@ ST I_I_HomeChain
 LDN I_ChainAligned
 ST  I_I_ChainAligned
 
+LD I_TubeDetector_Out
+ST I_I_TubeDetector_Out
+
+LD I_TubeDetector_In
+ST I_I_TubeDetector_In
 
 END_FUNCTION
 
@@ -866,5 +871,11 @@ ST O_Chain_Forw
 
 LD O_O_Chain_Back
 ST O_Chain_Back
+
+LD O_O_TubeDetector_Out
+ST O_TubeDetector_Out
+
+LD O_O_TubeDetector_In
+ST O_TubeDetector_In
 
 END_FUNCTION

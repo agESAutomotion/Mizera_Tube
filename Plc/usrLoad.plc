@@ -83,7 +83,21 @@ OR (
 ST     O_O_Chain_Back
 * ST     O_O_Chain_Back_D
 
+************************************************************
+* Tube detector on 1st spindle
+************************************************************
 
+LD Fun_M464_Ch0
+S  O_O_TubeDetector_Out
+
+LD I_I_TubeDetector_Out
+R  O_O_TubeDetector_Out
+
+LD Fun_M465_Ch0
+S  O_O_TubeDetector_In
+
+LD I_I_TubeDetector_In
+R  O_O_TubeDetector_In
 ************************************************************
 * Alarm / Status Reset
 ************************************************************
