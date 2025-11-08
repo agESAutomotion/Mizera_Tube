@@ -26,13 +26,22 @@ IF( SelfLockSLoader == 0 ) THEN
         ; I_I_TubeMobile_Spindle      AT  %USR_M1.27;
         ; I_I_TubeFix_Spindle         AT  %USR_M1.28;
 		IF( (%USR_M1.27) || (%USR_M1.28)) THEN 
+
+            M464                ; extend tube detector mounted on top of the 1st spindle
+            ;I_I_TubeDetector_Out                AT  %USR_M49.20;
+            AWAIT(%USR_M49.20)
+
             .FAULT_STATE_LOADER_0
             SYN 
             MSGOUT " Tube Already Exist in Machine "	   
 	        M0
             JMP .FAULT_STATE_LOADER_0	   		   
-        ENDIF 
-		
+        ENDIF
+
+        M465                    ; retract sensor to preven collisions
+        ;I_I_TubeDetector_In                 AT  %USR_M49.21;
+        AWAIT(%USR_M49.21)   
+            
 		%PROG_ONE.values11 = 0
 	ENDIF
 
