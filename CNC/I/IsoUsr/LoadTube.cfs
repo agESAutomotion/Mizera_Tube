@@ -280,7 +280,7 @@ N9
          ELSEIF ((%USR_M1.16) == 1 ) THEN
          ; Lower piston in order to lower v-shape
 
-            M464                       ; piston Z4 down
+            M463                       ; piston Z4 down
             ; I_I_Support_4_Dwn        AT  %USR_M0.16;
             WAITBIT("%USR_M0.16",1) 
             
