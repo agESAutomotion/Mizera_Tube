@@ -75,7 +75,7 @@ IF ( Debug_Loader ) M0
 G153 G0 Z(MaxQta_Z-15)   ;;YANG			; raise the laser head to 15 mm from the max
 G153 G0 Y(MinQta_Y+15)					; Park Y to the minimum position
 G153 G1 X(MaxQta_X) F30000 	 			
-G153 G1 C45 F2000  						; Rotate spindles to 45 degrees as default in order to be able
+G153 G1 C-45 F2000  					; Rotate spindles to -45 degrees as default in order to be able
 										; to load non-circular-profile tubes since they are rotated 45
 										; degrees due to the v-shapes
 
@@ -239,7 +239,7 @@ IF (AEXISTS(9,V)) G4010 M(AXIDX(V)) S(AXIDX(9,V)) I1    ; gear axis 84 (O4) to 7
 G152   
 G4099 
 
-G153 G1 X(TubeHorizontalCenterShift) Y(TubeHorizontalCenterShift) Z(TubeHorizontalCenterShift) V(TubeHorizontalCenterShift) F10000  
+G153 G1 X(-TubeHorizontalCenterShift) Y(-TubeHorizontalCenterShift) Z(-TubeHorizontalCenterShift) V(TubeHorizontalCenterShift) F10000  
 
 G153
 G4005 S(AXIDX(9,Z))						; ungear axis 52
