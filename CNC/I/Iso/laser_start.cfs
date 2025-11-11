@@ -26,13 +26,18 @@ IF( %C18.7 ) THEN
 
 ; Pipe Calibration (not scan)
 ELSEIF( %CalPipe[0].General[3] == 1 ) THEN
-    ?%TabLsr[0].L_CutDistance = 1
-    gL_CutDistance = 1
+    ;;;?%TabLsr[0].L_CutDistance = 1
+    ;;;gL_CutDistance = 1
+	?%TabLsr[0].L_CutDistance = 2
+	gL_CutDistance = 2
+	
 
 ; Pipe Calibration (scan)
 ELSEIF( %CalPipe[0].General[3] == 2 ) THEN
-    ?%TabLsr[0].L_CutDistance = 1
-    gL_CutDistance = 1
+    ;;;?%TabLsr[0].L_CutDistance = 1
+    ;;;gL_CutDistance = 1
+	?%TabLsr[0].L_CutDistance = 2
+	gL_CutDistance = 2
 
 ; Capacitive test
 ELSEIF( %C18.17 ) THEN
