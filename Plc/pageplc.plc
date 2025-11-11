@@ -12,84 +12,43 @@ FUNCTION PAGE_PLC
 LD     HMI_PagePop
 ANDN   %PLCFLAGS.8
 ANDN(
-    LD     %Uipl.Page
-    EQ     171501    
+LD     %Uipl.Page
+EQ     171501    
 )
 JMPCN  POP_WIND_STATE
-    LD     171501
-    ST     %PlcPage
+LD     171501
+ST     %PlcPage
 
-    LD     1
-    S      %ChangePlcPageFlags.3
+LD     1
+S      %ChangePlcPageFlags.3
 
-    LD     1400
-    ST     %WidthUiplDlg
+LD     1400
+ST     %WidthUiplDlg
 
-    LD     400
-    ST     %HeightUiplDlg
+LD     400
+ST     %HeightUiplDlg
 
-    LD     1
-    ST     %ChangePlcPage
+LD     1
+ST     %ChangePlcPage
 JMPC   COM_WIND_STATE
 POP_WIND_STATE:
-    LD     0
-    ST     %ChangePlcPage
+LD     0
+ST     %ChangePlcPage
 COM_WIND_STATE:
-
-
-LD HMI_Ret2Loader
-ANDN(
-    LD     %Uipl.Page
-    EQ     171502           ** Ret2Load.str    
-)
-JMPCN  Skip_Ret2Load
-    LD     171502
-    ST     %PlcPage
-
-    LD     1
-    S      %ChangePlcPageFlags.3
-
-    LD     1400
-    ST     %WidthUiplDlg
-
-    LD     400
-    ST     %HeightUiplDlg
-
-    LD     1
-    ST     %ChangePlcPage
-JMPC   COM_WIND_STATE2
-Skip_Ret2Load:
-    LD     0
-    ST     %ChangePlcPage
-COM_WIND_STATE2:
-
-
-
-
-
-
 
 LDN    %cn0.rc8.0
 JMPCN  PGMNORUNNING
-    LD     %PLCFLAGS.0
-    ST     Gui_btn_NoGear
-    ST     Gui_btn_Gear 
-    ST     HMI_PagePop
-    ST     HMI_Ret2Loader
+LD     %PLCFLAGS.0
+ST     Gui_btn_NoGear
+ST     Gui_btn_Gear 
+ST     HMI_PagePop
 PGMNORUNNING:
 
 LD     %Uipl.Page
 EQ     171501
 JMPCN  CLRPAGEREQ
-    LD     %PLCFLAGS.0     
-    ST     HMI_PagePop
+LD     %PLCFLAGS.0     
+ST     HMI_PagePop
 CLRPAGEREQ:
-   
-LD     %Uipl.Page
-EQ     171502
-JMPCN  CLRPAGEREQ2
-    LD     %PLCFLAGS.0     
-    ST     HMI_Ret2Loader
-CLRPAGEREQ2:
    
 END_FUNCTION
