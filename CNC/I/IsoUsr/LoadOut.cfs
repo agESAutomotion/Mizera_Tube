@@ -212,6 +212,7 @@ ELSEIF (roundFlag) THEN
     
 ENDIF
 
+?%LOADER.values63 = TubeHorizontalCenterShift * 1000
 ?%PROG_ONE.values12 = TubeVerticalCenterShift * 1000			; save this value in case of loading interrupted
 
 IF ( Debug_Loader ) MSGOUT TubeHorizontalCenterShift "," TubeVerticalCenterShift
@@ -252,6 +253,9 @@ G4099
 %PROG_ONE.values11 = 5			; set checkpoint
 N5
 
+TubeHorizontalCenterShift = %LOADER.values63/1000
+TubeVerticalCenterShift = %PROG_ONE.values12/1000			; save this value in case of loading interrupted
+
 IF ( Debug_Loader ) MSGOUT " Moving the tube into the machine Z = " TubeVerticalCenterShift
 IF (TubeVerticalCenterShift > (MaxHeightSupport - PistonStroke)) THEN
 	; if the vertical offset is greater than the maximum that the support
@@ -276,7 +280,7 @@ ENDIF
 
 SYN
 MSGOUT " Moving the tube into the machine "
-IF ( Debug_Loader ) MSGOUT " Moving the tube into the machine Z = " TubeVerticalCenterShift
+IF ( Debug_Loader ) MSGOUT " Moving the tube into the machine Z = " TubeVerticalCenterShift + 40
 IF ( Debug_Loader ) M0
 ; Perform Vertical Positioning
 
@@ -297,7 +301,7 @@ IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1    ; gear axis 54 (Z4) to 7
 G152   
 G4099 
 
-G91 G1 X(TubeVerticalCenterShift) Y(TubeVerticalCenterShift) Z(TubeVerticalCenterShift) V(TubeVerticalCenterShift) F3000  
+G91 G1 X(TubeVerticalCenterShift+40) Y(TubeVerticalCenterShift+40) Z(TubeVerticalCenterShift+40) V(TubeVerticalCenterShift+40) F3000  
 
 G90
 G153
