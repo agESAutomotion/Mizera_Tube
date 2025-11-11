@@ -253,6 +253,7 @@ TRIG1000_15:        TRIG;
 RTRIG1000_12:       R_TRIG;
 RTRIG1000_13:       R_TRIG;
 RTRIG1000_14:       R_TRIG;
+RTRIG1000_16:       R_TRIG;
 RTRIG10:            R_TRIG;
 RTRIG9:             R_TRIG;
 RT_M10:             R_TRIG;    * M10: Attiva Hold + Jog
@@ -2514,6 +2515,21 @@ OR   ON_ONE_SCAN
 R    %ServiceMillePGM.14
 
 ******************************************************************
+*   1000.PGM: return tube to loader
+*****************************************************************
+CAL  RTRIG1000_16(CLK:=%SoftBtn0.28)
+LD   RTRIG1000_16.Q
+ANDN PRGRUN_CN0                
+S    %ServiceMillePGM.16
+
+LD   M30_CN0                    
+OR   MACCEND.yInAlarm
+OR   Pul_Reset       
+OR   FT_PRGRUN.Q    
+OR   ON_ONE_SCAN             
+R    %ServiceMillePGM.16
+
+******************************************************************
 *** END REQUEST GO AXES TO SERVICE POSITION      --------------###
 ******************************************************************
 
@@ -2572,6 +2588,7 @@ OR   %ServiceMillePGM.8             * Semi Loading Request
 OR   %ServiceMillePGM.10            * Semi Tube Loading 
 OR   %ServiceMillePGM.11            * Weld seam identification
 OR   %ServiceMillePGM.15            * Park all Unloader Supports with flaps
+OR   %ServiceMillePGM.16            * Return tube to loader
 ST   ExeAuxMode                    ** (gPlc0.29)Esecuzione ausiliaria 1000.PGM
 
 LD   GESTCH0.xPPNumber

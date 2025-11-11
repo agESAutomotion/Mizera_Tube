@@ -1339,6 +1339,7 @@ Gui_Pul_Y_M          AT %LsGui71.14;
 Gui_Pul_Y_P          AT %LsGui71.15;
 Gui_Pul_Z_M          AT %LsGui71.16;
 Gui_Pul_Z_P          AT %LsGui71.17;
+HMI_Ret2Loader       AT %LsGui71.18;    ** Return to loader dialog
 
 Gui_Saw_rpm          AT %LsGui72;
 Gui_Saw_DRDH         AT %LsGui73;

@@ -1,0 +1,247 @@
+: Ret2load
+; Return tube to the loader
+; This subroutine is intended to return tube to the loader in case
+; the tube is not the right one
+
+; TODO make it start from the last checkpoint of the loading process
+; -1. Check if there is a tube inside the machine. Return if there is not
+;   -1.1. Extend the sensor
+; 0. Check if the loader is empty. Check if the sensor is signaling that there is no tube
+;   0.1. If there is no tube, proceed
+;   0.2. If there is a tube, show a message indicating that the loader will move backwards
+;        and wait for the operators confirmation to proceed, in order to avoid tubes falling
+;        from the back side of the loader
+; 1. Look for the tube's head
+;   1.1. Make the operator insert the type and dimensions of the actual tube
+;   1.2. Use this parameters to approximately take the tube under the laser head
+;   1.3. Copy part of the routine inside "HeadMes.cfu"
+;   1.4. If the tube's length is less than the distance between support 1 and 2, unable to unload
+; 2. Rotate the tube -45 degrees
+; 3. Take the current X postion as the lenght of the tube and start moving backwards
+;   3.1. If there is a support holding the tube, first postion the support to the Z and O coordinates
+;        in order to align the corner of the V-shape with the corner of the tube
+;   3.2. If/When the first support is holding the tube, open the 2nd spindle's clamps/rollers
+; 4. Move the X axis along with the supports until the X axis position is equal to the
+;    tube's lenght + the paddle distance (maybe with a little offset to avoid collisions)
+; 5. Release the tube from the 1st spindle and park it
+; 6. Raise supports to the maximum height
+; 7. Park horizontal supports
+; 8. Park vertical supports
+
+DBL Debug_Ret2Loader = 1
+DBL ax30CurrPos               ; auxiliary varaible to hold the 1st spindle current position
+DBL Paddle_distance =  %LOADER.values4/1000
+DBL X_Target
+DBL Sup1_Anticollision = %SUPPORTS_SYSTEM.values0/1000
+DBL Sup2_Anticollision = %SUPPORTS_SYSTEM.values1/1000
+DBL Sup3_Anticollision = %SUPPORTS_SYSTEM.values2/1000
+DBL Sup4_Anticollision = %SUPPORTS_SYSTEM.values3/1000
+DBL Sup_Ver_Park_Position = %LOADER.values15/1000
+DBL Sup_Hor_Park_Position = %LOADER.values16/1000
+DBL MaxHeightSupport = %ax51.pa22 / 1000
+DBL MinHeightSupport = %ax51.pa21 / 1000
+
+; M464        ; Extend sensor that detects the presence of tube inside the machine
+; ;I_I_TubeDetector_Out                AT  %USR_M49.20;
+; AWAIT(%USR_M49.20)
+
+; IF (%PROG_ONE.values15 > 0) JMPF((%PROG_ONE.values15))
+; ;I_I_TubeMobile_Spindle AT  %USR_M1.27;
+; IF (!(%USR_M1.27)) THEN
+;     M465    ; Retract sensor
+;     ;I_I_TubeDetector_In                 AT  %USR_M49.21;
+;     AWAIT(%USR_M49.21)
+;     POP(0)
+;     JMPF .End
+; ENDIF
+
+; IF ( Debug_Ret2Loader ) M0
+; SYN
+; ; I_I_TubeOnChain     AT %USR_M12.14;   ** Tube ready to be loaded by the supports (end of loader chain)
+; IF (%USR_M12.14) THEN
+;     MSGOUT "Tube in loading position. Press start to move back"
+;     M0
+
+;     M444   ; chain backward command (non blocking)
+;     SYN
+;     ; I_I_ChainAligned AT %USR_M12.16        ; Chain has done one step (inductor sensor)
+;     ; Assume the last loading was successful, then the sensor is reading a 1
+;     ; It has to read a 0 and then another 1
+;     WAITBIT("%USR_M12.16",0)                 
+;     WAITBIT("%USR_M12.16",1)
+; ENDIF
+; ?%PROG_ONE.values15 = 1         ; checkpoint
+; N1
+
+; ;Page Pop Plc Command
+; ?%LsGui71.18 = 1
+; G4 F5
+; SYN
+; AWAIT(%Uipl.Page != 171502)
+
+; DBL Tube_shape  = %LOADER.values5
+; DBL Tube_height = %LOADER.values6       ; also used as the diameter of round tubes
+; DBL Tube_width  = %LOADER.values7
+; DBL Tube_length = %LOADER.values9
+; SYN
+; IF (Tube_shape == 1) THEN
+; ; Square tube
+
+; 	TubeHorizontalCenterShift = SQRT(2) / 2 * ABS(Tube_width - Tube_height) / 2 
+; 	TubeVerticalCenterShift = SQRT(2) / 2 * (Tube_width + Tube_height) / 2
+
+; ELSEIF (Tube_shape == 2) THEN
+; ; Round tube
+; 	TubeHorizontalCenterShift = 0							; just for the sake of completeness
+; 	TubeVerticalCenterShift = Tube_height * (2.000 / (SQRT(3.000)) - 1)
+
+; ELSE 
+;     .loop
+;     MSGOUT "Shape not supported"
+;     M0
+;     JMP .loop
+
+; ENDIF
+
+
+
+; G153 
+; G4005 S(AXIDX(3,X))
+; G152   
+; G4099 
+
+; G153 
+; G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+; G152   
+; G4099 
+
+; ax30CurrPos = QCALC(X)
+; IF (ax30CurrPos > Sup1_Anticollision) THEN
+;     M460        ; Z1 piston go down 
+;     ; I_I_Support_1_Dwn                   AT  %USR_M0.13;
+;     AWAIT(%USR_M0.13)
+
+
+; ENDIF 
+
+
+; X_Target = Paddle_distance + Tube_length
+
+
+;TODO
+;Raise supports
+
+
+IF ( Debug_Ret2Loader ) M0
+;Raise supports to the maximum position
+G153
+G4005 S(AXIDX(5,Y))		; ungear axis 51
+G4005 S(AXIDX(5,Z))		; ungear axis 52
+; G4005 S(AXIDX(5,U))		; ungear axis 53
+; G4005 S(AXIDX(5,V))		; ungear axis 54
+G152
+G4099
+
+G153 
+G4010 M(AXIDX(X)) S(AXIDX(5,Z)) I1						; gear axis 52 (Z2) to 0
+IF (AEXISTS(5,Y)) G4010 M(AXIDX(Y)) S(AXIDX(5,Y)) I1	; gear axis 51 (Z1) to 1
+; IF (AEXISTS(5,U)) G4010 M(AXIDX(Z)) S(AXIDX(5,U)) I1    ; gear axis 53 (Z3) to 2
+; IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1    ; gear axis 54 (Z4) to 7
+; G152   
+G4099 
+
+G153 G1 X(MinHeightSupport) Y(MinHeightSupport) Z(MinHeightSupport) V(MinHeightSupport) F3000  
+
+G153
+G4005 S(AXIDX(5,Z))						; ungear axis 52
+IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))	; ungear axis 51
+IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))	; ungear axis 53
+IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))	; ungear axis 56
+G152
+G4099
+
+
+IF ( Debug_Ret2Loader ) M0
+; Perform Horizontal Positioning
+G153
+G4005 S(AXIDX(9,Y))		; ungear axis 81
+G4005 S(AXIDX(9,Z))		; ungear axis 82
+G4005 S(AXIDX(9,U))		; ungear axis 83
+G4005 S(AXIDX(9,V))		; ungear axis 84
+G152
+G4099
+
+G153 
+G4010 M(AXIDX(X)) S(AXIDX(9,Z)) I1						; gear axis 82 (O2) to 0
+IF (AEXISTS(9,Y)) G4010 M(AXIDX(Y)) S(AXIDX(9,Y)) I1	; gear axis 81 (O1) to 1
+; IF (AEXISTS(9,U)) G4010 M(AXIDX(Z)) S(AXIDX(9,U)) I1    ; gear axis 83 (O3) to 2
+; IF (AEXISTS(9,V)) G4010 M(AXIDX(V)) S(AXIDX(9,V)) I1    ; gear axis 84 (O4) to 7
+G152   
+G4099 
+
+G153 G1 X(Sup_Hor_Park_Position) Y(Sup_Hor_Park_Position) Z(Sup_Hor_Park_Position) V(Sup_Hor_Park_Position) F3000  
+
+G153
+G4005 S(AXIDX(9,Z))						; ungear axis 52
+IF (AEXISTS(9,Y)) G4005 S(AXIDX(9,Y))	; ungear axis 51
+IF (AEXISTS(9,U)) G4005 S(AXIDX(9,U))	; ungear axis 53
+IF (AEXISTS(9,V)) G4005 S(AXIDX(9,V))	; ungear axis 56
+; G152
+G4099
+
+
+IF ( Debug_Ret2Loader ) M0
+; Perform Vertical Positioning
+G153
+G4005 S(AXIDX(5,Y))		; ungear axis 51
+G4005 S(AXIDX(5,Z))		; ungear axis 52
+G4005 S(AXIDX(5,U))		; ungear axis 53
+G4005 S(AXIDX(5,V))		; ungear axis 54
+G152
+G4099
+
+G153 
+G4010 M(AXIDX(X)) S(AXIDX(5,Z)) I1						; gear axis 52 (Z2) to 0
+IF (AEXISTS(5,Y)) G4010 M(AXIDX(Y)) S(AXIDX(5,Y)) I1	; gear axis 51 (Z1) to 1
+; IF (AEXISTS(5,U)) G4010 M(AXIDX(Z)) S(AXIDX(5,U)) I1    ; gear axis 53 (Z3) to 2
+; IF (AEXISTS(5,V)) G4010 M(AXIDX(V)) S(AXIDX(5,V)) I1    ; gear axis 54 (Z4) to 7
+G152   
+G4099 
+
+G153 G1 X(Sup_Ver_Park_Position) Y(Sup_Ver_Park_Position) Z(Sup_Ver_Park_Position) V(Sup_Ver_Park_Position) F3000  
+
+G153
+G4005 S(AXIDX(5,Z))						; ungear axis 52
+IF (AEXISTS(5,Y)) G4005 S(AXIDX(5,Y))	; ungear axis 51
+IF (AEXISTS(5,U)) G4005 S(AXIDX(5,U))	; ungear axis 53
+IF (AEXISTS(5,V)) G4005 S(AXIDX(5,V))	; ungear axis 56
+G152
+G4099
+
+IF ( Debug_Ret2Loader ) M0
+M725                ; Supports down command in automatic mode
+SYN
+; I_I_Support_1_Dwn   AT  %USR_M0.13;   ; Piston support down
+; I_I_Support_2_Dwn   AT  %USR_M0.14;   ; Piston support down
+; I_I_Support_3_Dwn   AT  %USR_M0.15;   ; Piston support down
+; I_I_Support_4_Dwn   AT  %USR_M0.16;   ; Piston support down
+WAITBIT("%USR_M0.13",1)
+WAITBIT("%USR_M0.14",1)
+WAITBIT("%USR_M0.15",1)
+WAITBIT("%USR_M0.16",1)
+
+IF ( Debug_Ret2Loader ) M0
+M455                ; Close centerings (v-shapes down)
+SYN
+; I_I_VshapeZ1_Dwn AT  %USR_M49.4;
+; I_I_VshapeZ2_Dwn AT  %USR_M49.5;
+; I_I_VshapeZ3_Dwn AT  %USR_M49.6;
+; I_I_VshapeZ4_Dwn AT  %USR_M49.7;
+WAITBIT("%USR_M49.4",1)
+WAITBIT("%USR_M49.5",1)
+WAITBIT("%USR_M49.6",1)
+WAITBIT("%USR_M49.7",1)
+
+.End
+RET
+

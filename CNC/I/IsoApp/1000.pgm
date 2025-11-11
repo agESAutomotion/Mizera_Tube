@@ -38,6 +38,7 @@ IF( %ServiceMillePGM.8 )    JMP .semiLoad           ;Semi Loading Request
 IF( %ServiceMillePGM.10 )   JMP .SemiLoadTube       ;Semi Tube Loading 
 IF( %ServiceMillePGM.11 )   JMP .WeldSeamDect       ;Weld seam identification
 IF( %ServiceMillePGM.15 )   JMP .ParkUnloadSup      ;Park Unload Supports with Flaps
+IF( %ServiceMillePGM.16 )   JMP .Ret2load           ;Return tube to loader (unload from loader side)
 IF(%gPlc13.1)               JMP .acqisizorig        ;Acquisizione origine
 IF(%LsPlc11.0)              JMP .calibraz           ;Gestione calibrazione capacitivo
 IF(%gPlc13.24)              JMP .cleanhead          ;Richiesta routine di pulizia ugello su spazzola
@@ -394,6 +395,14 @@ JMP .ExitFrom1000
     ?%UNLOADER.boolean.6 = 0
 JMP .ExitFrom1000
 
+;******************************************************************************
+;   Return tube to the loader (Unload tube from loader side)
+;******************************************************************************
+.Ret2load
+
+    JSR "Ret2Loader.cfs"
+
+JMP .ExitFrom1000
 ;******************************************************************************
 ;   USER ISO
 ;******************************************************************************

@@ -358,10 +358,11 @@ Offset_U_Mobile          AT %LOADER.values2;
 Offset_U2                AT %LOADER.values3;
 TubeLengthShifted        AT %LOADER.values4;
 
-*                        AT %LOADER.values5;
-*                        AT %LOADER.values6;
-*                        AT %LOADER.values7;
+AUX_Tube_Shape           AT %LOADER.values5;    ** (ISO) Used to unload by the loader side
+AUX_Tube_Height          AT %LOADER.values6;    ** (ISO) Used to unload by the loader side
+AUX_Tube_Width           AT %LOADER.values7;    ** (ISO) Used to unload by the loader side
 ThreshLoadingSupDown     AT %LOADER.values8;  * Threshold for suport down during loading Danger parameter
+AUX_Tube_Length          AT %LOADER.values9;    ** (ISO) Used to unload by the loader side
 
 ManLoadQtaU              AT %LOADER.values10;
 
