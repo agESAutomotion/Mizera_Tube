@@ -88,12 +88,7 @@ N6
 	   	   
       SYN
       MSGOUT " Catching Tube ... " 
-      
-      G153 
-      G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
-      G152   
-      G4099 
-   
+
 	   ; Ensure photocells working well
 	   ; I_I_TubeMobile_Spindle AT  %USR_M1.27;
 	   ; I_I_TubeFix_Spindle    AT  %USR_M1.28;        ; Not present -> LDN %PLCFLAGS.1 -> ALWAYS_ZERO
