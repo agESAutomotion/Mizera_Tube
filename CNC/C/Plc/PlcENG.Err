@@ -171,7 +171,7 @@ Body touch (A11=1, A14=1, A15=0)            PLCerr5.5
 Nozzle lost (A11=1, A14=0, A15=1)           PLCerr5.6
 Calibration timeout                         PLCerr5.7
 Capacitive sensor cable cut                 PLCerr5.8
-                                            PLCerr5.9
+169                                         PLCerr5.9
 Wrong cutting gas selected                  PLCerr5.10
 LOW oxigen pressure                         PLCerr5.11
 LOW nitrogen pressure                       PLCerr5.12
