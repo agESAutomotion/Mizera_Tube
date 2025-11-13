@@ -296,6 +296,7 @@ GasPropEnabFromV            AT %M107.23;        * M107.23 Gas prop. valve enable
 Hold_gas_refill             AT %M107.24;        * M107.24 Hoerbiger insufficient gas pressure
                                                
 Memo_Emission_ON_da_Funz_M  AT %M107.25;        * M107.25 Memoria Emission ON da Funzione M
+GasCutBoxFeedback           AT %M107.26;        * M107.26 Gas pressure feedback taken from the CutBox Pro
 
 Prec_Pos_Run                AT %M110.15;        * Focal positioning in run
 

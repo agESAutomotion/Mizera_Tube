@@ -99,6 +99,11 @@ EQ   1
 AND  %config_machine2.0            ** LASER - Gestione valvola proporzionale sul bus ECAT
 ST   GasPVHoerbiger                ** M107.22 Cutting gas prop. valve type hoerbiger
 
+LD   %config_machine25              ** LASER - Tipo gestione valv. prop. sul bus ECAT (0=DIWAL,1=HOERBIGER...)
+EQ   5
+ST   GasCutBoxFeedback             ** M107.26 Gas pressure feedback taken from the CutBox Pro
+
+
 * Proportional valve test command
 
 CAL  RT_PVTST(CLK=P_ValTestProp)   ** (LsGui18.9) Proportional valve test from setting page
@@ -559,6 +564,18 @@ ST   AppPressCorrente              ** Appoggio Pressione Corrente
 JMP  ComValv
 
 no_hoerbiger:
+
+LD    GasCutBoxFeedback             * M107.26 Gas pressure feedback taken from the CutBox Pro
+JMPCN no_CutBoxFeedback
+
+* Preasure reading from the sensor inside the Laser Head
+
+LD   %CutBox.ActualCutGasPres
+MUL  10
+ST   AppPressCorrente              ** Appoggio Pressione Corrente
+JMP  ComValv
+
+no_CutBoxFeedback:
 
 * Selection 12 or 16 bits input resolution
 
