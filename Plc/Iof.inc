@@ -5,7 +5,7 @@
 ** 16 input - On CNC board position M.In 1
 
 I_LSR_ERROR                 AT %IW0.0;  ** Laser error / Alarm source
-I_LSR_READY                 AT %IW0.1;  ** Laser ready / Device Status Output
+* I_LSR_READY                 AT %IW0.1;  ** Laser ready / Device Status Output (not connected)
 ** free                     AT %IW0.2;
 I_PRESSIONE_N2              AT %IW0.3;  ** Nitrogen OK
 I_PRESSIONE_O2              AT %IW0.4;  ** Oxygen OK
@@ -425,7 +425,7 @@ I_FC_B1_NEG               AT %PLCFLAGS.1;
 I_FC_L4_NEG               AT %PLCFLAGS.1;        * ax74 L4 axis limit switch
 I_FC_L4_POS               AT %PLCFLAGS.1;        * ax74 L4 axis limit switch
 						  
-* I_LSR_READY               AT %PLCFLAGS.1;   
+I_LSR_READY               AT %PLCFLAGS.1;   
 I_FW_READY_nLight         AT %PLCFLAGS.1; 
 I_EMISS_nLight            AT %PLCFLAGS.0;   
 I_ERR_nLight              AT %PLCFLAGS.0; 

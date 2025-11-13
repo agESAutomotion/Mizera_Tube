@@ -191,14 +191,15 @@ FUNCTION INP_CONFIG
      EQ   1
      JMPCN NoLSR_IPG_YLR
 
-     *Ingressi digitali
-     *----------------------------
-     LD   %PLCFLAGS.1
-     ST   I_B1_LASER_READY              ** IPG Laser internal main power supply ON (Aux Power ON)
+          *Ingressi digitali
+          *----------------------------
+          LD   I_LSR_READY
+          ST   I_B1_LASER_READY              ** IPG Laser internal main power supply ON (Aux Power ON)
 
-     LDN  I_LSR_READY
-     AND  I_LSR_LASER_ON
-     ST   I_B4_LASER_ERROR              ** IPG YLS YLR Laser in Alarm status
+          LDN  I_LSR_READY
+          AND  I_LSR_LASER_ON
+          OR   I_LSR_ERROR
+          ST   I_B4_LASER_ERROR              ** IPG YLS YLR Laser in Alarm status
 
      LD   I_LSR_EMISSION_ON
      ST   I_B2_EMISSION_ON              ** IPG Emission ON
