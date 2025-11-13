@@ -60,7 +60,7 @@ FUNCTION INP_CONFIG
      LD   Pul_Reset
      R    I_I_EMERGENZA
 
-     LD   I_CHILLER_ERR				* Chiller error 
+     LDN  I_CHILLER_ERR				* Chiller error 
      ANDN %LSRPlcOp0.8
      ST   I_I_CHILLER_ERR
      ST   %PLCerr6.0    
