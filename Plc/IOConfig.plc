@@ -155,31 +155,31 @@ FUNCTION INP_CONFIG
      EQ   0
      JMPCN NoLSR_IPG_YLS
 
-     *Ingressi digitali
-     *----------------------------
-     LD   I_LSR_READY
-     ST   I_B1_LASER_READY           ** IPG Laser internal main power supply ON (Aux Power ON)
+          *Ingressi digitali
+          *----------------------------
+          LD   I_LSR_READY
+          ST   I_B1_LASER_READY           ** IPG Laser internal main power supply ON (Aux Power ON)
 
-     LD   I_LSR_WARNING
-     ST   I_B13_AVVERTENZA           ** IPG WARNING OUT
+          LD   I_LSR_WARNING
+          ST   I_B13_AVVERTENZA           ** IPG WARNING OUT
 
-     LD   I_LSR_ERROR
-     ST   I_B4_LASER_ERROR           ** IPG YLS YLR Laser in Alarm status
+          LD   I_LSR_ERROR
+          ST   I_B4_LASER_ERROR           ** IPG YLS YLR Laser in Alarm status
 
-     LD   I_LSR_GUIDE_ON
-     ST   I_B5_LASER_GUIDE           ** IPG Laser guida ON
+          LD   I_LSR_GUIDE_ON
+          ST   I_B5_LASER_GUIDE           ** IPG Laser guida ON
 
-     LD   I_LSR_EMISSION_ON
-     ST   I_B2_EMISSION_ON           ** IPG Emission ON
+          LD   I_LSR_EMISSION_ON
+          ST   I_B2_EMISSION_ON           ** IPG Emission ON
 
-     LD   ALWAYS_ONE
-     ST   I_B7_LASER_ASSIGNED        ** IPG Laser ASSIGNED
+          LD   ALWAYS_ONE
+          ST   I_B7_LASER_ASSIGNED        ** IPG Laser ASSIGNED
 
-     LD   ALWAYS_ONE
-     ST   I_B8_POWER_SUPPLY          ** IPG power supply status
+          LD   ALWAYS_ONE
+          ST   I_B8_POWER_SUPPLY          ** IPG power supply status
 
-     LD   ALWAYS_ONE
-     ST   I_B6_ANALOG_CONTROL        ** IPG Controllo analogico ON
+          LD   ALWAYS_ONE
+          ST   I_B6_ANALOG_CONTROL        ** IPG Controllo analogico ON
 
      ***************************************
      NoLSR_IPG_YLS:
@@ -201,31 +201,31 @@ FUNCTION INP_CONFIG
           OR   I_LSR_ERROR
           ST   I_B4_LASER_ERROR              ** IPG YLS YLR Laser in Alarm status
 
-     LD   I_LSR_EMISSION_ON
-     ST   I_B2_EMISSION_ON              ** IPG Emission ON
+          LD   I_LSR_EMISSION_ON
+          ST   I_B2_EMISSION_ON              ** IPG Emission ON
 
-     LD   %PLCFLAGS.1
-     ST   I_B7_LASER_ASSIGNED           ** IPG Laser ASSIGNED
+          LD   %PLCFLAGS.1
+          ST   I_B7_LASER_ASSIGNED           ** IPG Laser ASSIGNED
 
-     LD   ALWAYS_ONE
-     ST   I_B8_POWER_SUPPLY             ** IPG power supply status
+          LD   ALWAYS_ONE
+          ST   I_B8_POWER_SUPPLY             ** IPG power supply status
 
-     *Ingressi simulati
-     *----------------------------
-     LD   %PLCFLAGS.0
-     ST   I_B13_AVVERTENZA              ** IPG WARNING OUT
-     
-     LD   O_A6_ANALOG_CONTROL
-     AND  I_B8_POWER_SUPPLY             ** IPG power supply status
-     ST   I_B6_ANALOG_CONTROL           ** IPG Controllo analogico ON
-     
-     LD   O_A5_GUIDE_LASER
-     AND  I_B8_POWER_SUPPLY             ** IPG power supply status
-     ST   I_B5_LASER_GUIDE              ** IPG Laser guida ON
-     
-     *SEGNALI NON GESTITI
-     *----------------------------
-     *I_B3_INT_CONTROL              ** IPG Controllo interno abilitato
+          *Ingressi simulati
+          *----------------------------
+          LD   %PLCFLAGS.0
+          ST   I_B13_AVVERTENZA              ** IPG WARNING OUT
+          
+          LD   O_A6_ANALOG_CONTROL
+          AND  I_B8_POWER_SUPPLY             ** IPG power supply status
+          ST   I_B6_ANALOG_CONTROL           ** IPG Controllo analogico ON
+          
+          LD   O_A5_GUIDE_LASER
+          AND  I_B8_POWER_SUPPLY             ** IPG power supply status
+          ST   I_B5_LASER_GUIDE              ** IPG Laser guida ON
+          
+          *SEGNALI NON GESTITI
+          *----------------------------
+          *I_B3_INT_CONTROL              ** IPG Controllo interno abilitato
      
      ***************************************
      NoLSR_IPG_YLR:
@@ -259,20 +259,20 @@ FUNCTION INP_CONFIG
      EQ   5
      JMPCN no_nlight_resonator
 
-     LD   I_FW_READY_nLight
-     ST   I_I_FW_READY_nLight                     * NLIGHT: nLight ready to recieve input   
+          LD   I_FW_READY_nLight
+          ST   I_I_FW_READY_nLight                     * NLIGHT: nLight ready to recieve input   
 
-     LD   I_EMISS_nLight
-     ST   I_I_EMISS_nLight                        * NLIGHT: emiss nlight enable             
+          LD   I_EMISS_nLight
+          ST   I_I_EMISS_nLight                        * NLIGHT: emiss nlight enable             
 
-     LD   I_ERR_nLight
-     ST   I_I_ERR_nLight                          * NLIGHT: nlight error                    
+          LD   I_ERR_nLight
+          ST   I_I_ERR_nLight                          * NLIGHT: nlight error                    
 
-     LD   I_RDY_nLight
-     ST   I_I_RDY_nLight                          * NLIGHT: laser nlight ready              
+          LD   I_RDY_nLight
+          ST   I_I_RDY_nLight                          * NLIGHT: laser nlight ready              
 
-     LD   I_ExtCtr_Ready_nLight
-     ST   I_I_ExtCtr_Ready_nLight                 * NLIGHT: nLight external control ready   
+          LD   I_ExtCtr_Ready_nLight
+          ST   I_I_ExtCtr_Ready_nLight                 * NLIGHT: nLight external control ready   
 
      no_nlight_resonator:
 
@@ -350,11 +350,11 @@ FUNCTION INP_CONFIG
      EQ   0
      JMPCN NoLENS_PREC
 
-     LDN  I_PREC_ERROR
-     ST   I_I_PREC_ERROR                ** precitec in error
+          LDN  I_PREC_ERROR
+          ST   I_I_PREC_ERROR                ** precitec in error
 
-     LD   I_PREC_INPOS
-     ST   I_I_PREC_POSITION_REACHED     ** Position Reached 
+          LD   I_PREC_INPOS
+          ST   I_I_PREC_POSITION_REACHED     ** Position Reached 
      ***************************************
      NoLENS_PREC:
 
@@ -452,33 +452,33 @@ FUNCTION OUT_CONFIG
      EQ   0
      JMPCN NoLSR_IPG_YLS
 
-     *Gestione yEmission direttamente su scheda PWM
-     *----------------------------
-     LD  OUT_isFlyCutModeON            * IN "FLYCUT" or M851 cannot write on this register
-     JMPC YLS_FlyCut
-     LD   O_A1_LASER_REQ             ** IPG Richiesta Laser
-     ST   %QW911.8
-     
-     CAL  RTRIG_A1_LASER_REQ(CLK:=O_A1_LASER_REQ)
-     CAL  TOF_A1_LASER_REQ(IN=RTRIG_A1_LASER_REQ.Q,PT=1000)
-     
-     LD   TOF_A1_LASER_REQ.Q
-     ST   O_LSR_REQUEST
-     YLS_FlyCut:
+          *Gestione yEmission direttamente su scheda PWM
+          *----------------------------
+          LD  OUT_isFlyCutModeON            * IN "FLYCUT" or M851 cannot write on this register
+          JMPC YLS_FlyCut
+               LD   O_A1_LASER_REQ             ** IPG Richiesta Laser
+               ST   %QW911.8
+               
+               CAL  RTRIG_A1_LASER_REQ(CLK:=O_A1_LASER_REQ)
+               CAL  TOF_A1_LASER_REQ(IN=RTRIG_A1_LASER_REQ.Q,PT=1000)
+               
+               LD   TOF_A1_LASER_REQ.Q
+               ST   O_LSR_REQUEST
+          YLS_FlyCut:
 
-     *Uscite digitali
-     *----------------------------
-     LD   O_C1_LASER_SWITCH          ** IPG Laser Switch ON
-     ST   O_LSR_LASER_ON
+          *Uscite digitali
+          *----------------------------
+          LD   O_C1_LASER_SWITCH          ** IPG Laser Switch ON
+          ST   O_LSR_LASER_ON
 
-     LD   O_A4_LASER_RESET           ** IPG Resetta errori
-     ST   O_LSR_RESET
+          LD   O_A4_LASER_RESET           ** IPG Resetta errori
+          ST   O_LSR_RESET
 
-     LD   O_A5_GUIDE_LASER           ** IPG Laser spot guide ON
-     ST   O_LSR_GUIDE_ON
+          LD   O_A5_GUIDE_LASER           ** IPG Laser spot guide ON
+          ST   O_LSR_GUIDE_ON
 
-     LD   O_A6_ANALOG_CONTROL        ** IPG Controllo analogico ON
-     ST   O_LSR_ANALOG_CONTROL
+          LD   O_A6_ANALOG_CONTROL        ** IPG Controllo analogico ON
+          ST   O_LSR_ANALOG_CONTROL
 
      ***************************************
      NoLSR_IPG_YLS:
@@ -491,26 +491,32 @@ FUNCTION OUT_CONFIG
      EQ   1
      JMPCN NoLSR_IPG_YLR
 
-     *Gestione Remote start (solo IPG Rack)
-     *----------------------------
-     *Gestione fronte di salita
-     *I_LSR_WORNING è collegato Laser PS Active Pin 5-7 conn.EMG)
-     *  CAL TM_OnLSR(IN=AuxOn,PT=500)
-     *  LD   TM_OnLSR.Q
-     *  AND  O_A1_LASER_REQ                ** IPG Richiesta Laser
-     *  ST   AppStartLSR
-     *  CAL  TM_StartButton(IN=AppStartLSR,PT=1500)
-     
-     *  LD   TM_StartButton.Q
-     *  ST   O_LSR_REMOTE_START
+          *Gestione Remote start (solo IPG Rack)
+          *----------------------------
+          *Gestione fronte di salita
+          *I_LSR_WORNING è collegato Laser PS Active Pin 5-7 conn.EMG)
+          *  CAL TM_OnLSR(IN=AuxOn,PT=500)
+          *  LD   TM_OnLSR.Q
+          *  AND  O_A1_LASER_REQ                ** IPG Richiesta Laser
+          *  ST   AppStartLSR
+          *  CAL  TM_StartButton(IN=AppStartLSR,PT=1500)
+          
+          *  LD   TM_StartButton.Q
+          *  ST   O_LSR_REMOTE_START
 
-     *Uscite digitali
-     *----------------------------
-     LD   O_A4_LASER_RESET           * IPG Resetta errori
-     ST   O_LSR_RESET
+          *Uscite digitali
+          *----------------------------
+          LD   HW_PWM_CFG_FC
+          ST   O_LSR_LASER_ON
 
-     LD   O_A5_GUIDE_LASER           * IPG Laser spot guide ON
-     ST   O_LSR_GUIDE_ON
+          LD   O_A4_LASER_RESET           * IPG Resetta errori
+          ST   O_LSR_RESET
+
+          LD   O_A5_GUIDE_LASER           * IPG Laser spot guide ON
+          ST   O_LSR_GUIDE_ON
+
+          LD   ALWAYS_ONE
+          ST   O_LSR_REMOTE_START
 
      ***************************************
      NoLSR_IPG_YLR:
@@ -549,20 +555,20 @@ FUNCTION OUT_CONFIG
      EQ   5
      JMPCN no_nlight_resonator1
 
-     LD   O_O_EXTEN_IN_nLight                   * NLIGHT: nlight exten in 
-     ST   %M5.0
+          LD   O_O_EXTEN_IN_nLight                   * NLIGHT: nlight exten in 
+          ST   %M5.0
 
-     LD   O_O_GUIDE_nLight                      * NLIGHT: Guide laser nlight 
-     ST   O_LSR_GUIDE_ON
+          LD   O_O_GUIDE_nLight                      * NLIGHT: Guide laser nlight 
+          ST   O_LSR_GUIDE_ON
 
-     *LD   O_O_SYSTEM_ON_nLight                  * NLIGHT: nlight system on
-     *ST   %QW3.3
+          *LD   O_O_SYSTEM_ON_nLight                  * NLIGHT: nlight system on
+          *ST   %QW3.3
 
-     LD   O_O_RESET_nLight                      * NLIGHT: reset error nlight
-     ST   O_LSR_RESET
+          LD   O_O_RESET_nLight                      * NLIGHT: reset error nlight
+          ST   O_LSR_RESET
 
-     LD   O_O_ExtCtr_ENABLE_nLight              * NLIGHT: Enable external control of nlight 
-     ST   %M5.0
+          LD   O_O_ExtCtr_ENABLE_nLight              * NLIGHT: Enable external control of nlight 
+          ST   %M5.0
 
      no_nlight_resonator1:
 
@@ -627,14 +633,14 @@ FUNCTION OUT_CONFIG
      EQ   0
      JMPCN NoLENS_PREC
 
-     LD   O_O_PREC_AUTOMATIC         * Automatic request fo precitec head
-     ST   O_PREC_POSITION
+          LD   O_O_PREC_AUTOMATIC         * Automatic request fo precitec head
+          ST   O_PREC_POSITION
 
-     LD   O_O_PREC_REFERENCE         * Reference signal for precitec head            
-     ST   O_PREC_REF
+          LD   O_O_PREC_REFERENCE         * Reference signal for precitec head            
+          ST   O_PREC_REF
 
-     LD   OA_FOCALE                  * Focal analog out
-     ST   O_PREC_FOCALE
+          LD   OA_FOCALE                  * Focal analog out
+          ST   O_PREC_FOCALE
 
      ***************************************
      NoLENS_PREC:
@@ -880,10 +886,10 @@ FUNCTION OUT_CONFIG
      LD   DoorSafety
      EQ   0
      JMPCN NOSFTDOOR
-     LD   0
-     ST   O_Unlock_Fence
-     ST   O_O_Guard_Door_1
-     ST   O_O_Guard_Door_2
+          LD   0
+          ST   O_Unlock_Fence
+          ST   O_O_Guard_Door_1
+          ST   O_O_Guard_Door_2
      NOSFTDOOR:
 
      LD   DoorSafety
@@ -898,25 +904,25 @@ FUNCTION OUT_CONFIG
           AND  PRGRUN_CN0
           S    %PLCerr21.15            ** Machine Door Open 
           
-     * LDN  I_Grating_Alm               
-     * AND  PRGRUN_CN0
-     * ANDN I_SafetyDevice_Bypass 
-     * S    %PLCerr21.16            ** Laser Safe Activated
-     * 
-     * CAL  TP_Fence(IN=I_UnlckFence_Btn,PT=3000)
-     * LD   TP_Fence.Q
-     * AND  %PLCFLAGS.10
-     * OR   O_Unlock_Fence
-     * ST   O_Unlock_Fence_LED
-     * 
-     * CAL  FTRIG_Fence(CLK=TP_Fence.Q)
-     * LD   FTRIG_Fence.Q
-     * S    O_Unlock_Fence
-     * 
-     * LD   O_Unlock_Fence
-     * OR   TP_Fence.Q
-     * AND   PRGRUN_CN0
-     * S    %PLCerr21.17
+          * LDN  I_Grating_Alm               
+          * AND  PRGRUN_CN0
+          * ANDN I_SafetyDevice_Bypass 
+          * S    %PLCerr21.16            ** Laser Safe Activated
+          * 
+          * CAL  TP_Fence(IN=I_UnlckFence_Btn,PT=3000)
+          * LD   TP_Fence.Q
+          * AND  %PLCFLAGS.10
+          * OR   O_Unlock_Fence
+          * ST   O_Unlock_Fence_LED
+          * 
+          * CAL  FTRIG_Fence(CLK=TP_Fence.Q)
+          * LD   FTRIG_Fence.Q
+          * S    O_Unlock_Fence
+          * 
+          * LD   O_Unlock_Fence
+          * OR   TP_Fence.Q
+          * AND   PRGRUN_CN0
+          * S    %PLCerr21.17
      SAFETYDOOR_1:
 
      LD   DoorSafety
