@@ -46,12 +46,12 @@ LD     ch0_ValFunM
 EQ     443
 AND    PRGRUN_CN0 
 ANDN   PRGSTOP_CN0
-*ANDN   Chain_Aligned
+ANDN   Chain_Aligned
 OR (
     LD     BtnGuiChainForw
     ANDN   PRGRUN_CN0
 )
-ANDN   I_I_TubeOnChain      ** Tube ready to be loaded by the supports (end of loader chain)
+* ANDN   I_I_TubeOnChain      ** Tube ready to be loaded by the supports (end of loader chain)
 ST     O_O_Chain_Forw
 
 CAL    TON_CHAIN(IN=O_O_Chain_Forw,PT=20000) *20 sec
