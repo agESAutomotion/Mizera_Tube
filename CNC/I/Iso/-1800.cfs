@@ -9,6 +9,7 @@
 ;//      [I<tp_lead>] [J<tp_tilt>]
 
 IF( VA16 != 0 ) THEN
+; M0
 RPT .tail_fetch_s, .tail_fetch_e, 1
 RPT .regear_calib_s, .regear_calib_e, 1
 RPT .assign_capvec_s, .assign_capvec_e, 1
@@ -854,11 +855,16 @@ IF( gTechType == 3 ) THEN
         ;****************************************	
         CASE 10 
 		    ;//Max compression depth
-		    SPC 30010,64                              
+		    ;SPC 30010,64                              
+            ; SPC 30010,3   ; Mizera
+            ; SPC 30010,9   ; Mizera
+            SPC 30010,32   ; Mizera
 		    
 		    IF( (gL_UserInt3<=0) || (gL_UserInt3>100) )  gL_UserInt3 = 100
 		    JRKTRJ=(%cn[WHO()].pc16 * gL_UserInt3) / 100  
-		    curvature_modulation = (5000 *gL_UserInt3)/100
+		    curvature_modulation = (3000 *gL_UserInt3)/100
+            MSGOUT "SPC 30064 = " curvature_modulation
+            ;M0
 		    SPC 30064,curvature_modulation
 			
 		    IF(AEXISTS(3,B)) FDCWEI[B] = 1
@@ -915,11 +921,11 @@ IF( gTechType == 3 ) THEN
         ;****************************************
         CASE 12           		
 		    ;//Max compression depth
-		    SPC 30010,64                              
+		    SPC 30010,32                             
 		    
 		    IF( (gL_UserInt3<=0) || (gL_UserInt3>100) )  gL_UserInt3 = 100
 		    JRKTRJ=(%cn[WHO()].pc16 * gL_UserInt3) / 100  
-		    curvature_modulation = (5000 *gL_UserInt3)/100
+		    curvature_modulation = (3000 *gL_UserInt3)/100
 		    SPC 30064,curvature_modulation
 			
 		    IF(AEXISTS(3,B)) FDCWEI[B] = 1
@@ -935,17 +941,17 @@ IF( gTechType == 3 ) THEN
             DECTRJ=((300 * gL_UserInt3)/100) * 2
             JRKTRJ=0
 
-            fdc_C = 10
-            fdc_B = 10
+            fdc_C = 20
+            fdc_B = 20
             FDCWEI[C]=3 + fdc_C - (gL_UserInt3*fdc_C)/100
             IF(AEXISTS(3,B))  FDCWEI[B]=3 + fdc_B - (gL_UserInt3*fdc_B)/100
 
-            FDCTCA=75                            ;//VIMO
-            FDCTCB=75 
-            FDCTCC=75
-            FDCTCD=75
+            FDCTCA=175                            ;//VIMO
+            FDCTCB=175 
+            FDCTCC=175
+            FDCTCD=175
 
-            curvature_modulation = (5000 *gL_UserInt3)/100
+            curvature_modulation = (2000 *gL_UserInt3)/100
             SPC 30064,curvature_modulation
             SPC 30054,40                          ;//LimitAngle
             SPC 30062,0                           ;//LIMIT FEED
@@ -1064,6 +1070,7 @@ ENDIF
 	    IF( (VA6 == 10) || (VA6 == 12) ) ?%LsIso18 = 0
 	    IF( (VA6 == 11) || (VA6 == 13) ) ?%LsIso18 = 1
         IF( !((VA6 == 10) || (VA6 == 11) || (VA6 == 12) || (VA6 == 13)) ) ?%LsIso18 = 0
+        ; M0
 	ELSE
 	    ?%LsIso18 = 0
 	ENDIF

@@ -121,6 +121,8 @@
 
         <!--Nodi Drives SKD-->
 		<Device Id="#x0000FFFF" ProductCode="#x00000001" ExternalLink="">SKD_DRIVES</Device> <!--IS620N-->
+        <!--Veichi SD700-->
+		<Device Id="#x00850104" ProductCode="#x01030507" ExternalLink="">Veichi_SD700</Device>
 	</Devices>
 			
 	<MessagesSet>
@@ -223,7 +225,7 @@
 		<LENZE_I700SERIES>
 			<Message LevelId="0" Code="#x2320">"(%04X) Short circuit or earth leakage on motor side",EcAlarmCode,</Message>
 			<Message LevelId="0" Code="#x2340">"(%04X) Short circuit on motor side",EcAlarmCode,</Message>
-			<Message LevelId="0" Code="#x2351">"(%04X) Motor utilisation (I²xt) > [value] %",EcAlarmCode,</Message>
+			<Message LevelId="0" Code="#x2351">"(%04X) Motor utilisation (Iï¿½xt) > [value] %",EcAlarmCode,</Message>
 			<Message LevelId="0" Code="#x2380">"(%04X) Fault - utilisation of the power section (Ixt) too high",EcAlarmCode,</Message>
 			<Message LevelId="0" Code="#x2381">"(%04X) Warning - Utilisation of the power section (Ixt) too high",EcAlarmCode,</Message>
 			<Message LevelId="0" Code="#x2382">"(%04X) Fault - device utilisation (Ixt) too high",EcAlarmCode,</Message>
@@ -736,7 +738,7 @@
             <Message LevelId="0" Code="#x00200004">A5.4 Motor thermal probe not connected</Message>
             <Message LevelId="0" Code="#x00200005">A5.5 Run with T.radiator too high</Message>
             <Message LevelId="0" Code="#x00200006">A5.6 IGBT module temperature too high</Message>
-            <Message LevelId="0" Code="#x00400000">A6.0 Motor I²t thermal alarm</Message>
+            <Message LevelId="0" Code="#x00400000">A6.0 Motor Iï¿½t thermal alarm</Message>
             <Message LevelId="0" Code="#x00800000">A7.0 Autotuning test unfinished</Message>
             <Message LevelId="0" Code="#x00800001">A7.1 Speed not reached during autotuning</Message>
             <Message LevelId="0" Code="#x01000000">A8.0 Missing enable logic input from the field</Message>
@@ -1791,10 +1793,114 @@
             <!--Generic message-->
 		</SKD_DRIVES>
 		
+		<Veichi_SD700>
+			<Message LevelId="0" Code="#x6000">"(Er.020) Parameter and check exception"</Message>
+			<Message LevelId="0" Code="#x6001">"(Er.021) Parameter formatting exception"</Message>
+			<Message LevelId="0" Code="#x6002">"(Er.022) System and check exception"</Message>
+			<Message LevelId="0" Code="#x6003">"(Er.023) XML file not burned"</Message>
+			<Message LevelId="0" Code="#x6004">"(Er.030) Main circuit detection part is abnormal"</Message>
+			<Message LevelId="0" Code="#x6005">"(Er.040) Abnormal parameter setting"</Message>
+			<Message LevelId="0" Code="#x6006">"(Er.041) Distribution pulse output setting is abnormal"</Message>
+			<Message LevelId="0" Code="#x6007">"(Er.042) Abnormal combination of parameters"</Message>
+			<Message LevelId="0" Code="#x6008">"(Er.044) Semi-closed loop / full closed loop parameter setting exception"</Message>
+			<Message LevelId="0" Code="#x6009">"(Er.050) Drive does not match motor capacity"</Message>
+			<Message LevelId="0" Code="#x600A">"(Er.051) Product does not support alarm"</Message>
+			<Message LevelId="0" Code="#x600B">"(Er.080) Encoder unit pulse distance setting is abnormal"</Message>
+			<Message LevelId="0" Code="#x600C">"(Er.08A) Position sensor resolution setting is abnormal"</Message>
+			<Message LevelId="0" Code="#x600D">"(Er.0B0) Servo on command invalid alarm"</Message>
+			<Message LevelId="0" Code="#x600E">"(Er.100) Overcurrent (OC)"</Message>
+			<Message LevelId="0" Code="#x600F">"(Er.300) Regeneration failure"</Message>
+			<Message LevelId="0" Code="#x6010">"(Er.320) Regenerative overload"</Message>
+			<Message LevelId="0" Code="#x6011">"(Er.330) Main circuit power supply wiring error"</Message>
+			<Message LevelId="0" Code="#x6012">"(Er.400) Main circuit overvoltage (OV)"</Message>
+			<Message LevelId="0" Code="#x6013">"(Er.410) Main circuit under voltage"</Message>
+			<Message LevelId="0" Code="#x6014">"(Er.42A) Converter exception"</Message>
+			<Message LevelId="0" Code="#x6015">"(Er.450) Main circuit capacitor overvoltage"</Message>
+			<Message LevelId="0" Code="#x6016">"(Er.510) Over speed (OS)"</Message>
+			<Message LevelId="0" Code="#x6017">"(Er.511) Crossover pulse output overspeed"</Message>
+			<Message LevelId="0" Code="#x6018">"(Er.520) Vibration alarm"</Message>
+			<Message LevelId="0" Code="#x6019">"(Er.521) Automatic tuning alarm"</Message>
+			<Message LevelId="0" Code="#x601A">"(Er.550) The highest speed setting is abnormal"</Message>
+			<Message LevelId="0" Code="#x601B">"(Er.710) Overload (instantaneous maximum load)"</Message>
+			<Message LevelId="0" Code="#x601C">"(Er.720) Overload (continuous maximum load)"</Message>
+			<Message LevelId="0" Code="#x601D">"(Er.730) DB overload 1"</Message>
+			<Message LevelId="0" Code="#x601E">"(Er.731) DB overload 2"</Message>
+			<Message LevelId="0" Code="#x601F">"(Er.740) Inrush current limiting resistor overload"</Message>
+			<Message LevelId="0" Code="#x6020">"(Er.7A0) Heat sink overheating"</Message>
+			<Message LevelId="0" Code="#x6021">"(Er.7AA) Control the substrate temperature abnormality"</Message>
+			<Message LevelId="0" Code="#x6022">"(Er.7AB) Servo unit built-in fan stop"</Message>
+			<Message LevelId="0" Code="#x6023">"(Er.810) Encoder backup alarm"</Message>
+			<Message LevelId="0" Code="#x6024">"(Er.820) Encoder and number verification alarm"</Message>
+			<Message LevelId="0" Code="#x6025">"(Er.830) Encoder battery alarm"</Message>
+			<Message LevelId="0" Code="#x6026">"(Er.840) Encoder data is abnormal"</Message>
+			<Message LevelId="0" Code="#x6027">"(Er.850) Encoder overspeed"</Message>
+			<Message LevelId="0" Code="#x6028">"(Er.860) Encoder overheating"</Message>
+			<Message LevelId="0" Code="#x607A">"(Er.870) CAN main station dropped (life factor)"</Message>
+			<Message LevelId="0" Code="#x607B">"(Er.900) CAN main station dropped (consumer time)"</Message>
+			<Message LevelId="0" Code="#x607C">"(Er.901) CAN master station off monitoring line configuration conflict"</Message>
+			<Message LevelId="0" Code="#x606D">"(Er.902) Critical point number error"</Message>
+			<Message LevelId="0" Code="#x606E">"(Er.910) Spindle data error"</Message>
+			<Message LevelId="0" Code="#x606F">"(Er.911) Spindle speed error"</Message>
+			<Message LevelId="0" Code="#x6070">"(Er.912) Slave speed error"</Message>
+			<Message LevelId="0" Code="#x6071">"(Er.913) Line type error"</Message>
+			<Message LevelId="0" Code="#x6072">"(Er.914) System operation error"</Message>
+			<Message LevelId="0" Code="#x6031">"(Er.915) Speed command A/D exception"</Message>
+			<Message LevelId="0" Code="#x6032">"(Er.B10) Speed command A/D conversion data is abnormal"</Message>
+			<Message LevelId="0" Code="#x6033">"(Er.B11) Torque command A/D exception"</Message>
+			<Message LevelId="0" Code="#x6034">"(Er.B20) Current detection fault 1 (U phase)"</Message>
+			<Message LevelId="0" Code="#x6035">"(Er.B31) Current detection fault 2 (V phase)"</Message>
+			<Message LevelId="0" Code="#x6036">"(Er.B32) Current detection fault 3 (current detector)"</Message>
+			<Message LevelId="0" Code="#x6037">"(Er.B33) Reserved"</Message>
+			<Message LevelId="0" Code="#x6038">"(Er.B40) Reserved"</Message>
+			<Message LevelId="0" Code="#x6039">"(Er.BE0) System alarm 0"</Message>
+			<Message LevelId="0" Code="#x603A">"(Er.BF0) System alarm 1"</Message>
+			<Message LevelId="0" Code="#x603B">"(Er.BF1) System alarm 2"</Message>
+			<Message LevelId="0" Code="#x603C">"(Er.BF2) System alarm 3"</Message>
+			<Message LevelId="0" Code="#x603D">"(Er.BF3) Hardware overcurrent"</Message>
+			<Message LevelId="0" Code="#x603E">"(Er.BF4) Prevent out of control detection"</Message>
+			<Message LevelId="0" Code="#x603F">"(Er.C10) Phase error detection"</Message>
+			<Message LevelId="0" Code="#x603F">"(Er.C20) Phase error detection"</Message>
+			<Message LevelId="0" Code="#x6040">"(Er.C21) Hall sensor is abnormal"</Message>
+			<Message LevelId="0" Code="#x6041">"(Er.C22) Inconsistent phase information"</Message>
+			<Message LevelId="0" Code="#x6042">"(Er.C50) Magnetic pole monitoring failed"</Message>
+			<Message LevelId="0" Code="#x6043">"(Er.C51) Magnetic pole monitoring stopped"</Message>
+			<Message LevelId="0" Code="#x6044">"(Er.C52) Magnetic pole monitoring is not finished"</Message>
+			<Message LevelId="0" Code="#x6045">"(Er.C53) Magnetic pole monitoring overtravel"</Message>
+			<Message LevelId="0" Code="#x6046">"(Er.C54) Magnetic pole monitoring failure 2"</Message>
+			<Message LevelId="0" Code="#x6047">"(Er.C80) Encoder clear exception"</Message>
+			<Message LevelId="0" Code="#x6048">"(Er.C90) Encoder communication failure"</Message>
+			<Message LevelId="0" Code="#x6049">"(Er.C91) Encoder communication position data acceleration abnormal"</Message>
+			<Message LevelId="0" Code="#x604A">"(Er.C92) Encoder communication timer is abnormal"</Message>
+			<Message LevelId="0" Code="#x604B">"(Er.CA0) Encoder parameter exception"</Message>
+			<Message LevelId="0" Code="#x604C">"(Er.CB0) Encoder loopback check exception"</Message>
+			<Message LevelId="0" Code="#x604D">"(Er.CC0) Inconsistent upper and lower limits of the number of revolutions"</Message>
+			<Message LevelId="0" Code="#x604E">"(Er.CF1) Reserved"</Message>
+			<Message LevelId="0" Code="#x604F">"(Er.CF2) Reserved"</Message>
+			<Message LevelId="0" Code="#x6050">"(Er.D00) Position deviation is too large"</Message>
+			<Message LevelId="0" Code="#x6051">"(Er.D01) Excessive position deviation when servo ON"</Message>
+			<Message LevelId="0" Code="#x6052">"(Er.D02) Excessive positional deviation caused by speed limit when servo is ON"</Message>
+			<Message LevelId="0" Code="#x6053">"(Er.D10) Motor - load position deviation is too large"</Message>
+			<Message LevelId="0" Code="#x6054">"(Er.D30) Location data overflow"</Message>
+			<Message LevelId="0" Code="#x606C">"(Er.EB9) EtherCAT initialization exception"</Message>
+			<Message LevelId="0" Code="#x6073">"(Er.EC6) Reserved"</Message>
+			<Message LevelId="0" Code="#x6077">"(Er.F10) Phase loss when the main circuit selects three-phase power input"</Message>
+
+			<Message LevelId="0" Code="#x900">"(AL.900) Position deviation is too large"</Message>
+			<Message LevelId="0" Code="#x901">"(AL.901) Excessive position deviation when servo ON"</Message>
+			<Message LevelId="0" Code="#x910">"(AL.910) Overload warning"</Message>
+			<Message LevelId="0" Code="#x911">"(AL.911) Vibration warning"</Message>
+			<Message LevelId="0" Code="#x920">"(AL.920) Regenerative overload warning"</Message>
+			<Message LevelId="0" Code="#x921">"(AL.921) DB overload warning"</Message>
+			<Message LevelId="0" Code="#x930">"(AL.930) Battery undervoltage warning"</Message>
+			<Message LevelId="0" Code="#x931">"(AL.931) The software limit 607Dh is abnormally set."</Message>
+			<Message LevelId="0" Code="#x940">"(AL.940) The origin is offset outside the soft limit"</Message>
+			<Message LevelId="0" Code="#x941">"(AL.941) Parameter change warning that requires power failure"</Message>
+			<Message LevelId="0" Code="#x942">"(AL.942) EtherCAT control mode setting is abnormal"</Message>
+			<Message LevelId="0" Code="#x950">"(AL.950) Position exceeds the soft limit"</Message>
+			<Message LevelId="0" Code="#x971">"(AL.971) Undervoltage warning"</Message>
+			<Message LevelId="0" Code="#x9A0">"(AL.9A0) Overtravel warning"</Message>
+			<Message LevelId="0" Code="#x9B0">"(AL.9B0) SYNC0 sync frame is lost"</Message>
+			<Message LevelId="0" Code="#x9F0">"(AL.9F0) Distributed clock cycle setting exception ( 125us integer multiple)"</Message>
+		</Veichi_SD700>
 	</MessagesSet>
-        
-	
 </Fieldbus>
-
-
-

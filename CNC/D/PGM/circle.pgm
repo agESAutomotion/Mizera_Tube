@@ -1,0 +1,127 @@
+% .PipeCutting_RectPart_Tilted_Heading_B_A2
+;// Cylindrical tube tilted plane heading with (A)B head and A2 table.
+
+;DBL debug_pgm = 0x03
+DBL debug_pgm = 0
+DBL rectW = 100/2        ;//rect half width
+DBL rectH = 100/2        ;//rect half height
+DBL rectR = 7.5           ;//rect rounding
+DBL thAngle = -35;//tilted heading section plane angle
+DBL thStep = 2          ;//tilted heading section angular step
+DBL cirRad = 20         ;//top circle radius
+DBL cirDist = -40        ;//top circle center distance from tilted heading
+DBL cirBevel = 45       ;//top circle bevel
+DBL cirStep = 3         ;//top circle angular step
+DBL bhDist = 40         ;//distance from tilted heading to bottom heading
+DBL bhBevel = -0        ;//bottom heading bevel angle
+DBL lead = 5            ;//lead-ins length
+DBL lead2 = 10          ;//lead-ins length for B angle orientation
+DBL border_pgm = 2          ;//corner processing start-end points
+
+DBL thRotation = 0     ;//tilted heading section rotation along X axis
+DBL thBase = rectH*ABS(TAN(thAngle))
+
+G2292 U(-3000) Y(-rectW) Z(-rectH) X(0.0) V(rectW) W(rectH) I(rectR)
+
+DBL rot
+DBL sn, cs
+DBL x, y, z
+DBL cy, cz
+DBL rx
+DBL b
+DBL c
+DBL Ox, Oy, Oz
+DBL Oyz
+
+G64
+G90
+G94
+G168
+
+; Gearing axes ignoring 3 Chucks management
+
+GRPQ[V] = 0
+G153
+G4005 S(AXIDX(3,X))
+G4005 S(AXIDX(3,Y))
+G4005 S(AXIDX(3,Z))
+IF (AEXISTS(3,U)) G4005 S(AXIDX(3,U))
+IF (AEXISTS(3,V)) G4005 S(AXIDX(3,V))    
+IF (AEXISTS(3,A)) G4005 S(AXIDX(3,A))
+IF (AEXISTS(3,B)) G4005 S(AXIDX(3,B))
+IF (AEXISTS(3,C)) G4005 S(AXIDX(3,C))
+G152
+G4099
+
+G153
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1
+G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+IF (AEXISTS(3,A)) G4010 M(AXIDX(A)) S(AXIDX(3,A)) I1  
+IF (AEXISTS(3,B)) G4010 M(AXIDX(B)) S(AXIDX(3,B)) I1   
+IF (AEXISTS(3,C)) G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1    
+G152
+G4099
+
+G806 A11 T3 N1 H1 D1 E1 S(workpiece_safe_dist) Q0
+;//*********************
+;// TOP BEVELED CIRCLE
+;//*********************
+N2
+G161 X(-thBase*2-cirDist)
+
+
+;G153 G1 Z(100) F30000
+;G153 G1 Z(300) F30000
+;G153 G1 Z(100) F30000
+;G153 G1 Z(300) F30000
+;G153 G1 Z(100) F30000
+;G153 G1 Z(300) F30000
+;G153 G1 Z(100) F30000
+;G153 G1 Z(300) F30000
+;G153 G1 Z(100) F30000
+;G153 G1 Z(300) F30000
+;G153 G1 Z(100) F30000
+;G153 G1 Z(300) F30000
+
+;G169
+;M30
+;M2
+
+; MSGOUT "x = " (cirRad-lead2)
+; M0
+; MSGOUT "z = " (rectH+workpiece_safe_dist)
+; M0
+G180 X(cirRad-lead2) Y0 Z(rectH+workpiece_safe_dist) B0 C0
+G153 G0 X(kine_x) Y(kine_y) B(kine_b) C(kine_c)
+G153 G0 Z(kine_z)
+G650 T3 W1
+;G800 K0 D1 G12 X(cirRad-lead2) Y0 Z(rectH) F(feed1) T0 R0 U0 V0 W1 Q0
+G800 K0 D1 G13 X(cirRad-lead2) Y0 Z(rectH) F(feed1) T0 R0 U0 V0 W1 Q0
+IF (debug_pgm) G888 F(debug_pgm)
+G832
+G1 X(cirRad) B(cirBevel)
+IF (debug_pgm) G888 F(debug_pgm)
+DBL idx
+;FOR idx = 0 TO 100 BY 1
+FOR rot = cirStep TO 360.01 BY cirStep
+    sn = SIN(rot)
+    cs = COS(rot)
+    x = cirRad*cs
+    y = cirRad*sn
+    Ox = SIN(cirBevel) * COS(rot)
+    Oy = SIN(cirBevel) * SIN(rot)
+    Oz = COS(cirBevel)
+    c = ATANXY(Oy,Oz)
+    Oyz = SQRT(Oy*Oy+Oz*Oz)
+    b = ATANXY(Ox,Oyz)
+    G1 X(x) Y(y) I0 J0 B(b) C(c)
+    IF (debug_pgm) G888 F(debug_pgm)
+ENDFOR
+;ENDFOR
+G840
+G153 G0 Z(trav_safe_z)
+
+G169
+M30
+M2
