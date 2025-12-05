@@ -53,7 +53,7 @@ ST   AdvOpen
 LD   %ax30.ra0.0
 JMPCN _closeloop_active
     LD   %ax30.ra92
-    SUB  AdvOpen
+    * SUB  AdvOpen
     ST   PosUMis
 JMP _no_loop
 _closeloop_active:
