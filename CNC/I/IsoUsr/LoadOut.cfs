@@ -2,7 +2,7 @@
 
 ; Semi-Loader Part 1: Park all components, allow the operator to load the pipe
 
-DBL Debug_Loader = 1
+DBL Debug_Loader = 0
 DBL UpSupVoffset = 0
 DBL UpSupHgt = ABS(%gIso24) / 2.000		; gIso24 : (tube height) Measure of pipe along Z
 DBL SkipStpTo = %PROG_ONE.values11		; Last loader step (case external loader?)
@@ -57,21 +57,22 @@ IF( Debug_Loader ) M0
 
 G153
 G4005 S(AXIDX(3,Z))		; ungear axis 29	- Z
-G4005 S(AXIDX(3,X))		; ungear axis 30	- 1st spindle
+G4005 S(AXIDX(3,X))		; ungear axis 30	- X
 G4005 S(AXIDX(3,Y))		; ungear axis 28	- Y
 G4005 S(AXIDX(3,C))		; ungear axis 34	- Cm
 G152
 G4099
  
 G153 
-G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1		; gear axis 30 (1st spindle) to 0
-G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1		; gear axis 28 (Y) to 1
-G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1		; gear axis 29 (Z) to 2
-G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1    	; gear axis 34 (Cm) to 5
+G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1		; gear axis 30 (X) to 0 (Xv)
+G4010 M(AXIDX(Y)) S(AXIDX(3,Y)) I1		; gear axis 28 (Y) to 1 (Yv)
+G4010 M(AXIDX(Z)) S(AXIDX(3,Z)) I1		; gear axis 29 (Z) to 2 (Zv)
+G4010 M(AXIDX(C)) S(AXIDX(3,C)) I1    	; gear axis 34 (Cm) to 5 (Cv)
 G152   
 G4099 
 
 IF ( Debug_Loader ) M0
+; Z, Y, X -> Park. Cm (C1, C2) -> Load tube position 
 G153 G0 Z(MaxQta_Z-15)   ;;YANG			; raise the laser head to 15 mm from the max
 G153 G0 Y(MinQta_Y+15)					; Park Y to the minimum position
 G153 G1 X(MaxQta_X) F30000 	 			

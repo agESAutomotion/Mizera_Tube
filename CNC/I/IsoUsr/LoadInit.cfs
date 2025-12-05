@@ -2,7 +2,7 @@
 
 ; Semi-Loader Part 1: Park all components, allow the operator to load the pipe (Optional)
 
-DBL Debug_Loader = 1
+DBL Debug_Loader = 0
 IF( %cn[WHO()].rc[0].21 ) RET
 
 SYN

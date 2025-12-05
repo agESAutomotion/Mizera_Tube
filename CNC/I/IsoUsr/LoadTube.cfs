@@ -1,7 +1,7 @@
 : LoadTube
 
 ; Load Tube Automomatically 
-DBL Debug_LoadTube = 1
+DBL Debug_LoadTube = 0
 
 DBL Vout0 = 0x04
 DBL VOUT = 0x08
@@ -85,7 +85,7 @@ N6
 	   AWAIT( !%SUPPORTS_SYSTEM.boolean.31 )        ; ISO_SupUn_Init
 	   AWAIT( %LOADER.boolean.30 )                  ; ISO_Loader_Ack
 	   %LOADER.boolean.30 = 0                       ; ISO_Loader_Ack
-	   	   
+
       SYN
       MSGOUT " Catching Tube ... " 
 
@@ -165,12 +165,26 @@ N6
 
       IF (TheoreticalTubeLength < (%SUPPORTS_SYSTEM.values1/1000 - %LOADER.values4/1000) ) ERROR(793)   ; too short
 
+      G153 
+      G4005 S(AXIDX(3,X))
+      G152   
+      G4099 
+
+      G153 
+      G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
+      G152   
+      G4099 
+
       IF ( Debug_LoadTube ) M0
       G153 G1 X(TheoreticalTubeLength + %LOADER.values4 / 1000 + 500) F10000  
-
-      %PROG_ONE.values11 = 7
+      
+      ?%PROG_ONE.values11 = 7
 N7
-
+      G153 
+      G4005 S(AXIDX(3,X))
+      G152   
+      G4099 
+	   	   
       G153 
       G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
       G152   
@@ -198,7 +212,7 @@ N7
       G152   
       G4099 
 
-      %PROG_ONE.values11 = 8
+      ?%PROG_ONE.values11 = 8
 N8
 	   G153 
       G4010 M(AXIDX(X)) S(AXIDX(3,X)) I1
@@ -208,8 +222,8 @@ N8
       SYN	
 	   ; Close Spindle Position
 	   IF ( Debug_LoadTube ) M0
-	   G153 G1 X(QCALC(X) - CatchLoadOft) F10000  	 ; CatchLoadOft: offset between the sensor and the base of the clamps
-		 
+      G153 G1 X(QCALC(X) - CatchLoadOft) F10000  	 ; CatchLoadOft: offset between the sensor and the base of the clamps
+		
 	   SYN
 	   ; New Tube Length = paddle pos + QCALC(X)
 	   IF ( Debug_LoadTube ) M0
@@ -224,6 +238,8 @@ N8
          M0 
       ENDIF  
 		 
+      MSGOUT "Cofirm tube in position. Press Start"
+      M0
       ; Close master mobile spindle
       ; I_I_Mobile_Spindle_Close  AT  %USR_M0.28;  
       IF ( Debug_LoadTube ) M0
@@ -237,7 +253,7 @@ N8
       G4005 S(AXIDX(3,X))
       G152   
       G4099
-      %PROG_ONE.values11 = 9
+      ?%PROG_ONE.values11 = 9
 N9
 
       ax30CurrPos = QCALC(X)
@@ -446,7 +462,7 @@ N9
 
       ENDIF
 
-      %PROG_ONE.values11 = 10
+      ?%PROG_ONE.values11 = 10
 N10
 
       tube_len = %PROG_ONE.values13
@@ -555,7 +571,7 @@ N10
          ?%M254.5 = 0        ; ParkO2FromIso
       ENDIF
 
-      %PROG_ONE.values11 = 11
+      ?%PROG_ONE.values11 = 11
 N11
       G153
       G4005 S(AXIDX(3,X))		; ungear axis 30	- X
@@ -621,7 +637,7 @@ N11
    ENDIF
 ENDIF  
 	   
-%PROG_ONE.values11 = 0
+?%PROG_ONE.values11 = 0
 ; LoadinInProgres          AT %GENERAL_SETUP.values0;
 ?%GENERAL_SETUP.values0 = 0
 RET
