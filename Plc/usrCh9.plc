@@ -288,6 +288,10 @@ JMPCN NOAX81
         *AND  UnSupp_81_GoUp
     )
     OR   usrReqGrantSupL1                               ** Moving Z1
+    OR (
+        LD EnWriteBlendSwitch1
+        ANDN Z1Parked
+    )
     OR   HoldWhileVertMove
     ST   GESTAX81.xHoldMoving                           * Richiesta blocco avanzamento
 
@@ -442,6 +446,10 @@ JMPCN NOAX82
         *AND  UnSupp_82_GoUp
     )
     OR   usrReqGrantSupL2                               ** Moving Z2
+    OR (
+        LD EnWriteBlendSwitch1
+        ANDN Z2Parked
+    )
     OR   HoldWhileVertMove
     ST   GESTAX82.xHoldMoving          * Richiesta blocco avanzamento
 
@@ -596,6 +604,10 @@ JMPCN NOAX83
         *AND  UnSupp_83_GoUp
     )
     OR   usrReqGrantSupL3                               ** Moving Z3
+    OR (
+        LD EnWriteBlendSwitch1
+        ANDN Z3Parked
+    )
     OR   HoldWhileVertMove
     ST   GESTAX83.xHoldMoving                           * Richiesta blocco avanzamento
 
@@ -751,6 +763,10 @@ JMPCN NOAX84
         *AND  UnSupp_84_GoUp
     )
     OR   usrReqGrantSupL4                               ** Moving Z4
+    OR (
+        LD EnWriteBlendSwitch1
+        ANDN Z4Parked
+    )
     OR   HoldWhileVertMove
     ST   GESTAX84.xHoldMoving                           * Richiesta blocco avanzamento
 

@@ -206,6 +206,10 @@ SUPPORTS_JogPlusLed      AT %SUPPORTS_SYSTEM.values9.0;
 SUPPORTS_JogMinusLed     AT %SUPPORTS_SYSTEM.values9.1; 
 UNSUPPORTS_JogPlusLed    AT %SUPPORTS_SYSTEM.values9.2; 
 UNSUPPORTS_JogMinusLed   AT %SUPPORTS_SYSTEM.values9.3; 
+Z1Parked                 AT %SUPPORTS_SYSTEM.values9.4; 
+Z2Parked                 AT %SUPPORTS_SYSTEM.values9.5; 
+Z3Parked                 AT %SUPPORTS_SYSTEM.values9.6; 
+Z4Parked                 AT %SUPPORTS_SYSTEM.values9.7; 
 
 SUPPORTS_S1_Selected     AT %SUPPORTS_SYSTEM.values10.0;
 SUPPORTS_S2_Selected     AT %SUPPORTS_SYSTEM.values10.1;
