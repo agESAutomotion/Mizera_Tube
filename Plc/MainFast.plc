@@ -300,14 +300,14 @@ JMPCN _AssignAng5x
     *   come altezza di taglio in mm
     ***************************************
     LD   Capacit_Anal                  ** (C102)Analogica Capacitivo
-    MUL  1000
-    DIV  4095
+    MUL  20000
+    DIV  10
     DIV  (
         LD   bevAngleHead1_calc1
         COS  
     )
-    MUL  20000
-    DIV  10                             * Per visualizzare due cifre decimali
+    MUL  1000
+    DIV  4095
     ST   Capacit_Anal_Mm		             ** (C103)Analogica Capacitivo in mm
 
 JMP _AssignAngCom	 

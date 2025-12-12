@@ -109,9 +109,9 @@ JMPCN no_cutbox
     LD   20000      
     ST   MaxADCPoints
 
-    LD   %C121
-    ST   %C120 
-    ST   %C103
+    * LD   %C121
+    * * ST   %C120 
+    * ST   %C103
 
     PATH %ecat_ring0
     PATH %EcatNode[%CutBox0.rGeneralPurpose0]
