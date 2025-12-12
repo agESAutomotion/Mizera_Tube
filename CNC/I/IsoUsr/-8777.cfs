@@ -1,0 +1,67 @@
+ X Y C F L [TSTR] :G7777
+
+; Custom macro for Mizera's printer handling
+
+; Parameters:
+;   <X>      : x coordinate of the starting point
+;   <Y>      : y coordinate of the starting point
+;   <C>      : rotation of the tube in degrees
+;   <L>      : length of the image to print in mm
+;   <F>      : feed (speed) in mm/min
+;   <[TSTR]> : (unsupported) Text to print. It was kept in order to have the same
+;              functon signature as the original (waterjet) version
+
+; In the case of this machine, the Y parameter should always be 0 
+; since the printer cannot move in this direction. The X coordinate 
+; should be with respect to the machine's origin, we will take care 
+; of the distance between the origin and the printer (offset)
+
+; Example: G7777 X(500) Y(0) C(90) L(600) F(1000)
+; Explanation: the tube will rotate 90º (it could be seen as not on 
+; top of the tube but to one side) and it will be positioned in such 
+; a way that the printer starts printing at 500 mm + offset and stops 
+; at 500 mm + 600 mm + offset and the movement will be at 1000 mm/min
+
+
+DBL x_start = CTOMM(VA23)
+DBL y_start = CTOMM(VA24)
+DBL c_start = CTOMM(VA2)
+DBL feed = CTOMM(VA5)
+DBL printing_length = CTOMM(VA11)
+DBL x_offset = %CostK24             ; X distance from the machine origin to the printer
+DBL y_offset = %CostK25             ; Y distance from the machine origin to the printer
+
+DBL sav_G90=XGET("@G90")
+DBL sav_G70=XGET("@G70")
+
+
+; Tube positioning to the start position for printing
+G153 G0 X(x_start + x_offset) Y(y_start + y_offset) C(c_start)
+
+; Make the printer go down
+M340
+; I_Printer_Down    AT  %USR_M12.24;
+AWAIT(%USR_M12.24)
+
+; Printer start
+M342
+G4 F2
+
+; Move in incremental mode to the 
+G91  X(printing_length) F(feed)
+
+; Make the printer go up
+M341
+; I_Printer_Up  AT  %USR_M12.23;
+AWAIT(%USR_M12.23)
+
+SYN
+G(sav_G70)
+G(sav_G90)
+
+RET
+
+
+
+
+

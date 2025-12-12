@@ -436,6 +436,15 @@ ST I_I_TubeDetector_Out
 LD I_TubeDetector_In
 ST I_I_TubeDetector_In
 
+** PRINTER
+
+LD I_Printer_Up
+ST I_I_Printer_Up
+
+LD I_Printer_Down
+ST I_I_Printer_Down
+
+
 END_FUNCTION
 
 FUNCTION  SHARED_MEMORY
@@ -877,5 +886,18 @@ ST O_TubeDetector_Out
 
 LD O_O_TubeDetector_In
 ST O_TubeDetector_In
+
+
+** Printer
+
+LD O_O_Printer_Down
+ST O_Printer_Down
+
+LD O_O_Printer_Up
+ST O_Printer_Up
+
+LD O_O_Printer_Start
+ST O_Printer_Start
+
 
 END_FUNCTION

@@ -74,11 +74,11 @@ I_I_ChainAligned                    AT  %USR_M12.16; ** Chain has done one step 
 O_O_Chain_Forw                      AT  %USR_M12.17;
 * O_O_Rst_InverterAlm                 AT  %USR_M12.18;
 O_O_Chain_Back                      AT  %USR_M12.19;
-*                                   AT  %USR_M12.20;
-*                                   AT  %USR_M12.21;
-*                                   AT  %USR_M12.22;
-*                                   AT  %USR_M12.23;
-*                                   AT  %USR_M12.24;
+O_O_Printer_Down                    AT  %USR_M12.20;
+O_O_Printer_Up                      AT  %USR_M12.21;
+O_O_Printer_Start                   AT  %USR_M12.22;
+I_I_Printer_Up                      AT  %USR_M12.23;
+I_I_Printer_Down                    AT  %USR_M12.24;
 *                                   AT  %USR_M12.25;
 *                                   AT  %USR_M12.26;
 I_I_FlapL3_Home                     AT  %USR_M12.27;
@@ -223,6 +223,10 @@ Fun_M463_Ch0                        AT  %USR_M15.7;             ** Vertical Pist
 
 Fun_M464_Ch0                        AT  %USR_M15.8;             ** 1st spindle tube sensor out
 Fun_M465_Ch0                        AT  %USR_M15.9;             ** 1st spindle tube sensor in
+
+Fun_M340_Ch0                        AT  %USR_M15.10;            ** Printer go down 
+Fun_M341_Ch0                        AT  %USR_M15.11;            ** Printer go up 
+Fun_M342_Ch0                        AT  %USR_M15.12;            ** Printer start 
 
 MainChFeedrate                      AT  %USR_M23;               * feedrate for channel
 

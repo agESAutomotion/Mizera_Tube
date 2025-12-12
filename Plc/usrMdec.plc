@@ -84,6 +84,22 @@ AND  Strobe_M_Ch0
 ST   Fun_M339_Ch0    
 
 LD   Register_M_Ch0
+EQ   340
+AND  Strobe_M_Ch0
+ST   Fun_M340_Ch0           * Printer go down
+
+LD   Register_M_Ch0
+EQ   341
+AND  Strobe_M_Ch0
+ST   Fun_M341_Ch0           * Printer go up
+
+LD   Register_M_Ch0
+EQ   342
+AND  Strobe_M_Ch0
+ST   Fun_M341_Ch0           * Printer start
+
+
+LD   Register_M_Ch0
 EQ   431
 AND  Strobe_M_Ch0
 ST   Fun_M431_Ch0      

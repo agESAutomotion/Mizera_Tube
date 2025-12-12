@@ -31,8 +31,8 @@ I_TubeOnChain                   AT %IW1.1;    ** Presence of material loading - 
 * AT %IW1.4;    ** Presence of material complete    - not used 
 I_Loader_Alarm                  AT %IW1.5;    ** Ok loading inverter
 * AT %IW1.6;    ** Unloading inverter ok
-* AT %IW1.7;    ** Printer raised
-* AT %IW1.8;    ** Printer abandoned
+I_Printer_Up                    AT %IW1.7;    ** Printer raised
+I_Printer_Down                  AT %IW1.8;    ** Printer abandoned
 I_FixedSpindle_Open             AT %IW1.9;    ** Chuck 2 open 
 I_Mobile_Spindle_Slave_Open_Jaws AT %IW1.10;   ** Chuck 3 open Jaws
 I_Mobile_Spindle_Slave_Open     AT %IW1.11;   ** Chuck 3 open Rollers
@@ -106,7 +106,7 @@ O_Lock_Safety_Door              AT %QW2.10; ** Unlock door
 O_LSR_GUIDE_ON                  AT %QW2.11;
 O_Chain_Forw                    AT %QW2.12;  ** Loader forward
 O_Chain_Back                    AT %QW2.13;  ** Loader backward
-** free                         AT %QW2.14;
+O_Printer_Start                 AT %QW2.14;
 ** free                         AT %QW2.15;
 
 ** 16 outputs - On CNC board position 1 - 2
@@ -121,8 +121,8 @@ O_Mobile_Spindle_Slave_Open         AT %QW3.6;  ** Open chuck 3 - Rollers
 O_Mobile_Spindle_Slave_Close        AT %QW3.7;  ** Close chuck 3 - Rollers
 * AT %QW3.8;  ** Dremel – turn on
 * AT %QW3.9;  ** Spare
-* AT %QW3.10; ** Lift the Printer
-* AT %QW3.11; ** Lower the printer
+O_Printer_Up                        AT %QW3.10; ** Lift the Printer
+O_Printer_Down                      AT %QW3.11; ** Lower the printer
 O_TubeDetector_Out                  AT %QW3.12; ** Extend the sensor
 O_TubeDetector_In                   AT %QW3.13; ** Insert the sensor
 * AT %QW3.14; ** Lift the Dremel
@@ -548,7 +548,7 @@ I_ECAT_BROKEN             AT %PLCFLAGS.0;    * A12  %ecat_ring0.EcatNode28.EcMDP
 I_ECAT_READY              AT %PLCFLAGS.1;    * A13  %ecat_ring0.EcatNode28.EcMDPIn1.3
 I_ECAT_BODY_TOUCH         AT %PLCFLAGS.0;    * A14  %ecat_ring0.EcatNode28.EcMDPIn1.4
 I_ECAT_REACH              AT %PLCFLAGS.0;    * A15  %ecat_ring0.EcatNode28.EcMDPIn1.5
-I_ECAT_CAPACITIVO         AT %M5;            *      %ecat_ring0.EcatNode28.EcMDPIn0
+I_ECAT_CAPACITIVO         AT %ecat_ring0.EcatNode28.EcMDPIn0;
 
 O_ECAT_CALIBRAZIONE       AT %M5.0;          * A3   %ecat_ring0.EcatNode28.EcMDPOut1.0
 O_ECAT_SELCHAR_0          AT %M5.0;          * A4   %ecat_ring0.EcatNode28.EcMDPOut1.1

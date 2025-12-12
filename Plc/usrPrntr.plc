@@ -1,0 +1,36 @@
+#include "usrMem.inc"
+
+VAR
+TON_Printer_Down:   TON;
+TON_Printer_Up:     TON;
+RT_Printer_Start:   R_TRIG;
+END_VAR
+
+VAR_IN_OUT
+
+END_VAR
+
+FUNCTION PRINTER
+
+* CAL TON_Printer_Down(IN=O_O_Printer_Down,PT=2000)     * 2 sec
+* CAL TON_Printer_Up(IN=O_O_Printer_Up,PT=2000)     * 2 sec
+CAL RT_Printer_Start(CLK:=Fun_M342_Ch0)
+
+* LD TON_Printer_Down.Q
+LD I_I_Printer_Down
+R  O_O_Printer_Down
+
+LD Fun_M340_Ch0
+S  O_O_Printer_Down
+
+* LD TON_Printer_Up.Q
+LD I_I_Printer_Up
+R  O_O_Printer_Up
+
+LD Fun_M341_Ch0
+S  O_O_Printer_Up
+
+LD RT_Printer_Start.Q
+ST O_O_Printer_Start
+
+END_FUNCTION
