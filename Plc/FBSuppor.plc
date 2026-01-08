@@ -88,6 +88,7 @@ JMPCN  no_check
      LD   xPosU
      LT   xLimitQuota
      ANDN xSensorDwn
+     AND  xEnable
      ST   HoldSuperviAxis
 no_check:
 
