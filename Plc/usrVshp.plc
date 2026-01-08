@@ -372,8 +372,9 @@ no_loop:
     LD     VShapeVertSup4.yPistonMinus 
     ST     O_O_Ev_VShapeZ4_Dwn               ** (%SUPPORTS_SYSTEM.IO1.15)
 
-    LD     VShapeVertSup4.yAlarm
-    ST     %PLCerr22.3                      ** Timeout: Loader V piston support 4
+    * LD     VShapeVertSup4.yAlarm
+    * AND    SUPPORT_4.xEnable                ** Provisional
+    * ST     %PLCerr22.3                      ** Timeout: Loader V piston support 4
 *}}}
 
 LD   I_I_VshapeZ1_Dwn

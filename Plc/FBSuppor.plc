@@ -178,6 +178,7 @@ ST  yEvDwn
 CAL Ton_Down(IN:=yEvDwn, PT=xTimeOut)
 LD   Ton_Down.Q
 ANDN xSensorDwn
+AND  xEnable             ** Provisional
 S    yAlarmDwn
 
 LD   xReset
